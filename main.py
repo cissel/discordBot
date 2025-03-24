@@ -8,6 +8,7 @@ import signal
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 TEST_ENV_CHANNEL_ID = int(os.getenv("TEST_ENV_CHANNEL_ID"))
+CHUCK_USER_ID = int(os.getenv("CHUCK_USER_ID")) 
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -27,7 +28,7 @@ class Client(discord.Client):
         if message.author == self.user:
             return
         
-        if message.author == '448619126659743744':
+        if message.author == CHUCK_USER_ID:
             await message.channel.send(f"shut up chuck")
             return
         
