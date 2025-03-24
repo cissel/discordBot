@@ -32,7 +32,7 @@ class Client(discord.Client):
             await message.channel.send(f"shut up chuck")
             return
         
-        if message.content.startswith('hello'):
+        if message.content.lower().startswith('hello'):
             await message.channel.send(f"yooooo what's up {message.author.display_name}")
 
         if message.content.lower() == 'ping':
