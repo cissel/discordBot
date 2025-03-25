@@ -91,6 +91,10 @@ class Client(discord.Client):
             selected_file = random.choice(media_files)
 
             await message.channel.send(file=discord.File(selected_file))
+        
+        if message.content.lower().startswith("gm"):
+            await message.add_reaction("🌞")
+            await message.channel.send("good morning! :)")
 
     async def send_goodbye_message(self):
 
