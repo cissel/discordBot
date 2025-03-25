@@ -27,6 +27,8 @@ myTheme <- theme(legend.position = "none",
 
 #####
 
+setwd("C:/Users/james/projects/discordBot")
+
 ##### Surf Forecast Dataframe #####
 
 surfFcstDf <- function() {
@@ -278,7 +280,7 @@ plotSurfFcst <- function() {
   
   p <- ggplotly(sfp)
   
-  ggsave("surf_fcst.png", plot = sfp, width = 10, height = 4, dpi = 300, bg = "transparent")
+  ggsave("outputs/surf_fcst.png", plot = sfp, width = 10, height = 4, dpi = 300, bg = "transparent")
   
 }
 
