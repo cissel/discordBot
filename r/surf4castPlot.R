@@ -278,9 +278,35 @@ plotSurfFcst <- function() {
           panel.grid.major.x = element_blank(),
           axis.ticks.x = element_blank())
   
-  p <- ggplotly(sfp)
+  #p <- ggplotly(sfp)
+
+  print("Generating surf forecast plot...")
   
-  ggsave("outputs/surf_fcst.png", plot = sfp, width = 10, height = 4, dpi = 300, bg = "transparent")
+  print("Creating outputs/ directory if missing...")
+  
+  if (!dir.exists("outputs")) {
+    
+    dir.create("outputs")
+    
+  }
+  
+print("Saving plot to: outputs/surf_fcst.png")
+
+ggsave("outputs/surf_fcst.png", 
+       plot = sfp, 
+       width = 10, 
+       height = 4, 
+       dpi = 300, 
+       bg = "transparent")
+
+print("Plot successfully saved!")
+
+  ggsave("outputs/surf_fcst.png", 
+         plot = sfp, 
+         width = 10, 
+         height = 4, 
+         dpi = 300, 
+         bg = "transparent")
   
 }
 
