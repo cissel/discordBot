@@ -3,7 +3,7 @@ import subprocess
 from dotenv import load_dotenv
 import os
 import asyncio
-import signal
+import random
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -12,6 +12,7 @@ CHUCK_USER_ID = int(os.getenv("CHUCK_USER_ID"))
 
 R_PATH = "r/"
 OUTPUT_PATH = "outputs/"
+BBOT_FOLDER = os.path.join(OUTPUT_PATH, "bb")
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -58,6 +59,18 @@ class Client(discord.Client):
             await message.channel.send(f'pulling florida radar')
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "flRadar.gif")))
+
+        if message.content.lower() == "!boobs":  
+            # Get all image & video files from the folder
+            media_files = [os.path.join(BBOT_FOLDER, f) for f in os.listdir(BBOT_FOLDER) if f.endswith((".png", ".jpg", ".jpeg", ".gif", ".mov"))]
+
+            if not media_files:
+                await message.channel.send("no images or videos found in the folder")
+                return
+
+            selected_file = random.choice(media_files)
+
+            await message.channel.send(file=discord.File(selected_file))
 
     async def send_goodbye_message(self):
 
