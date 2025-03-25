@@ -21,11 +21,11 @@ class Client(discord.Client):
 
     async def on_ready(self):
 
-        print(f'online!')
+        print("online!")
 
         channel = client.get_channel(TEST_ENV_CHANNEL_ID)
         if channel:
-            await channel.send(f'going online!')
+            await channel.send("going online!")
 
     async def on_message(self, message):
 
@@ -34,13 +34,13 @@ class Client(discord.Client):
         
         if message.author.id == CHUCK_USER_ID:
             if random.random() < 0.1:
-                await message.channel.send(f"shut up")
+                await message.channel.send("shut up")
                 await asyncio.sleep(1)
-                await message.channel.send(f"idiot")
+                await message.channel.send("idiot")
                 await asyncio.sleep(2)
                 await message.channel.send("jk here u go")
         
-        if message.content.lower().startswith('hello'):
+        if message.content.lower().startswith("hello"):
             await message.channel.send(f"yooooo what's up {message.author.display_name}")
 
         if message.content.lower() == 'ping':
@@ -61,17 +61,17 @@ class Client(discord.Client):
             await message.channel.send(file=discord.File(selected_audio))
 
         if message.content.lower() == '!surf':
-            await message.channel.send(f"hey dude! give me a sec to check the waves")
+            await message.channel.send("hey dude! give me a sec to check the waves")
             subprocess.run(["Rscript", os.path.join(R_PATH, "surf4castPlot.R")])
             await message.channel.send("here's the latest surf forecast:", file=discord.File(os.path.join(OUTPUT_PATH, "surf_fcst.png")))
 
         if message.content.lower() == '!jaxradar':
-            await message.channel.send(f'pulling jax radar')
+            await message.channel.send("pulling jax radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "jaxRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "nwsJaxRadar.gif")))
 
         if message.content.lower() == '!flradar':
-            await message.channel.send(f'pulling florida radar')
+            await message.channel.send("pulling florida radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "flRadar.gif")))
 
@@ -97,8 +97,8 @@ class Client(discord.Client):
         """Sends a shutdown message before the bot exits."""
         channel = self.get_channel(TEST_ENV_CHANNEL_ID)
         if channel:
-            print("Sending goodbye message")
-            await channel.send(f'going offline!')
+            print("sending goodbye message")
+            await channel.send("going offline!")
             await asyncio.sleep(2)
         else:
             print(f"Could not find channel {TEST_ENV_CHANNEL_ID}")
@@ -107,7 +107,7 @@ client = Client(intents=intents)
 
 async def shutdown_handler():
     """Handles cleanup when the bot is shutting down."""
-    print("Shutting down bot...")
+    print("shutting down bot...")
     await client.send_goodbye_message()  # Send the goodbye message
     await client.close()  # Properly disconnect the bot
 
