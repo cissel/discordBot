@@ -48,6 +48,17 @@ class Client(discord.Client):
 
         if message.content.lower() == "good bot":
             await message.add_reaction("❤️")
+            audio_folder = os.path.join(OUTPUT_PATH, "botSounds")
+
+            audio_files = [os.path.join(audio_folder, f) for f in os.listdir(audio_folder) if f.endswith((".wav", ".mp3", ".mp4"))]
+
+            if not audio_files:
+                await message.channel.send("no audio files in folder")
+                return
+            
+            selected_audio = random.choice(audio_files)
+
+            await message.channel.send(file=discord.File(selected_audio))
 
         if message.content.lower() == '!surf':
             await message.channel.send(f"hey dude! give me a sec to check the waves")
