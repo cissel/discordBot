@@ -10,7 +10,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 TEST_ENV_CHANNEL_ID = int(os.getenv("TEST_ENV_CHANNEL_ID"))
 CHUCK_USER_ID = int(os.getenv("CHUCK_USER_ID")) 
 
-R_PATH = os.path.join("..", "r")
+R_PATH = "r/"
 OUTPUT_PATH = "outputs/"
 
 intents = discord.Intents.default()
