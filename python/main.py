@@ -32,9 +32,13 @@ class Client(discord.Client):
         if message.author == self.user:
             return
         
-        if message.author == CHUCK_USER_ID:
-            await message.channel.send(f"shut up chuck")
-            return
+        if message.author.id == CHUCK_USER_ID:
+            if random.random() < 0.1:
+                await message.channel.send(f"shut up")
+                await asyncio.sleep(1)
+                await message.channel.send(f"idiot")
+                await asyncio.sleep(2)
+                await message.channel.send("jk here u go")
         
         if message.content.lower().startswith('hello'):
             await message.channel.send(f"yooooo what's up {message.author.display_name}")
@@ -60,7 +64,12 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "flRadar.gif")))
 
-        if message.content.lower() == "!boobs":  
+        if message.content.lower() == "!boobs":  # Replace with your trigger message
+            # 50% chance to respond with "x" instead of a file
+            if random.random() < 0.333:  # 33.3% probability
+                await message.channel.send("gulag")
+                return
+
             # Get all image & video files from the folder
             media_files = [os.path.join(BBOT_FOLDER, f) for f in os.listdir(BBOT_FOLDER) if f.endswith((".png", ".jpg", ".jpeg", ".gif", ".mov"))]
 
