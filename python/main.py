@@ -158,8 +158,8 @@ class Client(discord.Client):
 
             # Loop through each row and add a field for each game
             for i, row in df.iterrows():
-                matchup_text = f"{row['matchup']}"  # Adjust column names if needed
-                embed.add_field(name=row["time"], value=matchup_text, inline=False)
+                matchup_text = f"{row['time']}" 
+                embed.add_field(name=row["matchup"], value=matchup_text, inline=False)
 
             # Send the embed to Discord
             await message.channel.send(embed=embed)
