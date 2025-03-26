@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import asyncio
 import random
+import pandas as pd
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -132,6 +133,31 @@ class Client(discord.Client):
             await message.channel.send("pulling data from 2024 stanley cup game 7")
             subprocess.run(["Rscript", os.path.join(R_PATH, "floridaPanthe.R")])
             await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "catsWin.png")))
+
+        if message.content.lower() == "hoops today?":  # Command to trigger CSV generation
+            await message.channel.send("lemme check")
+
+            # Run the R script to generate the CSV
+            subprocess.run(["Rscript", os.path.join(R_PATH, "nbaToday.R")])
+
+            csv_path = os.path.join(OUTPUT_PATH, "sports/nba/gamesToday.csv")
+
+            # Check if CSV was created
+            if not os.path.exists(csv_path):
+                await message.channel.send("no hoops today :(")
+                return
+            
+            print(".csv found")
+            await message.channel.send("hoops today:")
+
+            # Read CSV into a DataFrame
+            df = pd.read_csv(csv_path)
+
+            # Convert to a formatted table
+            table = df.to_markdown(index=False)  # Converts to a Markdown-style table
+
+            # Send the table in Discord
+            await message.channel.send(f"```{table}```")
 
     async def send_goodbye_message(self):
 
