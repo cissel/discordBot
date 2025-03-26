@@ -153,11 +153,16 @@ class Client(discord.Client):
             # Read CSV into a DataFrame
             df = pd.read_csv(csv_path)
 
-            # Convert to a formatted table
-            table = df.to_markdown(index=False)  # Converts to a Markdown-style table
+            # Create an embed message
+            embed = discord.Embed(title="🏀 Today's NBA Matchups", color=0x3498db)
 
-            # Send the table in Discord
-            await message.channel.send(f"```{table}```")
+            # Loop through each row and add a field for each game
+            for i, row in df.iterrows():
+                matchup_text = f"{row['matchup']}"  # Adjust column names if needed
+                embed.add_field(name=row["time"], value=matchup_text, inline=False)
+
+            # Send the embed to Discord
+            await message.channel.send(embed=embed)
 
     async def send_goodbye_message(self):
 
