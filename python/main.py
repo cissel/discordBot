@@ -19,6 +19,7 @@ intents.message_content = True
 
 class Client(discord.Client):
 
+    # initialize last_sent_meme
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.last_sent_meme = None  # ✅ Store in the bot instance
@@ -56,7 +57,7 @@ class Client(discord.Client):
             await message.channel.send(f"yooooo what's up {message.author.display_name}")
 
         if message.content.lower() == 'ping':
-            await message.channel.send(f"pong 🏓")
+            await message.channel.send("pong 🏓")
 
         if message.content.lower().startswith("gm"):
             await message.add_reaction("🌞")
@@ -75,6 +76,12 @@ class Client(discord.Client):
             selected_audio = random.choice(audio_files)
 
             await message.channel.send(file=discord.File(selected_audio))
+
+        if message.content.lower() == "duval":
+            await message.channel.send("bang em")
+
+        if message.content.lower() == "westside":
+            await message.channel.send("jville")
 
         if message.content.lower() == '!surf':
             await message.channel.send("hey dude! give me a sec to check the waves")
