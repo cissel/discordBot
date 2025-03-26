@@ -19,6 +19,10 @@ intents.message_content = True
 
 class Client(discord.Client):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.last_sent_meme = None  # ✅ Store in the bot instance
+
     async def on_ready(self):
 
         print("online!")
@@ -38,7 +42,7 @@ class Client(discord.Client):
                 await asyncio.sleep(1)
                 await message.channel.send("idiot")
                 await asyncio.sleep(2)
-                await message.channel.send("jk here u go")
+                await message.channel.send("lol jk here u go")
         
         if "hey" in message.content.lower() and "bot" in message.content.lower():
             await message.channel.send("hey man")
@@ -53,6 +57,10 @@ class Client(discord.Client):
 
         if message.content.lower() == 'ping':
             await message.channel.send(f"pong 🏓")
+
+        if message.content.lower().startswith("gm"):
+            await message.add_reaction("🌞")
+            await message.channel.send("good morning! :)")
 
         if message.content.lower() == "good bot":
             await message.add_reaction("❤️")
@@ -83,26 +91,40 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "flRadar.gif")))
 
-        if message.content.lower() == "!boobs":  # Replace with your trigger message
-            # 50% chance to respond with "x" instead of a file
-            if random.random() < 0.333:  # 33.3% probability
+        if message.content.lower() == "!boobs":
+            # 33.3% chance to send "gulag" instead of an image
+            if random.random() < 0.333:
                 await message.channel.send("gulag")
                 return
 
-            # Get all image & video files from the folder
+            # Get all media files from the folder
             media_files = [os.path.join(BBOT_FOLDER, f) for f in os.listdir(BBOT_FOLDER) if f.endswith((".png", ".jpg", ".jpeg", ".gif", ".mov"))]
 
             if not media_files:
                 await message.channel.send("no images or videos found in the folder")
                 return
 
-            selected_file = random.choice(media_files)
+            # Remove the last sent file from selection if possible
+            available_files = [f for f in media_files if f != self.last_sent_meme]
+
+            # If all files were removed, reset and allow any file
+            if not available_files:
+                available_files = media_files
+
+            # Pick a new random file
+            selected_file = random.choice(available_files)
+
+            # ✅ Update the last sent file in the bot instance
+            self.last_sent_meme = selected_file  
 
             await message.channel.send(file=discord.File(selected_file))
-        
-        if message.content.lower().startswith("gm"):
-            await message.add_reaction("🌞")
-            await message.channel.send("good morning! :)")
+
+        if message.content.lower() == "cats!":
+            await message.channel.send("vamos gatos")
+            await asyncio.sleep(1)
+            await message.channel.send("pulling data from 2024 stanley cup game 7")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "floridaPanthe.R")])
+            await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "catsWin.png")))
 
     async def send_goodbye_message(self):
 
