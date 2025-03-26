@@ -10,8 +10,8 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 TEST_ENV_CHANNEL_ID = int(os.getenv("TEST_ENV_CHANNEL_ID"))
 CHUCK_USER_ID = int(os.getenv("CHUCK_USER_ID")) 
 
-R_PATH = "r/"
-OUTPUT_PATH = "outputs/"
+R_PATH = "/Users/jamescissel/discordBot/r/"
+OUTPUT_PATH = "/Users/jamescissel/discordBot/outputs/"
 BBOT_FOLDER = os.path.join(OUTPUT_PATH, "bb")
 
 intents = discord.Intents.default()
@@ -40,6 +40,14 @@ class Client(discord.Client):
                 await asyncio.sleep(2)
                 await message.channel.send("jk here u go")
         
+        if "hey" in message.content.lower() and "bot" in message.content.lower():
+            await message.channel.send("hey man")
+
+        if "how are you" in message.content.lower():
+            await message.channel.send("happy to be here :)")
+            await asyncio.sleep(1)
+            await message.channel.send("thank you for asking :)")
+
         if message.content.lower().startswith("hello"):
             await message.channel.send(f"yooooo what's up {message.author.display_name}")
 
