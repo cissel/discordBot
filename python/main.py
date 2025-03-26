@@ -5,6 +5,8 @@ import os
 import asyncio
 import random
 import pandas as pd
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline 
+import torch
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -14,6 +16,75 @@ CHUCK_USER_ID = int(os.getenv("CHUCK_USER_ID"))
 R_PATH = "/Users/jamescissel/discordBot/r/"
 OUTPUT_PATH = "/Users/jamescissel/discordBot/outputs/"
 BBOT_FOLDER = os.path.join(OUTPUT_PATH, "bb")
+
+# ✅ Switch back to GPT-2
+MODEL_NAME = "gpt2"
+
+# ✅ Set device to CPU (change to "cuda" if running on GPU)
+device = torch.device("cpu")
+
+# ✅ Load GPT-2 model & tokenizer
+print("Loading GPT-2 model...")  # Debugging print
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+model = AutoModelForCausalLM.from_pretrained(MODEL_NAME).to(device)
+
+# ✅ Create the GPT-2 text-generation pipeline
+gpt2_pipeline = pipeline(
+    "text-generation",
+    model=model,
+    tokenizer=tokenizer,
+    max_new_tokens=100,  # Adjust for longer/shorter responses
+    do_sample=True, 
+    temperature=0.7, 
+    top_k=50, 
+    top_p=0.95,
+    device=-1  # ✅ -1 forces CPU mode
+)
+
+print("GPT-2 model loaded!")  # Debugging print
+
+# Define the bot's personality
+BOT_PERSONA = (
+    "You are a chill bot. Respond kindly to all messages even if they are mean."
+    "If someone is trying to be funny, being too horny, or generally trolling please respond in a meme-y/troll-y way."
+    "Be a kind and honest bot above all else."
+)
+
+async def generate_ai_response(user_message):
+    prompt = f"{BOT_PERSONA}\n\nUser: {user_message}\nBot:"
+
+    print(f"🛠️ Debug: Received user message: {user_message}")
+    print(f"🛠️ Debug: Generated prompt: {prompt}")
+
+    try:
+        response = gpt2_pipeline(
+            prompt, 
+            max_new_tokens=30, 
+            do_sample=True, 
+            temperature=0.7, 
+            top_k=50, 
+            top_p=0.95
+        )
+
+
+        print(f"🛠️ Debug: Raw GPT-2 response object: {response}")  # ✅ Check if response exists
+
+        if not response:  # ✅ Handle empty response
+            print("🚨 GPT-2 returned an empty response!")
+            return "Uh oh, I lost my train of thought!"
+
+        bot_reply = response[0]['generated_text'].split("Bot:")[-1].strip()
+
+        # ✅ Only keep the first sentence to prevent looping weirdness
+        bot_reply = bot_reply.split("User:")[0].strip()
+
+        print(f"🛠️ Debug: Extracted bot reply: {bot_reply}")  # ✅ Check if bot_reply is empty
+
+        return bot_reply or "I'm speechless!"
+
+    except Exception as e:
+        print(f"🚨 Error generating response: {e}")
+        return "Oops, something went wrong!"
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -46,21 +117,37 @@ class Client(discord.Client):
                 await asyncio.sleep(2)
                 await message.channel.send("lol jk here u go")
         
-        if "hey" in message.content.lower() and "bot" in message.content.lower():
-            await message.channel.send("hey man")
+        # Trigger GPT-2 only if "bot" is in the message
+        if "mr" in message.content.lower() and "bot" in message.content.lower():
+            print(f"GPT-2 Triggered by: {message.content}")  # ✅ Debugging line
+            #await message.channel.send("thinking...")
 
-        if "how are you" in message.content.lower():
-            await message.channel.send("happy to be here :)")
-            await asyncio.sleep(1)
-            await message.channel.send("thank you for asking :)")
+            try:
+                ai_response = await generate_ai_response(message.content)
+                
+                if not ai_response.strip():  # ✅ Check if response is empty
+                    await message.channel.send("wait what did u say sorry i got really stoned earlier")
+                    return
 
-        if message.content.lower().startswith("hello"):
-            await message.channel.send(f"yooooo what's up {message.author.display_name}")
+                await message.channel.send(ai_response)
+                print(f"Sent GPT-2 Response: {ai_response}")  # ✅ Debugging line
+
+            except Exception as e:
+                print(f"error generating response: {e}")
+                await message.channel.send("error - something went wrong")
+
+        #if "how are you" in message.content.lower():
+        #    await message.channel.send("happy to be here :)")
+        #    await asyncio.sleep(1)
+        #    await message.channel.send("thank you for asking :)")
+
+        #if message.content.lower().startswith("hello"):
+        #    await message.channel.send(f"yooooo what's up {message.author.display_name}")
 
         if message.content.lower() == 'ping':
             await message.channel.send("pong 🏓")
 
-        if message.content.lower().startswith("gm"):
+        if "gm" in message.content.lower():
             await message.add_reaction("🌞")
             await message.channel.send("good morning! :)")
 
