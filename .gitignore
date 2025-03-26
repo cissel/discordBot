@@ -1,2 +1,5 @@
 .env
 .httr-oauth
+outputs/.DS_Store
+outputs/sports/.DS_Store
+r/.DS_Store
