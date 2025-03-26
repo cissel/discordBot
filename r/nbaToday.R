@@ -12,7 +12,7 @@ gt <- nba_schedule() |>
   filter(game_date == Sys.Date()) |>  # Filter only today's games
   select(game_id,
          game_status_text,
-         game_time_est,  # Get the game time
+         arena_name,
          home_team_city, home_team_name, home_team_tricode, home_team_wins, home_team_losses,
          away_team_city, away_team_name, away_team_tricode, away_team_wins, away_team_losses)
 
@@ -23,7 +23,10 @@ gtc <- data.frame(time = character(),
 
 # Loop through each game and extract matchup details
 for (i in 1:nrow(gt)) {
-  game_time <- gt$game_status_text[i]  # Extract game time
+  game_time <- paste(gt$game_status_text[i],
+                     "@",
+                     gt$arena_name[i],
+                     sep = " ")  # Extract game time
   
   # Format each team's name with record (W-L)
   home_team <- paste0(gt$home_team_city[i], " ", gt$home_team_name[i], 
