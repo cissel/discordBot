@@ -132,7 +132,7 @@ class Client(discord.Client):
             await asyncio.sleep(1)
             await message.channel.send("pulling data from 2024 stanley cup game 7")
             subprocess.run(["Rscript", os.path.join(R_PATH, "floridaPanthe.R")])
-            await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "catsWin.png")))
+            await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsWin.png")))
 
         if message.content.lower() == "hoops today?":  # Command to trigger CSV generation
             await message.channel.send("lemme check")
