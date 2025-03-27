@@ -1,4 +1,4 @@
-# nbaToday.R by JHCV
+# nbaTomorrow.R by JHCV
 
 ##### Required Packages #####
 
@@ -9,7 +9,7 @@ library(hoopR)
 
 # Pull today's NBA games
 gt <- nba_schedule() |>  
-  filter(game_date == Sys.Date()) |>  # Filter only today's games
+  filter(game_date == Sys.Date()+1) |>  # Filter only today's games
   select(game_id,
          game_status_text,
          arena_name,
@@ -36,21 +36,14 @@ for (i in 1:nrow(gt)) {
   
   # Build base matchup string
   matchup <- paste0(away_team, " @ ", home_team)
-
-  # Only add score if the game is live or final
-  if (!is.na(gt$home_team_score[i]) && !is.na(gt$away_team_score[i]) &&
-      game_status_text == 2) {
-    
-    score_text <- paste0(" — Score: ", gt$away_team_score[i], "-", gt$home_team_score[i])
-    matchup <- paste0(matchup, score_text)
-  }
   
   # Append to the dataframe
   gtc <- rbind(gtc, data.frame(time = game_time, matchup = matchup))
+  
 }
 
 # Output
 print(gtc)
 
-write_csv(gtc, "C:/Users/james/projects/discordBot/outputs/sports/nba/gamesToday.csv")
+write_csv(gtc, "C:/Users/james/projects/discordBot/outputs/sports/nba/gamesTomorrow.csv")
 print(".csv saved")

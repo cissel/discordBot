@@ -64,5 +64,5 @@ catsCup <- geom_hockey("nhl") +
     plot.caption = element_text(hjust = .9)
   )
 
-ggsave("/Users/jamescissel/discordBot/outputs/sports/nhl/catsWin.png", plot = catsCup, width = 10, height = 6, dpi = 300, bg = "white")
+ggsave("C:/Users/james/projects/discordBot/outputs/sports/nhl/catsWin.png", plot = catsCup, width = 10, height = 6, dpi = 300, bg = "white")
 
