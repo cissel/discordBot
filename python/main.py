@@ -122,7 +122,7 @@ class Client(discord.Client):
                 await message.channel.send("lol jk")
         
         # Trigger GPT-2 only if "mr" or bot" is in the message
-        if "mr" in message.content.lower() or "bot" in message.content.lower() or "jarvis" in message.content.lower():
+        if "mr bot" in message.content.lower() or "jarvis" in message.content.lower():
             print(f"GPT-2 Triggered by: {message.content}")  # Debugging line
             #await message.channel.send("thinking...")
 
