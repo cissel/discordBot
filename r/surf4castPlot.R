@@ -27,7 +27,7 @@ myTheme <- theme(legend.position = "none",
 
 #####
 
-setwd("/Users/jamescissel/discordBot")
+setwd("C:/Users/james/projects/discordBot")
 
 ##### Surf Forecast Dataframe #####
 
