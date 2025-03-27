@@ -1,3 +1,4 @@
+# several bots for room 40 by jhcv
 import discord
 import subprocess
 from dotenv import load_dotenv
@@ -23,18 +24,18 @@ OUTPUT_PATH = "C:/Users/james/projects/discordBot/outputs/"
 
 BBOT_FOLDER = os.path.join(OUTPUT_PATH, "bb")
 
-# ✅ Switch back to GPT-2
+# Switch back to GPT-2
 MODEL_NAME = "gpt2"
 
-# ✅ Set device to CPU (change to "cuda" if running on GPU)
+# Set device to CPU (change to "cuda" if running on GPU)
 device = torch.device("cpu")
 
-# ✅ Load GPT-2 model & tokenizer
+# Load GPT-2 model & tokenizer
 print("Loading GPT-2 model...")  # Debugging print
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME).to(device)
 
-# ✅ Create the GPT-2 text-generation pipeline
+# Create the GPT-2 text-generation pipeline
 gpt2_pipeline = pipeline(
     "text-generation",
     model=model,
@@ -44,21 +45,21 @@ gpt2_pipeline = pipeline(
     temperature=1.0, 
     top_k=50, 
     top_p=0.90,
-    device=-1  # ✅ -1 forces CPU mode
+    device=-1  # -1 forces CPU mode
 )
 
 print("GPT-2 model loaded!")  # Debugging print
 
 # Define the bot's personality
 BOT_PERSONA = (
-    "A really witty and very funny & helpful bot is in a groupchat with a bunch of his buddies."
+    "A really witty and very funny & helpful bot is joking around in a groupchat with a bunch of his buddies."
 )
 
 async def generate_ai_response(user_message):
     prompt = f"{BOT_PERSONA}\n\nUser: {user_message}\nBot:"
 
-    print(f"🛠️ Debug: Received user message: {user_message}")
-    print(f"🛠️ Debug: Generated prompt: {prompt}")
+    print(f"Debug: Received user message: {user_message}")
+    print(f"Debug: Generated prompt: {prompt}")
 
     try:
         response = gpt2_pipeline(
@@ -67,26 +68,26 @@ async def generate_ai_response(user_message):
             do_sample=True, 
             temperature=0.75, 
             top_k=50, 
-            top_p=0.95
+            top_p=0.90
         )
 
-        print(f"🛠️ Debug: Raw GPT-2 response object: {response}")  # ✅ Check if response exists
+        print(f"Debug: Raw GPT-2 response object: {response}")  # Check if response exists
 
-        if not response:  # ✅ Handle empty response
-            print("🚨 GPT-2 returned an empty response!")
+        if not response:  # Handle empty response
+            print("GPT-2 returned an empty response!")
             return "what were we talking about again?"
 
         bot_reply = response[0]['generated_text'].split("Bot:")[-1].strip()
 
-        # ✅ Only keep the first sentence to prevent looping weirdness
+        # Only keep the first sentence to prevent looping weirdness
         bot_reply = bot_reply.split("User:")[0].strip()
 
-        print(f"🛠️ Debug: Extracted bot reply: {bot_reply}")  # ✅ Check if bot_reply is empty
+        print(f"Debug: Extracted bot reply: {bot_reply}")  # Check if bot_reply is empty
 
         return bot_reply or "uhhhhh wait what?"
 
     except Exception as e:
-        print(f"🚨 Error generating response: {e}")
+        print(f"Error generating response: {e}")
         return "Oops, something went wrong!"
 
 intents = discord.Intents.default()
@@ -97,7 +98,7 @@ class Client(discord.Client):
     # initialize last_sent_meme
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.last_sent_meme = None  # ✅ Store in the bot instance
+        self.last_sent_meme = None  # Store in the bot instance
 
     async def on_ready(self):
 
@@ -118,32 +119,43 @@ class Client(discord.Client):
                 await asyncio.sleep(1)
                 await message.channel.send("idiot")
                 await asyncio.sleep(2)
-                await message.channel.send("lol jk here u go")
+                await message.channel.send("lol jk")
         
-        # Trigger GPT-2 only if "mr" & bot" is in the message
+        # Trigger GPT-2 only if "mr" or bot" is in the message
         if "mr" in message.content.lower() or "bot" in message.content.lower() or "jarvis" in message.content.lower():
-            print(f"GPT-2 Triggered by: {message.content}")  # ✅ Debugging line
+            print(f"GPT-2 Triggered by: {message.content}")  # Debugging line
             #await message.channel.send("thinking...")
 
             try:
                 ai_response = await generate_ai_response(message.content)
                 
-                if not ai_response.strip():  # ✅ Check if response is empty
+                if not ai_response.strip():  # Check if response is empty
                     await message.channel.send("wait what did u say sorry i got really stoned earlier")
                     return
 
                 await message.channel.send(ai_response)
-                print(f"Sent GPT-2 Response: {ai_response}")  # ✅ Debugging line
+                print(f"Sent GPT-2 Response: {ai_response}")  # Debugging line
 
             except Exception as e:
                 print(f"error generating response: {e}")
                 await message.channel.send("error - something went wrong")
 
-        #if "how are you" in message.content.lower():
-        #    await message.channel.send("happy to be here :)")
-        #    await asyncio.sleep(1)
-        #    await message.channel.send("thank you for asking :)")
+        if "r2" in message.content.lower():
+            audio_folder = os.path.join(OUTPUT_PATH, "botSounds")
 
+            audio_files = [os.path.join(audio_folder, f) for f in os.listdir(audio_folder) if f.endswith((".wav", ".mp3", ".mp4"))]
+
+            if not audio_files:
+                await message.channel.send("no audio files in folder")
+                return
+            
+            selected_audio = random.choice(audio_files)
+
+            await message.channel.send(file=discord.File(selected_audio))            
+
+        if "type shit" in message.content.lower():
+            await message.channel.send("ong fr")
+        
         #if message.content.lower().startswith("hello"):
         #    await message.channel.send(f"yooooo what's up {message.author.display_name}")
 
@@ -212,7 +224,7 @@ class Client(discord.Client):
             # Pick a new random file
             selected_file = random.choice(available_files)
 
-            # ✅ Update the last sent file in the bot instance
+            # Update the last sent file in the bot instance
             self.last_sent_meme = selected_file  
 
             await message.channel.send(file=discord.File(selected_file))
