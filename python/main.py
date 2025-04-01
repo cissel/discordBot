@@ -14,6 +14,7 @@ TEST_ENV_CHANNEL_ID = int(os.getenv("TEST_ENV_CHANNEL_ID"))
 CHUCK_USER_ID = int(os.getenv("CHUCK_USER_ID")) 
 
 R_PATH = "/Users/jamescissel/discordBot/r/"
+PYTHON_PATH = "/Users/jamescissel/discordBot/python/"
 OUTPUT_PATH = "/Users/jamescissel/discordBot/outputs/"
 BBOT_FOLDER = os.path.join(OUTPUT_PATH, "bb")
 
@@ -242,6 +243,35 @@ class Client(discord.Client):
 
             # Create an embed message
             embed = discord.Embed(title="🏀 Today's NBA Matchups", color=0x3498db)
+
+            # Loop through each row and add a field for each game
+            for i, row in df.iterrows():
+                matchup_text = f"{row['time']}" 
+                embed.add_field(name=row["matchup"], value=matchup_text, inline=False)
+
+            # Send the embed to Discord
+            await message.channel.send(embed=embed)
+
+        if "hockey today?" in message.content.lower():
+            await message.channel.send("one sec")
+
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlToday.py")])
+
+            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/gamesToday.csv")
+
+            # Check if CSV was created
+            if not os.path.exists(csv_path):
+                await message.channel.send("no hockey today :(")
+                return
+            
+            print(".csv found")
+            await message.channel.send("hockey today:")
+
+            # Read CSV into a DataFrame
+            df = pd.read_csv(csv_path)
+
+            # Create an embed message
+            embed = discord.Embed(title="🏒 Today's NHL Matchups", color=0x3498db)
 
             # Loop through each row and add a field for each game
             for i, row in df.iterrows():
