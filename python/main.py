@@ -249,7 +249,7 @@ class Client(discord.Client):
             # Send the embed to Discord
             await message.channel.send(embed=embed)
 
-        if "hockey today?" in message.content.lower():
+        if "hockey today" in message.content.lower():
             await message.channel.send("one sec")
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlToday.py")])
@@ -276,6 +276,30 @@ class Client(discord.Client):
                 embed.add_field(name=row["matchup"], value=matchup_text, inline=False)
 
             # Send the embed to Discord
+            await message.channel.send(embed=embed)
+
+        if "hockey tomorrow" in message.content.lower():
+            await message.channel.send("i'll look")
+
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlTomorrow.py")])
+
+            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/gamesTomorrow.csv")
+
+            if not os.path.exists(csv_path):
+                await(message.channel.send("no hockey tomorrow :("))
+                return
+            
+            print(".csv found")
+            await message.channel.send("hockey tomorrow:")
+
+            df = pd.read_csv(csv_path)
+
+            embed = discord.Embed(title="🏒 Tomorrow's NHL Matchups", color=0x3498db)
+
+            for i, row in df.iterrows():
+                matchup_text = f"{row['time']}"
+                embed.add_field(name=row['matchup'], value=matchup_text, inline=False)
+
             await message.channel.send(embed=embed)
 
     async def send_goodbye_message(self):
