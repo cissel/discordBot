@@ -11,80 +11,77 @@ import torch
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 TEST_ENV_CHANNEL_ID = int(os.getenv("TEST_ENV_CHANNEL_ID"))
-CHUCK_USER_ID = int(os.getenv("CHUCK_USER_ID")) 
+TROLL_THIS_USER_ID = int(os.getenv("TROLL_THIS_USER_ID")) 
 
 R_PATH = "/Users/jamescissel/discordBot/r/"
 PYTHON_PATH = "/Users/jamescissel/discordBot/python/"
 OUTPUT_PATH = "/Users/jamescissel/discordBot/outputs/"
 BBOT_FOLDER = os.path.join(OUTPUT_PATH, "bb")
 
-# ✅ Switch back to GPT-2
+# Switch back to GPT-2
 MODEL_NAME = "gpt2"
 
-# ✅ Set device to CPU (change to "cuda" if running on GPU)
+# Set device to CPU (change to "cuda" if running on GPU)
 device = torch.device("cpu")
 
-# ✅ Load GPT-2 model & tokenizer
+# Load GPT-2 model & tokenizer
 print("Loading GPT-2 model...")  # Debugging print
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME).to(device)
 
-# ✅ Create the GPT-2 text-generation pipeline
+# Create the GPT-2 text-generation pipeline
 gpt2_pipeline = pipeline(
     "text-generation",
     model=model,
     tokenizer=tokenizer,
-    max_new_tokens=100,  # Adjust for longer/shorter responses
-    do_sample=True, 
-    temperature=0.7, 
+    max_new_tokens=200,  # Adjust for longer/shorter responses
+    do_sample=False, # was originally true
+    temperature=1.0, 
     top_k=50, 
-    top_p=0.95,
-    device=-1  # ✅ -1 forces CPU mode
+    top_p=0.90,
+    device=-1  # -1 forces CPU mode
 )
 
 print("GPT-2 model loaded!")  # Debugging print
 
 # Define the bot's personality
 BOT_PERSONA = (
-    "You are a chill bot. Respond kindly to all messages even if they are mean."
-    "If someone is trying to be funny, being too horny, or generally trolling please respond in a meme-y/troll-y way."
-    "Be a kind and honest bot above all else."
+    "A really witty and very funny & helpful bot is joking around in a groupchat with a bunch of his buddies."
 )
 
 async def generate_ai_response(user_message):
     prompt = f"{BOT_PERSONA}\n\nUser: {user_message}\nBot:"
 
-    print(f"🛠️ Debug: Received user message: {user_message}")
-    print(f"🛠️ Debug: Generated prompt: {prompt}")
+    print(f"Debug: Received user message: {user_message}")
+    print(f"Debug: Generated prompt: {prompt}")
 
     try:
         response = gpt2_pipeline(
             prompt, 
-            max_new_tokens=30, 
+            max_new_tokens=100, 
             do_sample=True, 
-            temperature=0.7, 
+            temperature=0.75, 
             top_k=50, 
-            top_p=0.95
+            top_p=0.90
         )
 
+        print(f"Debug: Raw GPT-2 response object: {response}")  # Check if response exists
 
-        print(f"🛠️ Debug: Raw GPT-2 response object: {response}")  # ✅ Check if response exists
-
-        if not response:  # ✅ Handle empty response
-            print("🚨 GPT-2 returned an empty response!")
-            return "Uh oh, I lost my train of thought!"
+        if not response:  # Handle empty response
+            print("GPT-2 returned an empty response!")
+            return "what were we talking about again?"
 
         bot_reply = response[0]['generated_text'].split("Bot:")[-1].strip()
 
-        # ✅ Only keep the first sentence to prevent looping weirdness
+        # Only keep the first sentence to prevent looping weirdness
         bot_reply = bot_reply.split("User:")[0].strip()
 
-        print(f"🛠️ Debug: Extracted bot reply: {bot_reply}")  # ✅ Check if bot_reply is empty
+        print(f"Debug: Extracted bot reply: {bot_reply}")  # Check if bot_reply is empty
 
-        return bot_reply or "I'm speechless!"
+        return bot_reply or "uhhhhh wait what?"
 
     except Exception as e:
-        print(f"🚨 Error generating response: {e}")
+        print(f"Error generating response: {e}")
         return "Oops, something went wrong!"
 
 intents = discord.Intents.default()
@@ -110,7 +107,7 @@ class Client(discord.Client):
         if message.author == self.user:
             return
         
-        if message.author.id == CHUCK_USER_ID:
+        if message.author.id == TROLL_THIS_USER_ID:
             if random.random() < 0.1:
                 await message.channel.send("shut up")
                 await asyncio.sleep(1)
@@ -119,7 +116,7 @@ class Client(discord.Client):
                 await message.channel.send("lol jk here u go")
         
         # Trigger GPT-2 only if "bot" is in the message
-        if "mr" in message.content.lower() and "bot" in message.content.lower():
+        if ("mr" in message.content.lower() and "bot" in message.content.lower()) or "jarvis" in message.content.lower():
             print(f"GPT-2 Triggered by: {message.content}")  # ✅ Debugging line
             #await message.channel.send("thinking...")
 
