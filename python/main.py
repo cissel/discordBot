@@ -340,6 +340,11 @@ class Client(discord.Client):
 
             await message.channel.send(embed=embed)
 
+        if message.content.lower() == "yield curve":
+            await message.channel.send("pulling data from the fed")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "yieldCurve.R")])
+            await message.channel.send("this is what the yield curve looks like right now:", file=discord.File(os.path.join(OUTPUT_PATH, "yield_curve.png")))
+
     async def send_goodbye_message(self):
 
         """Sends a shutdown message before the bot exits."""
