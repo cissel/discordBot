@@ -16,7 +16,7 @@ plotjaxradar <- function() {
   
   kjaxUrl <- "https://radar.weather.gov/ridge/standard/KJAX_loop.gif"
   
-  kjaxOut <- "outputs/nwsJaxRadar.gif"
+  kjaxOut <- "outputs/weather/nwsJaxRadar.gif"
   
   download.file(kjaxUrl, kjaxOut, mode = "wb")
   

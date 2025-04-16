@@ -1,7 +1,13 @@
+# yieldCurve.R by JHCV
+
+##### Required Packages #####
+
 library(fredr)
 library(dplyr)
 library(ggplot2)
 library(scales)
+
+#####
 
 ##### Plot Appearance Theme #####
 
