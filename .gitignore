@@ -4,11 +4,8 @@
 outputs/.DS_Store
 outputs/sports/.DS_Store
 r/.DS_Store
-<<<<<<< HEAD
 .RData
 .Rhistory
-=======
-python/waves
-python/winds
+outputs/weather/waves
+outputs/weather/winds
 server_messages.txt
->>>>>>> mac-version
