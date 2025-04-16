@@ -1,4 +1,3 @@
-# several bots for room 40 by jhcv
 import discord
 import subprocess
 from dotenv import load_dotenv
@@ -12,16 +11,11 @@ import torch
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 TEST_ENV_CHANNEL_ID = int(os.getenv("TEST_ENV_CHANNEL_ID"))
-CHUCK_USER_ID = int(os.getenv("CHUCK_USER_ID")) 
+TROLL_THIS_USER_ID = int(os.getenv("TROLL_THIS_USER_ID")) 
 
-# Windows file paths
-R_PATH = "C:/Users/james/projects/discordBot/r/"
-OUTPUT_PATH = "C:/Users/james/projects/discordBot/outputs/"
-
-# Mac file paths
-#R_PATH = "/Users/jamescissel/discordBot/r/"
-#OUTPUT_PATH = "/Users/jamescissel/discordBot/outputs/"
-
+R_PATH = "/Users/jamescissel/discordBot/r/"
+PYTHON_PATH = "/Users/jamescissel/discordBot/python/"
+OUTPUT_PATH = "/Users/jamescissel/discordBot/outputs/"
 BBOT_FOLDER = os.path.join(OUTPUT_PATH, "bb")
 
 # Switch back to GPT-2
@@ -98,7 +92,7 @@ class Client(discord.Client):
     # initialize last_sent_meme
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.last_sent_meme = None  # Store in the bot instance
+        self.last_sent_meme = None  # ✅ Store in the bot instance
 
     async def on_ready(self):
 
@@ -113,32 +107,34 @@ class Client(discord.Client):
         if message.author == self.user:
             return
         
-        if message.author.id == CHUCK_USER_ID:
-            if random.random() < 0.1:
+        if message.author.id == TROLL_THIS_USER_ID:
+            if random.random() < 0.9:
                 await message.channel.send("shut up")
                 await asyncio.sleep(1)
                 await message.channel.send("idiot")
-                await asyncio.sleep(2)
-                await message.channel.send("lol jk")
+                return
         
-        # Trigger GPT-2 only if "mr" or bot" is in the message
-        if "mr bot" in message.content.lower() or "jarvis" in message.content.lower():
-            print(f"GPT-2 Triggered by: {message.content}")  # Debugging line
+        # Trigger GPT-2 only if "bot" is in the message
+        if ("mr" in message.content.lower() and "bot" in message.content.lower()) or "jarvis" in message.content.lower():
+            print(f"GPT-2 Triggered by: {message.content}")  # ✅ Debugging line
             #await message.channel.send("thinking...")
 
             try:
                 ai_response = await generate_ai_response(message.content)
                 
-                if not ai_response.strip():  # Check if response is empty
+                if not ai_response.strip():  # ✅ Check if response is empty
                     await message.channel.send("wait what did u say sorry i got really stoned earlier")
                     return
 
                 await message.channel.send(ai_response)
-                print(f"Sent GPT-2 Response: {ai_response}")  # Debugging line
+                print(f"Sent GPT-2 Response: {ai_response}")  # ✅ Debugging line
 
             except Exception as e:
                 print(f"error generating response: {e}")
                 await message.channel.send("error - something went wrong")
+
+        if message.content.lower() == 'ping':
+            await message.channel.send("pong 🏓")
 
         if "r2" in message.content.lower():
             audio_folder = os.path.join(OUTPUT_PATH, "botSounds")
@@ -155,18 +151,12 @@ class Client(discord.Client):
 
         if "type shit" in message.content.lower():
             await message.channel.send("ong fr")
-        
-        #if message.content.lower().startswith("hello"):
-        #    await message.channel.send(f"yooooo what's up {message.author.display_name}")
-
-        if message.content.lower() == 'ping':
-            await message.channel.send("pong 🏓")
 
         if "gm" in message.content.lower():
             await message.add_reaction("🌞")
             await message.channel.send("good morning! :)")
 
-        if "good bot" in message.content.lower():
+        if message.content.lower() == "good bot":
             await message.add_reaction("❤️")
             audio_folder = os.path.join(OUTPUT_PATH, "botSounds")
 
@@ -189,17 +179,27 @@ class Client(discord.Client):
         if message.content.lower() == '!surf':
             await message.channel.send("hey dude! give me a sec to check the waves")
             subprocess.run(["Rscript", os.path.join(R_PATH, "surf4castPlot.R")])
-            await message.channel.send("here's the latest surf forecast:", file=discord.File(os.path.join(OUTPUT_PATH, "surf_fcst.png")))
+            await message.channel.send("here's the latest surf forecast:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/surf_fcst.png")))
+
+        if message.content.lower() == '!wavemap':
+            await message.channel.send("pulling wave forecast (this one is pretty slow sorry dude)")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "surfMap.R")])
+            await message.channel.send("here's the latest forecast map:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/wave_animation.gif")))
+
+        if message.content.lower() == '!windmap':
+            await message.channel.send("pulling wind forecast (this is slow too sorry homie)")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "windMap.R")])
+            await message.channel.send("here's the latest wind forecast map:", file = discord.File(os.path.join(OUTPUT_PATH, "weather/wind_animation.gif")))
 
         if message.content.lower() == '!jaxradar':
             await message.channel.send("pulling jax radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "jaxRada.R")])
-            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "nwsJaxRadar.gif")))
+            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/nwsJaxRadar.gif")))
 
         if message.content.lower() == '!flradar':
             await message.channel.send("pulling florida radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
-            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "flRadar.gif")))
+            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/flRadar.gif")))
 
         if message.content.lower() == "!boobs":
             # 33.3% chance to send "gulag" instead of an image
@@ -224,7 +224,7 @@ class Client(discord.Client):
             # Pick a new random file
             selected_file = random.choice(available_files)
 
-            # Update the last sent file in the bot instance
+            # ✅ Update the last sent file in the bot instance
             self.last_sent_meme = selected_file  
 
             await message.channel.send(file=discord.File(selected_file))
@@ -236,71 +236,121 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "floridaPanthe.R")])
             await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsWin.png")))
 
-        if "hoops today?" in message.content.lower():
+        if message.content.lower() == "hoops today":  
             await message.channel.send("lemme check")
 
             # Run the R script to generate the CSV
             subprocess.run(["Rscript", os.path.join(R_PATH, "nbaToday.R")])
 
-            # Define CSV path
             csv_path = os.path.join(OUTPUT_PATH, "sports/nba/gamesToday.csv")
 
-            # Check if CSV exists
+            # Check if CSV was created
             if not os.path.exists(csv_path):
                 await message.channel.send("no hoops today :(")
                 return
-
+            
             print(".csv found")
             await message.channel.send("hoops today:")
 
-            # Load the CSV
+            # Read CSV into a DataFrame
             df = pd.read_csv(csv_path)
 
-            # Create the embed
+            # Create an embed message
             embed = discord.Embed(title="🏀 Today's NBA Matchups", color=0x3498db)
 
-            # Add each matchup as a field
-            for _, row in df.iterrows():
-                matchup_text = row["matchup"]
-                status_line = row["time"]
-                # Add the field to the embed
-                embed.add_field(name=matchup_text, value=status_line, inline=False)
+            # Loop through each row and add a field for each game
+            for i, row in df.iterrows():
+                matchup_text = f"{row['time']}" 
+                embed.add_field(name=row["matchup"], value=matchup_text, inline=False)
 
-            # Send the embed
+            # Send the embed to Discord
             await message.channel.send(embed=embed)
 
-        if "hoops tomorrow?" in message.content.lower():
-            await message.channel.send("lemme check")
+        if "hockey today" in message.content.lower():
+            await message.channel.send("one sec")
 
-            # Run the R script to generate the CSV
-            subprocess.run(["Rscript", os.path.join(R_PATH, "nbaTomorrow.R")])
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlToday.py")])
 
-            # Define CSV path
-            csv_path = os.path.join(OUTPUT_PATH, "sports/nba/gamesTomorrow.csv")
+            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/gamesToday.csv")
 
-            # Check if CSV exists
+            # Check if CSV was created
             if not os.path.exists(csv_path):
-                await message.channel.send("no hoops today :(")
+                await message.channel.send("no hockey today :(")
                 return
-
+            
             print(".csv found")
-            await message.channel.send("hoops today:")
+            await message.channel.send("hockey today:")
 
-            # Load the CSV
+            # Read CSV into a DataFrame
             df = pd.read_csv(csv_path)
 
-            # Create the embed
-            embed = discord.Embed(title="🏀 Tomorrow's NBA Matchups", color=0x3498db)
+            # Create an embed message
+            embed = discord.Embed(title="🏒 Today's NHL Matchups", color=0x3498db)
 
-            # Add each matchup as a field
-            for _, row in df.iterrows():
-                matchup_text = row["matchup"]
-                status_line = row["time"]
-                # Add the field to the embed
-                embed.add_field(name=matchup_text, value=status_line, inline=False)
+            # Loop through each row and add a field for each game
+            for i, row in df.iterrows():
+                matchup_text = f"{row['time']}" 
+                embed.add_field(name=row["matchup"], value=matchup_text, inline=False)
 
-            # Send the embed
+            # Send the embed to Discord
             await message.channel.send(embed=embed)
+
+        if "hockey tomorrow" in message.content.lower():
+            await message.channel.send("i'll look")
+
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlTomorrow.py")])
+
+            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/gamesTomorrow.csv")
+
+            if not os.path.exists(csv_path):
+                await(message.channel.send("no hockey tomorrow :("))
+                return
+            
+            print(".csv found")
+            await message.channel.send("hockey tomorrow:")
+
+            df = pd.read_csv(csv_path)
+
+            embed = discord.Embed(title="🏒 Tomorrow's NHL Matchups", color=0x3498db)
+
+            for i, row in df.iterrows():
+                matchup_text = f"{row['time']}"
+                embed.add_field(name=row['matchup'], value=matchup_text, inline=False)
+
+            await message.channel.send(embed=embed)
+
+        if "next launch" in message.content.lower():
+            await message.channel.send("checking spaceflight schedules")
+
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "spaceLaunches.py")])
+
+            csv_path = os.path.join(OUTPUT_PATH, "space/next_launch.csv")
+
+            if not os.path.exists(csv_path):
+                await message.channel.send("🚫 Couldn't find launch data.")
+                return
+
+            df = pd.read_csv(csv_path)
+            row = df.iloc[0]
+
+            # Create a styled embed
+            embed = discord.Embed(
+                title=f"**⏳ T - {row['T-minus']}**",
+                description="Next Cape Canaveral / Kennedy Space Center Launch",
+                color=0x5865F2  # Discord blurple
+            )
+
+            embed.add_field(name="🚀 Mission", value=row['Name'], inline=False)
+            embed.add_field(name="📅 Launch Window Opens", value=f"`{row['Window']}` UTC", inline=True)
+            embed.add_field(name="🏢 Provider", value=row['Provider'], inline=True)
+            embed.add_field(name="📍 Launch Pad", value=row['Pad'], inline=False)
+
+            await message.channel.send(embed=embed)
+
+        if message.content.lower() == "yield curve":
+            await message.channel.send("pulling data from the fed")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "yieldCurve.R")])
+            await message.channel.send("this is what the yield curve looks like right now:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_curve.png")))
 
     async def send_goodbye_message(self):
 
