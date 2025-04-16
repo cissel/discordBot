@@ -1,8 +1,8 @@
 library(gifski)
 
 # Create a temp directory to store images
-dir.create("winds", showWarnings = FALSE)
-setwd("winds")
+dir.create("/Users/jamescissel/discordBot/outputs/weather/winds", showWarnings = FALSE)
+setwd("/Users/jamescissel/discordBot/outputs/weather/winds")
 
 # Generate image ID strings
 img_seq <- seq(0, 144, 3)
