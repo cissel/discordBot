@@ -136,6 +136,23 @@ class Client(discord.Client):
         if message.content.lower() == 'ping':
             await message.channel.send("pong 🏓")
 
+        if "r2" in message.content.lower():
+            audio_folder = os.path.join(OUTPUT_PATH, "botSounds")
+
+            audio_files = [os.path.join(audio_folder, f) for f in os.listdir(audio_folder) if f.endswith((".wav", ".mp3", ".mp4"))]
+
+            if not audio_files:
+                await message.channel.send("no audio files in folder")
+                return
+            
+            selected_audio = random.choice(audio_files)
+
+            await message.channel.send(file=discord.File(selected_audio))            
+
+        if "type shit" in message.content.lower():
+            await message.channel.send("ong fr")
+ 
+
         if "gm" in message.content.lower():
             await message.add_reaction("🌞")
             await message.channel.send("good morning! :)")
@@ -325,7 +342,7 @@ class Client(discord.Client):
             )
 
             embed.add_field(name="🚀 Mission", value=row['Name'], inline=False)
-            embed.add_field(name="📅 Launch Window", value=f"`{row['Window']}` UTC", inline=True)
+            embed.add_field(name="📅 Launch Window Opens", value=f"`{row['Window']}` UTC", inline=True)
             embed.add_field(name="🏢 Provider", value=row['Provider'], inline=True)
             embed.add_field(name="📍 Launch Pad", value=row['Pad'], inline=False)
 
