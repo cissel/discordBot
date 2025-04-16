@@ -314,9 +314,10 @@ class Client(discord.Client):
 
         if "next launch" in message.content.lower():
             await message.channel.send("checking spaceflight schedules")
-            subprocess.run(["python3", "python/spaceLaunches.py"])
 
-            csv_path = os.path.join("/Users/jamescissel/discordBot/outputs/space/", "next_launch.csv")
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "spaceLaunches.py")])
+
+            csv_path = os.path.join(OUTPUT_PATH, "space/next_launch.csv")
 
             if not os.path.exists(csv_path):
                 await message.channel.send("🚫 Couldn't find launch data.")
