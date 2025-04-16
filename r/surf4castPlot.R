@@ -284,9 +284,9 @@ plotSurfFcst <- function() {
   
   print("Creating outputs/ directory if missing...")
   
-  if (!dir.exists("outputs")) {
+  if (!dir.exists("outputs/weather")) {
     
-    dir.create("outputs")
+    dir.create("outputs/weather")
     
   }
   
