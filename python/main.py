@@ -174,6 +174,16 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "surf4castPlot.R")])
             await message.channel.send("here's the latest surf forecast:", file=discord.File(os.path.join(OUTPUT_PATH, "surf_fcst.png")))
 
+        if message.content.lower() == '!wavemap':
+            await message.channel.send("pulling wave forecast (this one is pretty slow sorry dude)")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "surfMap.R")])
+            await message.channel.send("here's the latest forecast map:", file=discord.File(os.path.join(OUTPUT_PATH, "wave_animation.gif")))
+
+        if message.content.lower() == '!windmap':
+            await message.channel.send("pulling wind forecast (this is slow too sorry homie)")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "windMap.R")])
+            await message.channel.send("here's the latest wind forecast map:", file = discord.File(os.path.join(OUTPUT_PATH, "wind_animation.gif")))
+
         if message.content.lower() == '!jaxradar':
             await message.channel.send("pulling jax radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "jaxRada.R")])
@@ -219,7 +229,7 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "floridaPanthe.R")])
             await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsWin.png")))
 
-        if message.content.lower() == "hoops today?":  # Command to trigger CSV generation
+        if message.content.lower() == "hoops today":  
             await message.channel.send("lemme check")
 
             # Run the R script to generate the CSV
@@ -299,6 +309,33 @@ class Client(discord.Client):
             for i, row in df.iterrows():
                 matchup_text = f"{row['time']}"
                 embed.add_field(name=row['matchup'], value=matchup_text, inline=False)
+
+            await message.channel.send(embed=embed)
+
+        if "next launch" in message.content.lower():
+            await message.channel.send("checking spaceflight schedules")
+            subprocess.run(["python3", "python/spaceLaunches.py"])
+
+            csv_path = os.path.join("/Users/jamescissel/discordBot/outputs/space/", "next_launch.csv")
+
+            if not os.path.exists(csv_path):
+                await message.channel.send("🚫 Couldn't find launch data.")
+                return
+
+            df = pd.read_csv(csv_path)
+            row = df.iloc[0]
+
+            # Create a styled embed
+            embed = discord.Embed(
+                title=f"**⏳ T - {row['T-minus']}**",
+                description="Next Cape Canaveral / Kennedy Space Center Launch",
+                color=0x5865F2  # Discord blurple
+            )
+
+            embed.add_field(name="🚀 Mission", value=row['Name'], inline=False)
+            embed.add_field(name="📅 Launch Window", value=f"`{row['Window']}` UTC", inline=True)
+            embed.add_field(name="🏢 Provider", value=row['Provider'], inline=True)
+            embed.add_field(name="📍 Launch Pad", value=row['Pad'], inline=False)
 
             await message.channel.send(embed=embed)
 
