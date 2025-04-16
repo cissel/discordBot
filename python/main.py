@@ -133,14 +133,6 @@ class Client(discord.Client):
                 print(f"error generating response: {e}")
                 await message.channel.send("error - something went wrong")
 
-        #if "how are you" in message.content.lower():
-        #    await message.channel.send("happy to be here :)")
-        #    await asyncio.sleep(1)
-        #    await message.channel.send("thank you for asking :)")
-
-        #if message.content.lower().startswith("hello"):
-        #    await message.channel.send(f"yooooo what's up {message.author.display_name}")
-
         if message.content.lower() == 'ping':
             await message.channel.send("pong 🏓")
 
@@ -171,27 +163,27 @@ class Client(discord.Client):
         if message.content.lower() == '!surf':
             await message.channel.send("hey dude! give me a sec to check the waves")
             subprocess.run(["Rscript", os.path.join(R_PATH, "surf4castPlot.R")])
-            await message.channel.send("here's the latest surf forecast:", file=discord.File(os.path.join(OUTPUT_PATH, "surf_fcst.png")))
+            await message.channel.send("here's the latest surf forecast:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/surf_fcst.png")))
 
         if message.content.lower() == '!wavemap':
             await message.channel.send("pulling wave forecast (this one is pretty slow sorry dude)")
             subprocess.run(["Rscript", os.path.join(R_PATH, "surfMap.R")])
-            await message.channel.send("here's the latest forecast map:", file=discord.File(os.path.join(OUTPUT_PATH, "wave_animation.gif")))
+            await message.channel.send("here's the latest forecast map:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/wave_animation.gif")))
 
         if message.content.lower() == '!windmap':
             await message.channel.send("pulling wind forecast (this is slow too sorry homie)")
             subprocess.run(["Rscript", os.path.join(R_PATH, "windMap.R")])
-            await message.channel.send("here's the latest wind forecast map:", file = discord.File(os.path.join(OUTPUT_PATH, "wind_animation.gif")))
+            await message.channel.send("here's the latest wind forecast map:", file = discord.File(os.path.join(OUTPUT_PATH, "weather/wind_animation.gif")))
 
         if message.content.lower() == '!jaxradar':
             await message.channel.send("pulling jax radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "jaxRada.R")])
-            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "nwsJaxRadar.gif")))
+            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/nwsJaxRadar.gif")))
 
         if message.content.lower() == '!flradar':
             await message.channel.send("pulling florida radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
-            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "flRadar.gif")))
+            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/flRadar.gif")))
 
         if message.content.lower() == "!boobs":
             # 33.3% chance to send "gulag" instead of an image
