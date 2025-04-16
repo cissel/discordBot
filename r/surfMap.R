@@ -22,7 +22,7 @@ png_files <- list.files(".", pattern = "img\\d+\\.png$", full.names = TRUE)
 
 # Create gif
 output_gif <- "/Users/jamescissel/discordBot/outputs/weather/wave_animation.gif"
-gifski(png_files, gif_file = output_gif, width = 913 / 1.15, height = 656 / 1.65, delay = 0.25)
+gifski(png_files, gif_file = output_gif, width = 800, height = 503, delay = 0.25)
 
 # Reset working directory
 setwd("..")

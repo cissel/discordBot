@@ -92,4 +92,6 @@ ysp <- ggplot(all_data, aes(x = date, y = value, color = label)) +
   ) +
   myTheme
 
-ggplotly(ysp)
+# ---- Save the plot ----
+ggsave("/Users/jamescissel/discordBot/outputs/markets/yield_spread.png", ysp, width = 8, height = 4.5, dpi = 300)
+

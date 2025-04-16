@@ -114,7 +114,7 @@ class Client(discord.Client):
                 await message.channel.send("idiot")
                 return
         
-        # Trigger GPT-2 only if "bot" is in the message
+        # Trigger GPT-2 only if " mr bot" is in the message
         if ("mr" in message.content.lower() and "bot" in message.content.lower()) or "jarvis" in message.content.lower():
             print(f"GPT-2 Triggered by: {message.content}")  # ✅ Debugging line
             #await message.channel.send("thinking...")
@@ -351,6 +351,11 @@ class Client(discord.Client):
             await message.channel.send("pulling data from the fed")
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldCurve.R")])
             await message.channel.send("this is what the yield curve looks like right now:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_curve.png")))
+
+        if message.content.lower() == "yield spread":
+            await message.channel.send("pulling fed data")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "yieldSpreade.R")])
+            await message.channel.send("historical yield spreads:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_spread.png")))
 
     async def send_goodbye_message(self):
 
