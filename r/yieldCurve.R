@@ -118,4 +118,4 @@ ycp <- ggplot(ycdf, aes(x = yte, y = last)) +
   )
 
 # ---- Save the plot ----
-ggsave("/Users/jamescissel/discordBot/outputs/yield_curve.png", ycp, width = 8, height = 4.5, dpi = 300)
+ggsave("/Users/jamescissel/discordBot/outputs/markets/yield_curve.png", ycp, width = 8, height = 4.5, dpi = 300)
