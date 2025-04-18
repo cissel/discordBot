@@ -27,7 +27,11 @@ myTheme <- theme(legend.position = "none",
 
 #####
 
-setwd("C:/Users/james/projects/discordBot")
+# Windows file path
+#setwd("C:/Users/james/projects/discordBot")
+
+# Mac file path
+setwd("/Users/jamescissel/discordBot")
 
 ##### Surf Forecast Dataframe #####
 
@@ -290,7 +294,7 @@ plotSurfFcst <- function() {
     
   }
   
-print("Saving plot to: outputs/surf_fcst.png")
+print("Saving plot to: outputs/weather/surf_fcst.png")
 
 ggsave("outputs/surf_fcst.png", 
        plot = sfp, 
@@ -301,7 +305,7 @@ ggsave("outputs/surf_fcst.png",
 
 print("Plot successfully saved!")
 
-  ggsave("outputs/surf_fcst.png", 
+  ggsave("outputs/weather/surf_fcst.png", 
          plot = sfp, 
          width = 10, 
          height = 4, 
