@@ -39,7 +39,7 @@ for (i in 1:nrow(gt)) {
 
   # Only add score if the game is live or final
   if (!is.na(gt$home_team_score[i]) && !is.na(gt$away_team_score[i]) &&
-      game_status_text == 2) {
+      gt$game_status_text == 2) {
     
     score_text <- paste0(" — Score: ", gt$away_team_score[i], "-", gt$home_team_score[i])
     matchup <- paste0(matchup, score_text)
@@ -52,5 +52,6 @@ for (i in 1:nrow(gt)) {
 # Output
 print(gtc)
 
-write_csv(gtc, "C:/Users/james/projects/discordBot/outputs/sports/nba/gamesToday.csv")
+#write_csv(gtc, "C:/Users/james/projects/discordBot/outputs/sports/nba/gamesToday.csv")
+write_csv(gtc, "/Users/jamescissel/discordBot/outputs/sports/nba/gamesToday.csv")
 print(".csv saved")

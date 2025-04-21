@@ -236,7 +236,7 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "floridaPanthe.R")])
             await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsWin.png")))
 
-        if message.content.lower() == "hoops today":  
+        if "hoops today" in message.content.lower():  
             await message.channel.send("lemme check")
 
             # Run the R script to generate the CSV
