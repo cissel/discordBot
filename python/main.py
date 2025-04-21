@@ -266,6 +266,33 @@ class Client(discord.Client):
             # Send the embed to Discord
             await message.channel.send(embed=embed)
 
+        if "hoops tomorrow" in message.content.lower():
+            await message.channel.send("lemme see")
+
+            subprocess.run(["Rscript", os.path.join(R_PATH, "nbaTomorrow.R")])
+            
+            csv_path = os.path.join(OUTPUT_PATH, "sports/nba/gamesTomorrow.csv")
+
+            # Check if CSV was created
+            if not os.path.exists(csv_path):
+                await message.channel.send("no hoops tomorrow :(")
+                return
+            
+            print(".csv found")
+            await message.channel.send("hoops tomorrow:")
+
+            df = pd.read_csv(csv_path)
+
+            embed = discord.Embed(title = "🏀 Tomorrow's NBA Matchups", color=0x3498db)
+            
+            # Loop through each row and add a field for each game
+            for i, row in df.iterrows():
+                matchup_text = f"{row['time']}" 
+                embed.add_field(name=row["matchup"], value=matchup_text, inline=False)
+
+            # Send the embed to Discord
+            await message.channel.send(embed=embed)
+
         if "hockey today" in message.content.lower():
             await message.channel.send("one sec")
 
@@ -341,7 +368,7 @@ class Client(discord.Client):
             )
 
             embed.add_field(name="🚀 Mission", value=row['Name'], inline=False)
-            embed.add_field(name="🗓️ Launch Window Opens", value=f"{row['Window (ET)']} ET", inline=True)
+            embed.add_field(name="🗓️ Launch Window Opens", value=f"{row['Window (ET)']}", inline=True)
             embed.add_field(name="🏢 Provider", value=row['Provider'], inline=True)
             embed.add_field(name="📍 Launch Pad", value=row['Pad'], inline=False)
 
