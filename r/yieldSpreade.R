@@ -81,17 +81,21 @@ for (i in 1:nrow(all_series)) {
 
 ##### Plot #####
 
+maturity_order <- c("1M", "3M", "6M", "1Y", "2Y", "3Y", "5Y", "7Y", "10Y", "20Y", "30Y")
+all_data$label <- factor(all_data$label, levels = maturity_order)
+
 ysp <- ggplot(all_data, aes(x = date, y = value, color = label)) +
   geom_line() +
-  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(
     title = "Historical U.S. Treasury Yields by Maturity",
     x = "Date",
     y = "Yield",
     color = "Maturity"
   ) +
-  myTheme
+  myTheme + myLegend
+
 
 # ---- Save the plot ----
-#ggsave("/Users/jamescissel/discordBot/outputs/markets/yield_spread.png", ysp, width = 8, height = 4.5, dpi = 300)
-ggplotly(ysp)
+ggsave("/Users/jamescissel/discordBot/outputs/markets/yield_spread.png", ysp, width = 8, height = 4.5, dpi = 300)
+#ggplotly(ysp)
