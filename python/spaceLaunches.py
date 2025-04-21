@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from dateutil import parser
 import csv
 from pathlib import Path
@@ -29,10 +30,15 @@ def get_next_cape_kennedy_launch():
         filtered.sort(key=lambda x: x['window_start'])
         next_launch = filtered[0]
 
-        launch_time = parser.isoparse(next_launch['window_start']).astimezone(timezone.utc)
-        now = datetime.now(timezone.utc)
-        delta = launch_time - now
+        # Parse UTC time
+        launch_time_utc = parser.isoparse(next_launch['window_start']).astimezone(timezone.utc)
 
+        # Convert to Eastern Time
+        launch_time_et = launch_time_utc.astimezone(ZoneInfo("America/New_York"))
+
+        # T-minus delta
+        now = datetime.now(timezone.utc)
+        delta = launch_time_utc - now
         days = delta.days
         hours, remainder = divmod(delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
@@ -44,11 +50,12 @@ def get_next_cape_kennedy_launch():
         # Write launch info to CSV
         with open(output_path, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["T-minus", "Name", "Window", "Provider", "Pad"])
+            writer.writerow(["T-minus", "Name", "Window (UTC)", "Window (ET)", "Provider", "Pad"])
             writer.writerow([
                 f"{days}d {hours}h {minutes}m {seconds}s",
                 next_launch['name'],
-                next_launch['window_start'],
+                launch_time_utc.strftime("%Y-%m-%d %H:%M:%S %Z"),
+                launch_time_et.strftime("%Y-%m-%d %I:%M %p %Z"),
                 next_launch['launch_service_provider']['name'],
                 f"{next_launch['pad']['name']} ({next_launch['pad']['location']['name']})"
             ])
@@ -59,6 +66,6 @@ def get_next_cape_kennedy_launch():
     except Exception as e:
         return f"⚠️ Error fetching launch data: {e}"
 
-# If running directly, print for testing
+# Run it
 if __name__ == "__main__":
     print(get_next_cape_kennedy_launch())

@@ -335,13 +335,13 @@ class Client(discord.Client):
 
             # Create a styled embed
             embed = discord.Embed(
-                title=f"**⏳ T - {row['T-minus']}**",
-                description="Next Cape Canaveral / Kennedy Space Center Launch",
+                title=f"**⏳ T{row['T-minus']}**",
+                description="Next Launch from Kennedy Space Center",
                 color=0x5865F2  # Discord blurple
             )
 
             embed.add_field(name="🚀 Mission", value=row['Name'], inline=False)
-            embed.add_field(name="📅 Launch Window Opens", value=f"`{row['Window']}` UTC", inline=True)
+            embed.add_field(name="🗓️ Launch Window Opens", value=f"{row['Window (ET)']} ET", inline=True)
             embed.add_field(name="🏢 Provider", value=row['Provider'], inline=True)
             embed.add_field(name="📍 Launch Pad", value=row['Pad'], inline=False)
 
