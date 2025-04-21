@@ -296,7 +296,7 @@ plotSurfFcst <- function() {
   
 print("Saving plot to: outputs/weather/surf_fcst.png")
 
-ggsave("outputs/surf_fcst.png", 
+ggsave("outputs/weather/surf_fcst.png", 
        plot = sfp, 
        width = 10, 
        height = 4, 
@@ -305,13 +305,6 @@ ggsave("outputs/surf_fcst.png",
 
 print("Plot successfully saved!")
 
-  ggsave("outputs/weather/surf_fcst.png", 
-         plot = sfp, 
-         width = 10, 
-         height = 4, 
-         dpi = 300, 
-         bg = "transparent")
-  
 }
 
 #####
