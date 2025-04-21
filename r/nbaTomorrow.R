@@ -46,5 +46,5 @@ for (i in 1:nrow(gt)) {
 print(gtc)
 
 #write_csv(gtc, "C:/Users/james/projects/discordBot/outputs/sports/nba/gamesTomorrow.csv")
-write_csv(gtc, "/Users/jamescissel/discordBot/outputs/sports/nba/gamesToday.csv")
+write_csv(gtc, "/Users/jamescissel/discordBot/outputs/sports/nba/gamesTomorrow.csv")
 print(".csv saved")
