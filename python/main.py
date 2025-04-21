@@ -384,6 +384,11 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldSpreade.R")])
             await message.channel.send("historical yield spreads:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_spread.png")))
 
+        if message.content.lower() == "yield spread short":
+            await message.channel.send("pulling data from fed")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "yieldSpreadShort.R")])
+            await message.channel.send("last 2 months of yield spreads:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_spread_2mo.png")))
+
     async def send_goodbye_message(self):
 
         """Sends a shutdown message before the bot exits."""
