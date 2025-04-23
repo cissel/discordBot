@@ -246,18 +246,17 @@ class Client(discord.Client):
 
             csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/nextTeamGame.csv")
 
-
             if not os.path.exists(csv_path):
                 await message.channel.send("couldn’t find game info 😿")
                 return
 
-            # Read from CSV
-            with open(OUTPUT_PATH, "sports/nhl/") as f:
+            with open(csv_path, newline="") as f:
                 reader = csv.reader(f)
-                next(reader)  # Skip header
+                next(reader)  # skip header
                 row = next(reader)
 
             time, matchup = row
+
             venue = time.split("@")[-1].strip()
             clean_time = time.split("@")[0].strip()
 
@@ -425,6 +424,11 @@ class Client(discord.Client):
                 embed.set_image(url=row['Image'])
 
             await message.channel.send(embed=embed)
+
+        if "fed rate" in message.content.lower():
+            await message.channel.send("pulling fed data")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "fedTarget.R")])
+            await message.channel.send("here's the federal funds target rate:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/dfedtaru.png")))
 
         if message.content.lower() == "yield curve":
             await message.channel.send("pulling data from the fed")
