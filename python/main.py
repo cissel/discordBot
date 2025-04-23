@@ -240,20 +240,24 @@ class Client(discord.Client):
             await message.channel.send("༼ つ ◕◕ ༽つ FLORIDA PANTHERS TAKE MY ENERGY ༼ つ ◕◕ ༽つ")
 
         if message.content.lower() == "wen cats":
-            await message.channel.send("checking schedule for the cats 🐾...")
+            await message.channel.send("checking schedule")
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "nextCats.py")])
 
             csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/nextTeamGame.csv")
 
             if not os.path.exists(csv_path):
-                await message.channel.send("couldn’t find game info 😿")
+                await message.channel.send(f"couldnt find game info 😿")
                 return
 
-            with open(csv_path, newline="") as f:
-                reader = csv.reader(f)
-                next(reader)  # skip header
-                row = next(reader)
+            try:
+                with open(csv_path, newline="") as f:
+                    reader = csv.reader(f)
+                    next(reader)  # Skip header
+                    row = next(reader)
+            except StopIteration:
+                await message.channel.send("😿 No Panthers game info available.")
+                return
 
             time, matchup = row
 
