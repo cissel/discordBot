@@ -50,14 +50,17 @@ def get_next_cape_kennedy_launch():
         # Write launch info to CSV
         with open(output_path, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["T-minus", "Name", "Window (UTC)", "Window (ET)", "Provider", "Pad"])
+            writer.writerow(["T-minus", "Name", "Status", "Window (UTC)", "Window (ET)", "Provider", "Pad", "Mission", "Image"])
             writer.writerow([
                 f"{days}d {hours}h {minutes}m {seconds}s",
                 next_launch['name'],
+                next_launch['status']['name'],
                 launch_time_utc.strftime("%Y-%m-%d %H:%M:%S %Z"),
-                launch_time_et.strftime("%Y-%m-%d %I:%M %p %Z"),
+                launch_time_et.strftime("%A, %B %d %Y at %I:%M %p %Z"),
                 next_launch['launch_service_provider']['name'],
-                f"{next_launch['pad']['name']} ({next_launch['pad']['location']['name']})"
+                f"{next_launch['pad']['name']} ({next_launch['pad']['location']['name']})",
+                next_launch['mission']['description'] if next_launch['mission'] else "No mission description available.",
+                next_launch['image'] or ""
             ])
 
         # Print the path for confirmation
