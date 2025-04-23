@@ -236,6 +236,98 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "floridaPanthe.R")])
             await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsWin.png")))
 
+        if message.content.lower() == "florida panthers!":
+            await message.channel.send("༼ つ ◕◕ ༽つ FLORIDA PANTHERS TAKE MY ENERGY ༼ つ ◕◕ ༽つ")
+
+        if message.content.lower() == "wen cats":
+            await message.channel.send("checking schedule for the cats 🐾...")
+
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "nextCats.py")])
+
+            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/nextTeamGame.csv")
+
+
+            if not os.path.exists(csv_path):
+                await message.channel.send("couldn’t find game info 😿")
+                return
+
+            # Read from CSV
+            with open(OUTPUT_PATH, "sports/nhl/") as f:
+                reader = csv.reader(f)
+                next(reader)  # Skip header
+                row = next(reader)
+
+            time, matchup = row
+            venue = time.split("@")[-1].strip()
+            clean_time = time.split("@")[0].strip()
+
+            embed = discord.Embed(
+                title="🐾 Next Florida Panthers Game",
+                description=f"**{matchup}**",
+                color=0xB9975B  # Panthers gold-ish
+            )
+            embed.add_field(name="📅 When", value=clean_time, inline=False)
+            embed.add_field(name="🏟️ Where", value=venue, inline=False)
+            embed.set_footer(text="Go Cats 😼")
+
+            # Optional: Add thumbnail
+            embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/en/5/5d/Florida_Panthers_2023_logo.svg")
+
+            await message.channel.send(embed=embed)
+
+        if "hockey today" in message.content.lower():
+            await message.channel.send("one sec")
+
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlToday.py")])
+
+            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/gamesToday.csv")
+
+            # Check if CSV was created
+            if not os.path.exists(csv_path):
+                await message.channel.send("no hockey today :(")
+                return
+            
+            print(".csv found")
+            await message.channel.send("hockey today:")
+
+            # Read CSV into a DataFrame
+            df = pd.read_csv(csv_path)
+
+            # Create an embed message
+            embed = discord.Embed(title="🏒 Today's NHL Matchups", color=0x3498db)
+
+            # Loop through each row and add a field for each game
+            for i, row in df.iterrows():
+                matchup_text = f"{row['time']}" 
+                embed.add_field(name=row["matchup"], value=matchup_text, inline=False)
+
+            # Send the embed to Discord
+            await message.channel.send(embed=embed)
+
+        if "hockey tomorrow" in message.content.lower():
+            await message.channel.send("i'll look")
+
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlTomorrow.py")])
+
+            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/gamesTomorrow.csv")
+
+            if not os.path.exists(csv_path):
+                await(message.channel.send("no hockey tomorrow :("))
+                return
+            
+            print(".csv found")
+            await message.channel.send("hockey tomorrow:")
+
+            df = pd.read_csv(csv_path)
+
+            embed = discord.Embed(title="🏒 Tomorrow's NHL Matchups", color=0x3498db)
+
+            for i, row in df.iterrows():
+                matchup_text = f"{row['time']}"
+                embed.add_field(name=row['matchup'], value=matchup_text, inline=False)
+
+            await message.channel.send(embed=embed)
+
         if "hoops today" in message.content.lower():  
             await message.channel.send("lemme check")
 
@@ -293,59 +385,6 @@ class Client(discord.Client):
             # Send the embed to Discord
             await message.channel.send(embed=embed)
 
-        if "hockey today" in message.content.lower():
-            await message.channel.send("one sec")
-
-            subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlToday.py")])
-
-            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/gamesToday.csv")
-
-            # Check if CSV was created
-            if not os.path.exists(csv_path):
-                await message.channel.send("no hockey today :(")
-                return
-            
-            print(".csv found")
-            await message.channel.send("hockey today:")
-
-            # Read CSV into a DataFrame
-            df = pd.read_csv(csv_path)
-
-            # Create an embed message
-            embed = discord.Embed(title="🏒 Today's NHL Matchups", color=0x3498db)
-
-            # Loop through each row and add a field for each game
-            for i, row in df.iterrows():
-                matchup_text = f"{row['time']}" 
-                embed.add_field(name=row["matchup"], value=matchup_text, inline=False)
-
-            # Send the embed to Discord
-            await message.channel.send(embed=embed)
-
-        if "hockey tomorrow" in message.content.lower():
-            await message.channel.send("i'll look")
-
-            subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlTomorrow.py")])
-
-            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/gamesTomorrow.csv")
-
-            if not os.path.exists(csv_path):
-                await(message.channel.send("no hockey tomorrow :("))
-                return
-            
-            print(".csv found")
-            await message.channel.send("hockey tomorrow:")
-
-            df = pd.read_csv(csv_path)
-
-            embed = discord.Embed(title="🏒 Tomorrow's NHL Matchups", color=0x3498db)
-
-            for i, row in df.iterrows():
-                matchup_text = f"{row['time']}"
-                embed.add_field(name=row['matchup'], value=matchup_text, inline=False)
-
-            await message.channel.send(embed=embed)
-
         if "next launch" in message.content.lower():
             await message.channel.send("checking spaceflight schedules")
 
@@ -360,17 +399,30 @@ class Client(discord.Client):
             df = pd.read_csv(csv_path)
             row = df.iloc[0]
 
-            # Create a styled embed
             embed = discord.Embed(
-                title=f"**⏳ T{row['T-minus']}**",
+                title=f"⏳ **T - {row['T-minus']}**",
                 description="Next Launch from Kennedy Space Center",
-                color=0x5865F2  # Discord blurple
+                color=0x5865F2
             )
 
-            embed.add_field(name="🚀 Mission", value=row['Name'], inline=False)
-            embed.add_field(name="🗓️ Launch Window Opens", value=f"{row['Window (ET)']}", inline=True)
-            embed.add_field(name="🏢 Provider", value=row['Provider'], inline=True)
+            mission_desc = row['Mission']
+            if len(mission_desc) > 1000:
+                mission_desc = mission_desc[:997] + "..."
+
+            embed.add_field(
+                name="🚀 Mission",
+                value=f"{row['Name']}\n{mission_desc}",
+                inline=False
+            )
+            embed.add_field(name="📋 Status", value=row['Status'], inline=True)
+            embed.add_field(name="🗓️ Launch Window Opens", value=row['Window (ET)'], inline=True)
+            embed.add_field(name="🏢 Agency", value=row['Provider'], inline=True)
             embed.add_field(name="📍 Launch Pad", value=row['Pad'], inline=False)
+
+            # Add launch image if it exists
+            if isinstance(row['Image'], str) and row['Image'].startswith("http"):
+                print(f"Image URL: {row['Image']!r}")
+                embed.set_image(url=row['Image'])
 
             await message.channel.send(embed=embed)
 
