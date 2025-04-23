@@ -30,4 +30,3 @@ with open("/Users/jamescissel/discordBot/outputs/sports/nhl/gamesToday.csv", "w"
             time_with_venue = f"{time_str} @ {venue}"
 
             writer.writerow([time_with_venue, matchup])
-

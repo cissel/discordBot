@@ -49,10 +49,10 @@ else:
     time_with_venue = f"{time_str} @ {venue}"
 
     # Output to CSV
-    output_path = "/Users/jamescissel/discordBot/outputs/sports/nhl/nextTeamGame.csv"
-with open(csv_path, newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["time", "matchup"])
-        writer.writerow([time_with_venue, matchup])
+    csv_path = "/Users/jamescissel/discordBot/outputs/sports/nhl/nextTeamGame.csv"
+    with open(csv_path, newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["time", "matchup"])
+            writer.writerow([time_with_venue, matchup])
 
     print("✅ Wrote next game to CSV:", matchup)
