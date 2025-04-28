@@ -176,6 +176,16 @@ class Client(discord.Client):
         if message.content.lower() == "westside":
             await message.channel.send("jville")
 
+        if "weather tomorrow" in message.content.lower() or "weathertm" in message.content.lower():
+            await message.channel.send("checking nws")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "weatherTm.R")])
+            await message.channel.send("here ya go:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/weatherTm.png")))
+
+        if "weather today" in message.content.lower() or "weathertoday" in message.content.lower() or "weathertd" in message.content.lower():
+            await message.channel.send("walking outside")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "weathe.R")])
+            await message.channel.send("have a great day :)", file=discord.File(os.path.join(OUTPUT_PATH, "weather/weatherTd.png")))
+
         if message.content.lower() == '!surf':
             await message.channel.send("hey dude! give me a sec to check the waves")
             subprocess.run(["Rscript", os.path.join(R_PATH, "surf4castPlot.R")])
@@ -190,6 +200,13 @@ class Client(discord.Client):
             await message.channel.send("pulling wind forecast (this is slow too sorry homie)")
             subprocess.run(["Rscript", os.path.join(R_PATH, "windMap.R")])
             await message.channel.send("here's the latest wind forecast map:", file = discord.File(os.path.join(OUTPUT_PATH, "weather/wind_animation.gif")))
+
+        if "buoy waves" in message.content.lower():
+            await message.channel.send("pulling buoy data")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "noaaBuoy.R")])
+            await message.channel.send("generating plot")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "buoyWavePlot.R")])
+            await message.channel.send("latest observations from NOAA buoy #41117:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/buoyWaves.png")))
 
         if message.content.lower() == '!jaxradar':
             await message.channel.send("pulling jax radar")
@@ -229,6 +246,12 @@ class Client(discord.Client):
 
             await message.channel.send(file=discord.File(selected_file))
 
+        if "scrote" in message.content.lower():
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nba/traeYoung.png")))
+
+        if "zooksy" in message.content.lower():
+            await message.channel.send("!zooksyismyfriend")
+
         if message.content.lower() == "cats!":
             await message.channel.send("vamos gatos")
             await asyncio.sleep(1)
@@ -244,14 +267,14 @@ class Client(discord.Client):
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "nextCats.py")])
 
-            csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/nextTeamGame.csv")
+            CSV_PATH = os.path.join(OUTPUT_PATH, "sports/nhl/nextTeamGame.csv")
 
-            if not os.path.exists(csv_path):
+            if not os.path.exists(CSV_PATH):
                 await message.channel.send(f"couldnt find game info 😿")
                 return
 
             try:
-                with open(csv_path, newline="") as f:
+                with open(CSV_PATH, newline="") as f:
                     reader = csv.reader(f)
                     next(reader)  # Skip header
                     row = next(reader)
@@ -278,7 +301,7 @@ class Client(discord.Client):
 
             await message.channel.send(embed=embed)
 
-        if "hockey today" in message.content.lower():
+        if "hockey today" in message.content.lower() or "hockeytoday" in message.content.lower():
             await message.channel.send("one sec")
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlToday.py")])
@@ -307,7 +330,7 @@ class Client(discord.Client):
             # Send the embed to Discord
             await message.channel.send(embed=embed)
 
-        if "hockey tomorrow" in message.content.lower():
+        if "hockey tomorrow" in message.content.lower() or "hockeytomorrow" in message.content.lower():
             await message.channel.send("i'll look")
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "nhlTomorrow.py")])
@@ -331,7 +354,7 @@ class Client(discord.Client):
 
             await message.channel.send(embed=embed)
 
-        if "hoops today" in message.content.lower():  
+        if "hoops today" in message.content.lower() or "hoopstoday" in message.content.lower():  
             await message.channel.send("lemme check")
 
             # Run the R script to generate the CSV
@@ -361,7 +384,7 @@ class Client(discord.Client):
             # Send the embed to Discord
             await message.channel.send(embed=embed)
 
-        if "hoops tomorrow" in message.content.lower():
+        if "hoops tomorrow" in message.content.lower() or "hoopstomorrow" in message.content.lower():
             await message.channel.send("lemme see")
 
             subprocess.run(["Rscript", os.path.join(R_PATH, "nbaTomorrow.R")])
@@ -388,7 +411,7 @@ class Client(discord.Client):
             # Send the embed to Discord
             await message.channel.send(embed=embed)
 
-        if "next launch" in message.content.lower():
+        if "next launch" in message.content.lower() or "nextlaunch" in message.content.lower():
             await message.channel.send("checking spaceflight schedules")
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "spaceLaunches.py")])
@@ -429,22 +452,22 @@ class Client(discord.Client):
 
             await message.channel.send(embed=embed)
 
-        if "fed rate" in message.content.lower():
+        if "fed rate" in message.content.lower() or "fedrate" in message.content.lower():
             await message.channel.send("pulling fed data")
             subprocess.run(["Rscript", os.path.join(R_PATH, "fedTarget.R")])
             await message.channel.send("here's the federal funds target rate:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/dfedtaru.png")))
 
-        if message.content.lower() == "yield curve":
+        if "yield curve" in message.content.lower() or "yieldcurve" in message.content.lower():
             await message.channel.send("pulling data from the fed")
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldCurve.R")])
             await message.channel.send("this is what the yield curve looks like right now:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_curve.png")))
 
-        if message.content.lower() == "yield spread":
+        if "yield spread" in message.content.lower() or "yieldspread" in message.content.lower():
             await message.channel.send("pulling fed data")
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldSpreade.R")])
             await message.channel.send("historical yield spreads:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_spread.png")))
 
-        if message.content.lower() == "yield spread short":
+        if "yield spread short" in message.content.lower() or "yieldspreadshort" in message.content.lower():
             await message.channel.send("pulling data from fed")
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldSpreadShort.R")])
             await message.channel.send("last 2 months of yield spreads:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_spread_2mo.png")))
