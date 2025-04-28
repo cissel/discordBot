@@ -213,6 +213,11 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "tidePlot.R")])
             await message.channel.send("current tides:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportTides.png")))
 
+        if "wind plot" in message.content.lower():
+            await message.channel.send("checking mayport bar pilots dock")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "mayportWind.R")])
+            await message.channel.send("current winds:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportWinds.png")))
+
         if message.content.lower() == '!jaxradar':
             await message.channel.send("pulling jax radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "jaxRada.R")])
