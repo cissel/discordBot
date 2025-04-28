@@ -97,7 +97,7 @@ df <- btcm %>%
 
 p <- ggplot(df, aes(x = date)) +
   geom_line(aes(y = btc), color = "blue", size = 1) +
-  geom_line(aes(y = yoy*100), color = "red", size = 1) +
+  geom_line(aes(y = m2), color = "red", size = 1) +
   scale_y_continuous(
     name = "BTC Price",
     sec.axis = sec_axis(~ ., name = "Real M2 Money Supply")
