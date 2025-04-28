@@ -228,6 +228,9 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/flRadar.gif")))
 
+        if "is chuck gay" in message.content.lower():
+            await message.channel.send("ya")
+
         if message.content.lower() == "!boobs":
             # 33.3% chance to send "gulag" instead of an image
             if random.random() < 0.333:
