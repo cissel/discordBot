@@ -19,9 +19,13 @@ def get_next_cape_kennedy_launch():
             return f"🚨 Request failed with status code {response.status_code}"
 
         data = response.json()
+
+        now = datetime.now(timezone.utc)
+
         filtered = [
             launch for launch in data['results']
             if any(x in launch['pad']['location']['name'].lower() for x in ["cape canaveral", "kennedy"])
+            and parser.isoparse(launch['window_end']).astimezone(timezone.utc) > now
         ]
 
         if not filtered:
