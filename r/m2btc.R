@@ -95,17 +95,27 @@ df <- btcm %>%
 
 ##### Generate Plot #####
 
+range1 <- range(btcm$btc)
+range2 <- range(m2$m2)
+
+range1 <- range1[2]-range1[1]
+range2 <- range2[2]-range2[1]
+
+factor <- range2/range1
+
 p <- ggplot(df, aes(x = date)) +
   geom_line(aes(y = btc), color = "blue", size = 1) +
-  geom_line(aes(y = m2), color = "red", size = 1) +
+  geom_line(aes(y = e(m2)), color = "red", size = 1) +
   scale_y_continuous(
     name = "BTC Price",
-    sec.axis = sec_axis(~ ., name = "Real M2 Money Supply")
+    sec.axis = sec_axis(~. /factor, name = "Real M2 Money Supply")
   ) +
   labs(
     title = "Bitcoin vs M2 Money Supply",
     x = "Date"
   ) +
+  scale_y_continuous(trans="log10")+
   myTheme
 
 #####
+
