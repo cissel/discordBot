@@ -265,6 +265,10 @@ class Client(discord.Client):
         if "zooksy" in message.content.lower():
             await message.channel.send("!zooksyismyfriend")
 
+        if "denver nuggets" in message.content.lower():
+            await message.channel.send("joke around and find out")
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nba/thugJokic.jpg")))
+
         if message.content.lower() == "cats!":
             await message.channel.send("vamos gatos")
             await asyncio.sleep(1)
