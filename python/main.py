@@ -290,16 +290,15 @@ class Client(discord.Client):
                 await message.channel.send(f"couldnt find game info 😿")
                 return
 
-            try:
-                with open(CSV_PATH, newline="") as f:
-                    reader = csv.reader(f)
-                    next(reader)  # Skip header
-                    row = next(reader)
-            except StopIteration:
-                await message.channel.send("😿 No Panthers game info available.")
-                return
+            print(".csv found")
+            
+            df = pd.read_csv(CSV_PATH)
 
-            time, matchup = row
+            row = df.iloc[0]
+            print(row)
+
+            time = row["time"]
+            matchup = row["matchup"]
 
             venue = time.split("@")[-1].strip()
             clean_time = time.split("@")[0].strip()
