@@ -300,11 +300,14 @@ class Client(discord.Client):
             time = row["time"]
             matchup = row["matchup"]
 
-            venue = time.split("@")[-1].strip()
-            clean_time = time.split("@")[0].strip()
+            if "@" in time:
+                clean_time, venue = time.rsplit(" @ ", 1)
+            else:
+                clean_time = time
+                venue = "Unknown"
 
             embed = discord.Embed(
-                title="🐾 Next Florida Panthers Game",
+                title="Next Florida Panthers Game",
                 description=f"**{matchup}**",
                 color=0xB9975B  # Panthers gold-ish
             )
