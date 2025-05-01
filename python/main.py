@@ -228,8 +228,8 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/flRadar.gif")))
 
-        if "is chuck gay" in message.content.lower():
-            await message.channel.send("ya")
+        if "chuck" in message.content.lower():
+            await message.channel.send("!chucksagayfer")
 
         if message.content.lower() == "!boobs":
             # 33.3% chance to send "gulag" instead of an image
@@ -299,12 +299,9 @@ class Client(discord.Client):
 
             time = row["time"]
             matchup = row["matchup"]
+            venue = row["venue"]
 
-            if "@" in time:
-                clean_time, venue = time.rsplit(" @ ", 1)
-            else:
-                clean_time = time
-                venue = "Unknown"
+            clean_time = time
 
             embed = discord.Embed(
                 title="Next Florida Panthers Game",
@@ -313,7 +310,7 @@ class Client(discord.Client):
             )
             embed.add_field(name="📅 When", value=clean_time, inline=False)
             embed.add_field(name="🏟️ Where", value=venue, inline=False)
-            embed.set_footer(text="Go Cats 😼")
+            embed.set_footer(text="vamos gatos")
 
             # Optional: Add thumbnail
             embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/en/5/5d/Florida_Panthers_2023_logo.svg")
@@ -481,7 +478,7 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldCurve.R")])
             await message.channel.send("this is what the yield curve looks like right now:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_curve.png")))
 
-        if "yield spread" in message.content.lower() or "yieldspread" in message.content.lower():
+        if message.content.lower() == "yield spread":
             await message.channel.send("pulling fed data")
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldSpreade.R")])
             await message.channel.send("historical yield spreads:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_spread.png")))
