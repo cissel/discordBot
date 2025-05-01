@@ -57,7 +57,7 @@ else:
 
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["time", "matchup"])
-        writer.writerow([time_str, matchup])
+        writer.writerow(["time", "matchup", "venue"])
+        writer.writerow([time_str, matchup, venue])
 
     print("✅ Wrote next game to CSV:", matchup)
