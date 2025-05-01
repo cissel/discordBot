@@ -39,7 +39,7 @@ myLegend <- theme(legend.position = "right",
 ##### Pull data #####
 
 df <- read_csv("/Users/jamescissel/discordBot/outputs/weather/buoy41117.csv")
-
+df$WVHT <- df$WVHT*3.28084
 df$dt <- as.POSIXct(df$dt, format = "%Y-%m-%d %H:%M", tz = "UTC")
 
 #####
@@ -56,8 +56,12 @@ p <- ggplot(df,
              color = "cyan") +
   
   labs(x = "Time",
-       y = "Wave Height (m)",
-       title = paste("Lastest Observations from NOAA NDBC Buoy #41117")) +
+       y = "Wave Height (ft)",
+       title = paste("Lastest Observations from NOAA NDBC Buoy #41117 as of ",
+                     head(df$dt, 1),
+                     ": "
+                     head(df$WVHT, 1),
+                     sep = "")) +
   
   myTheme
 
