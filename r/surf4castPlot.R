@@ -22,6 +22,7 @@ myTheme <- theme(legend.position = "none",
                                            hjust = .5),
                  plot.subtitle = element_text(color = "white",
                                               hjust = .5),
+                 plot.caption = element_text(color = "white"),
                  strip.background = element_rect(fill = "#02233F"),
                  strip.text = element_text(color = "white"))
 
@@ -272,9 +273,9 @@ plotSurfFcst <- function() {
     
     labs(x = "Time",
          y = "Swell Height (ft)",
-         title = paste("Jax Beach Surf Forecast // ",
-                       Sys.Date(),
-                       sep = "")) +
+         caption = "JHCV",
+         subtitle = Sys.Date(),
+         title = "Jax Beach Surf Forecast") +
     
     myTheme +
     theme(axis.text.x = element_text(size = 6,
