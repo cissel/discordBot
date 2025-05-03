@@ -201,19 +201,19 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "windMap.R")])
             await message.channel.send("here's the latest wind forecast map:", file = discord.File(os.path.join(OUTPUT_PATH, "weather/wind_animation.gif")))
 
-        if "buoy waves" in message.content.lower():
+        if "buoy waves" in message.content.lower() or "buoywaves" in message.content.lower():
             await message.channel.send("pulling buoy data")
             subprocess.run(["Rscript", os.path.join(R_PATH, "noaaBuoy.R")])
             await message.channel.send("generating plot")
             subprocess.run(["Rscript", os.path.join(R_PATH, "buoyWavePlot.R")])
             await message.channel.send("latest observations from NOAA buoy #41117:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/buoyWaves.png")))
 
-        if "tide plot" in message.content.lower():
+        if "tide plot" in message.content.lower() or "tideplot" in message.content.lower():
             await message.channel.send("checking mayport bar pilots dock")
             subprocess.run(["Rscript", os.path.join(R_PATH, "tidePlot.R")])
             await message.channel.send("current tides:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportTides.png")))
 
-        if "wind plot" in message.content.lower():
+        if "wind plot" in message.content.lower() or "windplot" in message.content.lower():
             await message.channel.send("*licks finger*")
             subprocess.run(["Rscript", os.path.join(R_PATH, "mayportWind.R")])
             await message.channel.send("current winds:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportWinds.png")))

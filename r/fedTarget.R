@@ -22,7 +22,10 @@ myTheme <- theme(legend.position = "none",
                  plot.title = element_text(color = "white",
                                            hjust = .5),
                  plot.subtitle = element_text(color = "white",
-                                              hjust = .5))
+                                              hjust = .5),
+                 plot.caption = element_text(color = "white"),
+                 strip.background = element_rect(fill = "#02233F"),
+                 strip.text = element_text(color = "white"))
 
 #####
 
@@ -71,11 +74,13 @@ p <- ggplot(df,
   labs(title = paste("Federal Funds Target Range as of ",
                      tail(df$date, 1),
                      ": ",
-                     tail(df$value, 1),
-                     "%",
                      sep = ""),
+       subtitle = paste(tail(df$value, 1),
+                        "%",
+                        sep = ""),
        x = "Date",
-       y = "Yield") +
+       y = "Yield",
+       caption = "JHCV") +
   myTheme
 
 #####

@@ -22,7 +22,10 @@ myTheme <- theme(legend.position = "none",
                  plot.title = element_text(color = "white",
                                            hjust = .5),
                  plot.subtitle = element_text(color = "white",
-                                              hjust = .5))
+                                              hjust = .5),
+                 plot.caption = element_text(color = "white"),
+                 strip.background = element_rect(fill = "#02233F"),
+                 strip.text = element_text(color = "white"))
 
 #####
 
@@ -91,10 +94,11 @@ ysp <- ggplot(recentHistory, aes(x = date, y = value, color = label)) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(
     title = "Historical U.S. Treasury Yields by Maturity",
+    subtitle = max(recentHistory$date),
     x = "Date",
     y = "Yield",
-    color = "Maturity"
-  ) +
+    color = "Maturity",
+    caption = "JHCV") +
   myTheme + myLegend
 
 

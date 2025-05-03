@@ -21,7 +21,10 @@ myTheme <- theme(legend.position = "none",
                  plot.title = element_text(color = "white",
                                            hjust = .5),
                  plot.subtitle = element_text(color = "white",
-                                              hjust = .5))
+                                              hjust = .5),
+                 plot.caption = element_text(color = "white"),
+                 strip.background = element_rect(fill = "#02233F"),
+                 strip.text = element_text(color = "white"))
 
 #####
 
@@ -104,7 +107,9 @@ ycp <- ggplot(ycdf, aes(x = yte, y = last)) +
   labs(
     x = "Time to Maturity",
     y = "Interest Rate",
-    title = paste("Market Yield on U.S. Treasury Securities at Constant Maturity:", max(ycdf$asOf))
+    subtitle = max(ycdf$asOf),
+    title = "Market Yield on U.S. Treasury Securities at Constant Maturity",
+    caption = "JHCV"
   ) +
   scale_x_log10(
     breaks = ycdf$yte,
