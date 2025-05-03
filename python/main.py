@@ -115,7 +115,7 @@ class Client(discord.Client):
                 return
         
         # Trigger GPT-2 only if " mr bot" is in the message
-        if ("mr" in message.content.lower() and "bot" in message.content.lower()) or "jarvis" in message.content.lower():
+        if ("mr" in message.content.lower() and "bot" in message.content.lower()) or "jarvis" in message.content.lower() or "siri" in message.content.lower():
             print(f"GPT-2 Triggered by: {message.content}")  # ✅ Debugging line
             #await message.channel.send("thinking...")
 
@@ -149,7 +149,7 @@ class Client(discord.Client):
 
             await message.channel.send(file=discord.File(selected_audio))            
 
-        if "type shit" in message.content.lower():
+        if "type shit" in message.content.lower() or "typeshit" in message.content.lower() or message.content.lower() == "ts":
             await message.channel.send("ong fr")
 
         if "gm" in message.content.lower():
@@ -176,7 +176,7 @@ class Client(discord.Client):
         if message.content.lower() == "westside":
             await message.channel.send("jville")
 
-        if "weather tomorrow" in message.content.lower() or "weathertm" in message.content.lower():
+        if "weather tomorrow" in message.content.lower() or "weathertomorrow" or "weathertm" in message.content.lower():
             await message.channel.send("checking nws")
             subprocess.run(["Rscript", os.path.join(R_PATH, "weatherTm.R")])
             await message.channel.send("here ya go:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/weatherTm.png")))
@@ -478,7 +478,7 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldCurve.R")])
             await message.channel.send("this is what the yield curve looks like right now:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_curve.png")))
 
-        if message.content.lower() == "yield spread":
+        if message.content.lower() == "yield spread" or message.content.lower() == "yieldspread":
             await message.channel.send("pulling fed data")
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldSpreade.R")])
             await message.channel.send("historical yield spreads:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_spread.png")))
