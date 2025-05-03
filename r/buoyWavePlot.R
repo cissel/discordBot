@@ -62,7 +62,9 @@ p <- ggplot(df,
        subtitle = paste(head(df$dt, 1),
                         ": ",
                         round(head(df$WVHT, 1), 2),
-                        "ft",
+                        "ft @ ",
+                        head(df$APD, 1),
+                        "s",
                         sep = ""),
        title = "Latest Observations from NOAA NDBC Buoy #41117") +
   
