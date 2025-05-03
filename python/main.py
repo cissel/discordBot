@@ -214,7 +214,7 @@ class Client(discord.Client):
             await message.channel.send("current tides:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportTides.png")))
 
         if "wind plot" in message.content.lower():
-            await message.channel.send("checking mayport bar pilots dock")
+            await message.channel.send("*licks finger*")
             subprocess.run(["Rscript", os.path.join(R_PATH, "mayportWind.R")])
             await message.channel.send("current winds:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportWinds.png")))
 
