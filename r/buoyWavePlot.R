@@ -42,7 +42,7 @@ myLegend <- theme(legend.position = "right",
 df <- read_csv("/Users/jamescissel/discordBot/outputs/weather/buoy41117.csv")
 df$WVHT <- df$WVHT*3.28084
 df$dt <- as.POSIXct(df$dt, format = "%Y-%m-%d %H:%M", tz = "UTC")
-
+df$dt <- with_tz(df$dt, tzone = "America/New_York")
 #####
 
 ##### Generate plot #####
