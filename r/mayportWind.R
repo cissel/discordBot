@@ -23,6 +23,7 @@ myTheme <- theme(legend.position = "none",
                                            hjust = .5),
                  plot.subtitle = element_text(color = "white",
                                               hjust = .5),
+                 plot.caption = element_text(color = "white"),
                  strip.background = element_rect(fill = "#02233F"),
                  strip.text = element_text(color = "white"))
 
@@ -69,13 +70,13 @@ mws <- mw |>
   
   select(t, spd, d, dr)
 
-mws$type <- "sustained"
+mws$type <- "Sustained"
 
 mwg <- mw |>
   
   select(t, gusts, d, dr)
 
-mwg$type <- "gusts"
+mwg$type <- "Gusts"
 
 # Rename columns to be consistent for both dataframes
 mws <- mws %>%
@@ -100,7 +101,15 @@ mayportWindPlot <- ggplot(mayportWinds,
   labs(x = "Time",
        y = "Wind Speed (mph)",
        color = "Type",
-       title = "Mayport Winds") +
+       caption = "JHCV",
+       subtitle = paste(tail(mayportWinds$dr, 1),
+                        " @ ",
+                        round(tail(mwg$windSpd, 1), 2),
+                        "mph",
+                        sep = ""),
+       title = paste("Mayport Winds as of: ",
+                     tail(mayportWinds$t, 1),
+                     sep = "")) +
   
   myTheme +
   myLegend
