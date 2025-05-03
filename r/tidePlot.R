@@ -23,6 +23,7 @@ myTheme <- theme(legend.position = "none",
                                            hjust = .5),
                  plot.subtitle = element_text(color = "white",
                                               hjust = .5),
+                 plot.caption = element_text(color = "white"),
                  strip.background = element_rect(fill = "#02233F"),
                  strip.text = element_text(color = "white"))
 
@@ -110,6 +111,8 @@ tidePlot <- ggplot(mayport,
   
   labs(x = "Time", 
        y = "Water Level", 
+       caption = "JHCV",
+       subtitle = tail(md$time, 1),
        title = "Mayport Tides") + 
   
   scale_linewidth_manual(values = c("observed" = 1.25,
