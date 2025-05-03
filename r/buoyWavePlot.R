@@ -21,6 +21,7 @@ myTheme <- theme(legend.position = "none",
                                            hjust = .5),
                  plot.subtitle = element_text(color = "white",
                                               hjust = .5),
+                 plot.caption = element_text(color = "white"),
                  strip.background = element_rect(fill = "#02233F"),
                  strip.text = element_text(color = "white"))
 
@@ -57,11 +58,13 @@ p <- ggplot(df,
   
   labs(x = "Time",
        y = "Wave Height (ft)",
-       title = paste("Lastest Observations from NOAA NDBC Buoy #41117 as of ",
-                     head(df$dt, 1),
-                     ": "
-                     head(df$WVHT, 1),
-                     sep = "")) +
+       caption = "JHCV",
+       subtitle = paste(head(df$dt, 1),
+                        ": ",
+                        round(head(df$WVHT, 1), 2),
+                        "ft",
+                        sep = ""),
+       title = "Latest Observations from NOAA NDBC Buoy #41117") +
   
   myTheme
 
