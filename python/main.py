@@ -46,7 +46,7 @@ print("GPT-2 model loaded!")  # Debugging print
 
 # Define the bot's personality
 BOT_PERSONA = (
-    "A really witty and very funny & helpful bot is joking around in a groupchat with a bunch of his buddies."
+    "A really clever and very funny & kind bot is joking around in a groupchat with a bunch of his buddies."
 )
 
 async def generate_ai_response(user_message):
@@ -114,7 +114,7 @@ class Client(discord.Client):
                 await message.channel.send("idiot")
                 return
         
-        # Trigger GPT-2 only if " mr bot" is in the message
+        # Trigger GPT-2 only if "mr bot" is in the message
         if ("mr" in message.content.lower() and "bot" in message.content.lower()) or "jarvis" in message.content.lower() or "siri" in message.content.lower():
             print(f"GPT-2 Triggered by: {message.content}")  # ✅ Debugging line
             #await message.channel.send("thinking...")
@@ -176,7 +176,7 @@ class Client(discord.Client):
         if message.content.lower() == "westside":
             await message.channel.send("jville")
 
-        if "weather tomorrow" in message.content.lower() or "weathertomorrow" or "weathertm" in message.content.lower():
+        if "weather tomorrow" in message.content.lower() or "weathertomorrow" in message.content.lower() or "weathertm" in message.content.lower():
             await message.channel.send("checking nws")
             subprocess.run(["Rscript", os.path.join(R_PATH, "weatherTm.R")])
             await message.channel.send("here ya go:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/weatherTm.png")))
