@@ -201,7 +201,7 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "windMap.R")])
             await message.channel.send("here's the latest wind forecast map:", file = discord.File(os.path.join(OUTPUT_PATH, "weather/wind_animation.gif")))
 
-        if "buoy waves" in message.content.lower() or "buoywaves" in message.content.lower():
+        if "buoy waves" in message.content.lower() or "buoywaves" in message.content.lower() or "wave plot" in message.content.lower() or "waveplot" in message.content.lower():
             await message.channel.send("pulling buoy data")
             subprocess.run(["Rscript", os.path.join(R_PATH, "noaaBuoy.R")])
             await message.channel.send("generating plot")
