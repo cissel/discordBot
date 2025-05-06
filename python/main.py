@@ -488,6 +488,13 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "yieldSpreadShort.R")])
             await message.channel.send("last 2 months of yield spreads:", file=discord.File(os.path.join(OUTPUT_PATH, "markets/yield_spread_2mo.png")))
 
+        if "jax planes" in message.content.lower():
+            await message.channel.send("*looking up*")
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "overJax.py")])
+            await message.channel.send("saw planes, making plot")
+            #subprocess.run(["Rscript", os.path.join(R_PATH, "planePlot.R")])
+            await message.channel.send("here you go:", file=discord.File(os.path.join(OUTPUT_PATH, "aerospace/adsb250nm_map.html")))
+
     async def send_goodbye_message(self):
 
         """Sends a shutdown message before the bot exits."""
