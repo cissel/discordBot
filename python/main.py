@@ -281,10 +281,10 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "floridaPanthe.R")])
             await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsWin.png")))
 
-        if message.content.lower() == "florida panthers!":
+        if "florida panthers!" in message.content.lower() or "floridapanthers!" in message.content.lower():
             await message.channel.send("༼ つ ◕◕ ༽つ FLORIDA PANTHERS TAKE MY ENERGY ༼ つ ◕◕ ༽つ")
 
-        if message.content.lower() == "wen cats":
+        if "wen cats" in message.content.lower() or "wencats" in message.content.lower():
             await message.channel.send("checking schedule")
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "nextCats.py")])
