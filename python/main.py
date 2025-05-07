@@ -156,7 +156,7 @@ class Client(discord.Client):
             await message.add_reaction("🌞")
             await message.channel.send("good morning! :)")
 
-        if message.content.lower() == "good bot":
+        if "good bot" in message.content.lower() or "goodbot" in message.content.lower():
             await message.add_reaction("❤️")
             audio_folder = os.path.join(OUTPUT_PATH, "botSounds")
 
@@ -223,12 +223,12 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "mayportWind.R")])
             await message.channel.send("current winds:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportWinds.png")))
 
-        if message.content.lower() == '!jaxradar':
+        if "jax rad" in message.content.lower() or "jaxrad" in message.content.lower():
             await message.channel.send("pulling jax radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "jaxRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/nwsJaxRadar.gif")))
 
-        if message.content.lower() == '!flradar':
+        if "fl rad" in message.content.lower() or "flrad" in message.content.lower():
             await message.channel.send("pulling florida radar")
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/flRadar.gif")))
