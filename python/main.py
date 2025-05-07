@@ -186,7 +186,7 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "weathe.R")])
             await message.channel.send("have a great day :)", file=discord.File(os.path.join(OUTPUT_PATH, "weather/weatherTd.png")))
 
-        if message.content.lower() == '!surf':
+        if "surf" in message.content.lower():
             await message.channel.send("hey dude! give me a sec to check the waves")
             subprocess.run(["Rscript", os.path.join(R_PATH, "surf4castPlot.R")])
             await message.channel.send("here's the latest surf forecast:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/surf_fcst.png")))
@@ -239,7 +239,7 @@ class Client(discord.Client):
         if "zooksy" in message.content.lower():
             await message.channel.send("!zooksyismyfriend")
 
-        if message.content.lower() == "!boobs":
+        if "boobs" in message.content.lower():
             # 33.3% chance to send "gulag" instead of an image
             if random.random() < 0.333:
                 await message.channel.send("gulag")
