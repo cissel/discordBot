@@ -201,6 +201,16 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "windMap.R")])
             await message.channel.send("here's the latest wind forecast map:", file = discord.File(os.path.join(OUTPUT_PATH, "weather/wind_animation.gif")))
 
+        if "jax rad" in message.content.lower() or "jaxrad" in message.content.lower():
+            await message.channel.send("pulling jax radar")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "jaxRada.R")])
+            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/nwsJaxRadar.gif")))
+
+        if "fl rad" in message.content.lower() or "flrad" in message.content.lower():
+            await message.channel.send("pulling florida radar")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
+            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/flRadar.gif")))
+
         if "jax sat" in message.content.lower() or "jaxsat" in message.content.lower():
             await message.channel.send("*going to space brb w/ a gif*")
             subprocess.run(["Rscript", os.path.join(R_PATH, "jaxSat.R")])
@@ -222,16 +232,6 @@ class Client(discord.Client):
             await message.channel.send("*licks finger*")
             subprocess.run(["Rscript", os.path.join(R_PATH, "mayportWind.R")])
             await message.channel.send("current winds:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportWinds.png")))
-
-        if "jax rad" in message.content.lower() or "jaxrad" in message.content.lower():
-            await message.channel.send("pulling jax radar")
-            subprocess.run(["Rscript", os.path.join(R_PATH, "jaxRada.R")])
-            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/nwsJaxRadar.gif")))
-
-        if "fl rad" in message.content.lower() or "flrad" in message.content.lower():
-            await message.channel.send("pulling florida radar")
-            subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
-            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/flRadar.gif")))
 
         if "chuck" in message.content.lower():
             await message.channel.send("!chucksagayfer")
