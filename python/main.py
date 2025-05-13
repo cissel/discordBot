@@ -172,8 +172,21 @@ class Client(discord.Client):
 
         if "server history" in message.content.lower() or "serverhistory" in message.content.lower() or "servhist" in message.content.lower():
             await message.channel.send("*going back in time*")
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "channelReader.py")])
             subprocess.run(["Rscript", os.path.join(R_PATH, "serverHistory.R")])
             await message.channel.send(":) <3", file=discord.File(os.path.join(OUTPUT_PATH, "metrics/allMessages.png")))
+
+        if "channel history" in message.content.lower() or "channelhistory" in message.content.lower() or "chanhist" in message.content.lower():
+            await message.channel.send("*opening all channels*")
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "channelReader.py")])
+            subprocess.run(["Rscript", os.path.join(R_PATH, "channelHistory.R")])
+            await message.channel.send(":) <3", file=discord.File(os.path.join(OUTPUT_PATH, "metrics/channelMessages.png")))
+
+        if "user history" in message.content.lower() or "userhistory" in message.content.lower() or "userhist" in message.content.lower():
+            await message.channel.send("*checking attendance records*")
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "channelReader.py")])
+            subprocess.run(["Rscript", os.path.join(R_PATH, "userHistory.R")])
+            await message.channel.send(":) <3", file=discord.File(os.path.join(OUTPUT_PATH, "metrics/userMessages.png")))
 
         if message.content.lower() == "duval":
             await message.channel.send("bang em")
