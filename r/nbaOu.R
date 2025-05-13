@@ -127,7 +127,8 @@ for (i in 1:nrow(pbp)) {
              home_team_name,
              away_team_id,
              away_team_name,
-             athlete_id_1) |>
+             athlete_id_1,
+             athlete_name$PlayerIndex$PLAYER_SLUG) |>
     
     summarize("totPts" = sum(score_value))
   
@@ -135,7 +136,7 @@ for (i in 1:nrow(pbp)) {
   
   for (j in 1:nrow(pbp$data[[i]])) {
     
-    pbp$data[[i]]$athlete_name[[j]] <- nba_playerprofilev2(player_id = pbp$data[[i]]$athlete_id_1[[j]])
+    pbp$data[[i]]$athlete_name[[j]] <- nba_playerindex(player_id = pbp$data[[i]]$athlete_id_1[[j]])
     
   }
   

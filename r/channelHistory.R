@@ -69,9 +69,12 @@ cap <- ggplot(ca,
   geom_text(data = label_df,
             mapping = aes(x = date, 
                           y = tot^1.005, 
-                          label = tot, 
+                          label = paste(channel,
+                                        ": ",
+                                        tot,
+                                        sep = ""), 
                           color = channel),
-            hjust = 0.5,
+            hjust = 0.75,
             size = 3) +
   
   labs(x = "Date",
@@ -83,8 +86,8 @@ cap <- ggplot(ca,
                         sep = " "),
        caption = "JHCV") +
   
-  myTheme +
-  myLegend
+  myTheme #+
+  #myLegend
 
 ggsave("/Users/jamescissel/discordBot/outputs/metrics/channelMessages.png",
        plot = cap,
