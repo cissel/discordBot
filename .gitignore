@@ -8,4 +8,4 @@ r/.DS_Store
 .Rhistory
 outputs/weather/waves
 outputs/weather/winds
-server_messages.txt
+server_messages.csv
