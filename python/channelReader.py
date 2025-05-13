@@ -31,7 +31,7 @@ async def on_ready():
     # Prepare to write CSV
     with open("server_messages.csv", "w", encoding="utf-8", newline='') as f:
         writer = csv.writer(f)
-        writer.writerow(["datetime", "user", "channel", "message"])
+        writer.writerow(["datetime", "user_name", "user_display_name", "channel", "message"])
 
         for channel in guild.text_channels:
             if channel.id in ALLOWED_CHANNELS:
