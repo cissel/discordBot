@@ -1,0 +1,5 @@
+GAME_DATE_EST,game_id,TEAM_ID,TEAM_ABBREVIATION,TEAM_CITY_NAME,TEAM_NAME,PTS,team_name,game_code,game_status,game_status_text
+2025-05-12T00:00:00,0042400214,1610612738,BOS,Boston,Celtics,113,Boston Celtics,20250512/BOSNYK,3,Final
+2025-05-12T00:00:00,0042400214,1610612752,NYK,New York,Knicks,121,New York Knicks,20250512/BOSNYK,3,Final
+2025-05-12T00:00:00,0042400234,1610612750,MIN,Minnesota,Timberwolves,117,Minnesota Timberwolves,20250512/MINGSW,3,Final               
+2025-05-12T00:00:00,0042400234,1610612744,GSW,Golden State,Warriors,110,Golden State Warriors,20250512/MINGSW,3,Final               
