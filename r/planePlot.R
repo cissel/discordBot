@@ -19,8 +19,8 @@ plane_icon <- makeIcon(
 
 # Plot
 leaflet(df) |>
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  #addTiles() |>
+  #addProviderTiles(providers$CartoDB.Positron) %>%
+  addTiles() |>
   addMarkers(~lon, ~lat, 
              icon = plane_icon,
              label = ~flight)

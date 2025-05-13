@@ -375,6 +375,42 @@ class Client(discord.Client):
 
             await message.channel.send(embed=embed)
 
+        if "nba scoreboard" in message.content.lower() or "nbasb" in message.content.lower() or "live hoops" in message.content.lower() or "livehoops" in message.content.lower() or "hoops rn" in message.content.lower() or "hoopsrn" in message.content.lower():
+            await message.channel.send("*pulling up from half court*")
+
+            subprocess.run(["Rscript", os.path.join(R_PATH, "nbaLiveScore.R")])
+
+            CSV_PATH = os.path.join(OUTPUT_PATH, "sports/nba/liveScoreboard.csv")
+
+            # Check file exists
+            if not os.path.exists(CSV_PATH):
+                await message.channel.send("😢 Couldn't find live NBA scores.")
+                return
+
+            # Read the CSV
+            df = pd.read_csv(CSV_PATH)
+
+            # Group by game_id
+            grouped = df.groupby("game_id")
+
+            for game_id, group in grouped:
+                teams = group.sort_values("TEAM_NAME")  # Sort for consistency
+
+                team1 = teams.iloc[0]
+                team2 = teams.iloc[1]
+
+                embed = discord.Embed(
+                    title=f"🏀 {team1['team_name']} vs {team2['team_name']}",
+                    #description=f"{team1['PTS']} - {team2['PTS']}",
+                    color=0x5865F2
+                )
+
+                embed.add_field(name=team1["TEAM_ABBREVIATION"], value=f"{team1['PTS']}", inline=True)
+                embed.add_field(name=team2["TEAM_ABBREVIATION"], value=f"{team2['PTS']}", inline=True)
+                embed.add_field(name="Game Status", value=team1["game_status_text"].strip(), inline=False)
+
+                await message.channel.send(embed=embed)
+
         if "hoops today" in message.content.lower() or "hoopstoday" in message.content.lower() or "hoops td" in message.content.lower() or "hoopstd" in message.content.lower():  
             await message.channel.send("lemme check")
 
