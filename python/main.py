@@ -170,6 +170,11 @@ class Client(discord.Client):
 
             await message.channel.send(file=discord.File(selected_audio))
 
+        if "server history" in message.content.lower() or "serverhistory" in message.content.lower() or "servhist" in message.content.lower():
+            await message.channel.send("*going back in time*")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "serverHistory.R")])
+            await message.channel.send(":) <3", file=discord.File(os.path.join(OUTPUT_PATH, "metrics/allMessages.png")))
+
         if message.content.lower() == "duval":
             await message.channel.send("bang em")
 
