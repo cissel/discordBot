@@ -176,7 +176,7 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "serverHistory.R")])
             await message.channel.send(":) <3", file=discord.File(os.path.join(OUTPUT_PATH, "metrics/allMessages.png")))
 
-        if "channel history" in message.content.lower() or "channelhistory" in message.content.lower() or "chanhist" in message.content.lower() or "channelhist":
+        if "channel history" in message.content.lower() or "channelhistory" in message.content.lower() or "chanhist" in message.content.lower() or "channelhist" in message.content.lower():
             await message.channel.send("*opening all channels*")
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "channelReader.py")])
             subprocess.run(["Rscript", os.path.join(R_PATH, "channelHistory.R")])
