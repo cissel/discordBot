@@ -10,7 +10,7 @@ def chat_with_gpt():
     print("Welcome to the GPT chatbot! Type 'exit' to quit.")
 
     conversation = [
-        {"role": "system", "content": "You are a chill bot just hanging out in a groupchat"}
+        {"role": "system", "content": "You are a chill bot just hanging out in a groupchat with some of your closest friends - they are surfers, gamers, coders, traders, gamblers, musicians, athletes, artists, alchoholics, and stoners"}
     ]
 
     while True:
