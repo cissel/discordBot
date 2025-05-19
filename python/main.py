@@ -276,6 +276,12 @@ class Client(discord.Client):
 
         if "bully james" in message.content.lower() or "bullyjames" in message.content.lower():
             await message.channel.send("which one bro there are several james in here")
+            await asyncio.sleep(1)
+            await message.channel.send("you know what")
+            await asyncio.sleep(1)
+            await message.channel.send("fuck you james")
+            await asyncio.sleep(1)
+            await message.channel.send("fuck you too james")
 
         if "bully cissel" in message.content.lower() or "bullycissel" in message.content.lower():
             await message.channel.send("fuck you james")
