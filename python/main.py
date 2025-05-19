@@ -114,7 +114,7 @@ class Client(discord.Client):
                 await message.channel.send("idiot")
                 await asyncio.sleep(1)
                 await message.channel.send("jk lol here you go:")
-                return
+                #return
         
         # Trigger GPT-2 only if "mr bot" is in the message
         if ("mr" in message.content.lower() and "bot" in message.content.lower()) or "jarvis" in message.content.lower() or "siri" in message.content.lower():
