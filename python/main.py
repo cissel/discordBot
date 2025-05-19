@@ -108,10 +108,12 @@ class Client(discord.Client):
             return
         
         if message.author.id == TROLL_THIS_USER_ID:
-            if random.random() < 0.9:
+            if random.random() < 0.1:
                 await message.channel.send("shut up")
                 await asyncio.sleep(1)
                 await message.channel.send("idiot")
+                await asyncio.sleep(1)
+                await message.channel.send("jk lol here you go:")
                 return
         
         # Trigger GPT-2 only if "mr bot" is in the message
