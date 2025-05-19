@@ -113,7 +113,7 @@ class Client(discord.Client):
                 await asyncio.sleep(1)
                 await message.channel.send("idiot")
                 await asyncio.sleep(1)
-                await message.channel.send("jk lol here you go:")
+                await message.channel.send("jk lol here you go")
                 #return
         
         # Trigger GPT-2 only if "mr bot" is in the message
@@ -253,11 +253,42 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "mayportWind.R")])
             await message.channel.send("current winds:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportWinds.png")))
 
-        if "chuck" in message.content.lower():
-            await message.channel.send("!chucksagayfer")
+        #if "chuck" in message.content.lower():
+        #    await message.channel.send("!chucksagayfer")
 
-        if "zooksy" in message.content.lower():
-            await message.channel.send("!zooksyismyfriend")
+        #if "zooksy" in message.content.lower():
+        #    await message.channel.send("!zooksyismyfriend")
+
+        if "bully zooksy" in message.content.lower() or "bullyzooksy" in message.content.lower() or "bully chuck" in message.content.lower() or "bullychuck" in message.content.lower():
+            await message.channel.send("fuck you chuck")
+            await asyncio.sleep(1)
+            await message.channel.send("🤣🫵")
+
+        if "bully fish" in message.content.lower() or "bullyfish" in message.content.lower():
+            await message.channel.send("fuck you fish")
+            await asyncio.sleep(1)
+            await message.channel.send("🤣🫵")
+
+        if "bully bryce" in message.content.lower() or "bullybryce" in message.content.lower():
+            await message.channel.send("no")
+            await asyncio.sleep(1)
+            await message.channel.send("squidly rulez")
+
+        if "bully james" in message.content.lower() or "bullyjames" in message.content.lower():
+            await message.channel.send("which one")
+
+        if "bully cissel" in message.content.lower() or "bullycissel" in message.content.lower():
+            await message.channel.send("fuck you james")
+            await asyncio.sleep(1)
+            await message.channel.send("🤣🫵")
+
+        if "bully peyton" in message.content.lower() or "bullypeyton" in message.content.lower():
+            await message.channel.send("fuck you p")
+            await asyncio.sleep(1)
+            await message.channel.send("🤣🫵")
+
+        if "bully eli" in message.content.lower() or "bullyeli" in message.content.lower():
+            await message.channel.send("silky johnson player hater of the year 2025")
 
         if "boobs" in message.content.lower():
             # 33.3% chance to send "gulag" instead of an image
