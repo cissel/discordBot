@@ -275,14 +275,14 @@ class Client(discord.Client):
             await message.channel.send("squidly rulez")
 
         if "bully james" in message.content.lower() or "bullyjames" in message.content.lower():
-            await message.channel.send("which one")
+            await message.channel.send("which one bro there are several james in here")
 
         if "bully cissel" in message.content.lower() or "bullycissel" in message.content.lower():
             await message.channel.send("fuck you james")
             await asyncio.sleep(1)
             await message.channel.send("🤣🫵")
 
-        if "bully peyton" in message.content.lower() or "bullypeyton" in message.content.lower():
+        if "bully jp" in message.content.lower() or "bullyjp" in message.content.lower() or "bully p" in message.content.lower() or "bullyp" in message.content.lower() or "bully peyton" in message.content.lower() or "bullypeyton" in message.content.lower():
             await message.channel.send("fuck you p")
             await asyncio.sleep(1)
             await message.channel.send("🤣🫵")
