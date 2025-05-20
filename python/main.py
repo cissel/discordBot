@@ -296,6 +296,27 @@ class Client(discord.Client):
         if "bully eli" in message.content.lower() or "bullyeli" in message.content.lower():
             await message.channel.send("silky johnson player hater of the year 2025")
 
+        if "bully brandon" in message.content.lower() or "bullybrandon" in message.content.lower() or "bully vapedad" in message.content.lower() or "bullyvapedad" in message.content.lower():
+            await message.channel.send("hell nah")
+            await asyncio.sleep(1)
+            await message.channel.send("we did hard time together")
+            await asyncio.sleep(1)
+
+        if "bully jordan" in message.content.lower() or "bullyjordan" in message.content.lower():
+            await message.channel.send("nah jordan's only ever been nice to me")
+
+        if "bully chevy" in message.channel.send() or "bullychevy" in message.content.lower():
+            await message.channel.send("yo fuck you bubba")
+            await asyncio.sleep(1)
+            await message.channel.send("🤣🫵")
+            await asyncio.sleep(1)
+            await message.channel.send("ayo u know im jk i love u bubba")
+
+        if "bully verv" in message.content.lower() or "bullyverv" in message.content.lower():
+            await message.channel.send("nah dude")
+            await asyncio.sleep(1)
+            await message.channel.send("i'm good")
+
         if "boobs" in message.content.lower():
             # 33.3% chance to send "gulag" instead of an image
             if random.random() < 0.333:
