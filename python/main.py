@@ -253,14 +253,8 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "mayportWind.R")])
             await message.channel.send("current winds:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportWinds.png")))
 
-        #if "chuck" in message.content.lower():
-        #    await message.channel.send("!chucksagayfer")
-
-        #if "zooksy" in message.content.lower():
-        #    await message.channel.send("!zooksyismyfriend")
-
         if "bully zooksy" in message.content.lower() or "bullyzooksy" in message.content.lower() or "bully chuck" in message.content.lower() or "bullychuck" in message.content.lower():
-            await message.channel.send("fuck you chuck")
+            await message.channel.send("!kingcap")
             await asyncio.sleep(1)
             await message.channel.send("🤣🫵")
 
@@ -305,7 +299,7 @@ class Client(discord.Client):
         if "bully jordan" in message.content.lower() or "bullyjordan" in message.content.lower():
             await message.channel.send("nah jordan's only ever been nice to me")
 
-        if "bully chevy" in message.channel.send() or "bullychevy" in message.content.lower():
+        if "bully chevy" in message.content.lower() or "bullychevy" in message.content.lower():
             await message.channel.send("yo fuck you bubba")
             await asyncio.sleep(1)
             await message.channel.send("🤣🫵")
@@ -357,12 +351,18 @@ class Client(discord.Client):
             await message.channel.send("joke around and find out")
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nba/thugJokic.jpg")))
 
-        if message.content.lower() == "cats!":
+        if message.content.lower() == "stanley cup 2024!":
             await message.channel.send("vamos gatos")
             await asyncio.sleep(1)
             await message.channel.send("pulling data from 2024 stanley cup game 7")
             subprocess.run(["Rscript", os.path.join(R_PATH, "floridaPanthe.R")])
-            await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsWin.png")))
+            await message.channel.send("champions", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsCup.png")))
+
+        if "cats win" in message.content.lower() or "catswin" in message.content.lower():
+            await message.channel.send("W", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsWin.png")))
+
+        if "kodak" in message.content.lower():
+            await message.channel.send(file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/kodak.jpg")))
 
         if "florida panthers!" in message.content.lower() or "floridapanthers!" in message.content.lower():
             await message.channel.send("༼ つ ◕◕ ༽つ FLORIDA PANTHERS TAKE MY ENERGY ༼ つ ◕◕ ༽つ")
