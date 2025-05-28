@@ -106,41 +106,43 @@ ggplotly(cdf)
 
 ##### Player Level #####
 
+player_df <- nba_playerindex()$PlayerIndex |>
+  select(PERSON_ID,
+         PLAYER_SLUG,
+         PLAYER_FIRST_NAME,
+         PLAYER_LAST_NAME,
+         JERSEY_NUMBER,
+         TEAM_ID,
+         TEAM_SLUG)
+
 pbp <- load_nba_pbp() |> 
-  
   group_by(game_id, 
            home_team_abbrev, 
            away_team_abbrev) |>
-  
   nest()
-
-scoringPlays <- data.frame()
 
 for (i in 1:nrow(pbp)) {
   
-  pbp$data[[i]] <- pbp$data[[i]] |>
-    
-    filter(scoring_play == TRUE) |>
-    
-    group_by(team_id,
-             home_team_id,
-             home_team_name,
-             away_team_id,
-             away_team_name,
-             athlete_id_1,
-             athlete_name$PlayerIndex$PLAYER_SLUG) |>
-    
-    summarize("totPts" = sum(score_value))
+  ldf <- pbp$data[[i]]
   
-  pbp$data[[i]]$athlete_name <- ""
+  ldf$player_name <- ""
   
-  for (j in 1:nrow(pbp$data[[i]])) {
+  for (j in 1:nrow(ldf)) {
     
-    pbp$data[[i]]$athlete_name[[j]] <- nba_playerindex(player_id = pbp$data[[i]]$athlete_id_1[[j]])
+    for (k in 1:nrow(player_df)) {
+      
+      if (ldf$athlete_id_1[j] == player_df$PERSON_ID[k]) {
+        
+        ldf$player_name[j] <- paste(player_df$PLAYER_FIRST_NAME[k],
+                                    player_df$PLAYER_LAST_NAME[k],
+                                    sep = " ")
+        
+      }
+      
+    }
     
   }
   
 }
 
 #####
-

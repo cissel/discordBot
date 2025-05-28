@@ -107,13 +107,13 @@ class Client(discord.Client):
         if message.author == self.user:
             return
         
-        if message.author.id == TROLL_THIS_USER_ID:
-            if random.random() < 0.1:
-                await message.channel.send("shut up")
-                await asyncio.sleep(1)
-                await message.channel.send("idiot")
-                await asyncio.sleep(1)
-                await message.channel.send("jk lol here you go")
+        #if message.author.id == TROLL_THIS_USER_ID:
+        #    if random.random() < 0.01:
+        #        await message.channel.send("shut up")
+        #        await asyncio.sleep(1)
+        #        await message.channel.send("idiot")
+        #        await asyncio.sleep(1)
+        #        await message.channel.send("jk lol here you go")
                 #return
         
         # Trigger GPT-2 only if "mr bot" is in the message
@@ -365,6 +365,9 @@ class Client(discord.Client):
 
         if "kodak" in message.content.lower():
             await message.channel.send(file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/kodak.jpg")))
+
+        if "barkov" in message.content.lower() or "barky" in message.content.lower():
+            await message.channel.send(":)", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/barky.png")))
 
         if "florida panthers!" in message.content.lower() or "floridapanthers!" in message.content.lower():
             await message.channel.send("༼ つ ◕◕ ༽つ FLORIDA PANTHERS TAKE MY ENERGY ༼ つ ◕◕ ༽つ")
