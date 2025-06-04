@@ -410,6 +410,11 @@ class Client(discord.Client):
 
             await message.channel.send(embed=embed)
 
+        if "fuck edm" in message.content.lower() or "fuckedm" in message.content.lower():
+            await message.channel.send("FUCK EDM")
+            asyncio.sleep(1)
+            await message.channel.send("🤣🫵")
+
         if "hockey today" in message.content.lower() or "hockeytoday" in message.content.lower() or "hockey td" in message.content.lower() or "hockeytd" in message.content.lower():
             await message.channel.send("one sec")
 
