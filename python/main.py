@@ -415,6 +415,11 @@ class Client(discord.Client):
             asyncio.sleep(1)
             await message.channel.send("🤣🫵")
 
+        if "we the best" in message.content.lower():
+            await message.channel.send("WE THE BEST HOCKEY TEAM!")
+            asyncio.sleep(1)
+            await message.channel.send("<3", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/djkhaled.png")))
+
         if "hockey today" in message.content.lower() or "hockeytoday" in message.content.lower() or "hockey td" in message.content.lower() or "hockeytd" in message.content.lower():
             await message.channel.send("one sec")
 
