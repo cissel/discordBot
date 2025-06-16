@@ -154,6 +154,9 @@ class Client(discord.Client):
         if "type shit" in message.content.lower() or "typeshit" in message.content.lower() or message.content.lower() == "ts":
             await message.channel.send("ong fr")
 
+        if message.content.lower() == "type":
+            await message.channel.send("shit")
+
         if "gm" in message.content.lower():
             await message.add_reaction("🌞")
             await message.channel.send("good morning! :)")
@@ -352,6 +355,11 @@ class Client(discord.Client):
         if "denver nuggets" in message.content.lower():
             await message.channel.send("joke around and find out")
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nba/thugJokic.jpg")))
+
+        if "hali" in message.content.lower():
+            await message.channel.send("the haliban strikes again")
+            asyncio.sleep(1)
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nba/hali.png")))
 
         if message.content.lower() == "stanley cup 2024!":
             await message.channel.send("vamos gatos")
