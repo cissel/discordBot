@@ -371,34 +371,44 @@ class Client(discord.Client):
         if "cats win" in message.content.lower() or "catswin" in message.content.lower():
             await message.channel.send("W", file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/catsWin.png")))
 
+        if "cats lost" in message.content.lower() or "catslost" in message.content.lower():
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/sickAssPanther.webp")))
+
         if "kodak" in message.content.lower():
             await message.channel.send(file = discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/kodak.jpg")))
 
         if "barkov" in message.content.lower() or "barky" in message.content.lower():
             await message.channel.send(":)", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/barky.png")))
 
+        if "praise bobby" in message.content.lower() or "in bobby we trust" in message.content.lower():
+            await message.channel.send("bobby bless")
+            asyncio.sleep(1)
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/stbobby.jpeg")))
+            return
+
+        if "thug bobby" in message.content.lower() or "iced out bobby" in message.content.lower() or "icy bobby" in message.content.lower():
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/bobbyChain.png")))
+            return
+
         if "bobrovsky" in message.content.lower() or "sergei" in message.content.lower() or "bobby" in message.content.lower():
             await message.channel.send("BRICK WALL BOB")
             asyncio.sleep(1)
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/brickwallbob.jpg")))
 
-        if "praise bobby" in message.content.lower() or "in bobby we trust" in message.content.lower():
-            await message.channel.send("bobby bless")
-            asyncio.sleep(1)
-            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/stbobby.jpeg")))
-
-        if "thug bobby" in message.content.lower() or "iced out bobby" in message.content.lower() or "icy bobby" in message.content.lower():
-            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/bobbyChain.png")))
-
         if "chucky" in message.content.lower() or "tkachuk" in message.content.lower():
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/chucky.jpeg")))
+
+        if "reino" in message.content.lower() or "reinhart" in message.content.lower():
+            await message.channel.send("i love you sam <3")
+            asyncio.sleep(1)
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/reino.png")))
 
         if "aaron ekblad" in message.content.lower() or "ekblad" in message.content.lower() or "ekky" in message.content.lower():
             await message.channel.send("BOOSTED EKKY")
             asyncio.sleep(1)
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/ekblad.jpeg")))
 
-        if "carter" in message.content.lower() or "carter verhaeghe" in message.content.lower() or "swaggy verhaeghe" in message.content.lower() or "swaggycarter" in message.content.lower():
+        if "swaggy" in message.content.lower() or "carter" in message.content.lower() or "verhaeghe" in message.content.lower() or "swaggy verhaeghe" in message.content.lower() or "swaggycarter" in message.content.lower():
             await message.channel.send("NEVER FORGET", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/buttpuck.mov")))
 
         if "drunk marchand" in message.content.lower() or "drunk marchy" in message.content.lower() or "drunkmarchand" in message.content.lower() or "drunkmarchy" in message.content.lower():
@@ -412,8 +422,11 @@ class Client(discord.Client):
             asyncio.sleep(1)
             await message.channel.send("PANTHERS LEGEND AND FUTURE HALL OF FAMER BRADLEY MARCHAND", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/marchand.png")))
 
-        if "benny!" in message.content.lower() or "bennett" in message.content.lower():
+        if "benny" in message.content.lower() or "bennett" in message.content.lower():
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/benny.jpeg")))
+
+        if "eetu" in message.content.lower() or "luostarinen" in message.content.lower() or "luosty" in message.content.lower():
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/eetu.png")))
 
         if "gadjovich" in message.content.lower() or "gaddy" in message.content.lower() or "jonah" in message.content.lower():
             await message.channel.send("HEY SIRI PLAY SICKO MODE")
@@ -424,6 +437,27 @@ class Client(discord.Client):
             await message.channel.send("SETH MF JONES")
             asyncio.sleep(1)
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/sethjones.jpeg")))
+
+        if "lundy" in message.content.lower() or "lundell" in message.content.lower():
+            await message.channel.send("lundy a mf shooter fr")
+            asyncio.sleep(1)
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/lundell.png")))
+
+        if "gustav" in message.content.lower() or "forsling" in message.content.lower() or "goosey" in message.content.lower() or "forsy" in message.content.lower():
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/forsling.png")))
+
+        if "jesper" in message.content.lower() or "boqvist" in message.content.lower():
+            await message.channel.send("average jesper boqvist moment")
+            asyncio.sleep(1)
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/jesper.png")))
+
+        if "schmidty" in message.content.lower() or "nate schmidt" in message.content.lower() or "nate fucking schmidt" in message.content.lower():
+            await message.channel.send("NATE THE GREAT")
+            asyncio.sleep(1)
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/nateSchmidt.png")))
+
+        if "pantr" in message.content.lower():
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/pantrHands.jpeg")))
 
         if "i like the panthers" in message.content.lower():
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nhl/iLikeThePanthers.png")))
