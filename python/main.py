@@ -234,6 +234,11 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "flRada.R")])
             await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/flRadar.gif")))
 
+        if "us rad" in message.content.lower() or "usrad" in message.content.lower():
+            await message.channel.send("pulling us radar")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "usRada.R")])
+            await message.channel.send("here's the latest radar loop:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/usRadar.gif")))
+
         if "jax sat" in message.content.lower() or "jaxsat" in message.content.lower():
             await message.channel.send("*going to space brb w/ a gif*")
             subprocess.run(["Rscript", os.path.join(R_PATH, "jaxSat.R")])
@@ -255,6 +260,11 @@ class Client(discord.Client):
             await message.channel.send("*licks finger*")
             subprocess.run(["Rscript", os.path.join(R_PATH, "mayportWind.R")])
             await message.channel.send("current winds:", file=discord.File(os.path.join(OUTPUT_PATH, "weather/mayportWinds.png")))
+
+        if "two7" in message.content.lower() or message.content.lower() == "27" or "hurricane forecast" in message.content.lower():
+            await message.channel.send("checking NOAA")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "hurricane.R")])
+            await message.channel.send("here's the 7 day tropical weather outlook", file=discord.File(os.path.join(OUTPUT_PATH, "weather/two7d.png")))
 
         if "bully zooksy" in message.content.lower() or "bullyzooksy" in message.content.lower() or "bully chuck" in message.content.lower() or "bullychuck" in message.content.lower():
             await message.channel.send("!kingcap")
@@ -670,7 +680,7 @@ class Client(discord.Client):
             # Send the embed to Discord
             await message.channel.send(embed=embed)
 
-        if "wen jags" in message.content.lower() or "wenjags" in message.content.lower():
+        if "wen jags" in message.content.lower() or "wenjags" in message.content.lower() or "when jags" in message.content.lower:
             await message.channel.send("checking schedule")
 
             subprocess.run(["Rscript", os.path.join(R_PATH, "nextJagua.R")])
