@@ -481,7 +481,7 @@ class Client(discord.Client):
         if "florida panthers!" in message.content.lower() or "floridapanthers!" in message.content.lower():
             await message.channel.send("༼ つ ◕◕ ༽つ FLORIDA PANTHERS TAKE MY ENERGY ༼ つ ◕◕ ༽つ")
 
-        if "wen cats" in message.content.lower() or "wencats" in message.content.lower():
+        if "wen cats" in message.content.lower() or "wencats" in message.content.lower() or "when cats" in message.content.lower() or "whencats" in message.content.lower():
             await message.channel.send("checking schedule")
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "nextCats.py")])
@@ -680,7 +680,55 @@ class Client(discord.Client):
             # Send the embed to Discord
             await message.channel.send(embed=embed)
 
-        if "wen jags" in message.content.lower() or "wenjags" in message.content.lower() or "when jags" in message.content.lower:
+        if "wen nfl" in message.content.lower() or "next nfl" in message.content.lower():
+            await message.channel.send("checking schedules")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "nextNFL.R")])
+            
+            CSV_PATH = os.path.join(OUTPUT_PATH, "sports/nfl/nextGame.csv")
+
+            if not os.path.exists(CSV_PATH):
+                await message.channel.send("couldn't find game info :(")
+                return
+            
+            print(".csv found")
+
+            df = pd.read_csv(CSV_PATH)
+            row = df.iloc[0]
+
+            date = row["gameday"]
+            time = row["gametime"]
+            home = row["home_team"]
+            away = row["away_team"]
+            daysUntil = row["daysUntil"]
+            stadium = row["stadium"]
+            homeML = row["home_moneyline"]
+            awayML = row["away_moneyline"]
+            spreadline = row["spread_line"]
+            homeSpreadOdds = row["home_spread_odds"]
+            awaySpreadOdds = row["away_spread_odds"]
+            ouLine = row["total_line"]
+            underOdds = row["under_odds"]
+            overOdds = row["over_odds"]
+
+            matchup = f"{away} ({awayML}) @ {home} ({homeML})"
+            spread = f"{away}: {awaySpreadOdds} | {home}: {homeSpreadOdds}"
+            ouOdds = f"Under: {underOdds} | Over: {overOdds}"
+
+            embed = discord.Embed(
+                title=f"🏈 {daysUntil} Days Until Next NFL Game",
+                description=f"**{matchup}**",
+                color=0x013369  # NFL blue
+            )
+            embed.add_field(name="📅 When", value=f"{date} at {time}", inline=True)
+            embed.add_field(name="🏟️ Where", value=stadium, inline=True)
+            embed.add_field(name="", value="", inline=False)
+            embed.add_field(name=f"🎲 Betting Spread: {spreadline}", value=spread, inline=True)
+            embed.add_field(name=f"Total O/U: {ouLine}", value=ouOdds, inline=True)
+            embed.set_footer(text="source: i know ball")
+
+            await message.channel.send(embed=embed)
+
+        if "wen jags" in message.content.lower() or "wenjags" in message.content.lower() or "when jags" in message.content.lower() or "whenjags" in message.content.lower():
             await message.channel.send("checking schedule")
 
             subprocess.run(["Rscript", os.path.join(R_PATH, "nextJagua.R")])

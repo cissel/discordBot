@@ -64,7 +64,7 @@ md <- coops_search(station_name = mayportMeta$id,
                    time_zone = "lst")
 
 md$data$t <- as.POSIXct(md$data$t, 
-                        tz = "America/New_Yorkrw4")
+                        tz = "America/New_York")
 
 md <- md$data
 
