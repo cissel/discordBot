@@ -193,6 +193,11 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "userHistory.R")])
             await message.channel.send(":) <3", file=discord.File(os.path.join(OUTPUT_PATH, "metrics/userMessages.png")))
 
+        if "daily messages" in message.content.lower() or message.content.lower() == "dmp":
+            await message.channel.send("*going back in time*")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "dailyMessage.R")])
+            await message.channel.send(":) <3", file=discord.File(os.path.join(OUTPUT_PATH, "metrics/dailyMessages.png")))
+
         if message.content.lower() == "duval":
             await message.channel.send("bang em")
 
@@ -266,10 +271,16 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "hurricane.R")])
             await message.channel.send("here's the 7 day tropical weather outlook", file=discord.File(os.path.join(OUTPUT_PATH, "weather/two7d.png")))
 
+        if "ayo dontavius" in message.content.lower():
+            await message.channel.send("you gotta stay gaming bruh. don't focus on no girls just stay gaming.")
+
         if "bully zooksy" in message.content.lower() or "bullyzooksy" in message.content.lower() or "bully chuck" in message.content.lower() or "bullychuck" in message.content.lower():
             await message.channel.send("!kingcap")
             await asyncio.sleep(1)
             await message.channel.send("🤣🫵")
+
+        if "chucktronic" in message.content.lower():
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "misc/chucktronic.jpg")))
 
         if "bully fish" in message.content.lower() or "bullyfish" in message.content.lower():
             await message.channel.send("fuck you fish")
@@ -320,11 +331,9 @@ class Client(discord.Client):
             await message.channel.send("ayo u know im jk i love u bubba")
 
         if "bully verv" in message.content.lower() or "bullyverv" in message.content.lower():
-            await message.channel.send("nah dude")
+            await message.channel.send("i'll swiss cheese ur ass right here twin")
             await asyncio.sleep(1)
-            await message.channel.send("i'm good")
-            await asyncio.sleep(1)
-            await message.channel.send("that boy too kind")
+            await message.channel.send("JIT")
 
         if "bully tyler" in message.content.lower() or "bullytyler" in message.content.lower() or "bully tyjo" in message.content.lower() or "bullytyjo" in message.content.lower():
             await message.channel.send("fuck you tyler")
@@ -680,7 +689,7 @@ class Client(discord.Client):
             # Send the embed to Discord
             await message.channel.send(embed=embed)
 
-        if "wen nfl" in message.content.lower() or "next nfl" in message.content.lower():
+        if "wen nfl" in message.content.lower() or "when nfl" in message.content.lower() or "next nfl" in message.content.lower():
             await message.channel.send("checking schedules")
             subprocess.run(["Rscript", os.path.join(R_PATH, "nextNFL.R")])
             
@@ -777,7 +786,12 @@ class Client(discord.Client):
 
             await message.channel.send(embed=embed)
 
-        if "next launch" in message.content.lower() or "nextlaunch" in message.content.lower():
+        if message.content.lower() == "nfl wr" or message.content.lower() == "wr tgt":
+            await message.channel.send("*loading play by play data*")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "targetShare.R")])
+            await message.channel.send("here are the top targets", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/tgtShr.png")))
+
+        if "next launch" in message.content.lower() or "nextlaunch" in message.content.lower() or message.content.lower() == "when them shits be launchin":
             await message.channel.send("checking spaceflight schedules")
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "spaceLaunches.py")])

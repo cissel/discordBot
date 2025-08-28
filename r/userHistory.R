@@ -86,6 +86,8 @@ uap <- ggplot(ua,
                         sep = " "),
        caption = "JHCV") +
   
+  #scale_y_log10() +
+  
   myTheme #+
   #myLegend
 
