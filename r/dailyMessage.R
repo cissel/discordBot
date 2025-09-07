@@ -36,73 +36,73 @@ myLegend <- theme(legend.position = "right",
 
 #####
 
-##### Import Data #####
+setwd("~/discordBot")
 
-setwd("/Users/jamescissel/discordBot")
+df <- read_csv("server_messages.csv") |>
+  mutate(date = as.Date(datetime))
 
-df <- read_csv("server_messages.csv")
+# counts per date x channel (for stacked bars)
+cdm <- df |>
+  count(date, channel, name = "n")
 
-#####
-
-##### Daily Message Activity #####
-
-# Clean data
-
-dm <- df |>
-  mutate(date = as.Date(datetime)) |>
+# total per day + moving avgs (for lines)
+dm <- cdm |>
   group_by(date) |>
-  summarize(n = n())
+  summarise(n = sum(n), 
+            .groups = "drop") |>
+  arrange(date) |>
+  mutate(
+    ma7  = rollapply(n, 
+                     7,  
+                     mean, 
+                     align = "right", 
+                     fill = NA),   # or partial=TRUE if you prefer
+    ma30 = rollapply(n, 
+                     30, 
+                     mean, 
+                     align = "right", 
+                     fill = NA)
+  )
 
-# Moving average over last 7 days
-dm$ma7 <- rollapply(
-  dm$n,
-  width = 7,
-  FUN = mean,
-  align = "right",
-  fill = NA
-)
-
-# Moving average over last 30 days
-dm$ma30 <- rollapply(
-  dm$n,
-  width = 30,
-  FUN = mean,
-  align = "right",
-  fill = NA
-)
-
-# Plot data
-
-dmp <- ggplot(dm,
-              aes(x = date,
-                  weight = n)) +
+dmp <- ggplot(cdm, 
+              aes(x = date, 
+                  y = n, 
+                  fill = channel)) +
   
-  geom_bar(fill = "white", 
-           alpha = .5) +
+  geom_col(alpha = 0.75, 
+           position = "stack") +
   
-  geom_line(aes(y = ma7),
-            color = "cyan",
-            alpha = .5) +
+  # draw lines from the *dm* data, and don't inherit bar aesthetics
+  geom_line(
+    data = dm, 
+    aes(x = date, 
+        y = ma7),
+    color = "white", 
+    alpha = 0.65, 
+    linewidth = .5, 
+    inherit.aes = FALSE) +
   
-  geom_line(aes(y = ma30),
-            color = "white") +
+  geom_line(
+    data = dm, 
+    aes(x = date, 
+        y = ma30),
+    color = "white", 
+    linewidth = 0.75, 
+    inherit.aes = FALSE) +
   
-  labs(x = "Time",
-       y = "Messages Sent",
-       caption = "JHCV",
-       subtitle = tail(dm$date, 1),
-       title = "Room 40 Daily Activity") +
-  
-  #scale_y_log10() +
-  
+  labs(
+    x = "Time", 
+    y = "Messages Sent",
+    caption = "JHCV", 
+    subtitle = max(dm$date, na.rm = TRUE),
+    title = "Room 40 Daily Activity") +
   myTheme
 
-#ggplotly(dmp)
 ggsave("/Users/jamescissel/discordBot/outputs/metrics/dailyMessages.png",
-       plot = dmp,
-       width = 10,
-       height = 4,
-       dpi = 300,
+       plot = dmp, 
+       width = 10, 
+       height = 4, 
+       dpi = 300, 
        bg = "transparent")
 
 #####

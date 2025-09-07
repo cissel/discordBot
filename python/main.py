@@ -791,6 +791,12 @@ class Client(discord.Client):
             subprocess.run(["Rscript", os.path.join(R_PATH, "targetShare.R")])
             await message.channel.send("here are the top targets", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/tgtShr.png")))
 
+        if message.content.lower() == "fantasy scoreboard" or message.content.lower() == "fsb":
+            await message.channel.send("*fantasizing*")
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "sleeperProj.py")])
+            subprocess.run(["Rscript", os.path.join(R_PATH, "scorekeepe.R")])
+            await message.channel.send("ball don't lie", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/fantasyScoreboard.png")))
+
         if "next launch" in message.content.lower() or "nextlaunch" in message.content.lower() or message.content.lower() == "when them shits be launchin":
             await message.channel.send("checking spaceflight schedules")
 
