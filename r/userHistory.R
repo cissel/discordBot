@@ -37,9 +37,9 @@ myLegend <- theme(legend.position = "right",
 
 ##### Import Data #####
 
-setwd("/Users/jamescissel/discordBot")
+setwd("~/discordBot")
 
-df <- read_csv("server_messages.csv")
+df <- read_csv("outputs/metrics/server_messages.csv")
 
 #####
 

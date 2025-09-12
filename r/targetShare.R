@@ -47,10 +47,10 @@ myLegend <- theme(legend.position = "right",
 #####
 
 # Load play by play for entire NFL szn
-nfl24 <- load_pbp(2024)
+nfl25 <- load_pbp(2025)
 
 # Filter for passing plays and plays that have a target (pass attempts)
-passing_plays <- nfl24 |>
+passing_plays <- nfl25 |>
   filter(play_type == "pass" & !is.na(receiver_player_name))
 
 # Create a new dataframe that summarizes target share for each receiver
@@ -106,7 +106,7 @@ tgtShrPlot <- ggplot(top_5_receivers_df,
         panel.grid.major.x = element_blank()) +
   labs(x = "Receiver Rank",  # Label x-axis as Receiver Rank
        y = "Target Share", 
-       subtitle = "2024 Season",
+       subtitle = today(),
        caption = "JHCV",
        title = "NFL WR Target Share by Team") 
 

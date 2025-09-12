@@ -38,7 +38,7 @@ myLegend <- theme(legend.position = "right",
 
 setwd("~/discordBot")
 
-df <- read_csv("server_messages.csv") |>
+df <- read_csv("outputs/metrics/server_messages.csv") |>
   mutate(date = as.Date(datetime))
 
 # counts per date x channel (for stacked bars)

@@ -1,4 +1,4 @@
-# sleepe.R by JHCV
+# scorekeepe.R by JHCV
 
 ##### Required packages #####
 
@@ -194,13 +194,21 @@ for (i in 1:nrow(scoreboard)) {
   
 }
 
-scoreboard$proj_pts <- 0
+# explode starters to one row per player
+starters_long <- rdf %>%
+  select(roster_id, starters) %>%
+  unnest_longer(starters, values_to = "player_id", indices_include = FALSE) %>%
+  mutate(player_id = as.character(player_id))
 
-for (i in 1:nrow(scoreboard)) {
-  
-  
-  
-}
+projections2 <- projections %>%
+  transmute(player_id = as.character(player_id),
+            proj_pts_ppr = as.numeric(pts_ppr))
+
+scoreboard <- scoreboard %>%
+  left_join(starters_long, by = "roster_id") %>%
+  left_join(projections2, by = "player_id") %>%
+  group_by(matchup_id, roster_id, points, owner_id, owner_name, team_name, .add = TRUE) %>%
+  summarise(proj_pts = sum(proj_pts_ppr, na.rm = TRUE), .groups = "drop")
 
 #####
 
@@ -215,8 +223,12 @@ sbpi <- ggplot(scoreboard,
   
   geom_bar(position = "dodge") +
   
+  geom_bar(aes(weight = proj_pts),
+           position = "dodge",
+           alpha = .25) +
+  
   geom_text(aes(label = team_name,
-                y = points+4),
+                y = points+5),
             color = "white",
             size = 1.75,
             position = position_dodge(width = .9,
@@ -246,17 +258,21 @@ sbp <- ggplot(scoreboard,
   
   geom_bar(position = "dodge") +
   
+  geom_bar(aes(weight = proj_pts),
+           position = "dodge",
+           alpha = .25) +
+  
   geom_text(aes(label = team_name,
-                y = points+3),
+                y = points+4.8),
             color = "white",
             size = 3,
             position = position_dodge(width = .9,
                                       preserve = "total")) +
   
   geom_text(aes(label = points,
-                y = points+1.5),
+                y = points+2),
             color = "white",
-            size = 6,
+            size = 5,
             position = position_dodge(width = .9,
                                       preserve = "total")) +
   
