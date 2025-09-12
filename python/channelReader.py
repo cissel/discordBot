@@ -29,7 +29,7 @@ async def on_ready():
     print(f"Fetching messages from: {guild.name}")
 
     # Prepare to write CSV
-    with open("/Users/jamescissel/discordBot/server_messages.csv", "w", encoding="utf-8", newline='') as f:
+    with open("/Users/jamescissel/discordBot/outputs/metrics/server_messages.csv", "w", encoding="utf-8", newline='') as f:
         writer = csv.writer(f)
         writer.writerow(["datetime", "user_name", "user_display_name", "channel", "message"])
 

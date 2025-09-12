@@ -16,7 +16,7 @@ TROLL_THIS_USER_ID = int(os.getenv("TROLL_THIS_USER_ID"))
 R_PATH = "/Users/jamescissel/discordBot/r/"
 PYTHON_PATH = "/Users/jamescissel/discordBot/python/"
 OUTPUT_PATH = "/Users/jamescissel/discordBot/outputs/"
-BBOT_FOLDER = os.path.join(OUTPUT_PATH, "bb")
+BBOT_FOLDER = os.path.join(OUTPUT_PATH, "misc/bb")
 
 # Switch back to GPT-2
 MODEL_NAME = "gpt2"
@@ -195,6 +195,7 @@ class Client(discord.Client):
 
         if "daily messages" in message.content.lower() or message.content.lower() == "dmp":
             await message.channel.send("*going back in time*")
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "channelReader.py")])
             subprocess.run(["Rscript", os.path.join(R_PATH, "dailyMessage.R")])
             await message.channel.send(":) <3", file=discord.File(os.path.join(OUTPUT_PATH, "metrics/dailyMessages.png")))
 
@@ -786,6 +787,9 @@ class Client(discord.Client):
 
             await message.channel.send(embed=embed)
 
+        if "jags today" in message.content.lower():
+            await message.channel.send("i just wanna party with you <3", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/jagsParty.mov")))
+
         if message.content.lower() == "nfl wr" or message.content.lower() == "wr tgt":
             await message.channel.send("*loading play by play data*")
             subprocess.run(["Rscript", os.path.join(R_PATH, "targetShare.R")])
@@ -793,11 +797,21 @@ class Client(discord.Client):
 
         if message.content.lower() == "fantasy scoreboard" or message.content.lower() == "fsb":
             await message.channel.send("*fantasizing*")
-            subprocess.run(["python3", os.path.join(PYTHON_PATH, "sleeperProj.py")])
+            subprocess.run(["python3", os.path.join(PYTHON_PATH, "dynProj.py")])
             subprocess.run(["Rscript", os.path.join(R_PATH, "scorekeepe.R")])
             await message.channel.send("ball don't lie", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/fantasyScoreboard.png")))
 
-        if "next launch" in message.content.lower() or "nextlaunch" in message.content.lower() or message.content.lower() == "when them shits be launchin":
+        if message.content.lower() == "epa map":
+            await message.channel.send("*calculating mean expected points added*")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "epaMap.R")])
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/epaMap.png")))
+
+        if message.content.lower() == "room 40 points":
+            await message.channel.send("checking sleeper")
+            subprocess.run(["Rscript", os.path.join(R_PATH, "room40map.R")])
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/room40map.png")))
+
+        if "next launch" in message.content.lower() or "nextlaunch" in message.content.lower() or "when them shits be launchin" in message.content.lower():
             await message.channel.send("checking spaceflight schedules")
 
             subprocess.run(["python3", os.path.join(PYTHON_PATH, "spaceLaunches.py")])
@@ -864,6 +878,11 @@ class Client(discord.Client):
             await message.channel.send("saw planes, making plot")
             #subprocess.run(["Rscript", os.path.join(R_PATH, "planePlot.R")])
             await message.channel.send("here you go:", file=discord.File(os.path.join(OUTPUT_PATH, "aerospace/adsb250nm_map.html")))
+
+        if message.content.lower().startswith("speak"):
+            tail = message.content.lower[len("speak"):].lstrip()
+            out = f"/tts {tail}" if tail else "huh"
+            await message.channel.send(out, tts=True)
 
     async def send_goodbye_message(self):
 
