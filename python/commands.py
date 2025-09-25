@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from datetime import datetime, timezone
 
+import subprocess
 import pandas as pd
 import discord
 from discord import app_commands
@@ -23,30 +24,56 @@ tree = app_commands.CommandTree(bot)
 GUILD = discord.Object(id=GUILD_ID)
 
 # ---------- data / formatting ----------
+RSCRIPT = Path("~/discordBot/r/room40leaderboard.R").expanduser()
+try:
+    subprocess.run(["Rscript", str(RSCRIPT)], check=False, timeout=90)
+except Exception as e:
+    print(f"[boot] Rscript error: {e}")
+
 CSV_PATH = Path("~/discordBot/outputs/sports/nfl/room40leaderboard.csv").expanduser()
+
+print(f"[boot] commands.py path: {__file__}")
+print(f"[boot] cwd: {os.getcwd()}")
+print(f"[boot] CSV_PATH: {CSV_PATH}")
+print(f"[boot] R script: {RSCRIPT}")
+
+def _to_pct(val):
+    s = str(val).strip()
+    if s.endswith("%"):
+        try:
+            return float(s[:-1]) / 100.0
+        except ValueError:
+            return float("nan")
+    try:
+        v = float(s)
+        return v if 0.0 <= v <= 1.0 else v / 100.0
+    except ValueError:
+        return float("nan")
+
+def _fmt_mtime(p: Path) -> str:
+    try:
+        return datetime.fromtimestamp(p.stat().st_mtime).isoformat(timespec="seconds")
+    except FileNotFoundError:
+        return "missing"
 
 def load_df() -> pd.DataFrame:
     if not CSV_PATH.exists():
         raise FileNotFoundError(f"CSV not found at {CSV_PATH}")
+    print(f"[load_df] reading CSV; mtime={_fmt_mtime(CSV_PATH)}")
 
     cols = ["team_name", "wins", "losses", "accuracy", "fpts", "fpts_against", "ppts"]
     df = pd.read_csv(CSV_PATH)[cols].copy()
 
-    # coerce + sort (wins desc, then PF, then PPTS for tie-break)
     to_i = lambda s: pd.to_numeric(s, errors="coerce").fillna(0).astype(int)
     df["wins"]   = to_i(df["wins"])
     df["losses"] = to_i(df["losses"])
-    df["fpts"]   = to_i(df["fpts"])
-    df["fpa"]    = to_i(df["fpts_against"])
-    df["ppts"]   = to_i(df["ppts"])
+    df["fpts"]   = pd.to_numeric(df["fpts"], errors="coerce").fillna(0)
+    df["fpa"]    = pd.to_numeric(df["fpts_against"], errors="coerce").fillna(0)
+    df["ppts"]   = pd.to_numeric(df["ppts"], errors="coerce").fillna(0)
+
     df = df.sort_values(["wins", "fpts", "ppts"], ascending=[False, False, False]).reset_index(drop=True)
 
-    # left-side emoji ranks
-    RANK_ICONS = {
-        0: ":trophy:", 1: "🥈", 2: "🥉",
-        3: ":medal:", 4: "5️⃣", 5: "6️⃣", 6: "7️⃣", 7: "8️⃣", 8: "😰",
-        9: "🧻", 10: "💩", 11: "🚽",
-    }
+    RANK_ICONS = {0: ":trophy:", 1: "🥈", 2: "🥉", 3: ":star:", 4: "5️⃣", 5: "6️⃣", 6: "7️⃣", 7: "8️⃣", 8: "😰", 9: "🧻", 10: "💩", 11: "🚽"}
 
     rows = []
     for i, r in df.iterrows():
@@ -55,16 +82,12 @@ def load_df() -> pd.DataFrame:
         if i < 3:
             name = f"**{name}**"
 
-        record = f"{r['wins']}–{r['losses']}"      # en dash
-        pfpa   = f"{r['fpts']:,}–{r['fpa']:,}"      # thousands sep + en dash
-        acc    = pd.to_numeric(r["accuracy"], errors="coerce")
+        record = f"{int(r['wins'])}–{int(r['losses'])}"
+        pfpa   = f"{r['fpts']:.0f}–{r['fpa']:.0f}"
+        acc    = _to_pct(r["accuracy"])
         acc_s  = f"{acc:.1%}" if pd.notna(acc) else "—"
 
-        rows.append({
-            "Team": f"{prefix} {name} ({record})",
-            "PFPA": pfpa,
-            "Acc":  acc_s
-        })
+        rows.append({"Team": f"{prefix} {name} ({record})", "PFPA": pfpa, "Acc": acc_s})
 
     return pd.DataFrame(rows)
 

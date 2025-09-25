@@ -790,6 +790,9 @@ class Client(discord.Client):
         if "jags today" in message.content.lower():
             await message.channel.send("i just wanna party with you <3", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/jagsParty.mov")))
 
+        if message.content.lower() == "jags win" or message.content.lower() == "jags win!":
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/catnip.mov")))
+
         if message.content.lower() == "nfl wr" or message.content.lower() == "wr tgt":
             await message.channel.send("*loading play by play data*")
             subprocess.run(["Rscript", os.path.join(R_PATH, "targetShare.R")])
@@ -810,6 +813,31 @@ class Client(discord.Client):
             await message.channel.send("checking sleeper")
             subprocess.run(["Rscript", os.path.join(R_PATH, "room40map.R")])
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/room40map.png")))
+
+        if "amon ra" in message.content.lower():
+            await message.channel.send("I RUN THIS SHIT")
+            asyncio.sleep(1)
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/amonRa.mov")))
+
+        if "servers are down" in message.content.lower() or "servers r down" in message.content.lower():
+            await message.channel.send("EA SPORTS YOUR MOTHAFUCKIN SERVER IS DOWN")
+            await asyncio.sleep(2)
+            await message.channel.send("get that shit back up we tryna play")
+            await asyncio.sleep(2)
+            await message.channel.send("there's a bunch of motherfuckers at home that's locked and loaded right now")
+            await asyncio.sleep(2)
+            await message.channel.send("FIX THIS SHIT")
+            await asyncio.sleep(2)
+            await message.channel.send("Bill Gates Microsoft whoever the fuck")
+            await asyncio.sleep(2)
+            await message.channel.send("all these mothafuckin")
+            await asyncio.sleep(2)
+            await message.channel.send("bullshit ass vaccines yall tryna give us")
+            await asyncio.sleep(2)
+            await message.channel.send("FIX THE MOTHAFUCKIN VIDEO GAME :ninja:")
+            await asyncio.sleep(3)
+            await message.channel.send("NOW")
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "misc/serversDown.mp4")))
 
         if "next launch" in message.content.lower() or "nextlaunch" in message.content.lower() or "when them shits be launchin" in message.content.lower():
             await message.channel.send("checking spaceflight schedules")
