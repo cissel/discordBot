@@ -8,6 +8,7 @@ import pandas as pd
 import discord
 from discord import app_commands
 from dotenv import load_dotenv, find_dotenv
+import asyncio
 
 # ---------- env & client ----------
 load_dotenv(find_dotenv(usecwd=True))
@@ -92,7 +93,7 @@ def load_df() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 def make_pages(df: pd.DataFrame, rows_per_page: int = 15,
-               title: str = ":football: Room 40 Standings :football:",
+               title: str = ":football: Room 40 Standings",
                color: discord.Color = discord.Color.green()) -> list[discord.Embed]:
     pages: list[discord.Embed] = []
     for start in range(0, len(df), rows_per_page):
@@ -107,19 +108,48 @@ def make_pages(df: pd.DataFrame, rows_per_page: int = 15,
         pages.append(emb)
     return pages
 
-# ---------- slash command ----------
-@tree.command(name="standings", description="Show fantasy league standings", guild=GUILD)
-async def standings(interaction: discord.Interaction):
+def refresh_csv(max_seconds=90) -> None:
+    print(f"[refresh_csv] running Rscript: {RSCRIPT}")
     try:
-        df = load_df()
-    except FileNotFoundError as e:
-        await interaction.response.send_message(str(e), ephemeral=True)
-        return
+        # If you keep setwd() in R, no cwd needed; if you remove setwd() (recommended), add cwd=str(Path("~/discordBot").expanduser())
+        subprocess.run(["Rscript", str(RSCRIPT), str(CSV_PATH)], check=True, timeout=max_seconds)
+    except subprocess.CalledProcessError as e:
+        print(f"[refresh_csv] Rscript failed with exit code {e.returncode}")
+    except Exception as e:
+        print(f"[refresh_csv] error: {e}")
 
-    pages = make_pages(df, rows_per_page=12)
-    await interaction.response.send_message(embed=pages[0])
-    for emb in pages[1:]:
-        await interaction.followup.send(embed=emb)
+# ---------- slash command ----------
+@tree.command(name="standings", description="show fantasy league standings", guild=GUILD)
+async def standings(interaction: discord.Interaction):
+    # 1) Acknowledge within 3s
+    await interaction.response.defer(thinking=True, ephemeral=False)
+
+    try:
+        # 2) Run blocking work off the event loop
+        await asyncio.to_thread(refresh_csv)        # Rscript subprocess
+        df = await asyncio.to_thread(load_df)       # CSV read/format
+
+        pages = make_pages(df, rows_per_page=12)
+        mtime = _fmt_mtime(CSV_PATH)
+        for p in pages:
+            p.set_footer(text=f"scoreboard")
+
+        # 3) Send result after deferring
+        if not pages:
+            await interaction.followup.send("No standings available right now.")
+            return
+
+        # Option A: edit the deferred “thinking…” message, then send extra pages
+        await interaction.edit_original_response(embed=pages[0])
+        for emb in pages[1:]:
+            await interaction.followup.send(embed=emb)
+
+        # (Option B would be to use only followups; choose one style.)
+
+    except FileNotFoundError as e:
+        await interaction.followup.send(str(e), ephemeral=True)
+    except Exception as e:
+        await interaction.followup.send(f"Error building standings: {e}", ephemeral=True)
 
 # ---------- startup ----------
 @bot.event

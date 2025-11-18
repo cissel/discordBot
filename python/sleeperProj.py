@@ -1,60 +1,126 @@
+# sleeperProj.py
+# pip install requests pandas python-dotenv
+import os
 import json
 import requests
 import pandas as pd
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv(usecwd=True))
 
 GRAPHQL_URL = "https://sleeper.com/graphql"
+REST_BASE   = "https://api.sleeper.app/v1"
 
-PAYLOAD = {
-    "operationName": "get_player_score_and_projections_batch",
-    "variables": {},
-    "query": "query get_player_score_and_projections_batch {\n        \n        nfl__regular__2025__1__stat: stats_for_players_in_week(sport: \"nfl\",season: \"2025\",category: \"stat\",season_type: \"regular\",week: 1,player_ids: [\"6797\",\"8150\",\"8138\",\"7547\",\"9997\",\"1466\",\"5045\",\"6650\",\"SF\",\"4984\",\"6790\",\"12507\",\"11631\",\"8146\",\"10859\",\"11620\",\"11786\",\"BAL\",\"7523\",\"9224\",\"5892\",\"7564\",\"12530\",\"8130\",\"12501\",\"4195\",\"JAX\",\"4892\",\"6813\",\"7594\",\"11632\",\"8148\",\"5844\",\"5872\",\"4666\",\"MIN\",\"11563\",\"12527\",\"8155\",\"7569\",\"3321\",\"5022\",\"11624\",\"8259\",\"HOU\",\"4881\",\"4035\",\"4199\",\"6794\",\"5859\",\"7553\",\"11628\",\"1945\",\"DET\",\"11566\",\"9509\",\"11584\",\"5927\",\"7525\",\"4066\",\"4983\",\"11539\",\"PHI\",\"4046\",\"4866\",\"8151\",\"11635\",\"6801\",\"5012\",\"6783\",\"7839\",\"WAS\",\"8183\",\"3198\",\"9226\",\"9493\",\"12526\",\"4217\",\"8137\",\"11533\",\"PIT\",\"3294\",\"4034\",\"8205\",\"8112\",\"9488\",\"12518\",\"12529\",\"3678\",\"DEN\",\"6904\",\"9221\",\"4137\",\"2216\",\"12514\",\"11604\",\"4981\",\"12711\",\"GB\",\"6770\",\"5850\",\"5967\",\"6786\",\"5846\",\"4033\",\"7526\",\"4227\",\"BUF\"]){\n          game_id\nopponent\nplayer_id\nstats\nteam\nweek\nseason\n        }\n      \n\n        nfl__regular__2025__1__proj: stats_for_players_in_week(sport: \"nfl\",season: \"2025\",category: \"proj\",season_type: \"regular\",week: 1,player_ids: [\"6797\",\"8150\",\"8138\",\"7547\",\"9997\",\"1466\",\"5045\",\"6650\",\"SF\",\"4984\",\"6790\",\"12507\",\"11631\",\"8146\",\"10859\",\"11620\",\"11786\",\"BAL\",\"7523\",\"9224\",\"5892\",\"7564\",\"12530\",\"8130\",\"12501\",\"4195\",\"JAX\",\"4892\",\"6813\",\"7594\",\"11632\",\"8148\",\"5844\",\"5872\",\"4666\",\"MIN\",\"11563\",\"12527\",\"8155\",\"7569\",\"3321\",\"5022\",\"11624\",\"8259\",\"HOU\",\"4881\",\"4035\",\"4199\",\"6794\",\"5859\",\"7553\",\"11628\",\"1945\",\"DET\",\"11566\",\"9509\",\"11584\",\"5927\",\"7525\",\"4066\",\"4983\",\"11539\",\"PHI\",\"4046\",\"4866\",\"8151\",\"11635\",\"6801\",\"5012\",\"6783\",\"7839\",\"WAS\",\"8183\",\"3198\",\"9226\",\"9493\",\"12526\",\"4217\",\"8137\",\"11533\",\"PIT\",\"3294\",\"4034\",\"8205\",\"8112\",\"9488\",\"12518\",\"12529\",\"3678\",\"DEN\",\"6904\",\"9221\",\"4137\",\"2216\",\"12514\",\"11604\",\"4981\",\"12711\",\"GB\",\"6770\",\"5850\",\"5967\",\"6786\",\"5846\",\"4033\",\"7526\",\"4227\",\"BUF\"]){\n          game_id\nopponent\nplayer_id\nstats\nteam\nweek\nseason\n        }\n      \n      }"
-}
+LEAGUE_ID = os.getenv("SLEEPER_LEAGUE_ID", "").strip()
+if not LEAGUE_ID:
+    raise SystemExit("Set SLEEPER_LEAGUE_ID in your environment (export SLEEPER_LEAGUE_ID=XXXXXXXXXXXX).")
 
 HEADERS = {"content-type": "application/json"}
 
-def find_player_list_with_stats(obj):
-    if isinstance(obj, list) and obj and isinstance(obj[0], dict):
-        if isinstance(obj[0].get("stats"), dict):
-            return obj
-    if isinstance(obj, dict):
-        for v in obj.values():
-            found = find_player_list_with_stats(v)
-            if found is not None:
-                return found
-    return None
+def get_current_state():
+    r = requests.get(f"{REST_BASE}/state/nfl", timeout=20)
+    r.raise_for_status()
+    js = r.json()
+    # Example keys: {"season":"2025","week":9,"season_type":"regular", ...}
+    season = str(js.get("season"))
+    week = js.get("week")
+    season_type = js.get("season_type") or "regular"
+    if not season or week in (None, 0):
+        raise SystemExit(f"NFL state not in-season (season={season}, week={week}).")
+    return season, int(week), season_type
 
-def extract_row(rec):
-    s = rec.get("stats", {}) or {}
+def get_league_roster_player_ids(league_id: str) -> list[str]:
+    r = requests.get(f"{REST_BASE}/league/{league_id}/rosters", timeout=30)
+    r.raise_for_status()
+    rosters = r.json() or []
+    ids = set()
+    for ros in rosters:
+        # players: active; reserve: IR/NFI etc; taxi: practice
+        for key in ("players", "reserve", "taxi"):
+            vals = ros.get(key) or []
+            for pid in vals:
+                if pid:  # sleeper player ids are strings like "6797"
+                    ids.add(str(pid))
+    if not ids:
+        raise SystemExit("No player IDs found on league rosters.")
+    return sorted(ids)
+
+def build_graphql_query(season: str, week: int, season_type: str, player_ids: list[str]) -> dict:
+    # Sleeper GraphQL requires inline literals; we’ll alias the field so we can find it.
+    pid_list = ",".join(f"\"{pid}\"" for pid in player_ids)
+    alias_proj = f"nfl__{season_type}__{season}__{week}__proj"
+    # If you also want same-week actual stats, you could add a second field with category: "stat".
+    query = f"""
+    query get_player_score_and_projections_batch {{
+      {alias_proj}: stats_for_players_in_week(
+        sport: "nfl",
+        season: "{season}",
+        category: "proj",
+        season_type: "{season_type}",
+        week: {week},
+        player_ids: [{pid_list}]
+      ){{
+        game_id
+        opponent
+        player_id
+        stats
+        team
+        week
+        season
+      }}
+    }}
+    """
     return {
-        "player_id": rec.get("player_id"),
-        "team": rec.get("team"),
-        "opponent": rec.get("opponent"),
-        "season": rec.get("season"),
-        "week": rec.get("week"),
-        "pts_ppr": s.get("pts_ppr"),
-        "adp_dd_ppr": s.get("adp_dd_ppr"),
+        "operationName": "get_player_score_and_projections_batch",
+        "variables": {},
+        "query": " ".join(line.strip() for line in query.splitlines())
     }
 
-resp = requests.post(GRAPHQL_URL, json=PAYLOAD, headers=HEADERS, timeout=30)
-resp.raise_for_status()
-data = resp.json()
+def extract_rows_from_proj(data: dict) -> list[dict]:
+    # Find the alias that ends with "__proj"
+    proj_key = next((k for k in (data.get("data") or {}).keys() if k.endswith("__proj")), None)
+    if not proj_key:
+        raise SystemExit("Projection block not found in GraphQL response.")
+    records = data["data"][proj_key] or []
+    def extract_row(rec):
+        s = rec.get("stats") or {}
+        return {
+            "player_id": rec.get("player_id"),
+            "team": rec.get("team"),
+            "opponent": rec.get("opponent"),
+            "season": rec.get("season"),
+            "week": rec.get("week"),
+            "pts_ppr": s.get("pts_ppr"),
+            "adp_dd_ppr": s.get("adp_dd_ppr"),
+        }
+    return [extract_row(r) for r in records]
 
-if "errors" in data and data["errors"]:
-    print(json.dumps(data["errors"], indent=2))
-    raise SystemExit(1)
+def main():
+    season, week, season_type = get_current_state()
+    player_ids = get_league_roster_player_ids(LEAGUE_ID)
 
-records = find_player_list_with_stats(data["data"])
-if records is None:
-    print("Could not find records")
-    raise SystemExit(1)
+    payload = build_graphql_query(season, week, season_type, player_ids)
+    resp = requests.post(GRAPHQL_URL, json=payload, headers=HEADERS, timeout=30)
+    resp.raise_for_status()
+    data = resp.json()
 
-rows = [extract_row(r) for r in records]
-df = pd.DataFrame(rows)
+    if data.get("errors"):
+        print(json.dumps(data["errors"], indent=2))
+        raise SystemExit(1)
 
-# keep only ids + stats (no names)
-cols = ["player_id","team","opponent","season","week","pts_ppr","adp_dd_ppr"]
-df = df[cols]
+    rows = extract_rows_from_proj(data)
+    if not rows:
+        raise SystemExit("No projection rows returned.")
 
-df.to_csv("outputs/sports/nfl/sleeper_proj_pts.csv", index=False)
-print(f"Saved {len(df)} rows to outputs/nfl/sleeper_proj_pts.csv")
-print(df.head(10).to_string(index=False))
+    df = pd.DataFrame(rows)
+    cols = ["player_id","team","opponent","season","week","pts_ppr","adp_dd_ppr"]
+    df = df[cols].sort_values(["team","player_id"]).reset_index(drop=True)
+
+    out_path = "outputs/sports/nfl/sleeper_proj_pts.csv"
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    df.to_csv(out_path, index=False)
+    print(f"Saved {len(df)} rows to {out_path}")
+    print(df.head(10).to_string(index=False))
+
+if __name__ == "__main__":
+    main()

@@ -132,21 +132,82 @@ rdf <- GET(url = rUrl) |>
 leaderboard <- udf |>
   
   left_join(rdf,
-            by = c("user_id" = "owner_id"))
+            by = c("user_id" = "owner_id")) |>
+  
+  select(display_name,
+         team_name,
+         user_id,
+         roster_id,
+         settings.y) |>
+  
+  unnest(settings.y) |>
+  
+  select(-fpts_against_decimal,
+         -fpts_decimal,
+         -waiver_budget_used,
+         -ppts_decimal)
+
+#####
+
+##### Pull matchup data from sleeper api #####
+
+mUrl <- "https://api.sleeper.app/v1/league/1259616442014244864/matchups/"
+
+mdf <- GET(url = paste(mUrl,
+                       sdf$week,
+                       sep = "")) |>
+  
+  content(as = "text", 
+          encoding = "UTF-8") |>
+  
+  fromJSON() |>
+  
+  select(matchup_id,
+         roster_id,
+         points)
+
+#
+
+mdf$against <- 0
+
+for (i in 1:nrow(mdf)) {
+  
+  opp <- mdf |> 
+    
+    subset(matchup_id == mdf$matchup_id[i]) |>
+    
+    subset(roster_id != mdf$roster_id[i])
+  
+  mdf$against[i] <- opp$points
+  
+}
+
+#
+
+#####
+
+##### Add live scores to total points #####
+
+leaderboard <- left_join(leaderboard,
+                         mdf,
+                         by = "roster_id") |>
+  
+  mutate("live_pts" = (fpts+points),
+         "live_agst" = (fpts_against+against))
 
 #####
 
 ##### Plot #####
 
 lp <- ggplot(leaderboard,
-             aes(x = settings.y$fpts_against,
-                 y = settings.y$fpts)) +
+             aes(x = fpts_against,
+                 y = fpts)) +
   
-  geom_vline(aes(xintercept = mean(settings.y$fpts_against)),
+  geom_vline(aes(xintercept = mean(live_agst)),
              color = "white",
              alpha = .5) +
   
-  geom_hline(aes(yintercept = mean(settings.y$fpts)),
+  geom_hline(aes(yintercept = mean(live_pts)),
              color = "white",
              alpha = .5) +
   
@@ -155,13 +216,24 @@ lp <- ggplot(leaderboard,
               color = "white",
               alpha = .5) +
   
-  geom_text(aes(label = ifelse(!is.na(team_name), 
+  geom_text(aes(x = fpts_against,
+                y = fpts,
+                label = ifelse(!is.na(team_name), 
                                team_name, 
                                display_name),
-                color = settings.y$wins)) +
+                color = wins),
+            alpha = .25) +
+  
+  geom_text(aes(x = live_agst,
+                y = live_pts,
+                label = ifelse(!is.na(team_name), 
+                               team_name, 
+                               display_name),
+                color = wins)) +
   
   labs(x = "Points Against",
        y = "Points Scored",
+       color = "Wins",
        caption = "JHCV",
        subtitle = today(),
        title = "Room 40") +
@@ -169,7 +241,8 @@ lp <- ggplot(leaderboard,
   scale_color_gradient("low" = "red",
                        "high" = "green") +
   
-  myTheme
+  myTheme +
+  myLegend
 
 ggsave("~/discordBot/outputs/sports/nfl/room40map.png",
        plot = lp,
