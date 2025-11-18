@@ -190,6 +190,6 @@ myRoster <- myRoster |>
 tp <- ggplot(myRoster,
              aes(x = player_id,
                  y = proj_pts_ppr,
-                 fill = ))
+                 fill = position))
 
 #####

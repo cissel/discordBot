@@ -47,13 +47,13 @@ myLegend <- theme(legend.position = "right",
 #####
 
 # Load play by play for entire NFL szn
-nfl24 <- load_pbp(2024)
+nfl25 <- load_pbp(2025)
 
-wrdf <- nfl24 |> 
+wrdf <- nfl25 |> 
   
   subset(season_type == "REG") |>
   
-  subset(play_type == "pass") |>
+  subset(play_type == "pass" & complete_pass == 1) |>
   
   group_by(receiver_player_id,
            game_id) |>
@@ -91,7 +91,7 @@ wrfdf <- wrdf |>
   
   arrange(-pts) |>
   
-  head(250)
+  head(100)
 
 wrfp <- ggplot(wrfdf,
                aes(x = sd,
@@ -100,6 +100,10 @@ wrfp <- ggplot(wrfdf,
                    color = sharpe)) +
   
   geom_text(aes(label = name)) +
+  
+  labs(x="Standard Deviation",
+       y="Mean",
+       title = paste("NFL Receiving Fantasy Points 2025")) +
   
   scale_color_gradient("low" = "red",
                        "high" = "green") +

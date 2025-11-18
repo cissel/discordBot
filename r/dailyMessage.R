@@ -93,10 +93,15 @@ dmp <- ggplot(cdm,
   labs(
     x = "Time", 
     y = "Messages Sent",
-    caption = "JHCV", 
-    subtitle = max(dm$date, na.rm = TRUE),
+    #legend = "Channel",
+    #caption = "JHCV", 
+    #subtitle = max(dm$date, na.rm = TRUE),
     title = "Room 40 Daily Activity") +
-  myTheme
+  
+  #scale_y_log10() +
+  
+  myTheme +
+  myLegend
 
 ggsave("/Users/jamescissel/discordBot/outputs/metrics/dailyMessages.png",
        plot = dmp, 
