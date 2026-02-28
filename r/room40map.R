@@ -154,7 +154,7 @@ leaderboard <- udf |>
 mUrl <- "https://api.sleeper.app/v1/league/1259616442014244864/matchups/"
 
 mdf <- GET(url = paste(mUrl,
-                       sdf$week,
+                       sdf$display_week,
                        sep = "")) |>
   
   content(as = "text", 
@@ -238,8 +238,10 @@ lp <- ggplot(leaderboard,
        subtitle = today(),
        title = "Room 40") +
   
-  scale_color_gradient("low" = "red",
-                       "high" = "green") +
+  scale_color_gradient2("low" = "red",
+                        "mid" = "white",
+                        "high" = "green",
+                        midpoint = mean(leaderboard$wins)) +
   
   myTheme +
   myLegend
