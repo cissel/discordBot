@@ -42,7 +42,7 @@ setwd("~/discordBot")
 
 ##### Load pbp & summarize data #####
 
-nfl25 <- load_pbp()
+nfl25 <- load_pbp() 
 
 o25 <- nfl25 |>
   

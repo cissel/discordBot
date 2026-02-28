@@ -790,8 +790,15 @@ class Client(discord.Client):
         if "jags today" in message.content.lower():
             await message.channel.send("i just wanna party with you <3", file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/jagsParty.mov")))
 
+        if message.content.lower() == "jacksonville jaguars!":
+            await message.channel.send("༼ つ ◕◕ ༽つ JACKSONVILLE JAGUARS TAKE MY ENERGY ༼ つ ◕◕ ༽つ")
+
         if message.content.lower() == "jags win" or message.content.lower() == "jags win!":
+            await message.channel.send("how do the jags taste with my balls on your face")
             await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/catnip.mov")))
+
+        if message.content.lower() == "how bout them jags" or message.content.lower() == "how about them jags" or message.content.lower() == "how bout them jaguars" or message.content.lower() == "how about them jaguars":
+            await message.channel.send(file=discord.File(os.path.join(OUTPUT_PATH, "sports/nfl/howBout.mov")))
 
         if message.content.lower() == "nfl wr" or message.content.lower() == "wr tgt":
             await message.channel.send("*loading play by play data*")
@@ -906,11 +913,6 @@ class Client(discord.Client):
             await message.channel.send("saw planes, making plot")
             #subprocess.run(["Rscript", os.path.join(R_PATH, "planePlot.R")])
             await message.channel.send("here you go:", file=discord.File(os.path.join(OUTPUT_PATH, "aerospace/adsb250nm_map.html")))
-
-        if message.content.lower().startswith("speak"):
-            tail = message.content.lower[len("speak"):].lstrip()
-            out = f"/tts {tail}" if tail else "huh"
-            await message.channel.send(out, tts=True)
 
     async def send_goodbye_message(self):
 
