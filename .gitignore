@@ -9,3 +9,4 @@ r/.DS_Store
 outputs/weather/waves
 outputs/weather/winds
 server_messages.csv
+divergence_marker.md
