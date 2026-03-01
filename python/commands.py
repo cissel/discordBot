@@ -304,7 +304,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         key = target.lower().strip()
         lines = BULLY_RESPONSES.get(key)
         if not lines:
-            await _quick(interaction, f"i don't even know who {target} is")
+            await _quick(interaction, f"i don't know who {target} is lol")
             return
         await _defer(interaction)
         first = True
@@ -477,7 +477,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     # CATSGAMES GROUP  /catsgames <subcommand>  (schedule, scores, reactions)
     # ─────────────────────────────────────────────────────────────────────────
 
-    @cats_group.command(name="next", description="next Panthers game + odds")
+    @cats_group.command(name="next", description="next Panthers game")
     async def cats_next(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "python3", os.path.join(pp, "nextCats.py"))
@@ -728,7 +728,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         emb.set_footer(text=footer)
         return emb
 
-    @nfl_group.command(name="nextgame", description="next NFL game + odds")
+    @nfl_group.command(name="nextgame", description="next NFL game")
     async def nfl_nextgame(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nextNFL.R"))
@@ -742,7 +742,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         )
         await _send(interaction, embed=emb)
 
-    @nfl_group.command(name="wr", description="top WR targets this week")
+    @nfl_group.command(name="wr", description="top WR targets this szn")
     async def nfl_wr(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "targetShare.R"))
@@ -763,7 +763,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "epaMap.R"))
         await _send(interaction, file=discord.File(os.path.join(op, "sports/nfl/epaMap.png")))
 
-    @nfl_group.command(name="room40points", description="Room 40 fantasy points map")
+    @nfl_group.command(name="room40points", description="room 40 fantasy points map")
     async def nfl_room40points(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "room40map.R"))
@@ -782,7 +782,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     # ─────────────────────────────────────────────────────────────────────────
     jags_group = app_commands.Group(name="jags", description="Jacksonville Jaguars", guild_ids=[guild.id])
 
-    @jags_group.command(name="next", description="next Jaguars game + odds")
+    @jags_group.command(name="next", description="next Jaguars game")
     async def jags_next(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nextJagua.R"))
@@ -825,23 +825,17 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     # ─────────────────────────────────────────────────────────────────────────
     nba_group = app_commands.Group(name="nba", description="NBA commands", guild_ids=[guild.id])
 
-    @nba_group.command(name="today", description="NBA games today (with live scores if in progress)")
+    @nba_group.command(name="today", description="NBA games today")
     async def nba_today(interaction: discord.Interaction):
         await _defer(interaction)
-
-        # Run both R scripts concurrently
         await asyncio.gather(
             asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nbaToday.R")),
             asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nbaLiveScore.R")),
         )
-
         csv_today = os.path.join(op, "sports/nba/gamesToday.csv")
         if not os.path.exists(csv_today):
             await _send(interaction, "no hoops today :("); return
-
         today_df = pd.read_csv(csv_today)
-
-        # Build live score lookup — in-progress games only (game_status == 2)
         live_scores = {}
         csv_live = os.path.join(op, "sports/nba/liveScoreboard.csv")
         if os.path.exists(csv_live):
@@ -853,7 +847,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     "pts":    int(row["PTS"]) if pd.notna(row["PTS"]) else 0,
                     "status": str(row["game_status_text"]).strip(),
                 }
-
         emb = discord.Embed(title="🏀 Today's NBA Games", color=0x3498db)
         for _, row in today_df.iterrows():
             matchup  = str(row["matchup"])
@@ -866,7 +859,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     s1, s2 = live_scores[a1], live_scores[a2]
                     value  = f"🔴 LIVE  {a1} **{s1['pts']}** — **{s2['pts']}** {a2}  *{s1['status']}*"
             emb.add_field(name=matchup, value=value, inline=False)
-
         await _send(interaction, embed=emb)
 
     @nba_group.command(name="tomorrow", description="NBA games tomorrow")
@@ -885,16 +877,67 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     tree.add_command(nba_group)
 
     # ─────────────────────────────────────────────────────────────────────────
-    # /ball  —  all sports today in one embed
+    # GOLF GROUP  /golf <subcommand>
     # ─────────────────────────────────────────────────────────────────────────
-    @tree.command(name="ball", description="every sport happening today", guild=guild)
+    golf_group = app_commands.Group(name="golf", description="PGA Tour golf", guild_ids=[guild.id])
+
+    def _build_golf_embeds():
+        """Run pgaLeaderboard.py and return (tournament_embed, leaderboard_embed) or None."""
+        import subprocess
+        subprocess.run(["python3", os.path.join(pp, "pgaLeaderboard.py")],
+                       check=False, timeout=30)
+        tourn_csv = os.path.join(op, "sports/pga/tournament.csv")
+        lb_csv    = os.path.join(op, "sports/pga/leaderboard.csv")
+        if not os.path.exists(tourn_csv) or not os.path.exists(lb_csv):
+            return None, None
+        t  = pd.read_csv(tourn_csv).iloc[0]
+        lb = pd.read_csv(lb_csv)
+        if lb.empty or not t.get("name"):
+            return None, None
+
+        status_line = t.get("detail") or t.get("status") or ""
+        course_line = f"{t.get('course', '')}  ·  {t.get('city', '')}, {t.get('state', '')}".strip(" ·, ")
+
+        emb = discord.Embed(
+            title=f"⛳ {t['name']}",
+            description=f"{course_line}\n*{status_line}*",
+            color=0x2E7D32,
+        )
+        for _, row in lb.iterrows():
+            pos   = str(row.get("position", "–"))
+            name  = str(row.get("name", "–"))
+            score = str(row.get("score", "–"))
+            today = str(row.get("today", "–"))
+            thru  = str(row.get("thru", "–"))
+            emb.add_field(
+                name=f"{pos}. {name}",
+                value=f"**{score}**  today: {today}  thru: {thru}",
+                inline=False,
+            )
+        return emb
+
+    @golf_group.command(name="pga", description="live PGA Tour leaderboard")
+    async def golf_leaderboard(interaction: discord.Interaction):
+        await _defer(interaction)
+        emb = await asyncio.to_thread(_build_golf_embeds)
+        if emb is None:
+            await _send(interaction, "⛳ no PGA tournament in progress right now"); return
+        await _send(interaction, embed=emb)
+
+    tree.add_command(golf_group)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # /ball  —  all sports today in one message
+    # ─────────────────────────────────────────────────────────────────────────
+    @tree.command(name="ball", description="sports happening today", guild=guild)
     async def ball(interaction: discord.Interaction):
         await _defer(interaction)
 
-        # Run all schedule scripts concurrently
+        # Run all schedule/leaderboard scripts concurrently
         await asyncio.gather(
             asyncio.to_thread(_run, "python3",  os.path.join(pp, "nhlToday.py")),
             asyncio.to_thread(_run, "python3",  os.path.join(pp, "mlbToday.py")),
+            asyncio.to_thread(_run, "python3",  os.path.join(pp, "pgaLeaderboard.py")),
             asyncio.to_thread(_run, "Rscript",  os.path.join(rp, "nbaToday.R")),
             asyncio.to_thread(_run, "Rscript",  os.path.join(rp, "nbaLiveScore.R")),
             asyncio.to_thread(_run, "Rscript",  os.path.join(rp, "nextNFL.R")),
@@ -907,32 +950,30 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         live_csv = os.path.join(op, "sports/nba/liveScoreboard.csv")
         if os.path.exists(nba_csv):
             nba_df = pd.read_csv(nba_csv)
-
-            # build live score lookup (in-progress games only)
-            live_scores = {}
-            if os.path.exists(live_csv):
-                live_df = pd.read_csv(live_csv)
-                live_df = live_df[live_df["game_status"] == 2]
-                for _, r in live_df.iterrows():
-                    abbr = str(r["TEAM_ABBREVIATION"]).strip()
-                    live_scores[abbr] = {
-                        "pts":    int(r["PTS"]) if pd.notna(r["PTS"]) else 0,
-                        "status": str(r["game_status_text"]).strip(),
-                    }
-
-            emb = discord.Embed(title="🏀 NBA", color=0xC9082A)
-            for _, row in nba_df.iterrows():
-                matchup  = str(row["matchup"])
-                time_val = str(row["time"])
-                parts    = [p.strip() for p in matchup.replace("@", "vs").split("vs")]
-                value    = time_val
-                if len(parts) == 2:
-                    a1, a2 = parts[0], parts[1]
-                    if a1 in live_scores and a2 in live_scores:
-                        s1, s2 = live_scores[a1], live_scores[a2]
-                        value  = f"🔴 **{s1['pts']}–{s2['pts']}**  *{s1['status']}*"
-                emb.add_field(name=matchup, value=value, inline=False)
-            embeds.append(emb)
+            if not nba_df.empty:
+                live_scores = {}
+                if os.path.exists(live_csv):
+                    live_df = pd.read_csv(live_csv)
+                    live_df = live_df[live_df["game_status"] == 2]
+                    for _, r in live_df.iterrows():
+                        abbr = str(r["TEAM_ABBREVIATION"]).strip()
+                        live_scores[abbr] = {
+                            "pts":    int(r["PTS"]) if pd.notna(r["PTS"]) else 0,
+                            "status": str(r["game_status_text"]).strip(),
+                        }
+                emb = discord.Embed(title="🏀 NBA", color=0xC9082A)
+                for _, row in nba_df.iterrows():
+                    matchup  = str(row["matchup"])
+                    time_val = str(row["time"])
+                    parts    = [p.strip() for p in matchup.replace("@", "vs").split("vs")]
+                    value    = time_val
+                    if len(parts) == 2:
+                        a1, a2 = parts[0], parts[1]
+                        if a1 in live_scores and a2 in live_scores:
+                            s1, s2 = live_scores[a1], live_scores[a2]
+                            value  = f"🔴 **{s1['pts']}–{s2['pts']}**  *{s1['status']}*"
+                    emb.add_field(name=matchup, value=value, inline=False)
+                embeds.append(emb)
 
         # ── NHL ──────────────────────────────────────────────────────────────
         nhl_csv = os.path.join(op, "sports/nhl/gamesToday.csv")
@@ -952,6 +993,31 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 emb = discord.Embed(title="⚾ MLB", color=0x002D72)
                 for _, row in mlb_df.iterrows():
                     emb.add_field(name=row["matchup"], value=str(row["time"]), inline=False)
+                embeds.append(emb)
+
+        # ── PGA ──────────────────────────────────────────────────────────────
+        tourn_csv = os.path.join(op, "sports/pga/tournament.csv")
+        lb_csv    = os.path.join(op, "sports/pga/leaderboard.csv")
+        if os.path.exists(tourn_csv) and os.path.exists(lb_csv):
+            t  = pd.read_csv(tourn_csv).iloc[0]
+            lb = pd.read_csv(lb_csv)
+            if not lb.empty and t.get("name"):
+                status_line = t.get("detail") or t.get("status") or ""
+                emb = discord.Embed(
+                    title=f"⛳ {t['name']}",
+                    description=f"*{status_line}*  ·  Top 5",
+                    color=0x2E7D32,
+                )
+                for _, row in lb.head(5).iterrows():
+                    pos   = str(row.get("position", "–"))
+                    name  = str(row.get("name", "–"))
+                    score = str(row.get("score", "–"))
+                    today = str(row.get("today", "–"))
+                    emb.add_field(
+                        name=f"{pos}. {name}",
+                        value=f"**{score}**  today: {today}",
+                        inline=True,
+                    )
                 embeds.append(emb)
 
         # ── NFL (today only) ─────────────────────────────────────────────────
@@ -978,15 +1044,161 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, "nothing going on in the sports world today 😔")
             return
 
-        # Discord allows up to 10 embeds per message
         await _send(interaction, embeds=embeds)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # OSRS GROUP  /osrs <subcommand>
+    # ─────────────────────────────────────────────────────────────────────────
+    OSRS_SKILLS = [
+        "total",
+        "attack", "defence", "strength", "hitpoints", "ranged",
+        "prayer", "magic", "cooking", "woodcutting", "fletching",
+        "fishing", "firemaking", "crafting", "smithing", "mining",
+        "herblore", "agility", "thieving", "slayer", "farming",
+        "runecraft", "hunter", "construction", "sailing",
+    ]
+    OSRS_EMOJI = {
+        "total": "📊", "attack": "🗡️", "defence": "🛡️", "strength": "💪",
+        "hitpoints": "❤️", "ranged": "🏹", "prayer": "🙏", "magic": "🔮",
+        "cooking": "🍳", "woodcutting": "🪓", "fletching": "🪶", "fishing": "🎣",
+        "firemaking": "🔥", "crafting": "💎", "smithing": "⚒️", "mining": "⛏️",
+        "herblore": "🌿", "agility": "🏃", "thieving": "🗝️", "slayer": "💀",
+        "farming": "🌾", "runecraft": "🔵", "hunter": "🐾", "construction": "🏠",
+        "sailing": "⛵",
+    }
+    OSRS_LOGO = os.path.join(op, "osrs/osrs.png")
+
+    osrs_group = app_commands.Group(name="osrs", description="Old School RuneScape hiscores", guild_ids=[guild.id])
+
+    async def osrs_skill_autocomplete(interaction: discord.Interaction, current: str):
+        return [
+            app_commands.Choice(name=s, value=s)
+            for s in OSRS_SKILLS if current.lower() in s.lower()
+        ][:25]
+
+    @osrs_group.command(name="lvl", description="hiscores for the server — total level or any skill")
+    @app_commands.describe(skill="skill to look up (default: total)")
+    @app_commands.autocomplete(skill=osrs_skill_autocomplete)
+    async def osrs_stats(interaction: discord.Interaction, skill: str = "total"):
+        await _defer(interaction)
+        skill = skill.lower().strip()
+        if skill not in OSRS_SKILLS:
+            await _send(interaction, f"❓ `{skill}` isn't a valid OSRS skill. Try: total, attack, magic, slayer…", ephemeral=True)
+            return
+
+        await asyncio.to_thread(
+            lambda: subprocess.run(
+                ["python3", os.path.join(pp, "osrsHiscores.py"), skill],
+                check=False, timeout=60
+            )
+        )
+
+        csv_path = os.path.join(op, "osrs/hiscores.csv")
+        if not os.path.exists(csv_path):
+            await _send(interaction, "😔 couldn't fetch hiscores right now", ephemeral=True)
+            return
+
+        df = pd.read_csv(csv_path)
+        emoji   = OSRS_EMOJI.get(skill, "📊")
+        max_lvl = 99 if skill != "total" else 2376
+        title   = f"{emoji} OSRS {'Total Level' if skill == 'total' else skill.title()}"
+        emb     = discord.Embed(title=title, color=0x8B4513)
+        medals  = ["🥇", "🥈", "🥉"]
+
+        for i, (_, row) in enumerate(df.iterrows()):
+            lvl  = int(row["level"])
+            rank = str(row["rank"])
+            xp   = int(row["xp"])
+            prefix     = medals[i] if i < 3 else f"`{i+1}.`"
+            pct        = min(lvl / max_lvl, 1.0)
+            bar_filled = round(pct * 10)
+            bar        = "█" * bar_filled + "░" * (10 - bar_filled)
+            if skill == "total":
+                value = f"**{lvl:,}** / {max_lvl:,}  `{bar}`"
+            else:
+                value = f"**{lvl}** / {max_lvl}  `{bar}`\nXP: {xp:,}  ·  Rank: {rank}"
+            emb.add_field(name=f"{prefix} {row['player']}", value=value, inline=False)
+
+        emb.set_footer(text="source: OSRS hiscores  ·  sorted by level")
+
+        # Attach logo as thumbnail if it exists
+        if os.path.exists(OSRS_LOGO):
+            emb.set_thumbnail(url="attachment://osrs.png")
+            await _send(interaction, embed=emb, file=discord.File(OSRS_LOGO, filename="osrs.png"))
+        else:
+            await _send(interaction, embed=emb)
+
+    tree.add_command(osrs_group)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # JAXCAMS GROUP  /jaxcams
+    # ─────────────────────────────────────────────────────────────────────────
+    JAX_CAM_GROUPS = [
+        "i95", "i10", "i295", "downtown", "beaches", "bridges",
+        "northside", "southside", "westside", "random",
+    ]
+
+    async def jaxcams_autocomplete(interaction: discord.Interaction, current: str):
+        descs = {
+            "i95":       "I-95 corridor cams",
+            "i10":       "I-10 corridor cams",
+            "i295":      "I-295 beltway cams",
+            "downtown":  "Downtown / I-10 & I-95 interchange",
+            "beaches":   "JTB / Atlantic Blvd / beach routes",
+            "bridges":   "Dames Point Bridge cams",
+            "northside": "Northside cams",
+            "southside": "Southside cams",
+            "westside":  "Westside / Blanding cams",
+            "random":    "Random cam from anywhere in JAX",
+        }
+        return [
+            app_commands.Choice(name=f"{g} — {descs.get(g, '')}", value=g)
+            for g in JAX_CAM_GROUPS if current.lower() in g
+        ][:25]
+
+    @tree.command(name="jaxcams", description="Live JAX traffic cams from FL511", guild=guild)
+    @app_commands.describe(group="Which cameras to show (default: random)")
+    @app_commands.autocomplete(group=jaxcams_autocomplete)
+    async def jaxcams(interaction: discord.Interaction, group: str = "random"):
+        await _defer(interaction)
+
+        await asyncio.to_thread(
+            lambda: subprocess.run(
+                ["python3", os.path.join(pp, "jaxcams.py"), group, "1"],
+                check=False, timeout=30
+            )
+        )
+
+        csv_path = os.path.join(op, "cams/cams.csv")
+        if not os.path.exists(csv_path):
+            await _send(interaction, "😔 couldn't reach FL511 right now", ephemeral=True)
+            return
+
+        df = pd.read_csv(csv_path)
+        good = df[df["ok"] == True]
+
+        if good.empty:
+            await _send(interaction, "📷 No cameras returned images — FL511 may be down", ephemeral=True)
+            return
+
+        row = good.iloc[0]
+        group_label = group.upper() if group not in ("random", "downtown", "beaches", "bridges", "jtb") else group.upper()
+        emb = discord.Embed(
+            title=f"🎥 JAX Traffic Cams — {group_label}",
+            description=f"**{row['name']}**  ·  {pd.Timestamp.now().strftime('%I:%M %p')}",
+            color=0x005F9E,
+        )
+        emb.set_image(url="attachment://cam.jpg")
+        emb.set_footer(text="source: FL511 / FDOT  ·  refreshes on each call")
+
+        await _send(interaction, embed=emb, file=discord.File(row["path"], filename="cam.jpg"))
 
     # ─────────────────────────────────────────────────────────────────────────
     # MARKETS GROUP  /markets <subcommand>
     # ─────────────────────────────────────────────────────────────────────────
     markets_group = app_commands.Group(name="markets", description="markets / macro charts", guild_ids=[guild.id])
 
-    @markets_group.command(name="fedrate", description="Federal funds target rate")
+    @markets_group.command(name="fedrate", description="federal funds target rate")
     async def fedrate(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "fedTarget.R"))
@@ -1021,7 +1233,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     # ─────────────────────────────────────────────────────────────────────────
     space_group = app_commands.Group(name="space", description="space / launch commands", guild_ids=[guild.id])
 
-    @space_group.command(name="nextlaunch", description="next KSC rocket launch")
+    @space_group.command(name="nextlaunch", description="next rocket launch from KSC")
     async def nextlaunch(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "python3", os.path.join(pp, "spaceLaunches.py"))
@@ -1080,7 +1292,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         eye    = "👁️  Visible pass" if is_vis else "🌑  Pass (ISS in shadow)"
 
         emb = discord.Embed(
-            title=f"🛸  Next ISS Pass over Jacksonville",
+            title=f"Next ISS Pass Over Jacksonville",
             description=f"**{eye}**",
             color=color,
         )
