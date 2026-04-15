@@ -216,13 +216,13 @@ lp <- ggplot(leaderboard,
               color = "white",
               alpha = .5) +
   
-  geom_text(aes(x = fpts_against,
-                y = fpts,
-                label = ifelse(!is.na(team_name), 
-                               team_name, 
-                               display_name),
-                color = wins),
-            alpha = .25) +
+  #geom_text(aes(x = fpts_against,
+  #              y = fpts,
+  #              label = ifelse(!is.na(team_name), 
+  #                             team_name, 
+  #                             display_name),
+  #              color = wins),
+  #          alpha = .25) +
   
   geom_text(aes(x = live_agst,
                 y = live_pts,
@@ -246,7 +246,7 @@ lp <- ggplot(leaderboard,
   myTheme +
   myLegend
 
-ggsave("~/discordBot/outputs/sports/nfl/room40map.png",
+ggsave("outputs/sports/nfl/room40map.png",
        plot = lp,
        width = 10,
        height = 10,

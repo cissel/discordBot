@@ -6,9 +6,11 @@
 #   • GPT-2 "mr bot / jarvis / siri" keyword listener  (kept as on_message)
 #   • on_ready startup message
 #   • graceful Ctrl-C shutdown
+#   • daily mismatch precompute task (9am ET)
 
 import asyncio
 import os
+import datetime
 
 import discord
 from discord import app_commands
@@ -79,12 +81,19 @@ class BotClient(discord.Client):
         self.tree = app_commands.CommandTree(self)
 
     async def setup_hook(self):
-        # Import and register all slash commands from commands.py
         from commands import register_commands
         register_commands(self.tree, GUILD,
                           R_PATH=R_PATH,
                           PYTHON_PATH=PYTHON_PATH,
                           OUTPUT_PATH=OUTPUT_PATH)
+
+        # ── debug: print every command being synced ──
+        for cmd in self.tree.get_commands(guild=GUILD):
+            print(f"  registered: /{cmd.name}")
+            if hasattr(cmd, 'commands'):
+                for sub in cmd.commands:
+                    print(f"    /{cmd.name} {sub.name}")
+
         synced = await self.tree.sync(guild=GUILD)
         print(f"Synced {len(synced)} slash command(s) to guild {GUILD_ID}")
 
@@ -125,9 +134,10 @@ class BotClient(discord.Client):
             await asyncio.sleep(1)
         await super().close()
 
-client = BotClient()
 
 # ── run ─────────────────────────────────────────────────────────────────────────
+client = BotClient()
+
 async def main():
     async with client:
         await client.start(TOKEN)

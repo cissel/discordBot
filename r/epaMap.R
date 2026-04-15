@@ -42,7 +42,7 @@ setwd("~/discordBot")
 
 ##### Load pbp & summarize data #####
 
-nfl25 <- load_pbp() 
+nfl25 <- load_pbp()
 
 o25 <- nfl25 |>
   
@@ -64,6 +64,8 @@ epa25 <- epa25 |> dplyr::rename(team = posteam)
 
 epa25 <- epa25 |> left_join(teams_colors_logos,
                             by = c("team" = "team_abbr"))
+
+#epa25a <- epa25 |> subset(team_conf == "AFC")
 
 #####
 

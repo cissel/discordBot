@@ -38,8 +38,8 @@ def main():
 
     rows = []
     for game in dates[0].get("games", []):
-        away = game["teams"]["away"]["team"]["abbreviation"]
-        home = game["teams"]["home"]["team"]["abbreviation"]
+        away = game["teams"]["away"]["team"].get("abbreviation") or game["teams"]["away"]["team"].get("name", "TBD")
+        home = game["teams"]["home"]["team"].get("abbreviation") or game["teams"]["home"]["team"].get("name", "TBD")
         matchup = f"{away} @ {home}"
 
         status = game.get("status", {}).get("abstractGameState", "")

@@ -1,22 +1,28 @@
 # overJax.py
-# Fetches live aircraft within 250nm of Jacksonville and renders them
-# over real OpenStreetMap / CartoDB Dark Matter tiles using only
-# requests + Pillow (no cartopy, pyproj, or conda required).
+# Fetches live aircraft near Jacksonville and renders them
+# over real CartoDB Dark Matter tiles using only requests + Pillow.
 #
 # pip install requests Pillow
+# Usage: python3 overJax.py [--radius NM]   (default 50nm)
 
-import os, sys, math, requests, struct, zlib
+import argparse, os, sys, math, requests, struct, zlib
 from pathlib import Path
 from datetime import datetime, timezone
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 
+# ── CLI args ───────────────────────────────────────────────────────────────────
+_parser = argparse.ArgumentParser()
+_parser.add_argument("--radius", type=int, default=50,
+                     help="Display/fetch radius in nautical miles (default 50)")
+_args = _parser.parse_args()
+
 # ── config ─────────────────────────────────────────────────────────────────────
 JAX_LAT    = 30.3322
 JAX_LON    = -81.6557
-RADIUS_NM  = 250        # how far to fetch aircraft data
-DISPLAY_NM = 150        # how far to show on the map
-ZOOM       = 8
+DISPLAY_NM = _args.radius                   # how far to show on the map
+RADIUS_NM  = min(DISPLAY_NM + 50, 250)     # fetch a buffer beyond display edge
+ZOOM       = 8 if DISPLAY_NM >= 100 else 9  # zoom in for smaller radius
 TILE_SIZE  = 256
 # IMG_SIZE is computed dynamically from DISPLAY_NM in build_basemap
 OUTPUT     = Path("~/discordBot/outputs/aerospace/jaxPlanes.png").expanduser()
@@ -239,7 +245,7 @@ def main():
 
     # timestamp + count banner
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    banner = (f"Live Air Traffic  |  {RADIUS_NM}nm of Jacksonville  |  "
+    banner = (f"Live Air Traffic  |  {DISPLAY_NM}nm of Jacksonville  |  "
               f"{len(plotable)} aircraft ({airborne} airborne, {on_ground} on ground)  |  {ts}")
     draw.rectangle([0, 0, IMG_SIZE, 22], fill=(13, 13, 30, 210))
     draw.text((8, 4), banner, fill=(200, 200, 200, 230))

@@ -57,12 +57,11 @@ import os
 import random
 import subprocess
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import discord
 from discord import app_commands
 import pandas as pd
-
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -431,7 +430,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     # ─────────────────────────────────────────────────────────────────────────
     history_group = app_commands.Group(name="history", description="server history charts", guild_ids=[guild.id])
 
-    @history_group.command(name="server", description="all-server message history")
+    @history_group.command(name="server", description="total server message history")
     async def hist_server(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "python3", os.path.join(pp, "channelReader.py"))
@@ -439,7 +438,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/allMessages.png")))
 
-    @history_group.command(name="channel", description="per-channel message history")
+    @history_group.command(name="channel", description="channel message history")
     async def hist_channel(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "python3", os.path.join(pp, "channelReader.py"))
@@ -447,7 +446,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/channelMessages.png")))
 
-    @history_group.command(name="user", description="per-user message history")
+    @history_group.command(name="user", description="user message history")
     async def hist_user(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "python3", os.path.join(pp, "channelReader.py"))
@@ -455,7 +454,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/userMessages.png")))
 
-    @history_group.command(name="daily", description="daily messages per day plot")
+    @history_group.command(name="daily", description="daily messages plot")
     async def hist_daily(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "python3", os.path.join(pp, "channelReader.py"))
@@ -592,8 +591,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
     @rats_group.command(name="swaggy", description="NEVER FORGET")
     async def swaggy(interaction: discord.Interaction):
-        await interaction.response.send_message(
-            "NEVER FORGET", file=discord.File(os.path.join(op, "sports/nhl/buttpuck.mov")))
+        await _defer(interaction)
+        await _send(interaction, "NEVER FORGET")
+        await _send(interaction, file=discord.File(os.path.join(op, "sports/nhl/buttpuck.mov")))
 
     @rats_group.command(name="marchand", description="ALL HAIL THE RAT KING")
     async def marchand(interaction: discord.Interaction):
@@ -882,38 +882,53 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     golf_group = app_commands.Group(name="golf", description="PGA Tour golf", guild_ids=[guild.id])
 
     def _build_golf_embeds():
-        """Run pgaLeaderboard.py and return (tournament_embed, leaderboard_embed) or None."""
-        import subprocess
         subprocess.run(["python3", os.path.join(pp, "pgaLeaderboard.py")],
-                       check=False, timeout=30)
+                    check=False, timeout=30)
         tourn_csv = os.path.join(op, "sports/pga/tournament.csv")
         lb_csv    = os.path.join(op, "sports/pga/leaderboard.csv")
         if not os.path.exists(tourn_csv) or not os.path.exists(lb_csv):
-            return None, None
+            return None
+
         t  = pd.read_csv(tourn_csv).iloc[0]
         lb = pd.read_csv(lb_csv)
         if lb.empty or not t.get("name"):
-            return None, None
+            return None
 
-        status_line = t.get("detail") or t.get("status") or ""
-        course_line = f"{t.get('course', '')}  ·  {t.get('city', '')}, {t.get('state', '')}".strip(" ·, ")
+        # build description safely — skip any nan fields
+        detail = t.get("detail") or t.get("status") or ""
+        course = t.get("course", "")
+        city   = t.get("city", "")
+        state  = t.get("state", "")
+        location_parts = [x for x in [course, city, state]
+                        if x and str(x).strip() and str(x).strip().lower() != "nan"]
+        location_line = "  ·  ".join(location_parts)
+        description = f"{location_line}\n*{detail}*" if location_line else f"*{detail}*"
 
         emb = discord.Embed(
             title=f"⛳ {t['name']}",
-            description=f"{course_line}\n*{status_line}*",
+            description=description.strip(),
             color=0x2E7D32,
         )
-        for _, row in lb.iterrows():
-            pos   = str(row.get("position", "–"))
+
+        for i, (_, row) in enumerate(lb.iterrows(), start=1):
+            pos   = str(row.get("position", "")).strip()
             name  = str(row.get("name", "–"))
             score = str(row.get("score", "–"))
-            today = str(row.get("today", "–"))
-            thru  = str(row.get("thru", "–"))
-            emb.add_field(
-                name=f"{pos}. {name}",
-                value=f"**{score}**  today: {today}  thru: {thru}",
-                inline=False,
-            )
+            today = str(row.get("today", "")).strip()
+            thru  = str(row.get("thru", "")).strip()
+
+            # build value line — only show today/thru if they're real values
+            parts = [f"**{score}**"]
+            if today and today not in ("–", "nan", ""):
+                parts.append(f"today: {today}")
+            if thru and thru not in ("–", "nan", ""):
+                parts.append(f"thru {thru}")
+
+            # use rank number if position is missing
+            label = f"{pos} {name}" if pos and pos not in ("–", "nan") else f"{i}. {name}"
+
+            emb.add_field(name=label, value="  ".join(parts), inline=False)
+
         return emb
 
     @golf_group.command(name="pga", description="live PGA Tour leaderboard")
@@ -1076,10 +1091,10 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             for s in OSRS_SKILLS if current.lower() in s.lower()
         ][:25]
 
-    @osrs_group.command(name="lvl", description="hiscores for the server — total level or any skill")
+    @osrs_group.command(name="hiscores", description="crew hiscores leaderboard — total level or any skill")
     @app_commands.describe(skill="skill to look up (default: total)")
     @app_commands.autocomplete(skill=osrs_skill_autocomplete)
-    async def osrs_stats(interaction: discord.Interaction, skill: str = "total"):
+    async def osrs_hiscores(interaction: discord.Interaction, skill: str = "total"):
         await _defer(interaction)
         skill = skill.lower().strip()
         if skill not in OSRS_SKILLS:
@@ -1121,7 +1136,124 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         emb.set_footer(text="source: OSRS hiscores  ·  sorted by level")
 
-        # Attach logo as thumbnail if it exists
+        if os.path.exists(OSRS_LOGO):
+            emb.set_thumbnail(url="attachment://osrs.png")
+            await _send(interaction, embed=emb, file=discord.File(OSRS_LOGO, filename="osrs.png"))
+        else:
+            await _send(interaction, embed=emb)
+
+    # ── OSRS_PLAYERS for autocomplete on /osrs lvl ────────────────────────────
+    OSRS_PLAYERS = [
+        "captdeadhead", "SubieVapeski", "Pexci", "swampdog",
+        "Squidlies", "Wmwhite", "TrimIsLife", "Fart Johnsun",
+    ]
+
+    async def osrs_player_autocomplete(interaction: discord.Interaction, current: str):
+        return [
+            app_commands.Choice(name=p, value=p)
+            for p in OSRS_PLAYERS if current.lower() in p.lower()
+        ][:25]
+
+    @osrs_group.command(name="lvl", description="full skill sheet for a player")
+    @app_commands.describe(player="RSN to look up (defaults to cissel if not given)")
+    @app_commands.autocomplete(player=osrs_player_autocomplete)
+    async def osrs_lvl(interaction: discord.Interaction, player: str = ""):
+        await _defer(interaction)
+
+        # if no player given, fall back to first crew member as a safe default
+        rsn = player.strip() if player.strip() else OSRS_PLAYERS[0]
+
+        import urllib.request, urllib.parse, urllib.error
+
+        SKILLS_ORDER = [
+            "total",
+            "attack", "defence", "strength", "hitpoints", "ranged",
+            "prayer", "magic", "cooking", "woodcutting", "fletching",
+            "fishing", "firemaking", "crafting", "smithing", "mining",
+            "herblore", "agility", "thieving", "slayer", "farming",
+            "runecraft", "hunter", "construction", "sailing",
+        ]
+
+        def _fetch_all(rsn: str):
+            url = f"https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player={urllib.parse.quote(rsn)}"
+            req = urllib.request.Request(url, headers={"User-Agent": "discordBot/1.0 personal project"})
+            try:
+                with urllib.request.urlopen(req, timeout=10) as r:
+                    text = r.read().decode("utf-8")
+                rows = text.strip().splitlines()
+                result = {}
+                for i, skill in enumerate(SKILLS_ORDER):
+                    if i >= len(rows):
+                        break
+                    parts = rows[i].split(",")
+                    if len(parts) >= 2:
+                        result[skill] = {
+                            "rank":  int(parts[0]) if parts[0] != "-1" else None,
+                            "level": int(parts[1]),
+                            "xp":    int(parts[2]) if len(parts) > 2 else 0,
+                        }
+                return result
+            except urllib.error.HTTPError as e:
+                print(f"[osrs lvl] HTTP {e.code} for player '{rsn}'")
+                return None
+            except Exception as e:
+                print(f"[osrs lvl] fetch error for '{rsn}': {e}")
+                return None
+
+        data = await asyncio.to_thread(_fetch_all, rsn)
+
+        if data is None:
+            await _send(interaction, f"😔 couldn't find `{rsn}` on the hiscores — are they ranked?", ephemeral=True)
+            return
+
+        print(f"[osrs lvl] got {len(data)} skills for {rsn}")
+
+        # ── build embed ───────────────────────────────────────────────────────
+        total   = data.get("total", {})
+        tot_lvl = total.get("level", 0)
+        tot_xp  = total.get("xp", 0)
+
+        emb = discord.Embed(
+            title=f"📜 {rsn}",
+            description=f"**Total Level:** {tot_lvl:,}   |   **Total XP:** {tot_xp:,}",
+            color=0x8B4513,
+        )
+
+        # 24 skills in in-game order (3-column layout in Discord)
+        ALL_SKILLS = [
+            "attack",      "hitpoints",    "mining",
+            "strength",    "agility",      "smithing",
+            "defence",     "herblore",     "fishing",
+            "ranged",      "thieving",     "cooking",
+            "prayer",      "crafting",     "firemaking",
+            "magic",       "fletching",    "woodcutting",
+            "runecraft",   "slayer",       "farming",
+            "construction","hunter",       "sailing",
+        ]
+
+        for skill in ALL_SKILLS:
+            d = data.get(skill)
+            emoji = OSRS_EMOJI.get(skill, "?")
+            if d:
+                lvl = d["level"]
+                xp  = d["xp"]
+                bar_filled = round(min(lvl / 99, 1.0) * 6)
+                bar = "█" * bar_filled + "░" * (6 - bar_filled)
+                val = f"`{bar}`\n**{lvl}** / 99\n{xp:,} xp"
+            else:
+                val = "unranked"
+            emb.add_field(name=f"{emoji} {skill.title()}", value=val, inline=True)
+
+        # 25th field: total level
+        rank_str = f"#{total['rank']:,}" if total.get("rank") else "unranked"
+        emb.add_field(
+            name=f"📊 Total Level",
+            value=f"**{tot_lvl:,}** / 2,376\n{tot_xp:,} xp\nRank: {rank_str}",
+            inline=True,
+        )
+
+        emb.set_footer(text="source: OSRS hiscores")
+
         if os.path.exists(OSRS_LOGO):
             emb.set_thumbnail(url="attachment://osrs.png")
             await _send(interaction, embed=emb, file=discord.File(OSRS_LOGO, filename="osrs.png"))
@@ -1164,7 +1296,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         await asyncio.to_thread(
             lambda: subprocess.run(
-                ["python3", os.path.join(pp, "jaxcams.py"), group, "1"],
+                ["python3", os.path.join(pp, "jaxS.py"), group, "1"],
                 check=False, timeout=30
             )
         )
@@ -1225,6 +1357,104 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "yieldSpreadShort.R"))
         await _send(interaction, "last 2 months of yield spreads:",
                     file=discord.File(os.path.join(op, "markets/yield_spread_2mo.png")))
+        
+    @markets_group.command(name="crudeoil", description="west texas intermediate - cushing, oklahoma")
+    async def crudeoil(interaction: discord.Interaction):
+        await _defer(interaction)
+        await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "crude.R"))
+        await _send(interaction, "full price history for crude oil wti @ cushing, oklahoma:",
+                    file=discord.File(os.path.join(op, "markets/crudewti.png")))
+        
+    @markets_group.command(name="chart", description="return stock price chart")
+    @app_commands.describe(ticker="ticker symbol (e.g. SPY, AAPL)")
+    async def chart(interaction: discord.Interaction, ticker: str):
+        
+        # Sanitize input
+        ticker = ticker.upper().strip()
+        if not ticker.isalpha() or len(ticker) > 10:
+            await interaction.response.send_message("Invalid ticker symbol.", ephemeral=True)
+            return
+        
+        # Defer the response since Rscript will take a second
+        await interaction.response.defer()
+        
+        # Run the R script with the ticker as an argument
+        result = subprocess.run(
+            ["Rscript", "/Users/jamescissel/discordBot/r/stockChart.R", ticker],
+            capture_output=True,
+            text=True
+        )
+        
+        # Check if R script ran successfully
+        if result.returncode != 0:
+            await interaction.followup.send(f"Error generating chart for **${ticker}**.")
+            print(result.stderr)  # log the R error to console for debugging
+            return
+        
+        # Send the chart image
+        output_path = f"/Users/jamescissel/discordBot/outputs/markets/stockchart.png"
+        
+        if os.path.exists(output_path):
+            await interaction.followup.send(
+                content=f"**${ticker}**",
+                file=discord.File(output_path)
+            )
+        else:
+            await interaction.followup.send("Chart file not found.")
+
+    TIMEFRAME_CHOICES = [
+    app_commands.Choice(name="Recent — last hour of trading",         value="recent"),
+    app_commands.Choice(name="Close — last hour of market (3-4 PM)",  value="close"),
+    app_commands.Choice(name="Open — first hour of market (9:30-10:30 AM)", value="open"),
+    app_commands.Choice(name="Day — regular session (9:30 AM - 4 PM)", value="day"),
+    app_commands.Choice(name="Full — pre-market through after-hours",  value="full"),
+]
+
+    @markets_group.command(name="trades", description="Return trade level chart for a given timeframe")
+    @app_commands.describe(ticker="ticker symbol (e.g. SPY, AAPL)", timeframe="time window to display")
+    @app_commands.choices(timeframe=TIMEFRAME_CHOICES)
+    async def chart(interaction: discord.Interaction, ticker: str, timeframe: app_commands.Choice[str]):
+
+        ticker = ticker.upper().strip()
+        if not ticker.isalpha() or len(ticker) > 10:
+            await interaction.response.send_message("Invalid ticker symbol.", ephemeral=True)
+            return
+
+        await interaction.response.defer()
+
+        # Step 1: Pull trade data
+        pull_result = subprocess.run(
+            ["python3", "/Users/jamescissel/discordBot/python/marketTrades.py", ticker, timeframe.value],
+            capture_output=True,
+            text=True
+        )
+
+        if pull_result.returncode != 0:
+            await interaction.followup.send(f"Error pulling trade data for **${ticker}**.\n```{pull_result.stderr[-1500:]}```")
+            print("PULL ERROR:", pull_result.stderr)
+            return
+
+        # Step 2: Generate chart
+        chart_result = subprocess.run(
+            ["Rscript", "/Users/jamescissel/discordBot/r/tradeChart.R", ticker, timeframe.value],
+            capture_output=True,
+            text=True
+        )
+
+        if chart_result.returncode != 0:
+            await interaction.followup.send(f"Error generating chart for **${ticker}**.\n```{chart_result.stderr[-1500:]}```")
+            print("CHART ERROR:", chart_result.stderr)
+            return
+
+        output_path = "/Users/jamescissel/discordBot/outputs/markets/tradechart.png"
+
+        if os.path.exists(output_path):
+            await interaction.followup.send(
+                content=f"**${ticker}** — {timeframe.name}",
+                file=discord.File(output_path)
+            )
+        else:
+            await interaction.followup.send("Chart file not found.")
 
     tree.add_command(markets_group)
 
@@ -1426,7 +1656,503 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
     tree.add_command(f1_group)
 
+    # ─────────────────────────────────────────────────────────────────────────
+    # MLB GROUP  /mlb <subcommand>
+    # ─────────────────────────────────────────────────────────────────────────
+    mlb_group = app_commands.Group(name="mlb", description="Major League Baseball", guild_ids=[guild.id])
 
+    @mlb_group.command(name="today", description="MLB games today")
+    async def mlb_today(interaction: discord.Interaction):
+        await _defer(interaction)
+        await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "mlbToday.R"))
+
+        csv_path = os.path.join(op, "sports/mlb/gamesToday.csv")
+
+        try:
+            df = pd.read_csv(csv_path)
+        except FileNotFoundError:
+            await interaction.followup.send("❌ Could not load today's MLB schedule.")
+            return
+
+        if df.empty:
+            await interaction.followup.send("No MLB games scheduled for today.")
+            return
+
+        today_str = datetime.today().strftime("%B %d, %Y")
+        embed = discord.Embed(
+            title=f"⚾ MLB Games — {today_str}",
+            color=0x002D72
+        )
+
+        for _, row in df.iterrows():
+            away  = row["teams_away_team_name"]
+            home  = row["teams_home_team_name"]
+            state = row["status_abstract_game_state"]  # "Preview", "Live", "Final"
+            venue = row["venue_name"]
+            time  = row.get("game_time", "TBD")
+
+            away_pct = row.get("teams_away_league_record_pct", "")
+            home_pct = row.get("teams_home_league_record_pct", "")
+
+            away_rec = f"({away_pct})" if pd.notna(away_pct) and away_pct != "" else ""
+            home_rec = f"({home_pct})" if pd.notna(home_pct) and home_pct != "" else ""
+
+            if state == "Final":
+                away_score = int(row["teams_away_score"])
+                home_score = int(row["teams_home_score"])
+                away_w = "🏆 " if away_score > home_score else ""
+                home_w = "🏆 " if home_score > away_score else ""
+                value = (
+                    f"{away_w}**{away}** — {away_score}\n"
+                    f"{home_w}**{home}** — {home_score}\n"
+                    f"*Final • {venue}*"
+                )
+            elif state == "Live":
+                away_score = int(row["teams_away_score"])
+                home_score = int(row["teams_home_score"])
+                value = (
+                    f"🔴 **{away}** — {away_score}\n"
+                    f"🔴 **{home}** — {home_score}\n"
+                    f"*Live • {venue}*"
+                )
+            else:  # Preview
+                value = f"*{time} ET • {venue}*"
+
+            embed.add_field(
+                name=f"{away} ({away_pct}) @ {home} ({home_pct})",
+                value=value,
+                inline=False
+            )
+
+        embed.set_footer(text="Data via MLB Stats API")
+        await interaction.followup.send(embed=embed)
+
+    @mlb_group.command(name="tomorrow", description="MLB games tomorrow")
+    async def mlb_tomorrow(interaction: discord.Interaction):
+        await _defer(interaction)
+        await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "mlbtomorrow.R"))
+
+        csv_path = os.path.join(op, "sports/mlb/gamestomorrow.csv")
+
+        try:
+            df = pd.read_csv(csv_path)
+        except FileNotFoundError:
+            await _send(interaction, "❌ Could not load tomorrow's MLB schedule.")
+            return
+
+        if df.empty:
+            await _send(interaction, "No MLB games scheduled for tomorrow.")
+            return
+
+        tomorrow_str = (datetime.today() + timedelta(days=1)).strftime("%B %d, %Y")
+        embed = discord.Embed(
+            title=f"⚾ MLB Games — {tomorrow_str}",
+            color=0x002D72
+        )
+
+        for _, row in df.iterrows():
+            away     = row["teams_away_team_name"]
+            home     = row["teams_home_team_name"]
+            away_pct = row.get("teams_away_league_record_pct", "")
+            home_pct = row.get("teams_home_league_record_pct", "")
+            venue    = row["venue_name"]
+            time     = row.get("game_time", "TBD")
+
+            embed.add_field(
+                name=f"{away} @ {home}",
+                value=f"*{time} ET • {venue}*",
+                inline=False
+            )
+
+        embed.set_footer(text="Data via MLB Stats API")
+        await _send(interaction, embed=embed)
+
+    @mlb_group.command(name="fantasystandings", description="World Sillies fantasy baseball standings")
+    async def mlb_fantasystandings(interaction: discord.Interaction):
+        await _defer(interaction)
+
+        await asyncio.to_thread(_run, "python3", os.path.join(pp, "worldSilliesStandings.py"))
+
+        csv_path = os.path.join(op, "sports/mlb/fantasy/standings.csv")
+        if not os.path.exists(csv_path):
+            await _send(interaction, "couldn't fetch standings :(", ephemeral=True)
+            return
+
+        import csv
+        with open(csv_path, newline="") as f:
+            rows = list(csv.DictReader(f))
+
+        ICONS = {
+            1: "🏆", 2: "🥈", 3: "🥉",
+            4: "4️⃣", 5: "5️⃣", 6: "6️⃣",
+            7: "7️⃣", 8: "8️⃣", 9: "9️⃣", 10: "🔟",
+        }
+
+        embed = discord.Embed(
+            title="⚾ World Sillies - Fantasy Standings",
+            color=0x002D72,
+        )
+
+        rank_col   = ""
+        team_col   = ""
+        record_col = ""
+
+        for row in rows:
+            rank   = int(row["rank"])
+            icon   = ICONS.get(rank, f"`{rank}`")
+            rank_col   += f"{icon}\n"
+            team_col   += f"**{row['team_name']}** - {row['owner']}\n"
+            record_col += f"`{row['wins']}-{row['losses']}`\n"
+
+        embed.add_field(name="Rank",      value=rank_col,   inline=True)
+        embed.add_field(name="Team - Owner",   value=team_col,   inline=True)
+        embed.add_field(name="Record", value=record_col, inline=True)
+        embed.set_footer(text="Data via ESPN Fantasy API")
+
+        await _send(interaction, embed=embed)
+
+    @mlb_group.command(name="fantasyscoreboard", description="World Sillies live fantasy baseball scoreboard")
+    async def mlb_fantasyscoreboard(interaction: discord.Interaction):
+        await _defer(interaction)
+
+        await asyncio.to_thread(_run, "python3", os.path.join(pp, "worldSilliesScoreboard.py"))
+
+        csv_path = os.path.join(op, "sports/mlb/fantasy/scoreboard.csv")
+        if not os.path.exists(csv_path):
+            await _send(interaction, "couldn't fetch the scoreboard :(", ephemeral=True)
+            return
+
+        import csv
+        with open(csv_path, newline="") as f:
+            rows = list(csv.DictReader(f))
+
+        embed = discord.Embed(
+            title="⚾ World Sillies - Scoreboard",
+            color=0x002D72,
+        )
+
+        for row in rows:
+            home      = row["home_team"].strip()
+            away      = row["away_team"].strip()
+            home_score = float(row["home_score"])
+            away_score = float(row["away_score"])
+
+            # trophy on the winning side, dash if tied
+            if home_score > away_score:
+                home_str = f"🏆 **{home}**"
+                away_str = away
+            elif away_score > home_score:
+                home_str = home
+                away_str = f"🏆 **{away}**"
+            else:
+                home_str = f"**{home}**"
+                away_str = f"**{away}**"
+
+            embed.add_field(
+                name=f"{away_str}  vs  {home_str}",
+                value=f"`{away_score:.1f}`  -  `{home_score:.1f}`",
+                inline=False,
+            )
+
+        embed.set_footer(text="Data via ESPN Fantasy API")
+        await _send(interaction, embed=embed)
+
+        # team names for autocomplete — update if your league changes
+    SILLIES_TEAMS = [
+        "dock ellis fan club",
+        "Chandler Simpson Worshipper",
+        "UNCLE CUCKUS",
+        "2 balls 1 bat",
+        "Jose Caballero",
+        "Zach's Baseball Classic",
+        "Nolan Ryan's Right Hook",
+        "JungHooLee is My Father",
+    ]
+ 
+    async def sillies_team_autocomplete(interaction: discord.Interaction, current: str):
+        return [
+            app_commands.Choice(name=t, value=t)
+            for t in SILLIES_TEAMS if current.lower() in t.lower()
+        ][:25]
+ 
+    @mlb_group.command(name="fantasyroster", description="World Sillies roster & today's points for a team")
+    @app_commands.describe(team="fantasy team name")
+    @app_commands.autocomplete(team=sillies_team_autocomplete)
+    async def mlb_fantasyroster(interaction: discord.Interaction, team: str):
+        await _defer(interaction)
+
+        print("DEBUG pp:", pp)
+ 
+        await asyncio.to_thread(_run, "python3", os.path.join(pp, "worldSilliesRoster.py"))
+ 
+        csv_path = os.path.join(op, "sports/mlb/fantasy/roster.csv")
+        if not os.path.exists(csv_path):
+            await _send(interaction, "couldn't fetch roster data :(", ephemeral=True)
+            return
+ 
+        import csv as _csv
+        with open(csv_path, newline="") as f:
+            all_rows = list(_csv.DictReader(f))
+ 
+        # fuzzy-ish match in case of trailing spaces (e.g. "JungHooLee is My Father ")
+        team_rows = [r for r in all_rows if r["team_name"].strip().lower() == team.strip().lower()]
+ 
+        if not team_rows:
+            await _send(interaction, f"couldn't find team **{team}** in the roster data.", ephemeral=True)
+            return
+ 
+        active = [r for r in team_rows if r["slot_position"] not in ("BE", "IL")]
+        bench  = [r for r in team_rows if r["slot_position"] == "BE"]
+        il     = [r for r in team_rows if r["slot_position"] == "IL"]
+ 
+        def fmt_player(r):
+            pts = float(r["points"])
+            pts_str = f"`{pts:+.1f}`" if pts != 0 else "`  0.0`"
+            inj = " 🤕" if r["injury_status"] not in ("ACTIVE", "NORMAL", "") else ""
+            return f"{pts_str} **{r['player_name']}**{inj} ({r['slot_position']} · {r['position']})"
+ 
+        total_today = sum(float(r["points"]) for r in active)
+ 
+        embed = discord.Embed(
+            title=f"⚾ {team.strip()} - Today's Roster",
+            description=f"**Points today (active): `{total_today:.1f}`**",
+            color=0x002D72,
+        )
+ 
+        if active:
+            embed.add_field(
+                name="🟢 Active",
+                value="\n".join(fmt_player(r) for r in active) or "—",
+                inline=False,
+            )
+        if bench:
+            embed.add_field(
+                name="🪑 Bench",
+                value="\n".join(fmt_player(r) for r in bench) or "—",
+                inline=False,
+            )
+        if il:
+            embed.add_field(
+                name="🏥 IL",
+                value="\n".join(fmt_player(r) for r in il) or "—",
+                inline=False,
+            )
+ 
+        embed.set_footer(text="Data via ESPN Fantasy API")
+        await _send(interaction, embed=embed)
+
+    @mlb_group.command(name="fantasyfa", description="World Sillies top 10 free agents by position")
+    @app_commands.describe(position="player position to look up")
+    @app_commands.choices(position=[
+        app_commands.Choice(name="PP - Probable Pitchers Tomorrow", value="PP"),
+        app_commands.Choice(name="SP - Starting Pitcher", value="SP"),
+        app_commands.Choice(name="RP - Relief Pitcher",   value="RP"),
+        app_commands.Choice(name="C  - Catcher",          value="C"),
+        app_commands.Choice(name="1B - First Base",       value="1B"),
+        app_commands.Choice(name="2B - Second Base",      value="2B"),
+        app_commands.Choice(name="3B - Third Base",       value="3B"),
+        app_commands.Choice(name="SS - Shortstop",        value="SS"),
+        app_commands.Choice(name="OF - Outfield",         value="OF"),
+    ])
+    async def mlb_fantasyfa(interaction: discord.Interaction, position: str):
+        await _defer(interaction)
+
+        await asyncio.to_thread(_run, "python3", os.path.join(pp, "worldSilliesFA.py"), position)
+
+        csv_path = os.path.join(op, "sports/mlb/fantasy/freeagents.csv")
+        if not os.path.exists(csv_path):
+            await _send(interaction, "couldn't fetch free agent data :(", ephemeral=True)
+            return
+
+        import csv as _csv
+        with open(csv_path, newline="") as f:
+            rows = list(_csv.DictReader(f))
+
+        if not rows:
+            await _send(interaction, f"no free agents found at position **{position}**.", ephemeral=True)
+            return
+
+        POSITION_EMOJI = {
+            "SP": "🤾", "RP": "🔥", "C": "🎯",
+            "1B": "1️⃣", "2B": "2️⃣", "3B": "3️⃣",
+            "SS": "⚡", "OF": "🌿",
+        }
+        emoji = POSITION_EMOJI.get(position, "⚾")
+        is_pitcher = position in ("SP", "RP", "PP")
+        is_pp      = position == "PP"
+
+        embed = discord.Embed(
+            title=f"⚾ World Sillies - {'Probable Pitcher' if is_pp else f'Top {position}'} Free Agents",
+            description="Starting tomorrow · Sorted by % owned" if is_pp else "Sorted by % owned · Top 10 available" + (" · ⚾ = starting tomorrow" if is_pitcher else ""),
+            color=0x002D72,
+        )
+
+        player_col = ""
+        owned_col  = ""
+        proj_col   = ""
+
+        for i, row in enumerate(rows, start=1):
+            inj      = " 🤕" if row["injury_status"] not in ("ACTIVE", "NORMAL", "") else ""
+            starting = " ⚾" if row.get("starting_tomorrow") == "True" and is_pitcher else ""
+            pct      = float(row["percent_owned"])
+            proj     = float(row["projected_total_points"])
+            player_col += f"`{i:>2}.` **{row['player_name']}**{starting}{inj} ({row['pro_team']})\n"
+            owned_col  += f"`{pct:.1f}%`\n"
+            proj_col   += f"`{proj:.0f} pts`\n"
+
+        embed.add_field(name="Player",     value=player_col, inline=True)
+        embed.add_field(name="% Owned",    value=owned_col,  inline=True)
+        embed.add_field(name="Proj Total", value=proj_col,   inline=True)
+        embed.set_footer(text="Data via ESPN Fantasy API + MLB Stats API")
+
+        await _send(interaction, embed=embed)
+
+    @mlb_group.command(name="whohits", description="Top 10 hitters vs. a pitcher (last 5 seasons)")
+    @app_commands.describe(pitcher="Full name of the pitcher, e.g. 'Paul Skenes'")
+    async def mlb_pitcherhitters(interaction: discord.Interaction, pitcher: str):
+        await _defer(interaction)
+        await asyncio.to_thread(_run, "python3", os.path.join(pp, "whoHits.py"), pitcher, op)
+ 
+        csv_path = os.path.join(op, "sports/mlb/top10_vs_pitcher.csv")
+ 
+        try:
+            df = pd.read_csv(csv_path)
+        except FileNotFoundError:
+            await _send(interaction, f"❌ No data found for **{pitcher}**. Check the spelling or the logs.")
+            return
+ 
+        if df.empty:
+            await _send(interaction, f"No matchup data found for **{pitcher}** in the last 5 seasons (min. 5 PA).")
+            return
+ 
+        embed = discord.Embed(
+            title=f"⚾ Top Hitters vs. {pitcher}",
+            description="Sorted by OPS · Min. 5 PA · Last 5 seasons",
+            color=0x002D72
+        )
+ 
+        for i, row in df.iterrows():
+            def fmt(val):
+                try:    return f"{float(val):.3f}"
+                except: return "---"
+ 
+            name = row['Batter']
+            team = row.get('Team', '?')
+            avg  = fmt(row.get('AVG'))
+            obp  = fmt(row.get('OBP'))
+            slg  = fmt(row.get('SLG'))
+            ops  = fmt(row.get('OPS'))
+            h    = int(row['H'])
+            hr   = int(row['HR'])
+            bb   = int(row['BB'])
+            pa   = int(row['PA'])
+ 
+            embed.add_field(
+                name=f"{i+1}. {name} ({team})",
+                value=f"`{avg} / {obp} / {slg}` · OPS: `{ops}` · {h}H {hr}HR {bb}BB in {pa}PA",
+                inline=False
+            )
+ 
+        embed.set_footer(text="Data via Baseball Savant / Statcast")
+        await _send(interaction, embed=embed)
+    
+    @mlb_group.command(name="mismatch", description="Top batter/pitcher mismatches for tomorrow's games")
+    @app_commands.describe(mode="Which mismatches to show (default: both)")
+    @app_commands.choices(mode=[
+        app_commands.Choice(name="Both (Top 5 each)",       value="both"),
+        app_commands.Choice(name="Top 10 Batter Favored",   value="batters"),
+        app_commands.Choice(name="Top 10 Pitcher Favored",  value="pitchers"),
+    ])
+    async def mlb_mismatch(interaction: discord.Interaction, mode: str = "both"):
+        await _defer(interaction)
+        print(f"[DEBUG] /mlb mismatch called with mode='{mode}'")
+
+        csv_path = os.path.join(op, "sports/mlb/mismatch.csv")
+
+        # Only regenerate if CSV is missing or more than 3 hours old
+        needs_refresh = True
+        if os.path.exists(csv_path):
+            age_hours = (datetime.now() - datetime.fromtimestamp(os.path.getmtime(csv_path))).total_seconds() / 3600
+            if age_hours < 3:
+                needs_refresh = False
+                print(f"[DEBUG] Using cached CSV ({age_hours:.1f}h old)")
+
+        if needs_refresh:
+            print("[DEBUG] Regenerating mismatch data...")
+            await asyncio.to_thread(_run, "python3", os.path.join(pp, "mlbProbPitchers.py"))
+            await asyncio.to_thread(_run, "python3", os.path.join(pp, "mlbMismatch.py"))
+
+        try:
+            df = pd.read_csv(csv_path)
+        except FileNotFoundError:
+            await _send(interaction, "❌ Could not generate mismatch data. Check the logs.")
+            return
+
+        if df.empty:
+            await _send(interaction, "No matchup data found with sufficient PA history (min. 5 PA).")
+            return
+
+        date_str = (datetime.today() + timedelta(days=1)).strftime("%B %d, %Y")
+
+        embed = discord.Embed(
+            title=f"⚾ Pitcher/Batter Mismatches — {date_str}",
+            description="Based on last 5 seasons of Statcast data · Min. 5 PA",
+            color=0x002D72
+        )
+
+        def fmt(val):
+            try:    return f"{float(val):.3f}"
+            except: return "---"
+
+        def format_batter_row(row):
+            return (
+                f"**{row['batter']}** vs {row['pitcher']} *({row['matchup']})*\n"
+                f"`{fmt(row['AVG'])} / {fmt(row['OBP'])} / {fmt(row['SLG'])}` · "
+                f"OPS: `{fmt(row['OPS'])}` · "
+                f"{int(row['H'])}H {int(row['HR'])}HR {int(row['BB'])}BB {int(row['K'])}K in {int(row['PA'])}PA\n\n"
+            )
+
+        def format_pitcher_row(row):
+            return (
+                f"**{row['pitcher']}** vs {row['batter']} *({row['matchup']})*\n"
+                f"`{fmt(row['AVG'])} / {fmt(row['OBP'])} / {fmt(row['SLG'])}` · "
+                f"OPS: `{fmt(row['OPS'])}` · "
+                f"{int(row['H'])}H {int(row['HR'])}HR {int(row['BB'])}BB {int(row['K'])}K in {int(row['PA'])}PA\n\n"
+            )
+
+        def add_fields(embed, rows, formatter, base_name, emoji):
+            """Add rows as fields, splitting into two if showing 10 to stay under Discord's 1024 char limit."""
+            if len(rows) <= 5:
+                embed.add_field(
+                    name=f"{emoji} {base_name}",
+                    value="".join(formatter(row) for _, row in rows.iterrows()).strip(),
+                    inline=False
+                )
+            else:
+                half = len(rows) // 2
+                embed.add_field(
+                    name=f"{emoji} {base_name} (1-{half})",
+                    value="".join(formatter(row) for _, row in rows.iloc[:half].iterrows()).strip(),
+                    inline=False
+                )
+                embed.add_field(
+                    name=f"{emoji} {base_name} ({half+1}-{len(rows)})",
+                    value="".join(formatter(row) for _, row in rows.iloc[half:].iterrows()).strip(),
+                    inline=False
+                )
+
+        if mode in ("both", "batters"):
+            n = 5 if mode == "both" else 10
+            add_fields(embed, df.head(n), format_batter_row, "Batter Favored (Highest OPS)", "🔥")
+
+        if mode in ("both", "pitchers"):
+            n = 5 if mode == "both" else 10
+            add_fields(embed, df.tail(n).iloc[::-1].reset_index(drop=True), format_pitcher_row, "Pitcher Favored (Lowest OPS)", "🧊")
+
+        embed.set_footer(text="Data via Baseball Savant / Statcast")
+        await _send(interaction, embed=embed)
+
+    tree.add_command(mlb_group)
 
     # ── /jaxships ─────────────────────────────────────────────────────────────
     @tree.command(name="jaxships", description="ships in and around Jacksonville / JAXPORT right now", guild=guild)
@@ -1452,12 +2178,14 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
     # ── /jaxplanes ────────────────────────────────────────────────────────────
     @tree.command(name="jaxplanes", description="planes over Jacksonville right now", guild=guild)
-    async def jaxplanes(interaction: discord.Interaction):
+    @app_commands.describe(radius="display radius in nautical miles (default 50, max 250)")
+    async def jaxplanes(interaction: discord.Interaction, radius: int = 50):
+        radius = max(10, min(radius, 250))  # clamp to sane range
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "overJax.py"))
+        await asyncio.to_thread(_run, "python3", os.path.join(pp, "overJax.py"), "--radius", str(radius))
         img = os.path.join(op, "aerospace/jaxPlanes.png")
         if not os.path.exists(img):
             await _send(interaction, "couldn't generate the plot :(", ephemeral=True)
             return
-        await _send(interaction, "✈ here's what's flying over jax right now:",
+        await _send(interaction, f"✈ here's what's flying over jax right now (within {radius}nm):",
                     file=discord.File(img))

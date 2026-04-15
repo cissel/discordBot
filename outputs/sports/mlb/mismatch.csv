@@ -1,0 +1,93 @@
+pitcher,pitcher_team,batter,opposing_team,matchup,PA,AB,H,HR,BB,K,AVG,OBP,SLG,OPS
+Brady Singer,Cincinnati Reds,Matt Chapman,San Francisco Giants,San Francisco Giants @ Cincinnati Reds,7,7,5,2,0,1,0.714,0.714,1.857,2.571
+Sonny Gray,Boston Red Sox,Trevor Larnach,Minnesota Twins,Boston Red Sox @ Minnesota Twins,5,5,3,2,0,2,0.6,0.6,1.8,2.4
+Colin Rea,Chicago Cubs,Brandon Marsh,Philadelphia Phillies,Chicago Cubs @ Philadelphia Phillies,6,6,5,0,0,0,0.833,0.833,1.333,2.166
+Max Meyer,Miami Marlins,Austin Riley,Atlanta Braves,Miami Marlins @ Atlanta Braves,9,7,3,1,0,4,0.429,0.556,1.143,1.699
+Colin Rea,Chicago Cubs,J.T. Realmuto,Philadelphia Phillies,Chicago Cubs @ Philadelphia Phillies,11,9,5,1,0,1,0.556,0.636,1.0,1.636
+Mitch Keller,Pittsburgh Pirates,Joey Wiemer,Washington Nationals,Washington Nationals @ Pittsburgh Pirates,7,7,3,1,0,1,0.429,0.429,1.0,1.429
+Robbie Ray,San Francisco Giants,Eugenio Suárez,Cincinnati Reds,San Francisco Giants @ Cincinnati Reds,7,6,2,1,1,4,0.333,0.429,1.0,1.429
+Jeffrey Springs,Athletics,Kyle Higashioka,Texas Rangers,Texas Rangers @ Athletics,5,5,3,0,0,0,0.6,0.6,0.8,1.4
+MacKenzie Gore,Texas Rangers,Shea Langeliers,Athletics,Texas Rangers @ Athletics,5,5,2,1,0,1,0.4,0.4,1.0,1.4
+MacKenzie Gore,Texas Rangers,Jeff McNeil,Athletics,Texas Rangers @ Athletics,14,12,8,0,2,1,0.667,0.714,0.667,1.381
+Brady Singer,Cincinnati Reds,Luis Arraez,San Francisco Giants,San Francisco Giants @ Cincinnati Reds,6,6,4,0,0,1,0.667,0.667,0.667,1.334
+Bryan Woo,Seattle Mariners,Fernando Tatis Jr.,San Diego Padres,Seattle Mariners @ San Diego Padres,9,9,3,2,0,2,0.333,0.333,1.0,1.333
+Jeffrey Springs,Athletics,Josh Jung,Texas Rangers,Texas Rangers @ Athletics,9,9,4,1,0,2,0.444,0.444,0.778,1.222
+Michael King,San Diego Padres,Randy Arozarena,Seattle Mariners,Seattle Mariners @ San Diego Padres,10,9,3,1,1,2,0.333,0.4,0.778,1.178
+Framber Valdez,Detroit Tigers,Vinnie Pasquantino,Kansas City Royals,Kansas City Royals @ Detroit Tigers,6,6,2,1,0,3,0.333,0.333,0.833,1.166
+Jeffrey Springs,Athletics,Corey Seager,Texas Rangers,Texas Rangers @ Athletics,6,6,2,1,0,1,0.333,0.333,0.833,1.166
+Bryan Woo,Seattle Mariners,Miguel Andujar,San Diego Padres,Seattle Mariners @ San Diego Padres,12,11,3,2,1,2,0.273,0.333,0.818,1.151
+Aaron Nola,Philadelphia Phillies,Michael Conforto,Chicago Cubs,Chicago Cubs @ Philadelphia Phillies,8,8,3,1,0,0,0.375,0.375,0.75,1.125
+Mitch Keller,Pittsburgh Pirates,James Wood,Washington Nationals,Washington Nationals @ Pittsburgh Pirates,9,9,3,1,0,3,0.333,0.333,0.778,1.111
+Kevin Gausman,Toronto Blue Jays,Christian Yelich,Milwaukee Brewers,Toronto Blue Jays @ Milwaukee Brewers,6,5,2,0,1,1,0.4,0.5,0.6,1.1
+Michael King,San Diego Padres,Luke Raley,Seattle Mariners,Seattle Mariners @ San Diego Padres,5,4,2,0,0,1,0.5,0.6,0.5,1.1
+Sonny Gray,Boston Red Sox,Matt Wallner,Minnesota Twins,Boston Red Sox @ Minnesota Twins,6,5,2,0,1,0,0.4,0.5,0.6,1.1
+Brady Singer,Cincinnati Reds,Rafael Devers,San Francisco Giants,San Francisco Giants @ Cincinnati Reds,11,11,4,1,0,3,0.364,0.364,0.727,1.091
+Miles Mikolas,Washington Nationals,Marcell Ozuna,Pittsburgh Pirates,Washington Nationals @ Pittsburgh Pirates,15,12,4,1,3,5,0.333,0.467,0.583,1.05
+Framber Valdez,Detroit Tigers,Jonathan India,Kansas City Royals,Kansas City Royals @ Detroit Tigers,8,5,2,0,2,1,0.4,0.625,0.4,1.025
+Max Meyer,Miami Marlins,Michael Harris II,Atlanta Braves,Miami Marlins @ Atlanta Braves,7,7,3,0,0,0,0.429,0.429,0.571,1.0
+Miles Mikolas,Washington Nationals,Brandon Lowe,Pittsburgh Pirates,Washington Nationals @ Pittsburgh Pirates,5,5,1,1,0,3,0.2,0.2,0.8,1.0
+Sonny Gray,Boston Red Sox,Josh Bell,Minnesota Twins,Boston Red Sox @ Minnesota Twins,7,7,3,0,0,1,0.429,0.429,0.571,1.0
+Framber Valdez,Detroit Tigers,Starling Marte,Kansas City Royals,Kansas City Royals @ Detroit Tigers,10,9,3,0,0,2,0.333,0.4,0.556,0.956
+Michael King,San Diego Padres,Cal Raleigh,Seattle Mariners,Seattle Mariners @ San Diego Padres,10,9,3,0,1,5,0.333,0.4,0.556,0.956
+Miles Mikolas,Washington Nationals,Bryan Reynolds,Pittsburgh Pirates,Washington Nationals @ Pittsburgh Pirates,28,26,9,1,0,1,0.346,0.357,0.577,0.934
+Colin Rea,Chicago Cubs,Kyle Schwarber,Philadelphia Phillies,Chicago Cubs @ Philadelphia Phillies,13,11,3,1,2,5,0.273,0.385,0.545,0.93
+Reid Detmers,Los Angeles Angels,Amed Rosario,New York Yankees,Los Angeles Angels @ New York Yankees,11,11,4,0,0,4,0.364,0.364,0.545,0.909
+Aaron Nola,Philadelphia Phillies,Pete Crow-Armstrong,Chicago Cubs,Chicago Cubs @ Philadelphia Phillies,5,4,1,0,1,0,0.25,0.4,0.5,0.9
+Bryan Woo,Seattle Mariners,Gavin Sheets,San Diego Padres,Seattle Mariners @ San Diego Padres,10,10,3,1,0,3,0.3,0.3,0.6,0.9
+Bryan Woo,Seattle Mariners,Ty France,San Diego Padres,Seattle Mariners @ San Diego Padres,6,6,2,0,0,0,0.333,0.333,0.5,0.833
+Miles Mikolas,Washington Nationals,Nick Gonzales,Pittsburgh Pirates,Washington Nationals @ Pittsburgh Pirates,6,6,2,0,0,2,0.333,0.333,0.5,0.833
+Aaron Nola,Philadelphia Phillies,Dansby Swanson,Chicago Cubs,Chicago Cubs @ Philadelphia Phillies,26,25,6,2,1,6,0.24,0.269,0.52,0.789
+Aaron Nola,Philadelphia Phillies,Nico Hoerner,Chicago Cubs,Chicago Cubs @ Philadelphia Phillies,15,14,4,0,1,2,0.286,0.333,0.429,0.762
+Cole Ragans,Kansas City Royals,Matt Vierling,Detroit Tigers,Kansas City Royals @ Detroit Tigers,12,9,2,0,3,4,0.222,0.417,0.333,0.75
+Max Meyer,Miami Marlins,Ozzie Albies,Atlanta Braves,Miami Marlins @ Atlanta Braves,7,7,2,0,0,1,0.286,0.286,0.429,0.715
+Mitch Keller,Pittsburgh Pirates,CJ Abrams,Washington Nationals,Washington Nationals @ Pittsburgh Pirates,14,14,5,0,0,2,0.357,0.357,0.357,0.714
+Miles Mikolas,Washington Nationals,Oneil Cruz,Pittsburgh Pirates,Washington Nationals @ Pittsburgh Pirates,15,14,3,0,0,5,0.214,0.267,0.429,0.696
+Mitch Keller,Pittsburgh Pirates,Luis García Jr.,Washington Nationals,Washington Nationals @ Pittsburgh Pirates,16,16,4,0,0,3,0.25,0.25,0.438,0.688
+Framber Valdez,Detroit Tigers,Salvador Perez,Kansas City Royals,Kansas City Royals @ Detroit Tigers,12,10,1,1,1,4,0.1,0.25,0.4,0.65
+Mitch Keller,Pittsburgh Pirates,Jacob Young,Washington Nationals,Washington Nationals @ Pittsburgh Pirates,6,4,1,0,1,2,0.25,0.4,0.25,0.65
+Mitch Keller,Pittsburgh Pirates,Keibert Ruiz,Washington Nationals,Washington Nationals @ Pittsburgh Pirates,16,15,4,0,1,2,0.267,0.312,0.333,0.645
+Robbie Ray,San Francisco Giants,Nathaniel Lowe,Cincinnati Reds,San Francisco Giants @ Cincinnati Reds,11,11,3,0,0,3,0.273,0.273,0.364,0.637
+Cole Ragans,Kansas City Royals,Riley Greene,Detroit Tigers,Kansas City Royals @ Detroit Tigers,9,8,2,0,1,1,0.25,0.333,0.25,0.583
+Michael King,San Diego Padres,Mitch Garver,Seattle Mariners,Seattle Mariners @ San Diego Padres,7,7,2,0,0,2,0.286,0.286,0.286,0.572
+Max Meyer,Miami Marlins,Matt Olson,Atlanta Braves,Miami Marlins @ Atlanta Braves,9,9,1,1,0,4,0.111,0.111,0.444,0.555
+Bryan Woo,Seattle Mariners,Jake Cronenworth,San Diego Padres,Seattle Mariners @ San Diego Padres,8,6,1,0,2,1,0.167,0.375,0.167,0.542
+Aaron Nola,Philadelphia Phillies,Michael Busch,Chicago Cubs,Chicago Cubs @ Philadelphia Phillies,6,5,1,0,1,2,0.2,0.333,0.2,0.533
+Cole Ragans,Kansas City Royals,Gleyber Torres,Detroit Tigers,Kansas City Royals @ Detroit Tigers,6,5,1,0,1,3,0.2,0.333,0.2,0.533
+Jeffrey Springs,Athletics,Wyatt Langford,Texas Rangers,Texas Rangers @ Athletics,6,5,1,0,1,2,0.2,0.333,0.2,0.533
+Bryan Woo,Seattle Mariners,Xander Bogaerts,San Diego Padres,Seattle Mariners @ San Diego Padres,8,8,2,0,0,0,0.25,0.25,0.25,0.5
+Colin Rea,Chicago Cubs,Trea Turner,Philadelphia Phillies,Chicago Cubs @ Philadelphia Phillies,12,12,3,0,0,3,0.25,0.25,0.25,0.5
+Kevin Gausman,Toronto Blue Jays,David Hamilton,Milwaukee Brewers,Toronto Blue Jays @ Milwaukee Brewers,8,8,2,0,0,1,0.25,0.25,0.25,0.5
+Merrill Kelly,Arizona Diamondbacks,Pete Alonso,Baltimore Orioles,Arizona Diamondbacks @ Baltimore Orioles,6,6,1,0,0,0,0.167,0.167,0.333,0.5
+Trevor Rogers,Baltimore Orioles,Ketel Marte,Arizona Diamondbacks,Arizona Diamondbacks @ Baltimore Orioles,6,6,1,0,0,0,0.167,0.167,0.333,0.5
+Trevor Rogers,Baltimore Orioles,Ildemaro Vargas,Arizona Diamondbacks,Arizona Diamondbacks @ Baltimore Orioles,8,6,1,0,0,0,0.167,0.25,0.167,0.417
+Cole Ragans,Kansas City Royals,Kerry Carpenter,Detroit Tigers,Kansas City Royals @ Detroit Tigers,5,5,1,0,0,2,0.2,0.2,0.2,0.4
+Kevin Gausman,Toronto Blue Jays,Gary Sánchez,Milwaukee Brewers,Toronto Blue Jays @ Milwaukee Brewers,5,5,1,0,0,1,0.2,0.2,0.2,0.4
+Michael King,San Diego Padres,Josh Naylor,Seattle Mariners,Seattle Mariners @ San Diego Padres,5,5,1,0,0,1,0.2,0.2,0.2,0.4
+Reid Detmers,Los Angeles Angels,Aaron Judge,New York Yankees,Los Angeles Angels @ New York Yankees,5,3,0,0,2,2,0.0,0.4,0.0,0.4
+Cole Ragans,Kansas City Royals,Colt Keith,Detroit Tigers,Kansas City Royals @ Detroit Tigers,8,7,1,0,1,1,0.143,0.25,0.143,0.393
+Framber Valdez,Detroit Tigers,Bobby Witt Jr.,Kansas City Royals,Kansas City Royals @ Detroit Tigers,20,20,2,0,0,5,0.1,0.1,0.25,0.35
+Colin Rea,Chicago Cubs,Bryson Stott,Philadelphia Phillies,Chicago Cubs @ Philadelphia Phillies,12,11,1,0,1,3,0.091,0.167,0.182,0.349
+Framber Valdez,Detroit Tigers,Kyle Isbel,Kansas City Royals,Kansas City Royals @ Detroit Tigers,6,6,1,0,0,3,0.167,0.167,0.167,0.334
+Framber Valdez,Detroit Tigers,Lane Thomas,Kansas City Royals,Kansas City Royals @ Detroit Tigers,6,6,1,0,0,1,0.167,0.167,0.167,0.334
+Kevin Gausman,Toronto Blue Jays,Luis Rengifo,Milwaukee Brewers,Toronto Blue Jays @ Milwaukee Brewers,6,6,1,0,0,0,0.167,0.167,0.167,0.334
+Aaron Nola,Philadelphia Phillies,Seiya Suzuki,Chicago Cubs,Chicago Cubs @ Philadelphia Phillies,9,9,1,0,0,5,0.111,0.111,0.222,0.333
+Jeffrey Springs,Athletics,Danny Jansen,Texas Rangers,Texas Rangers @ Athletics,6,4,0,0,2,1,0.0,0.333,0.0,0.333
+Miles Mikolas,Washington Nationals,Joey Bart,Pittsburgh Pirates,Washington Nationals @ Pittsburgh Pirates,6,3,0,0,2,1,0.0,0.333,0.0,0.333
+Ryan Weathers,New York Yankees,Jorge Soler,Los Angeles Angels,Los Angeles Angels @ New York Yankees,6,4,0,0,2,2,0.0,0.333,0.0,0.333
+Michael King,San Diego Padres,J.P. Crawford,Seattle Mariners,Seattle Mariners @ San Diego Padres,9,9,1,0,0,3,0.111,0.111,0.111,0.222
+Framber Valdez,Detroit Tigers,Maikel Garcia,Kansas City Royals,Kansas City Royals @ Detroit Tigers,15,14,1,0,1,2,0.071,0.133,0.071,0.204
+Cole Ragans,Kansas City Royals,Jake Rogers,Detroit Tigers,Kansas City Royals @ Detroit Tigers,5,4,0,0,1,3,0.0,0.2,0.0,0.2
+Cole Ragans,Kansas City Royals,Spencer Torkelson,Detroit Tigers,Kansas City Royals @ Detroit Tigers,10,8,0,0,2,4,0.0,0.2,0.0,0.2
+Miles Mikolas,Washington Nationals,Spencer Horwitz,Pittsburgh Pirates,Washington Nationals @ Pittsburgh Pirates,5,4,0,0,0,2,0.0,0.2,0.0,0.2
+Colin Rea,Chicago Cubs,Alec Bohm,Philadelphia Phillies,Chicago Cubs @ Philadelphia Phillies,11,11,1,0,0,3,0.091,0.091,0.091,0.182
+Michael King,San Diego Padres,Julio Rodríguez,Seattle Mariners,Seattle Mariners @ San Diego Padres,11,10,0,0,1,4,0.0,0.091,0.0,0.091
+Aaron Nola,Philadelphia Phillies,Alex Bregman,Chicago Cubs,Chicago Cubs @ Philadelphia Phillies,8,8,0,0,0,2,0.0,0.0,0.0,0
+Aaron Nola,Philadelphia Phillies,Ian Happ,Chicago Cubs,Chicago Cubs @ Philadelphia Phillies,12,12,0,0,0,5,0.0,0.0,0.0,0
+Bryan Woo,Seattle Mariners,Jackson Merrill,San Diego Padres,Seattle Mariners @ San Diego Padres,5,5,0,0,0,2,0.0,0.0,0.0,0
+Bryan Woo,Seattle Mariners,Manny Machado,San Diego Padres,Seattle Mariners @ San Diego Padres,9,9,0,0,0,4,0.0,0.0,0.0,0
+Cole Ragans,Kansas City Royals,Javier Báez,Detroit Tigers,Kansas City Royals @ Detroit Tigers,6,6,0,0,0,5,0.0,0.0,0.0,0
+Colin Rea,Chicago Cubs,Bryce Harper,Philadelphia Phillies,Chicago Cubs @ Philadelphia Phillies,9,9,0,0,0,1,0.0,0.0,0.0,0
+Kevin Gausman,Toronto Blue Jays,Brice Turang,Milwaukee Brewers,Toronto Blue Jays @ Milwaukee Brewers,6,6,0,0,0,4,0.0,0.0,0.0,0
+Kevin Gausman,Toronto Blue Jays,William Contreras,Milwaukee Brewers,Toronto Blue Jays @ Milwaukee Brewers,6,6,0,0,0,5,0.0,0.0,0.0,0
+Reid Detmers,Los Angeles Angels,Cody Bellinger,New York Yankees,Los Angeles Angels @ New York Yankees,5,5,0,0,0,3,0.0,0.0,0.0,0
+Shane McClanahan,Tampa Bay Rays,Andrew Benintendi,Chicago White Sox,Tampa Bay Rays @ Chicago White Sox,5,5,0,0,0,2,0.0,0.0,0.0,0

@@ -1,0 +1,11 @@
+date,game_time,game_pk,teams_away_team_name,teams_away_league_record_pct,teams_away_score,teams_home_team_name,teams_home_league_record_pct,teams_home_score,venue_name,status_abstract_game_state
+2026-04-13,04:10 PM,823153,Houston Astros,.353,2,Seattle Mariners,.471,6,T-Mobile Park,Final
+2026-04-13,06:35 PM,824856,Arizona Diamondbacks,.529,7,Baltimore Orioles,.563,9,Oriole Park at Camden Yards,Final
+2026-04-13,06:40 PM,823400,Washington Nationals,.438,5,Pittsburgh Pirates,.625,16,PNC Park,Final
+2026-04-13,06:40 PM,823481,Chicago Cubs,.438,7,Philadelphia Phillies,.500,13,Citizens Bank Park,Final
+2026-04-13,07:05 PM,823563,Los Angeles Angels,.471,10,New York Yankees,.563,11,Yankee Stadium,Final
+2026-04-13,07:15 PM,824937,Miami Marlins,.529,10,Atlanta Braves,.588,4,Truist Park,Final
+2026-04-13,07:40 PM,823725,Boston Red Sox,.375,6,Minnesota Twins,.588,13,Target Field,Final
+2026-04-13,07:45 PM,823073,Cleveland Guardians,.588,9,St. Louis Cardinals,.500,3,Busch Stadium,Final
+2026-04-13,09:40 PM,825024,Texas Rangers,.533,4,Athletics,.533,0,Sutter Health Park,Live
+2026-04-13,10:10 PM,823964,New York Mets,.438,0,Los Angeles Dodgers,.733,1,UNIQLO Field at Dodger Stadium,Live
