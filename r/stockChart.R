@@ -98,7 +98,8 @@ p <- ggplot(df,
                      ticker,
                      " as of ",
                      max(df$time),
-                     sep = "")) +
+                     sep = ""),
+       caption = "JHCV") +
   
   scale_y_continuous(labels = scales::dollar) +
   

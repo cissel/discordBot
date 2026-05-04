@@ -1,11 +1,15 @@
 date,game_time,game_pk,teams_away_team_name,teams_away_league_record_pct,teams_away_score,teams_home_team_name,teams_home_league_record_pct,teams_home_score,venue_name,status_abstract_game_state
-2026-04-13,04:10 PM,823153,Houston Astros,.353,2,Seattle Mariners,.471,6,T-Mobile Park,Final
-2026-04-13,06:35 PM,824856,Arizona Diamondbacks,.529,7,Baltimore Orioles,.563,9,Oriole Park at Camden Yards,Final
-2026-04-13,06:40 PM,823400,Washington Nationals,.438,5,Pittsburgh Pirates,.625,16,PNC Park,Final
-2026-04-13,06:40 PM,823481,Chicago Cubs,.438,7,Philadelphia Phillies,.500,13,Citizens Bank Park,Final
-2026-04-13,07:05 PM,823563,Los Angeles Angels,.471,10,New York Yankees,.563,11,Yankee Stadium,Final
-2026-04-13,07:15 PM,824937,Miami Marlins,.529,10,Atlanta Braves,.588,4,Truist Park,Final
-2026-04-13,07:40 PM,823725,Boston Red Sox,.375,6,Minnesota Twins,.588,13,Target Field,Final
-2026-04-13,07:45 PM,823073,Cleveland Guardians,.588,9,St. Louis Cardinals,.500,3,Busch Stadium,Final
-2026-04-13,09:40 PM,825024,Texas Rangers,.533,4,Athletics,.533,0,Sutter Health Park,Live
-2026-04-13,10:10 PM,823964,New York Mets,.438,0,Los Angeles Dodgers,.733,1,UNIQLO Field at Dodger Stadium,Live
+2026-04-24,06:40 PM,824529,Detroit Tigers,.538,0,Cincinnati Reds,.640,0,Great American Ball Park,Preview
+2026-04-24,07:05 PM,824854,Boston Red Sox,.360,0,Baltimore Orioles,.480,0,Oriole Park at Camden Yards,Preview
+2026-04-24,07:07 PM,822827,Cleveland Guardians,.538,0,Toronto Blue Jays,.417,0,Rogers Centre,Preview
+2026-04-24,07:10 PM,823638,Colorado Rockies,.385,0,New York Mets,.360,0,Citi Field,Preview
+2026-04-24,07:10 PM,822992,Minnesota Twins,.480,0,Tampa Bay Rays,.542,0,Tropicana Field,Preview
+2026-04-24,07:15 PM,824932,Philadelphia Phillies,.320,0,Atlanta Braves,.692,0,Truist Park,Preview
+2026-04-24,07:40 PM,824124,Los Angeles Angels,.462,0,Kansas City Royals,.320,0,Kauffman Stadium,Preview
+2026-04-24,07:40 PM,824611,Washington Nationals,.423,0,Chicago White Sox,.400,0,Rate Field,Preview
+2026-04-24,07:40 PM,823800,Pittsburgh Pirates,.560,NA,Milwaukee Brewers,.542,NA,American Family Field,Preview
+2026-04-24,08:05 PM,822909,Athletics,.520,0,Texas Rangers,.520,0,Globe Life Field,Preview
+2026-04-24,08:10 PM,824204,New York Yankees,.640,0,Houston Astros,.385,0,Daikin Park,Preview
+2026-04-24,08:15 PM,823069,Seattle Mariners,.423,0,St. Louis Cardinals,.583,0,Busch Stadium,Preview
+2026-04-24,10:15 PM,823962,Chicago Cubs,.640,NA,Los Angeles Dodgers,.680,NA,UNIQLO Field at Dodger Stadium,Preview
+2026-04-24,10:15 PM,823232,Miami Marlins,.480,NA,San Francisco Giants,.440,NA,Oracle Park,Preview

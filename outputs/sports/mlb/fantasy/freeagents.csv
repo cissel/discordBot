@@ -1,11 +1,11 @@
 player_name,position,pro_team,percent_owned,projected_total_points,injury_status,starting_tomorrow
-James Wood,LF,Wsh,93.82,340.0,ACTIVE,False
-Jarren Duran,LF,Bos,91.63,378.0,ACTIVE,False
-Brent Rooker,DH,Oak,87.65,385.0,TEN_DAY_DL,False
-George Springer,DH,Tor,85.83,362.0,TEN_DAY_DL,False
-Jordan Walker,RF,StL,82.06,180.0,ACTIVE,False
-Ryan O'Hearn,1B,Pit,77.38,289.0,ACTIVE,False
-Tyler Soderstrom,LF,Oak,75.51,332.0,ACTIVE,False
-Teoscar Hernandez,RF,LAD,74.98,274.0,ACTIVE,False
-Wilyer Abreu,RF,Bos,70.93,282.0,ACTIVE,False
-Mauricio Dubon,LF,Atl,68.82,192.0,ACTIVE,False
+Robbie Ray,SP,SF,79.17,319.0,ACTIVE,True
+Eury Perez,SP,Mia,79.02,304.0,ACTIVE,True
+Mitch Keller,SP,Pit,36.46,305.0,ACTIVE,True
+Shane McClanahan,SP,TB,32.61,210.0,ACTIVE,True
+Andrew Painter,SP,Phi,31.64,207.0,ACTIVE,True
+Joey Cantillo,RP,Cle,30.12,261.0,ACTIVE,True
+Roki Sasaki,SP,LAD,23.45,226.0,ACTIVE,True
+Reid Detmers,RP,LAA,20.31,231.0,ACTIVE,True
+Bailey Ober,SP,Min,18.13,310.0,ACTIVE,True
+Ryan Weathers,SP,NYY,16.11,174.0,ACTIVE,True

@@ -819,7 +819,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
     tree.add_command(jags_group)
 
-
     # ─────────────────────────────────────────────────────────────────────────
     # NBA GROUP  /nba <subcommand>
     # ─────────────────────────────────────────────────────────────────────────
@@ -875,6 +874,17 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, embed=emb)
 
     tree.add_command(nba_group)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # MAGIC GROUP  /magic <subcommand>
+    # ─────────────────────────────────────────────────────────────────────────   
+    magic_group = app_commands.Group(name="magic", description="Orlando Magic", guild_ids=[guild.id])
+
+    @magic_group.command(name="takemyenergy", description="༼ つ ◕◕ ༽つ TAKE MY ENERGY")
+    async def magic_energy(interaction: discord.Interaction):
+        await _quick(interaction, "༼ つ ◕◕ ༽つ ORLANDO MAGIC TAKE MY ENERGY ༼ つ ◕◕ ༽つ")
+
+    tree.add_command(magic_group)
 
     # ─────────────────────────────────────────────────────────────────────────
     # GOLF GROUP  /golf <subcommand>

@@ -83,6 +83,7 @@ df <- df_out |>
     exchange_type   = ifelse(exchange == "D", "ADF (Dark Pool)", "Lit Exchange")
   )
 
+
 cat(sprintf("Loaded %d block events.\n", nrow(df)))
 cat(sprintf("Date range:  %s to %s\n", min(df$trade_date), max(df$trade_date)))
 cat(sprintf("Direction:   %d above market / %d below market\n",
