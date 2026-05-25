@@ -1376,35 +1376,56 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, "full price history for crude oil wti @ cushing, oklahoma:",
                     file=discord.File(os.path.join(op, "markets/crudewti.png")))
         
+    CHART_TIMEFRAME_CHOICES = [
+    app_commands.Choice(name="Intraday — today 1min bars",  value="intraday"),
+    app_commands.Choice(name="1 Week",                       value="1w"),
+    app_commands.Choice(name="1 Month",                      value="1mo"),
+    app_commands.Choice(name="3 Months",                     value="3mo"),
+    app_commands.Choice(name="6 Months",                     value="6mo"),
+    app_commands.Choice(name="1 Year",                       value="1y"),
+    app_commands.Choice(name="2 Years",                      value="2y"),
+    app_commands.Choice(name="5 Years",                      value="5y"),
+    app_commands.Choice(name="10 Years",                     value="10y"),
+    app_commands.Choice(name="Max",                          value="max"),
+]
+
     @markets_group.command(name="chart", description="return stock price chart")
-    @app_commands.describe(ticker="ticker symbol (e.g. SPY, AAPL)")
-    async def chart(interaction: discord.Interaction, ticker: str):
-        
-        # Sanitize input
+    @app_commands.describe(ticker="ticker symbol (e.g. SPY, AAPL)", timeframe="time window to display (default: 6mo)")
+    @app_commands.choices(timeframe=CHART_TIMEFRAME_CHOICES)
+    async def chart(interaction: discord.Interaction, ticker: str, timeframe: app_commands.Choice[str] = None):
+
         ticker = ticker.upper().strip()
         if not ticker.isalpha() or len(ticker) > 10:
             await interaction.response.send_message("Invalid ticker symbol.", ephemeral=True)
             return
-        
-        # Defer the response since Rscript will take a second
+
+        tf = timeframe.value if timeframe else "6mo"
+
         await interaction.response.defer()
-        
-        # Run the R script with the ticker as an argument
-        result = subprocess.run(
-            ["Rscript", "/home/jhcv/discordBot/r/stockChart.R", ticker],
+
+        # Step 1: Fetch bar data from Alpaca
+        fetch_result = subprocess.run(
+            [PYTHON, os.path.join(pp, "fetchStockBars.py"), ticker, tf],
             capture_output=True,
             text=True
         )
-        
-        # Check if R script ran successfully
+        if fetch_result.returncode != 0:
+            await interaction.followup.send(f"Error fetching data for **${ticker}**.\n```{fetch_result.stderr[-1500:]}```")
+            print("FETCH ERROR:", fetch_result.stderr)
+            return
+
+        # Step 2: Generate chart
+        result = subprocess.run(
+            ["Rscript", os.path.join(rp, "stockChart.R"), ticker, tf],
+            capture_output=True,
+            text=True
+        )
         if result.returncode != 0:
             await interaction.followup.send(f"Error generating chart for **${ticker}**.")
-            print(result.stderr)  # log the R error to console for debugging
+            print(result.stderr)
             return
-        
-        # Send the chart image
-        output_path = f"/home/jhcv/discordBot/outputs/markets/stockchart.png"
-        
+
+        output_path = os.path.join(op, "markets/stockchart.png")
         if os.path.exists(output_path):
             await interaction.followup.send(
                 content=f"**${ticker}**",
@@ -1468,6 +1489,67 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await interaction.followup.send("Chart file not found.")
 
     tree.add_command(markets_group)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # CRYPTO GROUP  /crypto <subcommand>
+    # ─────────────────────────────────────────────────────────────────────────
+    crypto_group = app_commands.Group(name="crypto", description="crypto charts", guild_ids=[guild.id])
+
+    CRYPTO_TIMEFRAME_CHOICES = [
+        app_commands.Choice(name="Intraday — today 1min bars",  value="intraday"),
+        app_commands.Choice(name="1 Week",                       value="1w"),
+        app_commands.Choice(name="1 Month",                      value="1mo"),
+        app_commands.Choice(name="3 Months",                     value="3mo"),
+        app_commands.Choice(name="6 Months",                     value="6mo"),
+        app_commands.Choice(name="1 Year",                       value="1y"),
+        app_commands.Choice(name="2 Years",                      value="2y"),
+        app_commands.Choice(name="5 Years",                      value="5y"),
+        app_commands.Choice(name="10 Years",                     value="10y"),
+        app_commands.Choice(name="Max",                          value="max"),
+    ]
+
+    async def _crypto_chart(interaction, symbol, timeframe):
+        tf = timeframe.value if timeframe else "6mo"
+        await interaction.response.defer()
+        fetch_result = subprocess.run(
+            [PYTHON, os.path.join(pp, "fetchCryptoBars.py"), symbol, tf],
+            capture_output=True, text=True
+        )
+        if fetch_result.returncode != 0:
+            await interaction.followup.send(f"Error fetching data for **{symbol}**.\n```{fetch_result.stderr[-1500:]}```")
+            return
+        chart_result = subprocess.run(
+            ["Rscript", os.path.join(rp, "cryptoChart.R"), symbol, tf],
+            capture_output=True, text=True
+        )
+        if chart_result.returncode != 0:
+            await interaction.followup.send(f"Error generating chart for **{symbol}**.\n```{chart_result.stderr[-1500:]}```")
+            return
+        out = os.path.join(op, "markets/cryptochart.png")
+        if os.path.exists(out):
+            await interaction.followup.send(content=f"**{symbol}/USD**", file=discord.File(out))
+        else:
+            await interaction.followup.send("Chart file not found.")
+
+    @crypto_group.command(name="btc", description="Bitcoin chart")
+    @app_commands.describe(timeframe="time window to display (default: 6mo)")
+    @app_commands.choices(timeframe=CRYPTO_TIMEFRAME_CHOICES)
+    async def crypto_btc(interaction: discord.Interaction, timeframe: app_commands.Choice[str] = None):
+        await _crypto_chart(interaction, "BTC", timeframe)
+
+    @crypto_group.command(name="eth", description="Ethereum chart")
+    @app_commands.describe(timeframe="time window to display (default: 6mo)")
+    @app_commands.choices(timeframe=CRYPTO_TIMEFRAME_CHOICES)
+    async def crypto_eth(interaction: discord.Interaction, timeframe: app_commands.Choice[str] = None):
+        await _crypto_chart(interaction, "ETH", timeframe)
+
+    @crypto_group.command(name="doge", description="Dogecoin chart")
+    @app_commands.describe(timeframe="time window to display (default: 6mo)")
+    @app_commands.choices(timeframe=CRYPTO_TIMEFRAME_CHOICES)
+    async def crypto_doge(interaction: discord.Interaction, timeframe: app_commands.Choice[str] = None):
+        await _crypto_chart(interaction, "DOGE", timeframe)
+
+    tree.add_command(crypto_group)
 
     # ─────────────────────────────────────────────────────────────────────────
     # SPACE GROUP  /space <subcommand>

@@ -1,4 +1,4 @@
-# stockChart.R by JHCV
+# cryptoChart.R by JHCV
 
 ##### Required Packages #####
 
@@ -27,17 +27,12 @@ myTheme <- theme(legend.position = "none",
                  strip.background = element_rect(fill = "#02233F"),
                  strip.text = element_text(color = "white"))
 
-myLegend <- theme(legend.position = "right",
-                  legend.background = element_rect(fill = "#02233F"),
-                  legend.text = element_text(color = "white"),
-                  legend.title = element_text(color = "white"))
-
 #####
 
 ##### Pull Data #####
 
 args      <- commandArgs(trailingOnly = TRUE)
-ticker    <- toupper(args[1])
+symbol    <- toupper(args[1])
 timeframe <- if (length(args) >= 2) args[2] else "6mo"
 
 tf_label <- switch(timeframe,
@@ -54,7 +49,7 @@ tf_label <- switch(timeframe,
                    timeframe
 )
 
-bars_csv <- path.expand(paste0("~/discordBot/outputs/markets/", ticker, "_", timeframe, "_bars.csv"))
+bars_csv <- path.expand(paste0("~/discordBot/outputs/markets/", symbol, "_", timeframe, "_bars.csv"))
 if (!file.exists(bars_csv)) stop("Bars CSV not found: ", bars_csv)
 
 df <- read_csv(bars_csv, show_col_types = FALSE) %>%
@@ -82,15 +77,15 @@ p <- ggplot(df,
               color = "green") +
   geom_line(color = "white") +
   labs(x = "Time",
-       y = "Share Price (USD)",
-       subtitle = paste0("$", tail(df$close, 1),
+       y = "Price (USD)",
+       subtitle = paste0("$", formatC(tail(df$close, 1), format = "f", digits = 2),
                          " (", round(tail(df$pct * 100, 1), 2), "%)"),
-       title = paste0("$", ticker, " — ", tf_label, " as of ", max(df$time)),
+       title = paste0(symbol, "/USD — ", tf_label, " as of ", max(df$time)),
        caption = "JHCV") +
   scale_y_continuous(labels = scales::dollar) +
   myTheme
 
-ggsave(path.expand("~/discordBot/outputs/markets/stockchart.png"),
+ggsave(path.expand("~/discordBot/outputs/markets/cryptochart.png"),
        p, width = 8, height = 4.5, dpi = 300)
 
 #####
