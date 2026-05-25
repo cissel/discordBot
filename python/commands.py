@@ -93,6 +93,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     rp  = R_PATH
     pp  = PYTHON_PATH
     op  = OUTPUT_PATH
+    PYTHON = os.path.expanduser("~/discordBot/venv/bin/python3")
 
     # ── /standings ────────────────────────────────────────────────────────────
     # (kept from original commands.py – full implementation preserved)
@@ -433,7 +434,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @history_group.command(name="server", description="total server message history")
     async def hist_server(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "channelReader.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "channelReader.py"))
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "serverHistory.R"))
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/allMessages.png")))
@@ -441,7 +442,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @history_group.command(name="channel", description="channel message history")
     async def hist_channel(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "channelReader.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "channelReader.py"))
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "channelHistory.R"))
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/channelMessages.png")))
@@ -449,7 +450,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @history_group.command(name="user", description="user message history")
     async def hist_user(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "channelReader.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "channelReader.py"))
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "userHistory.R"))
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/userMessages.png")))
@@ -457,7 +458,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @history_group.command(name="daily", description="daily messages plot")
     async def hist_daily(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "channelReader.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "channelReader.py"))
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "dailyMessage.R"))
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/dailyMessages.png")))
@@ -479,7 +480,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @cats_group.command(name="next", description="next Panthers game")
     async def cats_next(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "nextCats.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "nextCats.py"))
         csv = os.path.join(op, "sports/nhl/nextTeamGame.csv")
         if not os.path.exists(csv):
             await _send(interaction, "couldnt find game info 😿", ephemeral=True)
@@ -680,7 +681,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @nhl_group.command(name="today", description="NHL games today")
     async def nhl_today(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "nhlToday.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "nhlToday.py"))
         csv = os.path.join(op, "sports/nhl/gamesToday.csv")
         if not os.path.exists(csv):
             await _send(interaction, "no hockey today :(")
@@ -694,7 +695,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @nhl_group.command(name="tomorrow", description="NHL games tomorrow")
     async def nhl_tomorrow(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "nhlTomorrow.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "nhlTomorrow.py"))
         csv = os.path.join(op, "sports/nhl/gamesTomorrow.csv")
         if not os.path.exists(csv):
             await _send(interaction, "no hockey tomorrow :(")
@@ -752,7 +753,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @nfl_group.command(name="fantasyscoreboard", description="fantasy football scoreboard")
     async def nfl_fsb(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "dynProj.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "dynProj.py"))
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "scorekeepe.R"))
         await _send(interaction, "ball don't lie",
                     file=discord.File(os.path.join(op, "sports/nfl/fantasyScoreboard.png")))
@@ -892,7 +893,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     golf_group = app_commands.Group(name="golf", description="PGA Tour golf", guild_ids=[guild.id])
 
     def _build_golf_embeds():
-        subprocess.run(["python3", os.path.join(pp, "pgaLeaderboard.py")],
+        subprocess.run(["PYTHON", os.path.join(pp, "pgaLeaderboard.py")],
                     check=False, timeout=30)
         tourn_csv = os.path.join(op, "sports/pga/tournament.csv")
         lb_csv    = os.path.join(op, "sports/pga/leaderboard.csv")
@@ -960,9 +961,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # Run all schedule/leaderboard scripts concurrently
         await asyncio.gather(
-            asyncio.to_thread(_run, "python3",  os.path.join(pp, "nhlToday.py")),
-            asyncio.to_thread(_run, "python3",  os.path.join(pp, "mlbToday.py")),
-            asyncio.to_thread(_run, "python3",  os.path.join(pp, "pgaLeaderboard.py")),
+            asyncio.to_thread(_run, PYTHON,  os.path.join(pp, "nhlToday.py")),
+            asyncio.to_thread(_run, PYTHON,  os.path.join(pp, "mlbToday.py")),
+            asyncio.to_thread(_run, PYTHON,  os.path.join(pp, "pgaLeaderboard.py")),
             asyncio.to_thread(_run, "Rscript",  os.path.join(rp, "nbaToday.R")),
             asyncio.to_thread(_run, "Rscript",  os.path.join(rp, "nbaLiveScore.R")),
             asyncio.to_thread(_run, "Rscript",  os.path.join(rp, "nextNFL.R")),
@@ -1113,7 +1114,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         await asyncio.to_thread(
             lambda: subprocess.run(
-                ["python3", os.path.join(pp, "osrsHiscores.py"), skill],
+                ["PYTHON", os.path.join(pp, "osrsHiscores.py"), skill],
                 check=False, timeout=60
             )
         )
@@ -1306,7 +1307,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         await asyncio.to_thread(
             lambda: subprocess.run(
-                ["python3", os.path.join(pp, "jaxS.py"), group, "1"],
+                ["PYTHON", os.path.join(pp, "jaxS.py"), group, "1"],
                 check=False, timeout=30
             )
         )
@@ -1390,7 +1391,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         
         # Run the R script with the ticker as an argument
         result = subprocess.run(
-            ["Rscript", "/Users/jamescissel/discordBot/r/stockChart.R", ticker],
+            ["Rscript", "/home/jhcv/discordBot/r/stockChart.R", ticker],
             capture_output=True,
             text=True
         )
@@ -1402,7 +1403,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             return
         
         # Send the chart image
-        output_path = f"/Users/jamescissel/discordBot/outputs/markets/stockchart.png"
+        output_path = f"/home/jhcv/discordBot/outputs/markets/stockchart.png"
         
         if os.path.exists(output_path):
             await interaction.followup.send(
@@ -1434,7 +1435,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # Step 1: Pull trade data
         pull_result = subprocess.run(
-            ["python3", "/Users/jamescissel/discordBot/python/marketTrades.py", ticker, timeframe.value],
+            [PYTHON, os.path.join(pp, "marketTrades.py"), ticker, timeframe.value],
             capture_output=True,
             text=True
         )
@@ -1446,7 +1447,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # Step 2: Generate chart
         chart_result = subprocess.run(
-            ["Rscript", "/Users/jamescissel/discordBot/r/tradeChart.R", ticker, timeframe.value],
+            ["Rscript", os.path.join(rp, "tradeChart.R"), ticker, timeframe.value],
             capture_output=True,
             text=True
         )
@@ -1456,7 +1457,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             print("CHART ERROR:", chart_result.stderr)
             return
 
-        output_path = "/Users/jamescissel/discordBot/outputs/markets/tradechart.png"
+        output_path = os.path.join(op, "markets/tradechart.png")
 
         if os.path.exists(output_path):
             await interaction.followup.send(
@@ -1476,7 +1477,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @space_group.command(name="nextlaunch", description="next rocket launch from KSC")
     async def nextlaunch(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "spaceLaunches.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "spaceLaunches.py"))
         csv = os.path.join(op, "space/next_launch.csv")
         if not os.path.exists(csv):
             await _send(interaction, "🚫 Couldn't find launch data.", ephemeral=True); return
@@ -1502,7 +1503,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @space_group.command(name="isspass", description="next ISS passes over Jacksonville")
     async def isspass(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "issPass.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "issPass.py"))
         csv_path = os.path.join(op, "space/issPasses.csv")
         if not os.path.exists(csv_path):
             await _send(interaction, "couldn't compute ISS passes :(", ephemeral=True)
@@ -1781,7 +1782,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     async def mlb_fantasystandings(interaction: discord.Interaction):
         await _defer(interaction)
 
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "worldSilliesStandings.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesStandings.py"))
 
         csv_path = os.path.join(op, "sports/mlb/fantasy/standings.csv")
         if not os.path.exists(csv_path):
@@ -1825,7 +1826,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     async def mlb_fantasyscoreboard(interaction: discord.Interaction):
         await _defer(interaction)
 
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "worldSilliesScoreboard.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesScoreboard.py"))
 
         csv_path = os.path.join(op, "sports/mlb/fantasy/scoreboard.csv")
         if not os.path.exists(csv_path):
@@ -1893,7 +1894,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         print("DEBUG pp:", pp)
  
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "worldSilliesRoster.py"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesRoster.py"))
  
         csv_path = os.path.join(op, "sports/mlb/fantasy/roster.csv")
         if not os.path.exists(csv_path):
@@ -1967,7 +1968,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     async def mlb_fantasyfa(interaction: discord.Interaction, position: str):
         await _defer(interaction)
 
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "worldSilliesFA.py"), position)
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), position)
 
         csv_path = os.path.join(op, "sports/mlb/fantasy/freeagents.csv")
         if not os.path.exists(csv_path):
@@ -2021,7 +2022,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @app_commands.describe(pitcher="Full name of the pitcher, e.g. 'Paul Skenes'")
     async def mlb_pitcherhitters(interaction: discord.Interaction, pitcher: str):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "whoHits.py"), pitcher, op)
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "whoHits.py"), pitcher, op)
  
         csv_path = os.path.join(op, "sports/mlb/top10_vs_pitcher.csv")
  
@@ -2089,8 +2090,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         if needs_refresh:
             print("[DEBUG] Regenerating mismatch data...")
-            await asyncio.to_thread(_run, "python3", os.path.join(pp, "mlbProbPitchers.py"))
-            await asyncio.to_thread(_run, "python3", os.path.join(pp, "mlbMismatch.py"))
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"))
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbMismatch.py"))
 
         try:
             df = pd.read_csv(csv_path)
@@ -2175,7 +2176,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         env = {**os.environ, "MYSHIPTRACKING_KEY": mst_key}
         await asyncio.to_thread(
             lambda: subprocess.run(
-                ["python3", os.path.join(pp, "jaxShips.py")],
+                ["PYTHON", os.path.join(pp, "jaxShips.py")],
                 check=False, timeout=60, env=env
             )
         )
@@ -2192,7 +2193,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     async def jaxplanes(interaction: discord.Interaction, radius: int = 50):
         radius = max(10, min(radius, 250))  # clamp to sane range
         await _defer(interaction)
-        await asyncio.to_thread(_run, "python3", os.path.join(pp, "overJax.py"), "--radius", str(radius))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "overJax.py"), "--radius", str(radius))
         img = os.path.join(op, "aerospace/jaxPlanes.png")
         if not os.path.exists(img):
             await _send(interaction, "couldn't generate the plot :(", ephemeral=True)

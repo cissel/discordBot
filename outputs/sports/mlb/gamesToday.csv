@@ -1,15 +1,17 @@
 date,game_time,game_pk,teams_away_team_name,teams_away_league_record_pct,teams_away_score,teams_home_team_name,teams_home_league_record_pct,teams_home_score,venue_name,status_abstract_game_state
-2026-04-24,06:40 PM,824529,Detroit Tigers,.538,0,Cincinnati Reds,.640,0,Great American Ball Park,Preview
-2026-04-24,07:05 PM,824854,Boston Red Sox,.360,0,Baltimore Orioles,.480,0,Oriole Park at Camden Yards,Preview
-2026-04-24,07:07 PM,822827,Cleveland Guardians,.538,0,Toronto Blue Jays,.417,0,Rogers Centre,Preview
-2026-04-24,07:10 PM,823638,Colorado Rockies,.385,0,New York Mets,.360,0,Citi Field,Preview
-2026-04-24,07:10 PM,822992,Minnesota Twins,.480,0,Tampa Bay Rays,.542,0,Tropicana Field,Preview
-2026-04-24,07:15 PM,824932,Philadelphia Phillies,.320,0,Atlanta Braves,.692,0,Truist Park,Preview
-2026-04-24,07:40 PM,824124,Los Angeles Angels,.462,0,Kansas City Royals,.320,0,Kauffman Stadium,Preview
-2026-04-24,07:40 PM,824611,Washington Nationals,.423,0,Chicago White Sox,.400,0,Rate Field,Preview
-2026-04-24,07:40 PM,823800,Pittsburgh Pirates,.560,NA,Milwaukee Brewers,.542,NA,American Family Field,Preview
-2026-04-24,08:05 PM,822909,Athletics,.520,0,Texas Rangers,.520,0,Globe Life Field,Preview
-2026-04-24,08:10 PM,824204,New York Yankees,.640,0,Houston Astros,.385,0,Daikin Park,Preview
-2026-04-24,08:15 PM,823069,Seattle Mariners,.423,0,St. Louis Cardinals,.583,0,Busch Stadium,Preview
-2026-04-24,10:15 PM,823962,Chicago Cubs,.640,NA,Los Angeles Dodgers,.680,NA,UNIQLO Field at Dodger Stadium,Preview
-2026-04-24,10:15 PM,823232,Miami Marlins,.480,NA,San Francisco Giants,.440,NA,Oracle Park,Preview
+2026-05-24,12:15 PM,822813,Pittsburgh Pirates,.500,2,Toronto Blue Jays,.481,0,Rogers Centre,Live
+2026-05-24,12:35 PM,824839,Detroit Tigers,.385,0,Baltimore Orioles,.431,0,Oriole Park at Camden Yards,Live
+2026-05-24,06:05 PM,824840,Detroit Tigers,.385,NA,Baltimore Orioles,.431,NA,Oriole Park at Camden Yards,Preview
+2026-05-24,01:35 PM,824759,Minnesota Twins,.481,0,Boston Red Sox,.431,0,Fenway Park,Preview
+2026-05-24,01:35 PM,823459,Cleveland Guardians,.574,0,Philadelphia Phillies,.500,0,Citizens Bank Park,Preview
+2026-05-24,01:35 PM,823544,Tampa Bay Rays,.694,0,New York Yankees,.577,0,Yankee Stadium,Preview
+2026-05-24,01:40 PM,824514,St. Louis Cardinals,.569,0,Cincinnati Reds,.519,0,Great American Ball Park,Preview
+2026-05-24,01:40 PM,823861,New York Mets,.423,0,Miami Marlins,.453,0,loanDepot park,Preview
+2026-05-24,02:10 PM,824108,Seattle Mariners,.472,0,Kansas City Royals,.404,0,Kauffman Stadium,Preview
+2026-05-24,02:10 PM,823786,Los Angeles Dodgers,.615,0,Milwaukee Brewers,.612,0,American Family Field,Preview
+2026-05-24,02:20 PM,824676,Houston Astros,.415,0,Chicago Cubs,.558,0,Wrigley Field,Preview
+2026-05-24,04:05 PM,823220,Chicago White Sox,.510,NA,San Francisco Giants,.404,NA,Oracle Park,Preview
+2026-05-24,04:10 PM,825081,Colorado Rockies,.377,NA,Arizona Diamondbacks,.529,NA,Chase Field,Preview
+2026-05-24,04:10 PM,823297,Athletics,.500,NA,San Diego Padres,.608,NA,Petco Park,Preview
+2026-05-24,04:10 PM,824921,Washington Nationals,.491,NA,Atlanta Braves,.679,NA,Truist Park,Preview
+2026-05-24,07:20 PM,824028,Texas Rangers,.471,NA,Los Angeles Angels,.358,NA,Angel Stadium,Preview

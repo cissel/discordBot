@@ -99,7 +99,7 @@ cat(sprintf("Batch flags: %d / %d events have suspicious timestamps\n\n",
 run_tests <- function(data, window_label, label = "") {
   reach_col  <- paste0("reached_", window_label)
   toward_col <- paste0("pct_toward_", window_label)
-  
+  now th
   reached <- data[[reach_col]]
   toward  <- data[[toward_col]]
   

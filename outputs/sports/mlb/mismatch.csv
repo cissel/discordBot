@@ -1,75 +1,44 @@
 pitcher,pitcher_team,batter,opposing_team,matchup,PA,AB,H,HR,BB,K,AVG,OBP,SLG,OPS
-Bailey Ober,Minnesota Twins,George Springer,Toronto Blue Jays,Toronto Blue Jays @ Minnesota Twins,12,12,6,3,0,4,0.5,0.5,1.333,1.833
-Noah Cameron,Kansas City Royals,Brent Rooker,Athletics,Kansas City Royals @ Athletics,5,3,2,0,2,1,0.667,0.8,1.0,1.8
-Michael Lorenzen,Colorado Rockies,Tyler Stephenson,Cincinnati Reds,Colorado Rockies @ Cincinnati Reds,9,8,5,1,0,1,0.625,0.667,1.125,1.792
-Cristopher Sánchez,Philadelphia Phillies,Matt Chapman,San Francisco Giants,San Francisco Giants @ Philadelphia Phillies,12,11,7,1,1,2,0.636,0.667,1.091,1.758
-Framber Valdez,Detroit Tigers,Matt Olson,Atlanta Braves,Detroit Tigers @ Atlanta Braves,7,6,3,1,1,3,0.5,0.571,1.0,1.571
-Andrew Abbott,Cincinnati Reds,Brenton Doyle,Colorado Rockies,Colorado Rockies @ Cincinnati Reds,9,8,4,1,1,3,0.5,0.556,1.0,1.556
-Chris Bassitt,Baltimore Orioles,Yordan Alvarez,Houston Astros,Houston Astros @ Baltimore Orioles,15,12,5,2,3,1,0.417,0.533,1.0,1.533
-Framber Valdez,Detroit Tigers,Ozzie Albies,Atlanta Braves,Detroit Tigers @ Atlanta Braves,6,6,3,1,0,0,0.5,0.5,1.0,1.5
-Kevin Gausman,Toronto Blue Jays,Matt Wallner,Minnesota Twins,Toronto Blue Jays @ Minnesota Twins,6,5,2,1,1,0,0.4,0.5,1.0,1.5
-Brandon Young,Baltimore Orioles,Christian Walker,Houston Astros,Houston Astros @ Baltimore Orioles,6,6,2,1,0,1,0.333,0.333,1.0,1.333
-Logan Webb,San Francisco Giants,Kyle Schwarber,Philadelphia Phillies,San Francisco Giants @ Philadelphia Phillies,7,6,2,1,1,2,0.333,0.429,0.833,1.262
-Brandon Woodruff,Milwaukee Brewers,Corbin Carroll,Arizona Diamondbacks,Arizona Diamondbacks @ Milwaukee Brewers,8,8,4,0,0,1,0.5,0.5,0.75,1.25
-Freddy Peralta,New York Mets,CJ Abrams,Washington Nationals,Washington Nationals @ New York Mets,6,6,3,0,0,2,0.5,0.5,0.667,1.167
-Logan Webb,San Francisco Giants,Bryce Harper,Philadelphia Phillies,San Francisco Giants @ Philadelphia Phillies,6,6,2,1,0,1,0.333,0.333,0.833,1.166
-Miles Mikolas,Washington Nationals,Tyrone Taylor,New York Mets,Washington Nationals @ New York Mets,12,12,4,1,0,3,0.333,0.333,0.833,1.166
-Cristopher Sánchez,Philadelphia Phillies,Rafael Devers,San Francisco Giants,San Francisco Giants @ Philadelphia Phillies,9,9,4,0,0,2,0.444,0.444,0.667,1.111
-Brandon Woodruff,Milwaukee Brewers,Ketel Marte,Arizona Diamondbacks,Arizona Diamondbacks @ Milwaukee Brewers,6,5,2,0,1,1,0.4,0.5,0.6,1.1
-Michael Lorenzen,Colorado Rockies,TJ Friedl,Cincinnati Reds,Colorado Rockies @ Cincinnati Reds,6,5,2,0,1,1,0.4,0.5,0.6,1.1
-Brandon Woodruff,Milwaukee Brewers,Alek Thomas,Arizona Diamondbacks,Arizona Diamondbacks @ Milwaukee Brewers,5,5,2,0,0,0,0.4,0.4,0.6,1.0
-Miles Mikolas,Washington Nationals,Bo Bichette,New York Mets,Washington Nationals @ New York Mets,9,9,4,0,0,2,0.444,0.444,0.556,1.0
-Noah Cameron,Kansas City Royals,Lawrence Butler,Athletics,Kansas City Royals @ Athletics,5,5,2,0,0,0,0.4,0.4,0.6,1.0
-Cristopher Sánchez,Philadelphia Phillies,Willy Adames,San Francisco Giants,San Francisco Giants @ Philadelphia Phillies,15,13,4,0,2,3,0.308,0.4,0.538,0.938
-Kevin Gausman,Toronto Blue Jays,Royce Lewis,Minnesota Twins,Toronto Blue Jays @ Minnesota Twins,8,7,3,0,1,2,0.429,0.5,0.429,0.929
-Paul Skenes,Pittsburgh Pirates,Victor Scott II,St. Louis Cardinals,St. Louis Cardinals @ Pittsburgh Pirates,7,7,2,0,0,2,0.286,0.286,0.571,0.857
-Brandon Young,Baltimore Orioles,Yainer Diaz,Houston Astros,Houston Astros @ Baltimore Orioles,6,6,1,1,0,1,0.167,0.167,0.667,0.834
-Miles Mikolas,Washington Nationals,Brett Baty,New York Mets,Washington Nationals @ New York Mets,9,8,2,0,1,3,0.25,0.333,0.5,0.833
-Paul Skenes,Pittsburgh Pirates,Alec Burleson,St. Louis Cardinals,St. Louis Cardinals @ Pittsburgh Pirates,18,17,6,0,1,3,0.353,0.389,0.412,0.801
-Jeffrey Springs,Athletics,Vinnie Pasquantino,Kansas City Royals,Kansas City Royals @ Athletics,5,5,2,0,0,1,0.4,0.4,0.4,0.8
-Miles Mikolas,Washington Nationals,Juan Soto,New York Mets,Washington Nationals @ New York Mets,14,13,5,0,0,2,0.385,0.385,0.385,0.77
-Framber Valdez,Detroit Tigers,Ronald Acuña Jr.,Atlanta Braves,Detroit Tigers @ Atlanta Braves,7,6,2,0,1,2,0.333,0.429,0.333,0.762
-Chris Bassitt,Baltimore Orioles,Jose Altuve,Houston Astros,Houston Astros @ Baltimore Orioles,12,10,3,0,2,0,0.3,0.417,0.3,0.717
-Cristopher Sánchez,Philadelphia Phillies,Casey Schmitt,San Francisco Giants,San Francisco Giants @ Philadelphia Phillies,9,8,2,0,1,5,0.25,0.333,0.375,0.708
-Kevin Gausman,Toronto Blue Jays,Trevor Larnach,Minnesota Twins,Toronto Blue Jays @ Minnesota Twins,14,11,3,0,3,4,0.273,0.429,0.273,0.702
-Bailey Ober,Minnesota Twins,Ernie Clement,Toronto Blue Jays,Toronto Blue Jays @ Minnesota Twins,10,10,2,1,0,0,0.2,0.2,0.5,0.7
-Brandon Young,Baltimore Orioles,Carlos Correa,Houston Astros,Houston Astros @ Baltimore Orioles,6,6,2,0,0,1,0.333,0.333,0.333,0.666
-Bryce Elder,Atlanta Braves,Gleyber Torres,Detroit Tigers,Detroit Tigers @ Atlanta Braves,6,6,2,0,0,0,0.333,0.333,0.333,0.666
-Freddy Peralta,New York Mets,Luis García Jr.,Washington Nationals,Washington Nationals @ New York Mets,8,8,2,0,0,1,0.25,0.25,0.375,0.625
-Andrew Abbott,Cincinnati Reds,Hunter Goodman,Colorado Rockies,Colorado Rockies @ Cincinnati Reds,7,6,1,0,1,2,0.167,0.286,0.333,0.619
-Kevin Gausman,Toronto Blue Jays,Tristan Gray,Minnesota Twins,Toronto Blue Jays @ Minnesota Twins,5,5,1,0,0,2,0.2,0.2,0.4,0.6
-Chris Bassitt,Baltimore Orioles,Christian Walker,Houston Astros,Houston Astros @ Baltimore Orioles,9,8,2,0,0,1,0.25,0.333,0.25,0.583
-Chris Bassitt,Baltimore Orioles,Yainer Diaz,Houston Astros,Houston Astros @ Baltimore Orioles,12,12,3,0,0,1,0.25,0.25,0.333,0.583
-Freddy Peralta,New York Mets,Keibert Ruiz,Washington Nationals,Washington Nationals @ New York Mets,7,7,2,0,0,1,0.286,0.286,0.286,0.572
-Brandon Woodruff,Milwaukee Brewers,Geraldo Perdomo,Arizona Diamondbacks,Arizona Diamondbacks @ Milwaukee Brewers,8,6,1,0,1,1,0.167,0.375,0.167,0.542
-Bailey Ober,Minnesota Twins,Myles Straw,Toronto Blue Jays,Toronto Blue Jays @ Minnesota Twins,6,5,1,0,1,1,0.2,0.333,0.2,0.533
-Brandon Woodruff,Milwaukee Brewers,Nolan Arenado,Arizona Diamondbacks,Arizona Diamondbacks @ Milwaukee Brewers,6,5,1,0,1,0,0.2,0.333,0.2,0.533
-Logan Webb,San Francisco Giants,Trea Turner,Philadelphia Phillies,San Francisco Giants @ Philadelphia Phillies,12,11,3,0,0,1,0.273,0.25,0.273,0.523
-Paul Skenes,Pittsburgh Pirates,Nolan Gorman,St. Louis Cardinals,St. Louis Cardinals @ Pittsburgh Pirates,8,8,2,0,0,3,0.25,0.25,0.25,0.5
-Bailey Ober,Minnesota Twins,Andrés Giménez,Toronto Blue Jays,Toronto Blue Jays @ Minnesota Twins,19,17,3,0,2,5,0.176,0.263,0.235,0.498
-Kevin Gausman,Toronto Blue Jays,Ryan Jeffers,Minnesota Twins,Toronto Blue Jays @ Minnesota Twins,7,6,1,0,1,3,0.167,0.286,0.167,0.453
-Lance McCullers Jr.,Houston Astros,Taylor Ward,Baltimore Orioles,Houston Astros @ Baltimore Orioles,7,6,1,0,1,1,0.167,0.286,0.167,0.453
-Paul Skenes,Pittsburgh Pirates,Jordan Walker,St. Louis Cardinals,St. Louis Cardinals @ Pittsburgh Pirates,7,6,1,0,1,4,0.167,0.286,0.167,0.453
-Framber Valdez,Detroit Tigers,Jorge Mateo,Atlanta Braves,Detroit Tigers @ Atlanta Braves,9,9,2,0,0,2,0.222,0.222,0.222,0.444
-Paul Skenes,Pittsburgh Pirates,Pedro Pagés,St. Louis Cardinals,St. Louis Cardinals @ Pittsburgh Pirates,9,9,2,0,0,3,0.222,0.222,0.222,0.444
-Chris Bassitt,Baltimore Orioles,Isaac Paredes,Houston Astros,Houston Astros @ Baltimore Orioles,20,17,2,0,3,4,0.118,0.25,0.176,0.426
-Cristopher Sánchez,Philadelphia Phillies,Heliot Ramos,San Francisco Giants,San Francisco Giants @ Philadelphia Phillies,12,12,2,0,0,6,0.167,0.167,0.25,0.417
-Framber Valdez,Detroit Tigers,Jonah Heim,Atlanta Braves,Detroit Tigers @ Atlanta Braves,28,25,4,0,2,6,0.16,0.214,0.2,0.414
-Bailey Ober,Minnesota Twins,Daulton Varsho,Toronto Blue Jays,Toronto Blue Jays @ Minnesota Twins,5,5,1,0,0,3,0.2,0.2,0.2,0.4
-Michael Lorenzen,Colorado Rockies,JJ Bleday,Cincinnati Reds,Colorado Rockies @ Cincinnati Reds,5,5,1,0,0,4,0.2,0.2,0.2,0.4
-Miles Mikolas,Washington Nationals,MJ Melendez,New York Mets,Washington Nationals @ New York Mets,5,5,1,0,0,1,0.2,0.2,0.2,0.4
-Noah Cameron,Kansas City Royals,Nick Kurtz,Athletics,Kansas City Royals @ Athletics,5,5,1,0,0,1,0.2,0.2,0.2,0.4
-Paul Skenes,Pittsburgh Pirates,Masyn Winn,St. Louis Cardinals,St. Louis Cardinals @ Pittsburgh Pirates,18,18,3,0,0,4,0.167,0.167,0.222,0.389
-Michael Lorenzen,Colorado Rockies,Elly De La Cruz,Cincinnati Reds,Colorado Rockies @ Cincinnati Reds,9,8,1,0,1,2,0.125,0.222,0.125,0.347
-Michael Lorenzen,Colorado Rockies,Spencer Steer,Cincinnati Reds,Colorado Rockies @ Cincinnati Reds,9,8,1,0,1,1,0.125,0.222,0.125,0.347
-Bailey Ober,Minnesota Twins,Vladimir Guerrero Jr.,Toronto Blue Jays,Toronto Blue Jays @ Minnesota Twins,10,8,1,0,0,2,0.125,0.2,0.125,0.325
-Michael Lorenzen,Colorado Rockies,Will Benson,Cincinnati Reds,Colorado Rockies @ Cincinnati Reds,8,7,1,0,0,1,0.143,0.125,0.143,0.268
-Framber Valdez,Detroit Tigers,Eli White,Atlanta Braves,Detroit Tigers @ Atlanta Braves,9,7,0,0,2,4,0.0,0.222,0.0,0.222
-Brandon Young,Baltimore Orioles,Jose Altuve,Houston Astros,Houston Astros @ Baltimore Orioles,6,5,0,0,1,0,0.0,0.167,0.0,0.167
-Cristopher Sánchez,Philadelphia Phillies,Luis Arraez,San Francisco Giants,San Francisco Giants @ Philadelphia Phillies,16,15,1,0,0,2,0.067,0.067,0.067,0.134
-Andrew Abbott,Cincinnati Reds,Ezequiel Tovar,Colorado Rockies,Colorado Rockies @ Cincinnati Reds,6,6,0,0,0,1,0.0,0.0,0.0,0
-Andrew Abbott,Cincinnati Reds,Jake McCarthy,Colorado Rockies,Colorado Rockies @ Cincinnati Reds,5,5,0,0,0,2,0.0,0.0,0.0,0
-Andrew Abbott,Cincinnati Reds,Willi Castro,Colorado Rockies,Colorado Rockies @ Cincinnati Reds,6,6,0,0,0,2,0.0,0.0,0.0,0
-Bailey Ober,Minnesota Twins,Lenyn Sosa,Toronto Blue Jays,Toronto Blue Jays @ Minnesota Twins,11,11,0,0,0,2,0.0,0.0,0.0,0
-Logan Webb,San Francisco Giants,Adolis García,Philadelphia Phillies,San Francisco Giants @ Philadelphia Phillies,7,7,0,0,0,3,0.0,0.0,0.0,0
-Logan Webb,San Francisco Giants,Alec Bohm,Philadelphia Phillies,San Francisco Giants @ Philadelphia Phillies,6,6,0,0,0,2,0.0,0.0,0.0,0
+Jesús Luzardo,Philadelphia Phillies,Manny Machado,San Diego Padres,Philadelphia Phillies @ San Diego Padres,8,6,2,2,2,3,0.333,0.5,1.333,1.833
+Jacob Misiorowski,Milwaukee Brewers,Iván Herrera,St. Louis Cardinals,St. Louis Cardinals @ Milwaukee Brewers,7,6,3,1,1,1,0.5,0.571,1.167,1.738
+Matthew Liberatore,St. Louis Cardinals,Joey Ortiz,Milwaukee Brewers,St. Louis Cardinals @ Milwaukee Brewers,6,4,2,0,1,1,0.5,0.6,1.0,1.6
+Emmet Sheehan,Los Angeles Dodgers,Kyle Karros,Colorado Rockies,Colorado Rockies @ Los Angeles Dodgers,7,5,2,1,1,2,0.4,0.429,1.0,1.429
+Zebby Matthews,Minnesota Twins,Edgar Quero,Chicago White Sox,Minnesota Twins @ Chicago White Sox,5,5,2,1,0,0,0.4,0.4,1.0,1.4
+Zebby Matthews,Minnesota Twins,Colson Montgomery,Chicago White Sox,Minnesota Twins @ Chicago White Sox,6,6,2,1,0,2,0.333,0.333,1.0,1.333
+Carmen Mlodzinski,Pittsburgh Pirates,Ian Happ,Chicago Cubs,Chicago Cubs @ Pittsburgh Pirates,10,9,5,0,1,1,0.556,0.6,0.556,1.156
+Carmen Mlodzinski,Pittsburgh Pirates,Nico Hoerner,Chicago Cubs,Chicago Cubs @ Pittsburgh Pirates,10,9,5,0,1,0,0.556,0.6,0.556,1.156
+Matthew Liberatore,St. Louis Cardinals,Christian Yelich,Milwaukee Brewers,St. Louis Cardinals @ Milwaukee Brewers,7,7,4,0,0,1,0.571,0.571,0.571,1.142
+Jesús Luzardo,Philadelphia Phillies,Fernando Tatis Jr.,San Diego Padres,Philadelphia Phillies @ San Diego Padres,9,7,3,0,2,2,0.429,0.556,0.571,1.127
+Carmen Mlodzinski,Pittsburgh Pirates,Dansby Swanson,Chicago Cubs,Chicago Cubs @ Pittsburgh Pirates,10,8,4,0,2,1,0.5,0.6,0.5,1.1
+Shane McClanahan,Tampa Bay Rays,Taylor Ward,Baltimore Orioles,Tampa Bay Rays @ Baltimore Orioles,5,5,2,0,0,2,0.4,0.4,0.6,1.0
+Matthew Liberatore,St. Louis Cardinals,Jackson Chourio,Milwaukee Brewers,St. Louis Cardinals @ Milwaukee Brewers,8,6,2,0,1,2,0.333,0.375,0.5,0.875
+Nick Lodolo,Cincinnati Reds,Tyrone Taylor,New York Mets,Cincinnati Reds @ New York Mets,10,9,2,1,0,3,0.222,0.3,0.556,0.856
+Jesús Luzardo,Philadelphia Phillies,Ty France,San Diego Padres,Philadelphia Phillies @ San Diego Padres,6,6,1,1,0,1,0.167,0.167,0.667,0.834
+Jesús Luzardo,Philadelphia Phillies,Nick Castellanos,San Diego Padres,Philadelphia Phillies @ San Diego Padres,8,6,2,0,2,4,0.333,0.5,0.333,0.833
+Carmen Mlodzinski,Pittsburgh Pirates,Carson Kelly,Chicago Cubs,Chicago Cubs @ Pittsburgh Pirates,7,6,2,0,1,3,0.333,0.429,0.333,0.762
+Jacob Misiorowski,Milwaukee Brewers,Pedro Pagés,St. Louis Cardinals,St. Louis Cardinals @ Milwaukee Brewers,6,6,2,0,0,1,0.333,0.333,0.333,0.666
+Tanner Bibee,Cleveland Guardians,Curtis Mead,Washington Nationals,Washington Nationals @ Cleveland Guardians,6,6,2,0,0,2,0.333,0.333,0.333,0.666
+Matthew Liberatore,St. Louis Cardinals,Blake Perkins,Milwaukee Brewers,St. Louis Cardinals @ Milwaukee Brewers,5,4,1,0,1,2,0.25,0.4,0.25,0.65
+Jesús Luzardo,Philadelphia Phillies,Xander Bogaerts,San Diego Padres,Philadelphia Phillies @ San Diego Padres,5,5,1,0,0,1,0.2,0.2,0.4,0.6
+Zack Littell,Washington Nationals,José Ramírez,Cleveland Guardians,Washington Nationals @ Cleveland Guardians,9,9,2,0,0,1,0.222,0.222,0.333,0.555
+Emmet Sheehan,Los Angeles Dodgers,Tyler Freeman,Colorado Rockies,Colorado Rockies @ Los Angeles Dodgers,6,5,1,0,1,3,0.2,0.333,0.2,0.533
+Will Warren,New York Yankees,Maikel Garcia,Kansas City Royals,New York Yankees @ Kansas City Royals,6,6,1,0,0,1,0.167,0.167,0.333,0.5
+Carmen Mlodzinski,Pittsburgh Pirates,Seiya Suzuki,Chicago Cubs,Chicago Cubs @ Pittsburgh Pirates,11,10,2,0,1,5,0.2,0.273,0.2,0.473
+Zack Littell,Washington Nationals,Steven Kwan,Cleveland Guardians,Washington Nationals @ Cleveland Guardians,7,6,1,0,1,1,0.167,0.286,0.167,0.453
+Matthew Liberatore,St. Louis Cardinals,Sal Frelick,Milwaukee Brewers,St. Louis Cardinals @ Milwaukee Brewers,7,7,1,0,0,2,0.143,0.143,0.286,0.429
+Nick Lodolo,Cincinnati Reds,Vidal Bruján,New York Mets,Cincinnati Reds @ New York Mets,5,3,0,0,1,1,0.0,0.4,0.0,0.4
+Shane McClanahan,Tampa Bay Rays,Gunnar Henderson,Baltimore Orioles,Tampa Bay Rays @ Baltimore Orioles,5,5,1,0,0,1,0.2,0.2,0.2,0.4
+Will Warren,New York Yankees,Jac Caglianone,Kansas City Royals,New York Yankees @ Kansas City Royals,5,5,1,0,0,2,0.2,0.2,0.2,0.4
+Will Warren,New York Yankees,Vinnie Pasquantino,Kansas City Royals,New York Yankees @ Kansas City Royals,5,5,1,0,0,1,0.2,0.2,0.2,0.4
+Shane McClanahan,Tampa Bay Rays,Adley Rutschman,Baltimore Orioles,Tampa Bay Rays @ Baltimore Orioles,14,11,1,0,3,4,0.091,0.286,0.091,0.377
+Will Warren,New York Yankees,Bobby Witt Jr.,Kansas City Royals,New York Yankees @ Kansas City Royals,6,6,1,0,0,2,0.167,0.167,0.167,0.334
+Emmet Sheehan,Los Angeles Dodgers,Ezequiel Tovar,Colorado Rockies,Colorado Rockies @ Los Angeles Dodgers,14,14,2,0,0,5,0.143,0.143,0.143,0.286
+Jacob Misiorowski,Milwaukee Brewers,Alec Burleson,St. Louis Cardinals,St. Louis Cardinals @ Milwaukee Brewers,7,7,1,0,0,0,0.143,0.143,0.143,0.286
+Matthew Liberatore,St. Louis Cardinals,William Contreras,Milwaukee Brewers,St. Louis Cardinals @ Milwaukee Brewers,9,7,0,0,2,1,0.0,0.222,0.0,0.222
+Zebby Matthews,Minnesota Twins,Andrew Benintendi,Chicago White Sox,Minnesota Twins @ Chicago White Sox,5,4,0,0,1,0,0.0,0.2,0.0,0.2
+Carmen Mlodzinski,Pittsburgh Pirates,Pete Crow-Armstrong,Chicago Cubs,Chicago Cubs @ Pittsburgh Pirates,11,11,1,0,0,3,0.091,0.091,0.091,0.182
+Carmen Mlodzinski,Pittsburgh Pirates,Michael Busch,Chicago Cubs,Chicago Cubs @ Pittsburgh Pirates,11,10,0,0,1,2,0.0,0.091,0.0,0.091
+Emmet Sheehan,Los Angeles Dodgers,Hunter Goodman,Colorado Rockies,Colorado Rockies @ Los Angeles Dodgers,8,8,0,0,0,4,0.0,0.0,0.0,0
+Matthew Liberatore,St. Louis Cardinals,Brice Turang,Milwaukee Brewers,St. Louis Cardinals @ Milwaukee Brewers,10,10,0,0,0,2,0.0,0.0,0.0,0
+Shane McClanahan,Tampa Bay Rays,Tyler O'Neill,Baltimore Orioles,Tampa Bay Rays @ Baltimore Orioles,6,6,0,0,0,2,0.0,0.0,0.0,0
+Zack Littell,Washington Nationals,Daniel Schneemann,Cleveland Guardians,Washington Nationals @ Cleveland Guardians,6,6,0,0,0,3,0.0,0.0,0.0,0
