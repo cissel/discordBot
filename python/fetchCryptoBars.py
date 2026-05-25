@@ -49,9 +49,9 @@ TIMEFRAME_MAP = {
     "6mo":      (today - timedelta(days=180),   today,  "1Day"),
     "1y":       (today - timedelta(days=365),   today,  "1Day"),
     "2y":       (today - timedelta(days=730),   today,  "1Day"),
-    "5y":       (today - timedelta(days=1825),  today,  "1Week"),
-    "10y":      (today - timedelta(days=3650),  today,  "1Week"),
-    "max":      (date(2018, 1, 1),              today,  "1Month"),
+    "5y":       (today - timedelta(days=1825),  today,  "1Day"),
+    "10y":      (today - timedelta(days=3650),  today,  "1Day"),
+    "max":      (date(2018, 1, 1),              today,  "1Day"),
 }
 
 # ── for intraday, crypto trades 24/7 so just use today ───────────────────────
