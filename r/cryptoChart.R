@@ -80,7 +80,7 @@ p <- ggplot(df,
        y = "Price (USD)",
        subtitle = paste0("$", formatC(tail(df$close, 1), format = "f", digits = 2),
                          " (", round(tail(df$pct * 100, 1), 2), "%)"),
-       title = paste0(symbol, "/USD — ", tf_label, " as of ", max(df$time)),
+       title = paste0(symbol, "/USD - ", tf_label, " as of ", max(df$time)),
        caption = "JHCV") +
   scale_y_continuous(labels = scales::dollar) +
   myTheme

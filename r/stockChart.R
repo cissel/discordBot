@@ -85,7 +85,7 @@ p <- ggplot(df,
        y = "Share Price (USD)",
        subtitle = paste0("$", tail(df$close, 1),
                          " (", round(tail(df$pct * 100, 1), 2), "%)"),
-       title = paste0("$", ticker, " — ", tf_label, " as of ", max(df$time)),
+       title = paste0("$", ticker, " - ", tf_label, " as of ", max(df$time)),
        caption = "JHCV") +
   scale_y_continuous(labels = scales::dollar) +
   myTheme

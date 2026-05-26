@@ -708,7 +708,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
     tree.add_command(nhl_group)
 
-
     # ─────────────────────────────────────────────────────────────────────────
     # NFL GROUP  /nfl <subcommand>
     # ─────────────────────────────────────────────────────────────────────────
@@ -828,17 +827,14 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @nba_group.command(name="today", description="NBA games today")
     async def nba_today(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.gather(
-            asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nbaToday.R")),
-            asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nbaLiveScore.R")),
-        )
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "nbaToday.py"))
         csv_today = os.path.join(op, "sports/nba/gamesToday.csv")
         if not os.path.exists(csv_today):
             await _send(interaction, "no hoops today :("); return
         today_df = pd.read_csv(csv_today)
         live_scores = {}
         csv_live = os.path.join(op, "sports/nba/liveScoreboard.csv")
-        if os.path.exists(csv_live):
+        if os.path.exists(csv_live) and os.path.getsize(csv_live) > 0:
             live_df = pd.read_csv(csv_live)
             live_df = live_df[live_df["game_status"] == 2]
             for _, row in live_df.iterrows():
@@ -849,17 +845,10 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 }
         emb = discord.Embed(title="🏀 Today's NBA Games", color=0x3498db)
         for _, row in today_df.iterrows():
-            matchup  = str(row["matchup"])
-            time_val = str(row["time"])
-            parts    = [p.strip() for p in matchup.replace("@", "vs").split("vs")]
-            value    = time_val
-            if len(parts) == 2:
-                a1, a2 = parts[0], parts[1]
-                if a1 in live_scores and a2 in live_scores:
-                    s1, s2 = live_scores[a1], live_scores[a2]
-                    value  = f"🔴 LIVE  {a1} **{s1['pts']}** — **{s2['pts']}** {a2}  *{s1['status']}*"
-            emb.add_field(name=matchup, value=value, inline=False)
-        await _send(interaction, embed=emb)
+            emb.add_field(name=row["matchup"], value=str(row["time"]), inline=False)
+        emb.set_thumbnail(url="attachment://nba.png")
+        logo_path = os.path.expanduser("~/discordBot/stickers/nba.png")
+        await interaction.followup.send(embed=emb, file=discord.File(logo_path, filename="nba.png"))
 
     @nba_group.command(name="tomorrow", description="NBA games tomorrow")
     async def nba_tomorrow(interaction: discord.Interaction):
@@ -964,7 +953,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             asyncio.to_thread(_run, PYTHON,  os.path.join(pp, "nhlToday.py")),
             asyncio.to_thread(_run, PYTHON,  os.path.join(pp, "mlbToday.py")),
             asyncio.to_thread(_run, PYTHON,  os.path.join(pp, "pgaLeaderboard.py")),
-            asyncio.to_thread(_run, "Rscript",  os.path.join(rp, "nbaToday.R")),
+            asyncio.to_thread(_run, PYTHON, os.path.join(pp, "nbaToday.py")),
             asyncio.to_thread(_run, "Rscript",  os.path.join(rp, "nbaLiveScore.R")),
             asyncio.to_thread(_run, "Rscript",  os.path.join(rp, "nextNFL.R")),
         )
@@ -2224,12 +2213,12 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             else:
                 half = len(rows) // 2
                 embed.add_field(
-                    name=f"{emoji} {base_name} (1-{half})",
+                    name=f"{base_name}",
                     value="".join(formatter(row) for _, row in rows.iloc[:half].iterrows()).strip(),
                     inline=False
                 )
                 embed.add_field(
-                    name=f"{emoji} {base_name} ({half+1}-{len(rows)})",
+                    name="\u200b",
                     value="".join(formatter(row) for _, row in rows.iloc[half:].iterrows()).strip(),
                     inline=False
                 )

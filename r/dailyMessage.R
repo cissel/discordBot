@@ -50,6 +50,8 @@ dm <- cdm |>
   group_by(date) |>
   summarise(n = sum(n), 
             .groups = "drop") |>
+  complete(date = seq.Date(min(date), max(date), by = "day"),
+           fill = list(n = 0)) |>
   arrange(date) |>
   mutate(
     ma7  = rollapply(n, 
@@ -103,7 +105,7 @@ dmp <- ggplot(cdm,
   myTheme +
   myLegend
 
-ggsave("/Users/jamescissel/discordBot/outputs/metrics/dailyMessages.png",
+ggsave("~/discordBot/outputs/metrics/dailyMessages.png",
        plot = dmp, 
        width = 10, 
        height = 4, 
