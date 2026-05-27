@@ -4,10 +4,11 @@ import requests
 from datetime import datetime, timedelta
 from espn_api.baseball import League
 import unicodedata
+import os
 
 LEAGUE_ID = 1858112591
 YEAR      = 2026
-CSV_PATH  = "/Users/jamescissel/discordBot/outputs/sports/mlb/fantasy/freeagents.csv"
+CSV_PATH  = os.path.expanduser("~/discordBot/outputs/sports/mlb/fantasy/freeagents.csv")
 
 VALID_POSITIONS = ["C", "1B", "2B", "3B", "SS", "OF", "SP", "RP", "PP"]
 
@@ -38,7 +39,7 @@ def get_probable_starters_tomorrow():
         print(f"WARNING: couldn't fetch probable starters: {e}")
         return set()
 
-def fetch_free_agents(position: str):
+def fetch_free_agents(position: str, size: int = 50):
     position = position.upper().strip()
     if position not in VALID_POSITIONS:
         print(f"ERROR: invalid position '{position}'. Valid: {VALID_POSITIONS}")
@@ -53,7 +54,7 @@ def fetch_free_agents(position: str):
     # PP is just SP under the hood — fetch SP free agents then filter
     espn_position = "SP" if position == "PP" else position
     league = League(league_id=LEAGUE_ID, year=YEAR)
-    agents = league.free_agents(size=200, position=espn_position)  # fetch more so we have enough after filtering
+    agents = league.free_agents(size=size*4, position=espn_position)  # fetch more so we have enough after filtering
 
     rows = []
     for p in agents:
@@ -69,8 +70,8 @@ def fetch_free_agents(position: str):
             "injury_status":          p.injuryStatus,
             "starting_tomorrow":      starting_tomorrow,
         })
-        if len(rows) == 10:
-            break  # cap at 10
+        if len(rows) == size:
+            break  # cap at requested size
 
     with open(CSV_PATH, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=[

@@ -2234,6 +2234,66 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         embed.set_footer(text="Data via Baseball Savant / Statcast")
         await _send(interaction, embed=embed)
 
+    # ── /mlb fantasyrisk ──────────────────────────────────────────────────────
+    @mlb_group.command(name="fantasyrisk", description="Fantasy risk analysis plot for a position (World Sillies scoring)")
+    @app_commands.describe(
+        position="Position to analyze",
+        scope="All players at this position, or free agents only"
+    )
+    @app_commands.choices(
+        position=[
+            app_commands.Choice(name="SP - Starting Pitcher", value="SP"),
+            app_commands.Choice(name="RP - Relief Pitcher",   value="RP"),
+            app_commands.Choice(name="C  - Catcher",          value="C"),
+            app_commands.Choice(name="1B - First Base",       value="1B"),
+            app_commands.Choice(name="2B - Second Base",      value="2B"),
+            app_commands.Choice(name="3B - Third Base",       value="3B"),
+            app_commands.Choice(name="SS - Shortstop",        value="SS"),
+            app_commands.Choice(name="OF - Outfield",         value="OF"),
+        ],
+        scope=[
+            app_commands.Choice(name="All Players",      value="all"),
+            app_commands.Choice(name="Free Agents Only", value="fa"),
+        ]
+    )
+    async def mlb_fantasyrisk(interaction: discord.Interaction, position: str, scope: str = "all"):
+        await _defer(interaction)
+
+        out_img  = os.path.join(op, "sports/mlb/fantasy/fantasyRisk.png")
+        fa_csv   = os.path.join(op, "sports/mlb/fantasy/freeagents.csv")
+        os.makedirs(os.path.dirname(out_img), exist_ok=True)
+
+        # if FA only, refresh the free agents CSV first then extract names
+        fa_names_arg = "ALL"
+        if scope == "fa":
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), position)
+            if not os.path.exists(fa_csv):
+                await _send(interaction, "❌ couldn't fetch free agent data.", ephemeral=True)
+                return
+            import csv as _csv
+            with open(fa_csv, newline="") as f:
+                fa_names = [r["player_name"] for r in _csv.DictReader(f) if r.get("player_name")]
+            if not fa_names:
+                await _send(interaction, f"no free agents found at **{position}**.", ephemeral=True)
+                return
+            # pass as pipe-delimited string so R can split it
+            fa_names_arg = "|".join(fa_names)
+
+        await asyncio.to_thread(
+            _run, "Rscript", os.path.join(rp, "mlbFantasyRiskPlotte.R"), position, out_img, fa_names_arg
+        )
+
+        if not os.path.exists(out_img):
+            await _send(interaction, f"❌ couldn't generate the risk plot for **{position}** — check the R logs.", ephemeral=True)
+            return
+
+        scope_label = "Free Agents Only" if scope == "fa" else "All Players"
+        await _send(
+            interaction,
+            f"📊 fantasy risk — **{position}** · {scope_label}",
+            file=discord.File(out_img),
+        )
+
     tree.add_command(mlb_group)
 
     # ── /jaxships ─────────────────────────────────────────────────────────────

@@ -154,7 +154,25 @@ fetch_batter_log <- function(playerid, player_name, fantasy_pos) {
         `1B`, `2B`, `3B`, HR,
         R, RBI, BB,
         K  = SO,
-        SB
+        SB,
+        PA,
+        
+        # -- sabermetrics for regression --
+        wOBA       = as.numeric(wOBA),
+        ISO        = as.numeric(ISO),
+        BABIP      = as.numeric(BABIP),
+        BB_pct     = as.numeric(`BB%`),
+        K_pct      = as.numeric(`K%`),
+        Hard_pct   = as.numeric(`Hard%`),
+        Barrel_pct = as.numeric(`Barrel%`),
+        GB_pct     = as.numeric(`GB%`),
+        LD_pct     = as.numeric(`LD%`),
+        FB_pct     = as.numeric(`FB%`),
+        SwStr_pct  = as.numeric(`SwStr%`),
+        xwOBA      = as.numeric(xwOBA),
+        EV         = as.numeric(EV),
+        maxEV      = as.numeric(maxEV),
+        Barrels    = as.numeric(Barrels)
       ) %>%
       batting_pts()
   }, error = function(e) {
