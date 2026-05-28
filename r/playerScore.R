@@ -156,6 +156,7 @@ fetch_batter_log <- function(playerid, player_name, fantasy_pos) {
         K  = SO,
         SB,
         PA,
+        BatOrder = as.integer(BatOrder),
         
         # -- sabermetrics for regression --
         wOBA       = as.numeric(wOBA),
@@ -195,6 +196,7 @@ fetch_pitcher_log <- function(playerid, player_name, fantasy_pos) {
         team             = Team,
         opponent         = Opp,
         home_away        = HomeAway,
+        BatOrder = as.integer(BatOrder),
         IP, H, ER, BB,
         K   = SO,
         W, L, SV,
