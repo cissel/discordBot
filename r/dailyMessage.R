@@ -96,8 +96,8 @@ dmp <- ggplot(cdm,
     x = "Time", 
     y = "Messages Sent",
     #legend = "Channel",
-    #caption = "JHCV", 
-    #subtitle = max(dm$date, na.rm = TRUE),
+    caption = "JHCV", 
+    subtitle = max(dm$date, na.rm = TRUE),
     title = "Room 40 Daily Activity") +
   
   #scale_y_log10() +

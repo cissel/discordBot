@@ -61,8 +61,7 @@ aap <- ggplot(aa,
                   y = tot,
                   fill = channel)) +
   
-  geom_area(alpha = 0.75,
-            position = "stack") +
+  geom_area(position = "stack") +
   
   geom_text(
     data = aa |> filter(date == max(date)) |> arrange(desc(channel)) |>
