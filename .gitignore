@@ -1,11 +1,7 @@
 .env
 .httr-oauth
 .DS_Store
-outputs/.DS_Store
-outputs/sports/.DS_Store
-r/.DS_Store
 .RData
 .Rhistory
-outputs/weather/waves
-outputs/weather/winds
 server_messages.csv
+outputs/
