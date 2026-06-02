@@ -2427,16 +2427,32 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         elif scope in ("today_sp", "tomorrow_sp"):
             which = "today" if scope == "today_sp" else "tomorrow"
-            prob_csv = os.path.join(op, "sports/mlb/probableStartersToday.csv" if scope == "today_sp" else "sports/mlb/probableStarters.csv")
-            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"), which)
-            if not os.path.exists(prob_csv):
-                await _send(interaction, f"❌ couldn't fetch {which}'s probable starters.", ephemeral=True)
+            # refresh FA list for SP
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), "SP")
+            if not os.path.exists(fa_csv):
+                await _send(interaction, "❌ couldn't fetch free agent data.", ephemeral=True)
                 return
             import csv as _csv
-            with open(prob_csv, newline="") as f:
-                sp_names = [r["pitcher_name"] for r in _csv.DictReader(f) if r.get("pitcher_name")]
+            with open(fa_csv, newline="") as f:
+                fa_rows = [r for r in _csv.DictReader(f) if r.get("player_name")]
+
+            if scope == "tomorrow_sp":
+                # FA CSV already has starting_tomorrow flag — no extra API call needed
+                sp_names = [r["player_name"] for r in fa_rows if r.get("starting_tomorrow") == "True"]
+            else:
+                # fetch today's starters and intersect with FA list
+                prob_csv = os.path.join(op, "sports/mlb/probableStartersToday.csv")
+                await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"), "today")
+                if not os.path.exists(prob_csv):
+                    await _send(interaction, "❌ couldn't fetch today's probable starters.", ephemeral=True)
+                    return
+                with open(prob_csv, newline="") as f:
+                    today_starters = {r["pitcher_name"] for r in _csv.DictReader(f) if r.get("pitcher_name")}
+                fa_names = {r["player_name"] for r in fa_rows}
+                sp_names = [n for n in today_starters if n in fa_names]
+
             if not sp_names:
-                await _send(interaction, f"no probable starters found for {which}.", ephemeral=True)
+                await _send(interaction, f"no FA probable starters found for {which}.", ephemeral=True)
                 return
             fa_names_arg = "|".join(sp_names)
 
