@@ -2187,12 +2187,14 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # for PT (probable today), filter FA list to only today's starters
         if position == "PT":
+            import unicodedata
+            def _norm(s): return unicodedata.normalize("NFD", s).encode("ascii", "ignore").decode("ascii").strip().lower()
             prob_csv = os.path.join(op, "sports/mlb/probableStartersToday.csv")
             await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"), "today")
             if os.path.exists(prob_csv):
                 with open(prob_csv, newline="") as f:
-                    today_names = {r["pitcher_name"] for r in _csv.DictReader(f) if r.get("pitcher_name")}
-                rows = [r for r in rows if r.get("player_name") in today_names]
+                    today_names = {_norm(r["pitcher_name"]) for r in _csv.DictReader(f) if r.get("pitcher_name")}
+                rows = [r for r in rows if _norm(r.get("player_name", "")) in today_names]
 
         if not rows:
             await _send(interaction, f"no free agents found at position **{position}**.", ephemeral=True)
@@ -2446,10 +2448,12 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 if not os.path.exists(prob_csv):
                     await _send(interaction, "❌ couldn't fetch today's probable starters.", ephemeral=True)
                     return
+                import unicodedata
+                def _norm(s): return unicodedata.normalize("NFD", s).encode("ascii", "ignore").decode("ascii").strip().lower()
                 with open(prob_csv, newline="") as f:
                     today_starters = {r["pitcher_name"] for r in _csv.DictReader(f) if r.get("pitcher_name")}
-                fa_names = {r["player_name"] for r in fa_rows}
-                sp_names = [n for n in today_starters if n in fa_names]
+                fa_norm = {_norm(r["player_name"]): r["player_name"] for r in fa_rows}
+                sp_names = [fa_norm[_norm(n)] for n in today_starters if _norm(n) in fa_norm]
 
             if not sp_names:
                 await _send(interaction, f"no FA probable starters found for {which}.", ephemeral=True)
