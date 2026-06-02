@@ -196,7 +196,6 @@ fetch_pitcher_log <- function(playerid, player_name, fantasy_pos) {
         team             = Team,
         opponent         = Opp,
         home_away        = HomeAway,
-        BatOrder = as.integer(BatOrder),
         IP, H, ER, BB,
         K   = SO,
         W, L, SV,
