@@ -102,6 +102,17 @@ class BotClient(discord.Client):
         ch = self.get_channel(TEST_ENV_CHANNEL_ID)
         if ch:
             await ch.send("going online!")
+        asyncio.create_task(self._dj_warmup())
+
+    async def _dj_warmup(self):
+        from commands import _dj_genres, _dj_artists
+        try:
+            genres  = await asyncio.to_thread(_dj_genres)
+            artists = await asyncio.to_thread(_dj_artists)
+            total   = sum(len(v) for v in genres.values())
+            print(f"[DJ] indexes ready — {total} tracks · {len(genres)} genres · {len(artists)} artists")
+        except Exception as e:
+            print(f"[DJ] warmup failed: {e}")
 
     async def on_message(self, message: discord.Message):
         if message.author == self.user:

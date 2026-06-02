@@ -85,23 +85,109 @@ async def _quick(interaction: discord.Interaction, content=None, **kwargs):
 # Keyed by guild_id. Each value: {'vc': VoiceClient, 'queue': [Path], 'now_playing': Path|None}
 _dj_state: dict[int, dict] = {}
 
-_AUDIO_EXTS = {".mp3", ".m4a", ".wav", ".ogg", ".flac"}
-_SOUNDBOARD = Path(os.path.expanduser("~/discordBot/soundboard/"))
+_AUDIO_EXTS  = {".mp3", ".m4a", ".wav", ".ogg", ".flac"}
+_DJ_MUSIC    = Path(os.path.expanduser("~/discordBot/outputs/dj/music/"))
+_DJ_MIXES    = Path(os.path.expanduser("~/discordBot/outputs/dj/mixes/"))
+_DJ_XML      = Path(os.path.expanduser("~/discordBot/outputs/dj/rekordbox.xml"))
 
-def _dj_tracks() -> list[Path]:
-    if not _SOUNDBOARD.exists():
+_dj_genre_index:  dict[str, list[Path]] | None = None  # built lazily on first use
+_dj_artist_index: dict[str, list[Path]] | None = None  # built lazily on first use
+
+_GENRE_NORMALIZE = {
+    "Tech-House":       "Tech House",
+    "UK-House":         "UK Garage / Bassline",
+    "UK Garage / Bassline": "UK Garage",
+    "Garage / Bassline / Grime": "UK Garage",
+}
+
+def _dj_build_genre_index() -> dict[str, list[Path]]:
+    from mutagen.id3 import ID3
+    index: dict[str, list[Path]] = {}
+    for root, _, files in os.walk(_DJ_MUSIC):
+        for f in files:
+            if Path(f).suffix.lower() not in _AUDIO_EXTS or f.startswith("._"):
+                continue
+            path = Path(root) / f
+            try:
+                genre = str(ID3(str(path)).get("TCON") or "Unknown").strip()
+                genre = _GENRE_NORMALIZE.get(genre, genre)
+            except Exception:
+                genre = "Unknown"
+            index.setdefault(genre, []).append(path)
+    return index
+
+def _dj_genres() -> dict[str, list[Path]]:
+    global _dj_genre_index
+    if _dj_genre_index is None:
+        _dj_genre_index = _dj_build_genre_index()
+    return _dj_genre_index
+
+def _dj_build_artist_index() -> dict[str, list[Path]]:
+    from mutagen.id3 import ID3
+    from mutagen.mp4 import MP4
+    index: dict[str, list[Path]] = {}
+    for root, _, files in os.walk(_DJ_MUSIC):
+        for f in files:
+            suffix = Path(f).suffix.lower()
+            if suffix not in _AUDIO_EXTS or f.startswith("._"):
+                continue
+            path = Path(root) / f
+            artist = None
+            try:
+                if suffix in {".mp3", ".wav"}:
+                    a = ID3(str(path)).get("TPE1")
+                    artist = str(a).strip() if a else None
+                elif suffix in {".m4a", ".mp4"}:
+                    a = MP4(str(path)).get("\xa9ART")
+                    artist = str(a[0]).strip() if a else None
+            except Exception:
+                pass
+            if not artist:
+                # fallback: parse "Artist - Title" from filename
+                stem = path.stem
+                artist = stem.split(" - ")[0].strip() if " - " in stem else "Unknown"
+            index.setdefault(artist, []).append(path)
+    return index
+
+def _dj_artists() -> dict[str, list[Path]]:
+    global _dj_artist_index
+    if _dj_artist_index is None:
+        _dj_artist_index = _dj_build_artist_index()
+    return _dj_artist_index
+
+def _dj_mixes() -> list[Path]:
+    if not _DJ_MIXES.exists():
         return []
-    return sorted(f for f in _SOUNDBOARD.iterdir() if f.suffix.lower() in _AUDIO_EXTS)
+    return sorted(f for f in _DJ_MIXES.iterdir() if f.suffix.lower() in _AUDIO_EXTS)
 
-def _dj_find(query: str) -> Path | None:
-    for t in _dj_tracks():
-        if t.name == query:
-            return t
-    q = query.lower()
-    for t in _dj_tracks():
-        if q in t.stem.lower():
-            return t
-    return None
+def _dj_playlists() -> dict[str, list[Path]]:
+    """Read playlists from a rekordbox XML export placed at outputs/dj/rekordbox.xml."""
+    if not _DJ_XML.exists():
+        return {}
+    from pyrekordbox import RekordboxXml
+    try:
+        xml  = RekordboxXml(str(_DJ_XML))
+        # build filename → Path lookup from the music folder
+        name_map: dict[str, Path] = {}
+        for root, _, files in os.walk(_DJ_MUSIC):
+            for f in files:
+                if Path(f).suffix.lower() in _AUDIO_EXTS:
+                    name_map[f.lower()] = Path(root) / f
+        result: dict[str, list[Path]] = {}
+        for pl in xml.get_playlist():
+            tracks: list[Path] = []
+            for tid in pl.get_track_ids():
+                t = xml.get_track(TrackID=tid)
+                if t:
+                    fname = Path(t.Location).name.lower()
+                    if fname in name_map:
+                        tracks.append(name_map[fname])
+            if tracks:
+                result[pl.Name] = tracks
+        return result
+    except Exception as e:
+        print(f"[DJ] playlist read error: {e}")
+        return {}
 
 async def _dj_advance(guild_id: int) -> None:
     state = _dj_state.get(guild_id)
@@ -111,19 +197,22 @@ async def _dj_advance(guild_id: int) -> None:
     if not vc or not vc.is_connected():
         state["now_playing"] = None
         return
+    if vc.is_playing() or vc.is_paused():
+        return  # TTS or another source already active — don't interrupt
     queue: list[Path] = state.get("queue", [])
     if not queue:
         state["now_playing"] = None
         return
     track = queue.pop(0)
     state["now_playing"] = track
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     source = discord.FFmpegPCMAudio(str(track))
     def _after(err):
         if err:
             print(f"[DJ] player error: {err}")
         asyncio.run_coroutine_threadsafe(_dj_advance(guild_id), loop)
     vc.play(source, after=_after)
+    print(f"[DJ] now playing: {track.stem} ({len(queue)} left in queue)")
 
 
 # ── register_commands ─────────────────────────────────────────────────────────
@@ -2297,8 +2386,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             app_commands.Choice(name="OF - Outfield",         value="OF"),
         ],
         scope=[
-            app_commands.Choice(name="All Players",      value="all"),
-            app_commands.Choice(name="Free Agents Only", value="fa"),
+            app_commands.Choice(name="All Players",           value="all"),
+            app_commands.Choice(name="Free Agents Only",      value="fa"),
+            app_commands.Choice(name="Tomorrow's SP Starters", value="tomorrow_sp"),
         ]
     )
     async def mlb_fantasyrisk(interaction: discord.Interaction, position: str, scope: str = "all"):
@@ -2321,8 +2411,21 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             if not fa_names:
                 await _send(interaction, f"no free agents found at **{position}**.", ephemeral=True)
                 return
-            # pass as pipe-delimited string so R can split it
             fa_names_arg = "|".join(fa_names)
+
+        elif scope == "tomorrow_sp":
+            prob_csv = os.path.join(op, "sports/mlb/probableStarters.csv")
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"))
+            if not os.path.exists(prob_csv):
+                await _send(interaction, "❌ couldn't fetch tomorrow's probable starters.", ephemeral=True)
+                return
+            import csv as _csv
+            with open(prob_csv, newline="") as f:
+                sp_names = [r["pitcher_name"] for r in _csv.DictReader(f) if r.get("pitcher_name")]
+            if not sp_names:
+                await _send(interaction, "no probable starters found for tomorrow.", ephemeral=True)
+                return
+            fa_names_arg = "|".join(sp_names)
 
         await asyncio.to_thread(
             _run, "Rscript", os.path.join(rp, "mlbFantasyRiskPlotte.R"), position, out_img, fa_names_arg
@@ -2332,7 +2435,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, f"❌ couldn't generate the risk plot for **{position}** — check the R logs.", ephemeral=True)
             return
 
-        scope_label = "Free Agents Only" if scope == "fa" else "All Players"
+        scope_label = "Free Agents Only" if scope == "fa" else "Tomorrow's SP Starters" if scope == "tomorrow_sp" else "All Players"
         await _send(
             interaction,
             f"📊 fantasy risk — **{position}** · {scope_label}",
@@ -2342,24 +2445,31 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     tree.add_command(mlb_group)
 
     # ── /dj ───────────────────────────────────────────────────────────────────
-    dj_group = app_commands.Group(name="dj", description="DJ – bot joins voice & plays local tracks", guild_ids=[guild.id])
+    dj_group = app_commands.Group(name="dj", description="let DJ several bots spin a few tunes", guild_ids=[guild.id])
 
     @dj_group.command(name="join", description="Bot joins your voice channel")
     async def dj_join(interaction: discord.Interaction):
         if not interaction.user.voice or not interaction.user.voice.channel:
             await _quick(interaction, "you gotta be in a voice channel first", ephemeral=True)
             return
+        await _defer(interaction)
         channel = interaction.user.voice.channel
         state = _dj_state.setdefault(interaction.guild_id, {"vc": None, "queue": [], "now_playing": None})
         vc = state.get("vc")
-        if vc and vc.is_connected():
-            if vc.channel.id == channel.id:
-                await _quick(interaction, f"already in **{channel.name}**", ephemeral=True)
-                return
-            await vc.move_to(channel)
-        else:
-            state["vc"] = await channel.connect()
-        await _quick(interaction, f"joined **{channel.name}** — use `/dj play` to queue up tracks")
+        try:
+            if vc and vc.is_connected():
+                if vc.channel.id == channel.id:
+                    await _send(interaction, f"already in **{channel.name}**", ephemeral=True)
+                    return
+                await vc.move_to(channel)
+            else:
+                state["vc"] = await channel.connect(timeout=30.0, reconnect=False)
+        except Exception as e:
+            print(f"[DJ] connect error: {type(e).__name__}: {e}")
+            await _send(interaction, f"failed to join: {e}", ephemeral=True)
+            return
+        print(f"[DJ] joined {channel.name}")
+        await _send(interaction, f"joined **{channel.name}** — use `/dj genre`, `/dj playlist`, or `/dj mix`")
 
     @dj_group.command(name="leave", description="Bot leaves the voice channel and clears queue")
     async def dj_leave(interaction: discord.Interaction):
@@ -2372,53 +2482,140 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         _dj_state.pop(interaction.guild_id, None)
         await _quick(interaction, "later")
 
-    @dj_group.command(name="list", description="List available tracks in the soundboard")
-    async def dj_list(interaction: discord.Interaction):
-        tracks = _dj_tracks()
-        if not tracks:
-            await _quick(interaction, "no tracks found in soundboard folder", ephemeral=True)
-            return
-        lines = [f"`{t.stem}`" for t in tracks]
-        chunks = []
-        chunk = ""
-        for line in lines:
-            if len(chunk) + len(line) + 2 > 1900:
-                chunks.append(chunk)
-                chunk = line
-            else:
-                chunk = f"{chunk}\n{line}" if chunk else line
-        if chunk:
-            chunks.append(chunk)
-        await _quick(interaction, f"**{len(tracks)} tracks available:**\n{chunks[0]}", ephemeral=True)
-        for extra in chunks[1:]:
-            await interaction.followup.send(extra, ephemeral=True)
-
-    @dj_group.command(name="play", description="Add a track to the queue (tab to autocomplete)")
-    @app_commands.describe(song="Track name — start typing to search")
-    async def dj_play(interaction: discord.Interaction, song: str):
+    # ── /dj genre ─────────────────────────────────────────────────────────────
+    @dj_group.command(name="genre", description="Queue all tracks for a genre, shuffled")
+    @app_commands.describe(name="Genre name — start typing to search")
+    async def dj_genre(interaction: discord.Interaction, name: str):
         state = _dj_state.get(interaction.guild_id)
         vc = state.get("vc") if state else None
         if not vc or not vc.is_connected():
             await _quick(interaction, "use `/dj join` first", ephemeral=True)
             return
-        track = _dj_find(song)
-        if not track:
-            await _quick(interaction, f"couldn't find **{song}** — use `/dj list` to see available tracks", ephemeral=True)
+        await _defer(interaction)
+        genres = await asyncio.to_thread(_dj_genres)
+        # case-insensitive match
+        match = next((g for g in genres if g.lower() == name.lower()), None)
+        if not match:
+            await _send(interaction, f"genre **{name}** not found — available: {', '.join(sorted(genres))}", ephemeral=True)
             return
-        state["queue"].append(track)
+        tracks = genres[match].copy()
+        random.shuffle(tracks)
+        state["queue"].extend(tracks)
         was_idle = not vc.is_playing() and state["now_playing"] is None
         if was_idle:
-            await _quick(interaction, f"playing **{track.stem}**")
+            await _send(interaction, f"playing **{match}** — {len(tracks)} tracks queued")
             await _dj_advance(interaction.guild_id)
         else:
-            pos = len(state["queue"])
-            await _quick(interaction, f"queued **{track.stem}** (position #{pos})")
+            await _send(interaction, f"added {len(tracks)} **{match}** tracks to queue")
 
-    @dj_play.autocomplete("song")
-    async def dj_play_autocomplete(interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
-        tracks = _dj_tracks()
-        matches = [t for t in tracks if current.lower() in t.stem.lower()][:25]
-        return [app_commands.Choice(name=t.stem[:100], value=t.name) for t in matches]
+    @dj_genre.autocomplete("name")
+    async def dj_genre_autocomplete(interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+        genres = await asyncio.to_thread(_dj_genres)
+        matches = [g for g in sorted(genres) if current.lower() in g.lower()][:25]
+        return [app_commands.Choice(name=g, value=g) for g in matches]
+
+    # ── /dj artist ────────────────────────────────────────────────────────────
+    @dj_group.command(name="artist", description="Queue all tracks by an artist, shuffled")
+    @app_commands.describe(name="Artist name — start typing to search")
+    async def dj_artist(interaction: discord.Interaction, name: str):
+        state = _dj_state.get(interaction.guild_id)
+        vc = state.get("vc") if state else None
+        if not vc or not vc.is_connected():
+            await _quick(interaction, "use `/dj join` first", ephemeral=True)
+            return
+        await _defer(interaction)
+        artists = await asyncio.to_thread(_dj_artists)
+        # exact match first, then case-insensitive
+        match = next((a for a in artists if a == name), None) or \
+                next((a for a in artists if a.lower() == name.lower()), None)
+        if not match:
+            await _send(interaction, f"artist **{name}** not found — start typing to see suggestions", ephemeral=True)
+            return
+        tracks = artists[match].copy()
+        random.shuffle(tracks)
+        state["queue"].extend(tracks)
+        was_idle = not vc.is_playing() and state["now_playing"] is None
+        if was_idle:
+            await _send(interaction, f"playing **{match}** — {len(tracks)} track{'s' if len(tracks) != 1 else ''} queued")
+            await _dj_advance(interaction.guild_id)
+        else:
+            await _send(interaction, f"added {len(tracks)} track{'s' if len(tracks) != 1 else ''} by **{match}** to queue")
+
+    @dj_artist.autocomplete("name")
+    async def dj_artist_autocomplete(interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+        artists = await asyncio.to_thread(_dj_artists)
+        matches = [a for a in sorted(artists) if current.lower() in a.lower()][:25]
+        return [app_commands.Choice(name=f"{a} ({len(artists[a])} track{'s' if len(artists[a]) != 1 else ''})"[:100], value=a) for a in matches]
+
+    # ── /dj playlist ──────────────────────────────────────────────────────────
+    @dj_group.command(name="playlist", description="Queue a rekordbox playlist in order")
+    @app_commands.describe(name="Playlist name — start typing to search")
+    async def dj_playlist(interaction: discord.Interaction, name: str):
+        state = _dj_state.get(interaction.guild_id)
+        vc = state.get("vc") if state else None
+        if not vc or not vc.is_connected():
+            await _quick(interaction, "use `/dj join` first", ephemeral=True)
+            return
+        if not _DJ_XML.exists():
+            await _quick(interaction, "no rekordbox.xml found — export your collection from rekordbox (File → Export Collection in xml format) and place it at `outputs/dj/rekordbox.xml`", ephemeral=True)
+            return
+        await _defer(interaction)
+        playlists = await asyncio.to_thread(_dj_playlists)
+        match = next((p for p in playlists if p.lower() == name.lower()), None)
+        if not match:
+            names = ', '.join(sorted(playlists)) if playlists else "none found"
+            await _send(interaction, f"playlist **{name}** not found — available: {names}", ephemeral=True)
+            return
+        tracks = playlists[match]
+        state["queue"].extend(tracks)
+        was_idle = not vc.is_playing() and state["now_playing"] is None
+        if was_idle:
+            await _send(interaction, f"playing playlist **{match}** — {len(tracks)} tracks")
+            await _dj_advance(interaction.guild_id)
+        else:
+            await _send(interaction, f"added {len(tracks)} tracks from **{match}** to queue")
+
+    @dj_playlist.autocomplete("name")
+    async def dj_playlist_autocomplete(interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+        if not _DJ_XML.exists():
+            return []
+        playlists = await asyncio.to_thread(_dj_playlists)
+        matches = [p for p in sorted(playlists) if current.lower() in p.lower()][:25]
+        return [app_commands.Choice(name=p, value=p) for p in matches]
+
+    # ── /dj mix ───────────────────────────────────────────────────────────────
+    @dj_group.command(name="mix", description="Play a prerecorded DJ set")
+    @app_commands.describe(name="Mix name — start typing to search")
+    async def dj_mix(interaction: discord.Interaction, name: str):
+        state = _dj_state.get(interaction.guild_id)
+        vc = state.get("vc") if state else None
+        if not vc or not vc.is_connected():
+            await _quick(interaction, "use `/dj join` first", ephemeral=True)
+            return
+        mixes = _dj_mixes()
+        match = next((m for m in mixes if m.stem.lower() == name.lower() or m.name.lower() == name.lower()), None)
+        if not match:
+            stems = ', '.join(m.stem for m in mixes) if mixes else "none found"
+            await _quick(interaction, f"mix **{name}** not found — available: {stems}", ephemeral=True)
+            return
+        state["queue"].insert(0, match)
+        state["queue"] = [match] + [t for t in state["queue"] if t != match][1:]
+        was_idle = not vc.is_playing() and state["now_playing"] is None
+        if was_idle:
+            await _quick(interaction, f"playing mix **{match.stem}**")
+            await _dj_advance(interaction.guild_id)
+        else:
+            # stop current and play mix immediately
+            state["queue"] = [match]
+            state["now_playing"] = None
+            vc.stop()
+            await _quick(interaction, f"switching to mix **{match.stem}**")
+
+    @dj_mix.autocomplete("name")
+    async def dj_mix_autocomplete(interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+        mixes = _dj_mixes()
+        matches = [m for m in mixes if current.lower() in m.stem.lower()][:25]
+        return [app_commands.Choice(name=m.stem[:100], value=m.stem) for m in matches]
 
     @dj_group.command(name="skip", description="Skip the current track")
     async def dj_skip(interaction: discord.Interaction):
@@ -2431,6 +2628,43 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         vc.stop()  # triggers the after callback which advances the queue
         label = current.stem if current else "track"
         await _quick(interaction, f"skipped **{label}**")
+
+    @dj_group.command(name="pause", description="Pause playback — queue stays intact")
+    async def dj_pause(interaction: discord.Interaction):
+        state = _dj_state.get(interaction.guild_id)
+        vc = state.get("vc") if state else None
+        if not vc or not vc.is_connected():
+            await _quick(interaction, "not in a voice channel", ephemeral=True)
+            return
+        if vc.is_paused():
+            await _quick(interaction, "already paused — use `/dj play` to resume", ephemeral=True)
+            return
+        if not vc.is_playing():
+            await _quick(interaction, "nothing is playing", ephemeral=True)
+            return
+        vc.pause()
+        now = state.get("now_playing")
+        label = now.stem if now else "track"
+        await _quick(interaction, f"paused **{label}**")
+
+    @dj_group.command(name="play", description="Resume after a pause")
+    async def dj_play(interaction: discord.Interaction):
+        state = _dj_state.get(interaction.guild_id)
+        vc = state.get("vc") if state else None
+        if not vc or not vc.is_connected():
+            await _quick(interaction, "not in a voice channel", ephemeral=True)
+            return
+        if vc.is_paused():
+            vc.resume()
+            now = state.get("now_playing")
+            label = now.stem if now else "track"
+            await _quick(interaction, f"resumed **{label}**")
+        elif not vc.is_playing() and state and state.get("queue"):
+            # nothing playing but queue has tracks — kick it off
+            await _quick(interaction, "starting queue")
+            await _dj_advance(interaction.guild_id)
+        else:
+            await _quick(interaction, "nothing is paused", ephemeral=True)
 
     @dj_group.command(name="stop", description="Stop playing and clear the queue (stays in channel)")
     async def dj_stop(interaction: discord.Interaction):
@@ -2466,12 +2700,94 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         if now:
             lines.append(f"**now playing:** {now.stem}")
         if queue:
-            lines.append("**up next:**")
-            lines += [f"{i+1}. {t.stem}" for i, t in enumerate(queue)]
+            lines.append(f"**up next ({len(queue)} tracks):**")
+            lines += [f"{i+1}. {t.stem}" for i, t in enumerate(queue[:20])]
+            if len(queue) > 20:
+                lines.append(f"*...and {len(queue) - 20} more*")
         if not lines:
             await _quick(interaction, "queue is empty", ephemeral=True)
         else:
             await _quick(interaction, "\n".join(lines))
+
+    @dj_group.command(name="backspin", description="Restart the current track from the beginning")
+    async def dj_backspin(interaction: discord.Interaction):
+        state = _dj_state.get(interaction.guild_id)
+        vc = state.get("vc") if state else None
+        if not vc or not vc.is_connected():
+            await _quick(interaction, "not in a voice channel", ephemeral=True)
+            return
+        current = state.get("now_playing")
+        if not current:
+            await _quick(interaction, "nothing is playing", ephemeral=True)
+            return
+        # re-insert current track at front of queue so _after callback replays it
+        state["queue"].insert(0, current)
+        state["now_playing"] = None
+        vc.stop()
+        await _quick(interaction, f"rewinding **{current.stem}**")
+
+    @dj_group.command(name="yoink", description="Grab the currently playing track as a file")
+    async def dj_yoink(interaction: discord.Interaction):
+        state = _dj_state.get(interaction.guild_id)
+        current: Path | None = state.get("now_playing") if state else None
+        if not current:
+            await _quick(interaction, "nothing is playing", ephemeral=True)
+            return
+        await _defer(interaction)
+        size_mb = current.stat().st_size / (1024 * 1024)
+        if size_mb > 25:
+            await _send(interaction, f"**{current.stem}** is {size_mb:.1f}MB — too big for Discord (25MB limit)", ephemeral=True)
+            return
+        await _send(interaction, f"here ya go — **{current.stem}**", file=discord.File(str(current)))
+
+    # ── /dj mic ───────────────────────────────────────────────────────────────
+    @dj_group.command(name="mic", description="Say something over the music via robot text-to-speech")
+    @app_commands.describe(message="What to say")
+    async def dj_mic(interaction: discord.Interaction, message: str):
+        import tempfile
+
+        state = _dj_state.get(interaction.guild_id)
+        vc = state.get("vc") if state else None
+        if not vc or not vc.is_connected():
+            await _quick(interaction, "use `/dj join` first", ephemeral=True)
+            return
+
+        await _defer(interaction)
+
+        tts_path = Path(tempfile.mktemp(suffix=".wav"))
+        try:
+            await asyncio.to_thread(
+                subprocess.run,
+                ["espeak-ng", "-w", str(tts_path), message],
+                check=True, timeout=10
+            )
+        except FileNotFoundError:
+            await _send(interaction, "espeak-ng not installed — run `sudo apt install espeak-ng` on the Pi", ephemeral=True)
+            return
+        except Exception as e:
+            await _send(interaction, f"TTS failed: {e}", ephemeral=True)
+            return
+
+        # Re-insert current track at front so music resumes after TTS
+        current = state.get("now_playing")
+        if current:
+            state["queue"].insert(0, current)
+            state["now_playing"] = None
+
+        # Stop music — _after fires but _dj_advance will see vc.is_playing()=True
+        # (from the TTS we're about to start) and bail out
+        if vc.is_playing() or vc.is_paused():
+            vc.stop()
+
+        loop = asyncio.get_running_loop()
+        source = discord.FFmpegPCMAudio(str(tts_path))
+
+        def after_tts(err):
+            tts_path.unlink(missing_ok=True)
+            asyncio.run_coroutine_threadsafe(_dj_advance(interaction.guild_id), loop)
+
+        vc.play(source, after=after_tts)
+        await _send(interaction, f"🎤 *\"{message}\"*")
 
     tree.add_command(dj_group)
 
