@@ -13,9 +13,12 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-MLB_DIR      = Path("~/discordBot/outputs/sports/mlb")
-STARTERS_CSV = MLB_DIR / "probableStarters.csv"
-OUT_CSV      = MLB_DIR / "mismatch.csv"
+MLB_DIR = Path("~/discordBot/outputs/sports/mlb").expanduser()
+
+# accepts optional arg: "today" or "tomorrow" (default: tomorrow)
+_which       = sys.argv[1] if len(sys.argv) > 1 else "tomorrow"
+STARTERS_CSV = MLB_DIR / ("probableStartersToday.csv" if _which == "today" else "probableStarters.csv")
+OUT_CSV      = MLB_DIR / ("mismatchToday.csv" if _which == "today" else "mismatch.csv")
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "

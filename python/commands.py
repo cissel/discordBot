@@ -2285,18 +2285,27 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         embed.set_footer(text="Data via Baseball Savant / Statcast")
         await _send(interaction, embed=embed)
     
-    @mlb_group.command(name="mismatch", description="Top batter/pitcher mismatches for tomorrow's games")
-    @app_commands.describe(mode="Which mismatches to show (default: both)")
-    @app_commands.choices(mode=[
-        app_commands.Choice(name="Both (Top 5 each)",       value="both"),
-        app_commands.Choice(name="Top 10 Batter Favored",   value="batters"),
-        app_commands.Choice(name="Top 10 Pitcher Favored",  value="pitchers"),
-    ])
-    async def mlb_mismatch(interaction: discord.Interaction, mode: str = "both"):
+    @mlb_group.command(name="mismatch", description="Top batter/pitcher mismatches for today's or tomorrow's games")
+    @app_commands.describe(
+        mode="Which mismatches to show (default: both)",
+        day="Today's or tomorrow's games (default: tomorrow)"
+    )
+    @app_commands.choices(
+        mode=[
+            app_commands.Choice(name="Both (Top 5 each)",       value="both"),
+            app_commands.Choice(name="Top 10 Batter Favored",   value="batters"),
+            app_commands.Choice(name="Top 10 Pitcher Favored",  value="pitchers"),
+        ],
+        day=[
+            app_commands.Choice(name="Tomorrow", value="tomorrow"),
+            app_commands.Choice(name="Today",    value="today"),
+        ]
+    )
+    async def mlb_mismatch(interaction: discord.Interaction, mode: str = "both", day: str = "tomorrow"):
         await _defer(interaction)
-        print(f"[DEBUG] /mlb mismatch called with mode='{mode}'")
+        print(f"[DEBUG] /mlb mismatch called with mode='{mode}' day='{day}'")
 
-        csv_path = os.path.join(op, "sports/mlb/mismatch.csv")
+        csv_path = os.path.join(op, "sports/mlb/mismatchToday.csv" if day == "today" else "sports/mlb/mismatch.csv")
 
         # Only regenerate if CSV is missing or more than 3 hours old
         needs_refresh = True
@@ -2308,8 +2317,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         if needs_refresh:
             print("[DEBUG] Regenerating mismatch data...")
-            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"))
-            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbMismatch.py"))
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"), day)
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbMismatch.py"), day)
 
         try:
             df = pd.read_csv(csv_path)
@@ -2321,7 +2330,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, "No matchup data found with sufficient PA history (min. 5 PA).")
             return
 
-        date_str = (datetime.today() + timedelta(days=1)).strftime("%B %d, %Y")
+        date_str = datetime.today().strftime("%B %d, %Y") if day == "today" else (datetime.today() + timedelta(days=1)).strftime("%B %d, %Y")
 
         embed = discord.Embed(
             title=f"⚾ Pitcher/Batter Mismatches — {date_str}",
