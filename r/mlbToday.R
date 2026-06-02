@@ -73,8 +73,8 @@ df <- mlb_schedule(2026) |>
 
 ##### Write .csv #####
 
-dir.create("/Users/jamescissel/discordBot/outputs/sports/mlb/", recursive = TRUE, showWarnings = FALSE)
-write_csv(df, "/Users/jamescissel/discordBot/outputs/sports/mlb/gamesToday.csv")
+dir.create("~/discordBot/outputs/sports/mlb/", recursive = TRUE, showWarnings = FALSE)
+write_csv(df, "~/discordBot/outputs/sports/mlb/gamesToday.csv")
 print(".csv saved")
 
 #####

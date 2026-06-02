@@ -149,7 +149,7 @@ print(f"Total trades: {len(df)}")
 print(f"Price range:  ${df['price'].min():.2f} – ${df['price'].max():.2f}")
 
 # ── Write CSV ──────────────────────────────────────────────────────────────────
-out_dir  = "/Users/jamescissel/discordBot/outputs/markets"
+out_dir  = "~/discordBot/outputs/markets"
 os.makedirs(out_dir, exist_ok=True)
 out_path = os.path.join(out_dir, f"{ticker}_trades.csv")
 

@@ -91,7 +91,7 @@ uap <- ggplot(ua,
   myTheme #+
   #myLegend
 
-ggsave("/Users/jamescissel/discordBot/outputs/metrics/userMessages.png",
+ggsave("~/discordBot/outputs/metrics/userMessages.png",
        plot = uap,
        width = 10,
        height = 10,

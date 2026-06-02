@@ -17,7 +17,7 @@ library(scales)
 library(ggplot2)
 
 ##### Paths #####
-OUT_DIR      <- "/Users/jamescissel/discordBot/outputs/research"
+OUT_DIR      <- "~/discordBot/outputs/research"
 OUTCOMES_CSV <- file.path(OUT_DIR, "block_outcomes.csv")
 EVENTS_CSV   <- file.path(OUT_DIR, "block_events.csv")
 PLOTS_DIR    <- file.path(OUT_DIR, "plots")

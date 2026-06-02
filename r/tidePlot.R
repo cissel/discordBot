@@ -120,7 +120,7 @@ tidePlot <- ggplot(mayport,
   
   myTheme
 
-ggsave("/Users/jamescissel/discordBot/outputs/weather/mayportTides.png",
+ggsave("~/discordBot/outputs/weather/mayportTides.png",
        plot = tidePlot,
        width = 10,
        height = 4,

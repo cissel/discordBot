@@ -12,7 +12,7 @@ gt_raw <- tryCatch(
 if (is.null(gt_raw)) {
   message("No games today.")
   write_csv(data.frame(time = character(), matchup = character()),
-            "/Users/jamescissel/discordBot/outputs/sports/nba/gamesToday.csv")
+            "~/discordBot/outputs/sports/nba/gamesToday.csv")
   quit(save = "no", status = 0)
 }
 
@@ -34,7 +34,7 @@ gt <- gt_raw |>
 if (nrow(gt) == 0) {
   message("No games today.")
   write_csv(data.frame(time = character(), matchup = character()),
-            "/Users/jamescissel/discordBot/outputs/sports/nba/gamesToday.csv")
+            "~/discordBot/outputs/sports/nba/gamesToday.csv")
   quit(save = "no", status = 0)
 }
 
@@ -78,5 +78,5 @@ for (i in 1:nrow(gt)) {
 }
 
 print(gtc)
-write_csv(gtc, "/Users/jamescissel/discordBot/outputs/sports/nba/gamesToday.csv")
+write_csv(gtc, "~/discordBot/outputs/sports/nba/gamesToday.csv")
 print(".csv saved")

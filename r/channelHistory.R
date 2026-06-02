@@ -37,7 +37,7 @@ myLegend <- theme(legend.position = "right",
 
 ##### Import Data #####
 
-setwd("/Users/jamescissel/discordBot")
+setwd("~/discordBot")
 
 df <- read_csv("outputs/metrics/server_messages.csv")
 
@@ -89,7 +89,7 @@ cap <- ggplot(ca,
   myTheme #+
   #myLegend
 
-ggsave("/Users/jamescissel/discordBot/outputs/metrics/channelMessages.png",
+ggsave("~/discordBot/outputs/metrics/channelMessages.png",
        plot = cap,
        width = 10,
        height = 10,

@@ -1,8 +1,8 @@
 library(gifski)
 
 # Create a temp directory to store images
-dir.create("/Users/jamescissel/discordBot/outputs/weather/waves", showWarnings = FALSE)
-setwd("/Users/jamescissel/discordBot/outputs/weather/waves")
+dir.create("~/discordBot/outputs/weather/waves", showWarnings = FALSE)
+setwd("~/discordBot/outputs/weather/waves")
 
 # Generate image ID strings
 img_seq <- seq(0, 144, 3)
@@ -21,7 +21,7 @@ for (i in seq_along(urls)) {
 png_files <- list.files(".", pattern = "img\\d+\\.png$", full.names = TRUE)
 
 # Create gif
-output_gif <- "/Users/jamescissel/discordBot/outputs/weather/wave_animation.gif"
+output_gif <- "~/discordBot/outputs/weather/wave_animation.gif"
 gifski(png_files, gif_file = output_gif, width = 800, height = 503, delay = 0.25)
 
 # Reset working directory

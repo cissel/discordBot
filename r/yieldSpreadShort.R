@@ -103,5 +103,5 @@ ysp <- ggplot(recentHistory, aes(x = date, y = value, color = label)) +
 
 
 # ---- Save the plot ----
-ggsave("/Users/jamescissel/discordBot/outputs/markets/yield_spread_2mo.png", ysp, width = 8, height = 4.5, dpi = 300)
+ggsave("~/discordBot/outputs/markets/yield_spread_2mo.png", ysp, width = 8, height = 4.5, dpi = 300)
 #ggplotly(ysp)

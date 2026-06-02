@@ -38,7 +38,7 @@ timeframe_label <- switch(timeframe,
                           timeframe  # fallback: just show the raw value
 )
 
-csv_path <- paste0("/Users/jamescissel/discordBot/outputs/markets/", ticker, "_trades.csv")
+csv_path <- paste0("~/discordBot/outputs/markets/", ticker, "_trades.csv")
 
 if (!file.exists(csv_path)) {
   stop(paste("CSV not found:", csv_path))
@@ -96,7 +96,7 @@ p <- ggplot(df,
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ggsave(
-  "/Users/jamescissel/discordBot/outputs/markets/tradechart.png",
+  "~/discordBot/outputs/markets/tradechart.png",
   p,
   width  = 8,
   height = 4.5,

@@ -27,7 +27,7 @@ for team in standings["standings"]:
     })
 
 # Write to CSV
-output_path = "/Users/jamescissel/discordBot/outputs/sports/nhl/standings.csv"
+output_path = "~/discordBot/outputs/sports/nhl/standings.csv"
 
 with open(output_path, "w", newline="") as f:
     writer = csv.writer(f)

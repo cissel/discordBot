@@ -7,7 +7,7 @@ client = NHLClient()
 tomorrow = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 schedule = client.schedule.get_schedule(date=tomorrow)
 
-with open("/Users/jamescissel/discordBot/outputs/sports/nhl/gamesTomorrow.csv", "w", newline="") as f:
+with open("~/discordBot/outputs/sports/nhl/gamesTomorrow.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerow(["time", "matchup"])
 

@@ -28,7 +28,7 @@ API_KEY         = "AKGNBG6FMQEWRBELM45U"
 API_SECRET      = "86eND4Pe8NJp4wNoBzkFGrS2PAvHo3UhOy4xAIlL"
 BASE_URL        = "https://data.alpaca.markets/v2"
 
-OUT_DIR         = "/Users/jamescissel/discordBot/outputs/research"
+OUT_DIR         = "~/discordBot/outputs/research"
 EVENTS_CSV      = os.path.join(OUT_DIR, "block_events.csv")
 PROGRESS_CSV    = os.path.join(OUT_DIR, "processed_days.csv")
 

@@ -8,7 +8,7 @@ library(rvest)
 #####
 
 # mac file path
-setwd("/Users/jamescissel/discordBot")
+setwd("~/discordBot")
 
 ##### scrape noaa 7 day tropical weather outlook #####
 

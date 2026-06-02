@@ -8,7 +8,7 @@ client = NHLClient()
 team_name = "Florida Panthers"
 today = datetime.today()
 
-OUTPUT_PATH = "/Users/jamescissel/discordBot/outputs"
+OUTPUT_PATH = "~/discordBot/outputs"
 csv_path = os.path.join(OUTPUT_PATH, "sports/nhl/nextTeamGame.csv")
 
 # Gather games for the next 7 days

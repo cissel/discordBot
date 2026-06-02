@@ -105,7 +105,7 @@ df <- df |>
 
 ##### Write .csv #####
 
-write_csv(df, "/Users/jamescissel/discordBot/outputs/weather/buoy41117.csv")
+write_csv(df, "~/discordBot/outputs/weather/buoy41117.csv")
 print(".csv saved")
 
 #####

@@ -6,7 +6,7 @@ client = NHLClient()
 today = datetime.today().strftime('%Y-%m-%d')
 schedule = client.schedule.get_schedule(date=today)
 
-output_path = "/Users/jamescissel/discordBot/outputs/sports/nhl/nhlSchedRaw.csv"
+output_path = "~/discordBot/outputs/sports/nhl/nhlSchedRaw.csv"
 
 with open(output_path, "w", newline="") as f:
     writer = csv.writer(f)

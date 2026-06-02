@@ -13,7 +13,7 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-MLB_DIR      = Path("/Users/jamescissel/discordBot/outputs/sports/mlb")
+MLB_DIR      = Path("~/discordBot/outputs/sports/mlb")
 STARTERS_CSV = MLB_DIR / "probableStarters.csv"
 OUT_CSV      = MLB_DIR / "mismatch.csv"
 

@@ -23,4 +23,4 @@ jaxNext <- jaxFut |> head(1)
 jaxNext$daysUntil <- as.Date(jaxNext$gameday)-today()
 
 # write csv to output folder
-write_csv(jaxNext, "/Users/jamescissel/discordBot/outputs/sports/nfl/nextJags.csv")
+write_csv(jaxNext, "~/discordBot/outputs/sports/nfl/nextJags.csv")

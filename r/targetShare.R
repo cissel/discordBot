@@ -113,7 +113,7 @@ tgtShrPlot <- ggplot(top_5_receivers_df,
 # Interactive plot
 #ggplotly(tgtShrPlot)
 
-ggsave("/Users/jamescissel/discordBot/outputs/sports/nfl/tgtShr.png",
+ggsave("~/discordBot/outputs/sports/nfl/tgtShr.png",
        plot = tgtShrPlot,
        width = 10,
        height = 10,

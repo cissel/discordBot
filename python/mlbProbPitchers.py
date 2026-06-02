@@ -2,7 +2,7 @@ import csv
 import requests
 from datetime import datetime, timedelta
 
-CSV_PATH = "/Users/jamescissel/discordBot/outputs/sports/mlb/probableStarters.csv"
+CSV_PATH = "~/discordBot/outputs/sports/mlb/probableStarters.csv"
 
 def get_probable_starters_tomorrow():
     tomorrow = (datetime.today() + timedelta(days=1)).strftime("%Y-%m-%d")

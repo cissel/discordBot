@@ -3,7 +3,7 @@ from espn_api.baseball import League
 
 LEAGUE_ID = 1858112591
 YEAR      = 2026
-CSV_PATH  = "/Users/jamescissel/discordBot/outputs/sports/mlb/fantasy/scoreboard.csv"
+CSV_PATH  = "~/discordBot/outputs/sports/mlb/fantasy/scoreboard.csv"
 DEBUG     = True  # set to False once you confirm the output looks right
 
 

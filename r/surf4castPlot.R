@@ -32,7 +32,7 @@ myTheme <- theme(legend.position = "none",
 #setwd("C:/Users/james/projects/discordBot")
 
 # Mac file path
-setwd("/Users/jamescissel/discordBot")
+setwd("~/discordBot")
 
 ##### Surf Forecast Dataframe #####
 

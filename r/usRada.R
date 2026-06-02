@@ -9,7 +9,7 @@ library(magick)
 #####
 
 # mac file path
-setwd("/Users/jamescissel/discordBot")
+setwd("~/discordBot")
 
 # scrape radar
 

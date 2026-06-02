@@ -23,7 +23,7 @@ myLegend <- theme(legend.position = "right",
                   legend.text = element_text(color = "white"),
                   legend.title = element_text(color = "white"))
 #####
-setwd("/Users/jamescissel/discordBot")
+setwd("~/discordBot")
 
 today <- Sys.Date()
 yesterday <- today - 1

@@ -39,7 +39,7 @@ myLegend <- theme(legend.position = "right",
 
 ##### Pull data #####
 
-df <- read_csv("/Users/jamescissel/discordBot/outputs/weather/buoy41117.csv")
+df <- read_csv("~/discordBot/outputs/weather/buoy41117.csv")
 df$WVHT <- df$WVHT*3.28084
 df$dt <- as.POSIXct(df$dt, format = "%Y-%m-%d %H:%M", tz = "UTC")
 df$dt <- with_tz(df$dt, tzone = "America/New_York")
@@ -70,7 +70,7 @@ p <- ggplot(df,
   
   myTheme
 
-ggsave("/Users/jamescissel/discordBot/outputs/weather/buoyWaves.png",
+ggsave("~/discordBot/outputs/weather/buoyWaves.png",
        plot = p,
        width = 10,
        height = 4,

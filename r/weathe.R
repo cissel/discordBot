@@ -12,7 +12,7 @@ library(magick)
 #setwd("C:/Users/james/projects/discordBot")
 
 # Mac file path
-setwd("/Users/jamescissel/discordBot")
+setwd("~/discordBot")
 
 ##### Scrape Radar #####
 

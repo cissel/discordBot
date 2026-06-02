@@ -114,7 +114,7 @@ mayportWindPlot <- ggplot(mayportWinds,
   myTheme +
   myLegend
 
-ggsave("/Users/jamescissel/discordBot/outputs/weather/mayportWinds.png",
+ggsave("~/discordBot/outputs/weather/mayportWinds.png",
        plot = mayportWindPlot,
        width = 10,
        height = 4,

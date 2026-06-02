@@ -87,7 +87,7 @@ p <- ggplot(df,
 
 ##### Save plot #####
 
-ggsave("/Users/jamescissel/discordbot/outputs/markets/dfedtaru.png",
+ggsave("~/discordBot/outputs/markets/dfedtaru.png",
        p,
        width = 8, 
        height = 4.5, 
