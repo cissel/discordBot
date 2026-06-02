@@ -2160,6 +2160,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @mlb_group.command(name="fantasyfa", description="World Sillies top 10 free agents by position")
     @app_commands.describe(position="player position to look up")
     @app_commands.choices(position=[
+        app_commands.Choice(name="PT - Probable Pitchers Today",    value="PT"),
         app_commands.Choice(name="PP - Probable Pitchers Tomorrow", value="PP"),
         app_commands.Choice(name="SP - Starting Pitcher", value="SP"),
         app_commands.Choice(name="RP - Relief Pitcher",   value="RP"),
@@ -2184,6 +2185,15 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         with open(csv_path, newline="") as f:
             rows = list(_csv.DictReader(f))
 
+        # for PT (probable today), filter FA list to only today's starters
+        if position == "PT":
+            prob_csv = os.path.join(op, "sports/mlb/probableStartersToday.csv")
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"), "today")
+            if os.path.exists(prob_csv):
+                with open(prob_csv, newline="") as f:
+                    today_names = {r["pitcher_name"] for r in _csv.DictReader(f) if r.get("pitcher_name")}
+                rows = [r for r in rows if r.get("player_name") in today_names]
+
         if not rows:
             await _send(interaction, f"no free agents found at position **{position}**.", ephemeral=True)
             return
@@ -2194,12 +2204,13 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             "SS": "⚡", "OF": "🌿",
         }
         emoji = POSITION_EMOJI.get(position, "⚾")
-        is_pitcher = position in ("SP", "RP", "PP")
+        is_pitcher = position in ("SP", "RP", "PP", "PT")
         is_pp      = position == "PP"
+        is_pt      = position == "PT"
 
         embed = discord.Embed(
-            title=f"⚾ World Sillies - {'Probable Pitcher' if is_pp else f'Top {position}'} Free Agents",
-            description="Starting tomorrow · Sorted by % owned" if is_pp else "Sorted by % owned · Top 10 available" + (" · ⚾ = starting tomorrow" if is_pitcher else ""),
+            title=f"⚾ World Sillies - {'Probable Pitcher' if is_pp or is_pt else f'Top {position}'} Free Agents",
+            description=("Starting today · Sorted by % owned" if is_pt else "Starting tomorrow · Sorted by % owned" if is_pp else "Sorted by % owned · Top 10 available" + (" · ⚾ = starting tomorrow" if is_pitcher else "")),
             color=0x002D72,
         )
 
@@ -2386,8 +2397,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             app_commands.Choice(name="OF - Outfield",         value="OF"),
         ],
         scope=[
-            app_commands.Choice(name="All Players",           value="all"),
-            app_commands.Choice(name="Free Agents Only",      value="fa"),
+            app_commands.Choice(name="All Players",            value="all"),
+            app_commands.Choice(name="Free Agents Only",       value="fa"),
+            app_commands.Choice(name="Today's SP Starters",    value="today_sp"),
             app_commands.Choice(name="Tomorrow's SP Starters", value="tomorrow_sp"),
         ]
     )
@@ -2413,17 +2425,18 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 return
             fa_names_arg = "|".join(fa_names)
 
-        elif scope == "tomorrow_sp":
-            prob_csv = os.path.join(op, "sports/mlb/probableStarters.csv")
-            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"))
+        elif scope in ("today_sp", "tomorrow_sp"):
+            which = "today" if scope == "today_sp" else "tomorrow"
+            prob_csv = os.path.join(op, "sports/mlb/probableStartersToday.csv" if scope == "today_sp" else "sports/mlb/probableStarters.csv")
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"), which)
             if not os.path.exists(prob_csv):
-                await _send(interaction, "❌ couldn't fetch tomorrow's probable starters.", ephemeral=True)
+                await _send(interaction, f"❌ couldn't fetch {which}'s probable starters.", ephemeral=True)
                 return
             import csv as _csv
             with open(prob_csv, newline="") as f:
                 sp_names = [r["pitcher_name"] for r in _csv.DictReader(f) if r.get("pitcher_name")]
             if not sp_names:
-                await _send(interaction, "no probable starters found for tomorrow.", ephemeral=True)
+                await _send(interaction, f"no probable starters found for {which}.", ephemeral=True)
                 return
             fa_names_arg = "|".join(sp_names)
 
@@ -2435,7 +2448,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, f"❌ couldn't generate the risk plot for **{position}** — check the R logs.", ephemeral=True)
             return
 
-        scope_label = "Free Agents Only" if scope == "fa" else "Tomorrow's SP Starters" if scope == "tomorrow_sp" else "All Players"
+        scope_label = "Free Agents Only" if scope == "fa" else "Today's SP Starters" if scope == "today_sp" else "Tomorrow's SP Starters" if scope == "tomorrow_sp" else "All Players"
         await _send(
             interaction,
             f"📊 fantasy risk — **{position}** · {scope_label}",
