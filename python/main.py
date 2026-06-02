@@ -9,8 +9,10 @@
 #   • daily mismatch precompute task (9am ET)
 
 import asyncio
+import csv
 import os
 import datetime
+from pathlib import Path
 
 import discord
 from discord import app_commands
@@ -29,6 +31,29 @@ if not TOKEN:    raise SystemExit("Set DISCORD_TOKEN in your .env")
 if not GUILD_ID: raise SystemExit("Set GUILD_ID in your .env")
 
 GUILD = discord.Object(id=GUILD_ID)
+
+ALLOWED_CHANNELS  = set(map(int, os.getenv("ALLOWED_CHANNELS", "").split(",")))
+MESSAGES_CSV      = Path(os.path.expanduser("~/discordBot/outputs/metrics/server_messages.csv"))
+MESSAGES_FIELDS   = ["datetime", "user_name", "user_display_name", "channel", "message"]
+
+def _append_message(message: discord.Message):
+    """Append a single message to the CSV."""
+    try:
+        MESSAGES_CSV.parent.mkdir(parents=True, exist_ok=True)
+        write_header = not MESSAGES_CSV.exists() or MESSAGES_CSV.stat().st_size == 0
+        with open(MESSAGES_CSV, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=MESSAGES_FIELDS)
+            if write_header:
+                writer.writeheader()
+            writer.writerow({
+                "datetime":          message.created_at.isoformat(),
+                "user_name":         message.author.name,
+                "user_display_name": message.author.display_name,
+                "channel":           message.channel.name if hasattr(message.channel, "name") else "unknown",
+                "message":           message.content.replace("\n", "\\n"),
+            })
+    except Exception as e:
+        print(f"[history] failed to append message: {e}")
 
 # ── path constants (shared with commands.py) ───────────────────────────────────
 R_PATH      = os.path.expanduser("~/discordBot/r/")
@@ -117,6 +142,10 @@ class BotClient(discord.Client):
     async def on_message(self, message: discord.Message):
         if message.author == self.user:
             return
+
+        # ── live CSV append ───────────────────────────────────────────────────
+        if hasattr(message.channel, "id") and message.channel.id in ALLOWED_CHANNELS:
+            _append_message(message)
 
         content = message.content.lower()
 

@@ -568,7 +568,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @history_group.command(name="server", description="total server message history")
     async def hist_server(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "channelReader.py"))
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "serverHistory.R"))
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/allMessages.png")))
@@ -576,7 +575,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @history_group.command(name="channel", description="channel message history")
     async def hist_channel(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "channelReader.py"))
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "channelHistory.R"))
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/channelMessages.png")))
@@ -584,7 +582,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @history_group.command(name="user", description="user message history")
     async def hist_user(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "channelReader.py"))
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "userHistory.R"))
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/userMessages.png")))
@@ -592,7 +589,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @history_group.command(name="daily", description="daily messages plot")
     async def hist_daily(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "channelReader.py"))
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "dailyMessage.R"))
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/dailyMessages.png")))
