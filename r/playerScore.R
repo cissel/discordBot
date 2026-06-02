@@ -108,7 +108,7 @@ fg_pitchers <- fg_pitcher_leaders(
 top_sp <- fg_pitchers %>%
   filter(!is.na(GS) & GS >= 1) %>%
   arrange(desc(WAR)) %>%
-  slice_head(n = 100) %>%
+  slice_head(n = 250) %>%
   transmute(PlayerName, playerid, mlbam_id = xMLBAMID,
             fantasy_position = "SP", GS, G, WAR)
 
