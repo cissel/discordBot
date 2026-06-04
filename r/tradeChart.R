@@ -68,7 +68,7 @@ subtitle_text  <- paste0(
   " (", round(last_pct, 2), "%)"
 )
 title_text <- paste0(
-  "$", ticker, " — ", timeframe_label,
+  "$", ticker, " - ", timeframe_label,
   "\nas of ", format(last_time, "%b %d %Y %I:%M %p %Z")
 )
 #####

@@ -63,7 +63,7 @@ if __name__ == "__main__":
     rows = get_probable_starters(date_str)
     print(f"Found {len(rows)} probable starters for {which} ({date_str})")
     for r in rows:
-        print(f"  {r['pitcher_name']} ({r['team']}) — {r['matchup']}")
+        print(f"  {r['pitcher_name']} ({r['team']}) - {r['matchup']}")
 
     write_csv(rows, csv_path)
     print(f"Written to {csv_path}")

@@ -53,7 +53,7 @@ NON_AB = {
 # ── 1. Load probable starters ─────────────────────────────────────────────────
 def load_starters() -> list[dict]:
     if not STARTERS_CSV.exists():
-        sys.exit(f"[ERROR] {STARTERS_CSV} not found — run mlbProbPitchers.py first.")
+        sys.exit(f"[ERROR] {STARTERS_CSV} not found - run mlbProbPitchers.py first.")
     with open(STARTERS_CSV) as f:
         return list(csv.DictReader(f))
 
@@ -137,7 +137,7 @@ def get_opposing_batters(opposing_team_name: str, game_date: str) -> list[dict]:
     if lineup:
         print(f"  [INFO] Using probable lineup ({len(lineup)} batters)")
         return lineup
-    print(f"  [INFO] No lineup posted — falling back to active roster")
+    print(f"  [INFO] No lineup posted - falling back to active roster")
     return get_active_roster(team_id)
 
 # ── 4. Fetch one season of Statcast (used in thread pool) ────────────────────
@@ -224,7 +224,7 @@ def main():
         OUT_CSV.unlink()
 
     starters = load_starters()
-    print(f"[INFO] {len(starters)} probable starters — fetching Statcast in parallel...\n")
+    print(f"[INFO] {len(starters)} probable starters - fetching Statcast in parallel...\n")
 
     tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
@@ -234,7 +234,7 @@ def main():
 
     # ── Fetch Statcast for all pitchers concurrently (4 at a time) ───────────
     # Each pitcher itself fires 5 year-requests in parallel, so this is
-    # up to 4 × 5 = 20 concurrent requests — polite but fast.
+    # up to 4 × 5 = 20 concurrent requests - polite but fast.
     def fetch_entry(entry):
         pid = entry.get("pitcher_id")
         if not pid:

@@ -106,7 +106,7 @@ pa_events <- c(
   "field_error", "catcher_interf"
 )
 
-# Only keep the columns we actually need — avoids the schema mismatch entirely
+# Only keep the columns we actually need - avoids the schema mismatch entirely
 keep_cols <- c("batter", "events", "matchup.batter.fullName",
                "player_name", "batter_name")
 
@@ -125,7 +125,7 @@ fetch_chunk <- function(chunk) {
   
   result <- as.data.frame(result)
   
-  # Filter to PA-ending pitches immediately — shrinks memory dramatically
+  # Filter to PA-ending pitches immediately - shrinks memory dramatically
   result <- result[!is.na(result$events) & result$events %in% pa_events, ]
   if (nrow(result) == 0) return(NULL)
   
@@ -134,7 +134,7 @@ fetch_chunk <- function(chunk) {
   result[, cols, drop = FALSE]
 }
 
-cat("[INFO] Fetching chunks (each is fast — 2 weeks at a time)...\n")
+cat("[INFO] Fetching chunks (each is fast - 2 weeks at a time)...\n")
 pa_rows <- vector("list", length(all_chunks))
 for (i in seq_along(all_chunks)) {
   chunk  <- all_chunks[[i]]

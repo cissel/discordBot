@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# nbaToday.py — fetch today's NBA games from ESPN API
+# nbaToday.py - fetch today's NBA games from ESPN API
 
 import requests
 import pandas as pd
@@ -43,7 +43,7 @@ for event in events:
         try:
             away_score = int(away["score"])
             home_score = int(home["score"])
-            matchup += f" — {away_score}-{home_score}"
+            matchup += f" - {away_score}-{home_score}"
         except (KeyError, ValueError):
             pass
 

@@ -23,7 +23,7 @@ JAX_LAT    = "30.3322"
 JAX_LON    = "-81.6557"
 JAX_ELEV   = 5          # meters above sea level (Jacksonville is basically sea level)
 N_PASSES   = 5          # how many passes to find
-MIN_ELEV   = 10         # degrees — ignore grazing passes below this
+MIN_ELEV   = 10         # degrees - ignore grazing passes below this
 DAYS_AHEAD = 7
 OUTPUT     = Path("~/discordBot/outputs/space/issPasses.csv").expanduser()
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)

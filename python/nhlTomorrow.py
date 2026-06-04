@@ -1,13 +1,15 @@
 from nhlpy import NHLClient
 from datetime import datetime, timedelta
 from dateutil import tz
-import csv
+import csv, os
 
 client = NHLClient()
 tomorrow = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 schedule = client.schedule.get_schedule(date=tomorrow)
 
-with open("~/discordBot/outputs/sports/nhl/gamesTomorrow.csv", "w", newline="") as f:
+out_path = os.path.expanduser("~/discordBot/outputs/sports/nhl/gamesTomorrow.csv")
+os.makedirs(os.path.dirname(out_path), exist_ok=True)
+with open(out_path, "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerow(["time", "matchup"])
 

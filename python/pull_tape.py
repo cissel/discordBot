@@ -5,7 +5,7 @@ Pulls the full trade tape for SPY one trading day at a time going back 1 month.
 For each day, identifies block prints defined as trades that are BOTH:
   - Large in size  (>= MIN_SIZE shares)
   - Far from the rolling median price (>= MIN_DEVIATION_PCT %)
-Appends flagged events to a running CSV. Safe to re-run — skips days already processed.
+Appends flagged events to a running CSV. Safe to re-run - skips days already processed.
 """
 
 import requests

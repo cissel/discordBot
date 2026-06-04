@@ -1,2 +1,3 @@
-slot,name,id,path,ok
-0,JTB / SR-202 East,1727,/Users/jamescissel/discordBot/outputs/cams/cam_0.jpg,True
+slot,name,id,path,ok,mode
+0,Dames Point Bridge EB,1700,/home/jhcv/discordBot/outputs/cams/cam_grid.jpg,True,grid
+1,Dames Point Bridge WB,1701,/home/jhcv/discordBot/outputs/cams/cam_grid.jpg,True,grid

@@ -1,161 +1,163 @@
 team_name,player_name,slot_position,position,points,injury_status
-2 balls 1 bat,Jose Ramirez,3B,3B,3.0,ACTIVE
-2 balls 1 bat,Kyle Tucker,OF,RF,0.0,ACTIVE
-2 balls 1 bat,Cristopher Sanchez,BE,SP,13.0,ACTIVE
-2 balls 1 bat,Jackson Chourio,IL,CF,0,TEN_DAY_DL
-2 balls 1 bat,Brice Turang,2B,2B,0,ACTIVE
-2 balls 1 bat,Ian Happ,OF,LF,3.0,ACTIVE
-2 balls 1 bat,Luis Arraez,1B,1B,0,DAY_TO_DAY
-2 balls 1 bat,Brendan Donovan,UTIL,2B,4.0,ACTIVE
-2 balls 1 bat,Alec Burleson,OF,LF,2.0,ACTIVE
-2 balls 1 bat,Emerson Hancock,P,SP,0.0,ACTIVE
-2 balls 1 bat,Zach Neto,SS,SS,0.0,ACTIVE
-2 balls 1 bat,Edward Cabrera,P,SP,0.0,ACTIVE
-2 balls 1 bat,Gavin Williams,P,SP,8.0,ACTIVE
-2 balls 1 bat,Liam Hicks,C,C,3.0,ACTIVE
-2 balls 1 bat,Jeffrey Springs,P,SP,0.0,ACTIVE
-2 balls 1 bat,Seth Lugo,BE,SP,0,ACTIVE
-2 balls 1 bat,Randy Vasquez,BE,SP,0,ACTIVE
-2 balls 1 bat,Rhett Lowder,P,SP,0,ACTIVE
-2 balls 1 bat,Andrew Painter,P,SP,0.0,ACTIVE
-2 balls 1 bat,Zac Gallen,P,SP,0.0,ACTIVE
-Chandler Simpson Worshipper,Tarik Skubal,P,SP,0,ACTIVE
-Chandler Simpson Worshipper,Cal Raleigh,C,C,4.0,ACTIVE
-Chandler Simpson Worshipper,Junior Caminero,3B,3B,0,ACTIVE
-Chandler Simpson Worshipper,Edwin Diaz,P,RP,0.0,ACTIVE
-Chandler Simpson Worshipper,Nick Kurtz,1B,1B,0.0,ACTIVE
-Chandler Simpson Worshipper,Hunter Brown,IL,SP,0.0,FIFTEEN_DAY_DL
+Chandler Simpson Worshipper,Tarik Skubal,IL,SP,0.0,FIFTEEN_DAY_DL
+Chandler Simpson Worshipper,Cal Raleigh,BE,C,0.0,TEN_DAY_DL
+Chandler Simpson Worshipper,Junior Caminero,3B,3B,1.0,ACTIVE
+Chandler Simpson Worshipper,Edwin Diaz,IL,RP,0.0,SIXTY_DAY_DL
+Chandler Simpson Worshipper,Hunter Brown,IL,SP,0.0,SIXTY_DAY_DL
 Chandler Simpson Worshipper,Aroldis Chapman,P,RP,0.0,ACTIVE
-Chandler Simpson Worshipper,Freddy Peralta,P,SP,0.0,ACTIVE
-Chandler Simpson Worshipper,Brandon Lowe,2B,2B,13.0,ACTIVE
-Chandler Simpson Worshipper,Bo Bichette,SS,SS,0.0,ACTIVE
-Chandler Simpson Worshipper,Jarren Duran,OF,LF,7.0,ACTIVE
-Chandler Simpson Worshipper,Riley Greene,BE,LF,0,ACTIVE
-Chandler Simpson Worshipper,Ryan Pepiot,IL,SP,0,FIFTEEN_DAY_DL
-Chandler Simpson Worshipper,Seiya Suzuki,UTIL,DH,1.0,ACTIVE
-Chandler Simpson Worshipper,Oneil Cruz,OF,CF,11.0,ACTIVE
-Chandler Simpson Worshipper,Pete Fairbanks,P,RP,0.0,ACTIVE
-Chandler Simpson Worshipper,Jeff Hoffman,P,RP,0,ACTIVE
-Chandler Simpson Worshipper,Eury Perez,P,SP,-1.0,ACTIVE
-Chandler Simpson Worshipper,Steven Matz,BE,RP,0,ACTIVE
+Chandler Simpson Worshipper,Brandon Lowe,2B,2B,7.0,ACTIVE
+Chandler Simpson Worshipper,Oneil Cruz,OF,CF,7.0,ACTIVE
 Chandler Simpson Worshipper,Andy Pages,OF,CF,0.0,ACTIVE
-Chandler Simpson Worshipper,Spencer Strider,IL,SP,0.0,FIFTEEN_DAY_DL
-UNCLE CUCKUS,Garrett Crochet,P,SP,-27.0,ACTIVE
-UNCLE CUCKUS,Bobby Witt Jr.,SS,SS,0,ACTIVE
-UNCLE CUCKUS,Vinnie Pasquantino,1B,1B,0,ACTIVE
-UNCLE CUCKUS,Corbin Carroll,OF,RF,-1.0,ACTIVE
-UNCLE CUCKUS,Yordan Alvarez,OF,DH,1.0,ACTIVE
-UNCLE CUCKUS,Jesus Luzardo,P,SP,0.0,ACTIVE
-UNCLE CUCKUS,Steven Kwan,OF,LF,1.0,ACTIVE
-UNCLE CUCKUS,Bryan Woo,P,SP,0.0,ACTIVE
-UNCLE CUCKUS,Hunter Greene,IL,SP,0,SIXTY_DAY_DL
-UNCLE CUCKUS,Joe Ryan,P,SP,0.0,ACTIVE
-UNCLE CUCKUS,Andres Munoz,P,RP,0.0,ACTIVE
-UNCLE CUCKUS,Cole Ragans,P,SP,0,ACTIVE
-UNCLE CUCKUS,Christian Yelich,BE,DH,0,DAY_TO_DAY
-UNCLE CUCKUS,Maikel Garcia,3B,3B,0,ACTIVE
-UNCLE CUCKUS,Zack Wheeler,IL,SP,0.0,FIFTEEN_DAY_DL
-UNCLE CUCKUS,Kyle Bradish,P,SP,0.0,ACTIVE
-UNCLE CUCKUS,Adley Rutschman,UTIL,C,0.0,TEN_DAY_DL
-UNCLE CUCKUS,Marcus Semien,2B,2B,0.0,ACTIVE
-UNCLE CUCKUS,Josh Hader,IL,RP,0.0,FIFTEEN_DAY_DL
-UNCLE CUCKUS,Salvador Perez,C,C,0,ACTIVE
-UNCLE CUCKUS,Cade Smith,BE,RP,0.0,ACTIVE
+Chandler Simpson Worshipper,Chandler Simpson,OF,CF,-1.0,ACTIVE
+Chandler Simpson Worshipper,Xavier Edwards,SS,2B,2.0,ACTIVE
+Chandler Simpson Worshipper,Bryan Baker,P,RP,3.0,ACTIVE
+Chandler Simpson Worshipper,Antonio Senzatela,P,SP,0.0,ACTIVE
+Chandler Simpson Worshipper,Dillon Dingler,C,C,1.0,ACTIVE
+Chandler Simpson Worshipper,Jonathan Aranda,1B,1B,-2.0,ACTIVE
+Chandler Simpson Worshipper,Nick Martinez,BE,SP,0.0,ACTIVE
+Chandler Simpson Worshipper,Drew Rasmussen,P,SP,0.0,ACTIVE
+Chandler Simpson Worshipper,Nathan Eovaldi,P,SP,5.0,ACTIVE
+Chandler Simpson Worshipper,Jesus Luzardo,P,SP,0.0,ACTIVE
+Chandler Simpson Worshipper,Emmet Sheehan,BE,SP,0.0,ACTIVE
+Chandler Simpson Worshipper,Fernando Tatis Jr.,UTIL,RF,5.0,ACTIVE
+Chandler Simpson Worshipper,Shane Baz,P,SP,19.0,ACTIVE
+2 balls 1 bat,Jose Ramirez,3B,3B,9.0,ACTIVE
+2 balls 1 bat,Kyle Tucker,OF,RF,0.0,ACTIVE
+2 balls 1 bat,Cristopher Sanchez,BE,SP,0.0,ACTIVE
+2 balls 1 bat,Brice Turang,2B,2B,5.0,ACTIVE
+2 balls 1 bat,Gavin Williams,P,SP,0.0,ACTIVE
+2 balls 1 bat,Liam Hicks,C,C,3.0,ACTIVE
+2 balls 1 bat,Matt Olson,1B,1B,9.0,ACTIVE
+2 balls 1 bat,Parker Messick,BE,SP,0.0,ACTIVE
+2 balls 1 bat,Braxton Ashcraft,P,RP,0.0,ACTIVE
+2 balls 1 bat,Bryce Elder,P,SP,15.0,ACTIVE
+2 balls 1 bat,Davis Martin,P,SP,-11.0,ACTIVE
+2 balls 1 bat,JJ Wetherholt,SS,SS,3.0,ACTIVE
+2 balls 1 bat,Jackson Chourio,OF,CF,7.0,ACTIVE
+2 balls 1 bat,Daylen Lile,OF,RF,4.0,ACTIVE
+2 balls 1 bat,Spencer Arrighetti,P,SP,0.0,ACTIVE
+2 balls 1 bat,Kyle Harrison,P,SP,23.0,ACTIVE
+2 balls 1 bat,Louis Varland,BE,RP,0.0,ACTIVE
+2 balls 1 bat,Michael Soroka,P,SP,7.0,ACTIVE
+2 balls 1 bat,Bryan Reynolds,UTIL,RF,2.0,ACTIVE
 Zach's Baseball Classic,Yoshinobu Yamamoto,P,SP,0.0,ACTIVE
-Zach's Baseball Classic,Kyle Schwarber,UTIL,DH,16.0,ACTIVE
-Zach's Baseball Classic,Mookie Betts,BE,SS,0.0,TEN_DAY_DL
-Zach's Baseball Classic,Ben Rice,C,1B,1.0,ACTIVE
-Zach's Baseball Classic,Austin Riley,3B,3B,5.0,ACTIVE
-Zach's Baseball Classic,Ozzie Albies,2B,2B,0.0,ACTIVE
-Zach's Baseball Classic,Randy Arozarena,OF,LF,0.0,ACTIVE
-Zach's Baseball Classic,Gerrit Cole,P,SP,0.0,FIFTEEN_DAY_DL
-Zach's Baseball Classic,Drake Baldwin,BE,C,3.0,ACTIVE
-Zach's Baseball Classic,Mike Yastrzemski,OF,RF,3.0,ACTIVE
+Zach's Baseball Classic,Kyle Schwarber,UTIL,DH,1.0,ACTIVE
+Zach's Baseball Classic,Mookie Betts,SS,SS,2.0,ACTIVE
+Zach's Baseball Classic,Ben Rice,C,1B,2.0,ACTIVE
+Zach's Baseball Classic,Austin Riley,3B,3B,-1.0,ACTIVE
+Zach's Baseball Classic,Ozzie Albies,2B,2B,5.0,ACTIVE
+Zach's Baseball Classic,Randy Arozarena,OF,LF,2.0,ACTIVE
+Zach's Baseball Classic,Gerrit Cole,P,SP,0.0,ACTIVE
+Zach's Baseball Classic,Drake Baldwin,BE,C,0.0,TEN_DAY_DL
+Zach's Baseball Classic,Mike Yastrzemski,OF,RF,0.0,ACTIVE
 Zach's Baseball Classic,Mike Trout,OF,DH,1.0,ACTIVE
 Zach's Baseball Classic,Luke Weaver,P,RP,0.0,ACTIVE
-Zach's Baseball Classic,Raisel Iglesias,P,RP,0.0,ACTIVE
-Zach's Baseball Classic,Ryan Walker,P,RP,0,ACTIVE
-Zach's Baseball Classic,Max Muncy,BE,3B,0.0,ACTIVE
-Zach's Baseball Classic,Dansby Swanson,SS,SS,7.0,ACTIVE
-Zach's Baseball Classic,Freddie Freeman,1B,1B,0.0,ACTIVE
-Zach's Baseball Classic,Luis Gil,P,SP,0.0,ACTIVE
+Zach's Baseball Classic,Raisel Iglesias,P,RP,7.0,ACTIVE
+Zach's Baseball Classic,Ryan Walker,P,RP,0.0,ACTIVE
+Zach's Baseball Classic,Max Muncy,BE,3B,-2.0,ACTIVE
+Zach's Baseball Classic,Dansby Swanson,BE,SS,-1.0,ACTIVE
+Zach's Baseball Classic,Freddie Freeman,1B,1B,8.0,ACTIVE
 Zach's Baseball Classic,Ryan McMahon,BE,3B,0.0,ACTIVE
-Jose Caballero,Aaron Judge,OF,RF,6.0,ACTIVE
-Jose Caballero,Ronald Acuna Jr.,OF,RF,1.0,ACTIVE
-Jose Caballero,Max Fried,P,SP,0.0,ACTIVE
-Jose Caballero,Manny Machado,3B,3B,0,ACTIVE
-Jose Caballero,Elly De La Cruz,SS,SS,0,ACTIVE
-Jose Caballero,Bryce Harper,1B,1B,4.0,ACTIVE
-Jose Caballero,Gleyber Torres,2B,2B,0,ACTIVE
-Jose Caballero,Yainer Diaz,C,C,2.0,ACTIVE
-Jose Caballero,David Bednar,P,RP,0.0,ACTIVE
-Jose Caballero,Cam Schlittler,P,SP,0.0,ACTIVE
-Jose Caballero,Munetaka Murakami,BE,3B,0,ACTIVE
-Jose Caballero,Jose Caballero,OF,RF,7.0,ACTIVE
-Jose Caballero,Jose Soriano,P,SP,0.0,ACTIVE
-Jose Caballero,Mason Miller,P,RP,0,ACTIVE
-Jose Caballero,Michael Wacha,BE,SP,0,ACTIVE
-Jose Caballero,Nick Pivetta,P,SP,0,DAY_TO_DAY
-Jose Caballero,Taj Bradley,P,SP,0.0,ACTIVE
-Jose Caballero,Gunnar Henderson,UTIL,SS,3.0,ACTIVE
-Jose Caballero,Yandy Diaz,BE,DH,0,ACTIVE
-JungHooLee is My Father ,Paul Skenes,P,SP,20.0,ACTIVE
-JungHooLee is My Father ,Logan Webb,P,SP,0,ACTIVE
-JungHooLee is My Father ,Julio Rodriguez,OF,CF,5.0,ACTIVE
-JungHooLee is My Father ,Alex Bregman,3B,3B,2.0,ACTIVE
-JungHooLee is My Father ,Nico Hoerner,2B,2B,-2.0,ACTIVE
-JungHooLee is My Father ,Pete Alonso,1B,1B,11.0,ACTIVE
+Zach's Baseball Classic,Will Warren,P,SP,0.0,ACTIVE
+UNCLE CUCKUS,Garrett Crochet,IL,SP,0.0,FIFTEEN_DAY_DL
+UNCLE CUCKUS,Bobby Witt Jr.,SS,SS,3.0,ACTIVE
+UNCLE CUCKUS,Corbin Carroll,OF,RF,6.0,ACTIVE
+UNCLE CUCKUS,Yordan Alvarez,OF,DH,10.0,ACTIVE
+UNCLE CUCKUS,Steven Kwan,BE,LF,4.0,ACTIVE
+UNCLE CUCKUS,Bryan Woo,P,SP,0.0,ACTIVE
+UNCLE CUCKUS,Hunter Greene,IL,SP,0.0,SIXTY_DAY_DL
+UNCLE CUCKUS,Cole Ragans,IL,SP,0.0,FIFTEEN_DAY_DL
+UNCLE CUCKUS,Christian Yelich,UTIL,DH,8.0,ACTIVE
+UNCLE CUCKUS,Adley Rutschman,C,C,3.0,ACTIVE
+UNCLE CUCKUS,Marcus Semien,2B,2B,-1.0,ACTIVE
+UNCLE CUCKUS,Salvador Perez,BE,C,3.0,ACTIVE
+UNCLE CUCKUS,Rafael Devers,BE,DH,-4.0,ACTIVE
+UNCLE CUCKUS,Maikel Garcia,3B,3B,0.0,DAY_TO_DAY
+UNCLE CUCKUS,Christian Walker,1B,1B,-1.0,ACTIVE
+UNCLE CUCKUS,Joey Cantillo,P,RP,-1.0,ACTIVE
+UNCLE CUCKUS,Zack Wheeler,P,SP,0.0,ACTIVE
+UNCLE CUCKUS,Ian Happ,OF,LF,-2.0,ACTIVE
+UNCLE CUCKUS,Eduardo Rodriguez,P,SP,0.0,ACTIVE
+UNCLE CUCKUS,Payton Tolle,P,SP,0.0,ACTIVE
+UNCLE CUCKUS,Randy Vasquez,P,SP,8.0,ACTIVE
+UNCLE CUCKUS,Connelly Early,P,SP,5.0,ACTIVE
+JungHooLee is My Father ,Paul Skenes,P,SP,0.0,ACTIVE
+JungHooLee is My Father ,Julio Rodriguez,OF,CF,6.0,ACTIVE
+JungHooLee is My Father ,Alex Bregman,3B,3B,0.0,ACTIVE
+JungHooLee is My Father ,Nico Hoerner,2B,2B,5.0,ACTIVE
+JungHooLee is My Father ,Pete Alonso,BE,1B,7.0,ACTIVE
 JungHooLee is My Father ,Will Smith,C,C,0.0,ACTIVE
-JungHooLee is My Father ,Corey Seager,SS,SS,0.0,ACTIVE
-JungHooLee is My Father ,Roman Anthony,OF,RF,3.0,ACTIVE
-JungHooLee is My Father ,Tyler Glasnow,P,SP,0.0,ACTIVE
-JungHooLee is My Father ,Dylan Cease,P,SP,0,ACTIVE
-JungHooLee is My Father ,Matt Chapman,UTIL,3B,0,ACTIVE
-JungHooLee is My Father ,Jacob Misiorowski,P,SP,0,ACTIVE
-JungHooLee is My Father ,Byron Buxton,BE,CF,1.0,ACTIVE
+JungHooLee is My Father ,Corey Seager,SS,SS,0.0,TEN_DAY_DL
+JungHooLee is My Father ,Roman Anthony,BE,RF,0.0,TEN_DAY_DL
+JungHooLee is My Father ,Tyler Glasnow,P,SP,0.0,FIFTEEN_DAY_DL
+JungHooLee is My Father ,Dylan Cease,P,SP,0.0,FIFTEEN_DAY_DL
+JungHooLee is My Father ,Jacob Misiorowski,P,SP,0.0,ACTIVE
+JungHooLee is My Father ,Byron Buxton,BE,CF,0.0,ACTIVE
 JungHooLee is My Father ,Taylor Ward,OF,LF,-2.0,ACTIVE
-JungHooLee is My Father ,Willy Adames,BE,SS,0,ACTIVE
-JungHooLee is My Father ,Chase DeLauter,BE,RF,0.0,ACTIVE
-JungHooLee is My Father ,Brandon Woodruff,P,SP,0,ACTIVE
+JungHooLee is My Father ,Chase DeLauter,OF,RF,0.0,ACTIVE
 JungHooLee is My Father ,Shota Imanaga,P,SP,0.0,ACTIVE
-Nolan Ryan's Right Hook,Juan Soto,IL,RF,0.0,TEN_DAY_DL
-Nolan Ryan's Right Hook,Ketel Marte,2B,2B,11.0,ACTIVE
-Nolan Ryan's Right Hook,Logan Gilbert,P,SP,0.0,ACTIVE
+JungHooLee is My Father ,Casey Schmitt,UTIL,2B,-2.0,ACTIVE
+JungHooLee is My Father ,Nick Kurtz,1B,1B,6.0,ACTIVE
+JungHooLee is My Father ,Willy Adames,BE,SS,8.0,ACTIVE
+JungHooLee is My Father ,Robbie Ray,P,SP,0.0,ACTIVE
+Jose Caballero,Aaron Judge,OF,RF,0.0,DAY_TO_DAY
+Jose Caballero,Ronald Acuna Jr.,OF,RF,0.0,ACTIVE
+Jose Caballero,Max Fried,BE,SP,0.0,FIFTEEN_DAY_DL
+Jose Caballero,Elly De La Cruz,SS,SS,0.0,TEN_DAY_DL
+Jose Caballero,Bryce Harper,1B,1B,9.0,ACTIVE
+Jose Caballero,David Bednar,P,RP,0.0,ACTIVE
+Jose Caballero,Cam Schlittler,P,SP,1.0,ACTIVE
+Jose Caballero,Jose Caballero,BE,RF,2.0,ACTIVE
+Jose Caballero,Jose Soriano,P,SP,0.0,ACTIVE
+Jose Caballero,Mason Miller,P,RP,0.0,ACTIVE
+Jose Caballero,Michael Wacha,P,SP,0.0,ACTIVE
+Jose Caballero,Yandy Diaz,BE,DH,0.0,ACTIVE
+Jose Caballero,Kevin McGonigle,3B,SS,0.0,ACTIVE
+Jose Caballero,Ildemaro Vargas,2B,2B,2.0,ACTIVE
+Jose Caballero,Luis Arraez,UTIL,1B,5.0,ACTIVE
+Jose Caballero,Ivan Herrera,C,DH,2.0,ACTIVE
+Jose Caballero,Michael Harris II,OF,CF,4.0,ACTIVE
+Jose Caballero,Bailey Ober,P,SP,0.0,FIFTEEN_DAY_DL
+Jose Caballero,Trey Yesavage,P,SP,0.0,ACTIVE
+dock ellis fan club,Shohei Ohtani,UTIL,DH,9.0,ACTIVE
+dock ellis fan club,Vladimir Guerrero Jr.,1B,1B,2.0,ACTIVE
+dock ellis fan club,William Contreras,C,C,1.0,ACTIVE
+dock ellis fan club,Francisco Lindor,IL,SS,0.0,TEN_DAY_DL
+dock ellis fan club,Cody Bellinger,OF,LF,3.0,ACTIVE
+dock ellis fan club,Blake Snell,IL,SP,0.0,SIXTY_DAY_DL
+dock ellis fan club,Sonny Gray,BE,SP,0.0,ACTIVE
+dock ellis fan club,Chris Sale,P,SP,0.0,ACTIVE
+dock ellis fan club,Michael King,BE,SP,0.0,ACTIVE
+dock ellis fan club,James Wood,OF,LF,-1.0,ACTIVE
+dock ellis fan club,Miguel Vargas,3B,3B,2.0,ACTIVE
+dock ellis fan club,Cade Smith,P,RP,0.0,ACTIVE
+dock ellis fan club,Spencer Strider,P,SP,0.0,ACTIVE
+dock ellis fan club,Trent Grisham,OF,CF,2.0,ACTIVE
+dock ellis fan club,Joe Ryan,P,SP,0.0,ACTIVE
+dock ellis fan club,Otto Lopez,SS,SS,7.0,ACTIVE
+dock ellis fan club,Brayan Rocchio,2B,SS,4.0,ACTIVE
+dock ellis fan club,Max Meyer,P,SP,0.0,ACTIVE
+dock ellis fan club,Gregory Soto,P,RP,9.0,ACTIVE
+dock ellis fan club,Emerson Hancock,P,SP,0.0,ACTIVE
+dock ellis fan club,Ranger Suarez,BE,SP,0.0,ACTIVE
+Nolan Ryan's Right Hook,Juan Soto,OF,RF,0.0,ACTIVE
+Nolan Ryan's Right Hook,Ketel Marte,2B,2B,2.0,ACTIVE
+Nolan Ryan's Right Hook,Logan Gilbert,P,SP,15.0,ACTIVE
 Nolan Ryan's Right Hook,Jacob deGrom,BE,SP,0.0,ACTIVE
-Nolan Ryan's Right Hook,Framber Valdez,P,SP,0,ACTIVE
-Nolan Ryan's Right Hook,Jazz Chisholm Jr.,3B,2B,-1.0,ACTIVE
-Nolan Ryan's Right Hook,Jhoan Duran,P,RP,0.0,ACTIVE
-Nolan Ryan's Right Hook,Kevin Gausman,P,SP,0,ACTIVE
-Nolan Ryan's Right Hook,Wyatt Langford,OF,LF,0.0,DAY_TO_DAY
-Nolan Ryan's Right Hook,Jeremy Pena,SS,SS,0.0,TEN_DAY_DL
-Nolan Ryan's Right Hook,Jackson Merrill,OF,CF,0,ACTIVE
-Nolan Ryan's Right Hook,Nathan Eovaldi,BE,SP,0.0,ACTIVE
+Nolan Ryan's Right Hook,Framber Valdez,P,SP,0.0,ACTIVE
+Nolan Ryan's Right Hook,Jhoan Duran,P,RP,11.0,ACTIVE
+Nolan Ryan's Right Hook,Kevin Gausman,P,SP,9.0,ACTIVE
+Nolan Ryan's Right Hook,Jackson Merrill,BE,CF,-2.0,ACTIVE
 Nolan Ryan's Right Hook,Shea Langeliers,C,C,0.0,ACTIVE
 Nolan Ryan's Right Hook,MacKenzie Gore,P,SP,0.0,ACTIVE
-Nolan Ryan's Right Hook,Michael Busch,1B,1B,0.0,ACTIVE
-Nolan Ryan's Right Hook,Emilio Pagan,P,RP,0,ACTIVE
-Nolan Ryan's Right Hook,Caleb Durbin,UTIL,3B,3.0,ACTIVE
-Nolan Ryan's Right Hook,Brandon Nimmo,OF,LF,0.0,ACTIVE
-Nolan Ryan's Right Hook,Aaron Nola,P,SP,0.0,ACTIVE
+Nolan Ryan's Right Hook,Emilio Pagan,IL,RP,0.0,FIFTEEN_DAY_DL
+Nolan Ryan's Right Hook,Brandon Nimmo,OF,LF,-3.0,ACTIVE
 Nolan Ryan's Right Hook,Nolan McLean,BE,SP,0.0,ACTIVE
-dock ellis fan club,Shohei Ohtani,UTIL,DH,0.0,ACTIVE
-dock ellis fan club,Fernando Tatis Jr.,OF,RF,0,ACTIVE
-dock ellis fan club,Vladimir Guerrero Jr.,1B,1B,0,ACTIVE
-dock ellis fan club,William Contreras,C,C,0,ACTIVE
-dock ellis fan club,Francisco Lindor,SS,SS,0.0,ACTIVE
-dock ellis fan club,Cody Bellinger,OF,LF,0.0,ACTIVE
-dock ellis fan club,Jose Altuve,2B,2B,0.0,ACTIVE
-dock ellis fan club,Blake Snell,IL,SP,0.0,FIFTEEN_DAY_DL
-dock ellis fan club,Pete Crow-Armstrong,OF,CF,-2.0,ACTIVE
-dock ellis fan club,Luis Castillo,P,SP,0.0,ACTIVE
-dock ellis fan club,Sonny Gray,P,SP,0.0,ACTIVE
-dock ellis fan club,Eugenio Suarez,3B,3B,0,ACTIVE
-dock ellis fan club,Drew Rasmussen,BE,SP,0,ACTIVE
-dock ellis fan club,Sandy Alcantara,P,SP,0.0,ACTIVE
-dock ellis fan club,Trevor Rogers,P,SP,0.0,ACTIVE
-dock ellis fan club,Nick Lodolo,IL,SP,0,FIFTEEN_DAY_DL
-dock ellis fan club,Chris Sale,P,SP,0.0,ACTIVE
-dock ellis fan club,George Kirby,P,SP,19.0,ACTIVE
-dock ellis fan club,Tanner Bibee,BE,SP,0.0,ACTIVE
-dock ellis fan club,Chad Patrick,BE,SP,0,ACTIVE
-dock ellis fan club,Michael King,P,SP,0,ACTIVE
+Nolan Ryan's Right Hook,CJ Abrams,SS,SS,1.0,ACTIVE
+Nolan Ryan's Right Hook,Jordan Walker,OF,RF,-1.0,ACTIVE
+Nolan Ryan's Right Hook,Sal Stewart,1B,1B,0.0,ACTIVE
+Nolan Ryan's Right Hook,Riley O'Brien,P,RP,-7.0,ACTIVE
+Nolan Ryan's Right Hook,Gunnar Henderson,UTIL,SS,2.0,ACTIVE
+Nolan Ryan's Right Hook,Chase Burns,P,SP,0.0,ACTIVE
+Nolan Ryan's Right Hook,Munetaka Murakami,IL,3B,0.0,TEN_DAY_DL
+Nolan Ryan's Right Hook,Ernie Clement,3B,3B,1.0,ACTIVE

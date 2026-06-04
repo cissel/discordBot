@@ -1,22 +1,15 @@
 import csv
+import os
 from espn_api.baseball import League
 
 LEAGUE_ID = 1858112591
 YEAR      = 2026
-CSV_PATH  = "~/discordBot/outputs/sports/mlb/fantasy/scoreboard.csv"
-DEBUG     = True  # set to False once you confirm the output looks right
+CSV_PATH  = os.path.expanduser("~/discordBot/outputs/sports/mlb/fantasy/scoreboard.csv")
 
 
 def fetch_scoreboard():
-    league = League(league_id=LEAGUE_ID, year=YEAR)
-
-    # box_scores() with no args returns the current matchup period
+    league   = League(league_id=LEAGUE_ID, year=YEAR)
     matchups = league.box_scores()
-
-    if DEBUG and matchups:
-        box = matchups[0]
-        print("DEBUG box score attrs:", [a for a in dir(box) if not a.startswith('_')])
-        print("DEBUG first matchup:", box)
 
     rows = []
     for matchup in matchups:

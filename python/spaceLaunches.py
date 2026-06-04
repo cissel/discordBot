@@ -2,7 +2,7 @@ import requests
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from dateutil import parser
-import csv
+import csv, os
 from pathlib import Path
 
 def get_next_cape_kennedy_launch():
@@ -48,7 +48,7 @@ def get_next_cape_kennedy_launch():
         minutes, seconds = divmod(remainder, 60)
 
         # Create output path
-        output_path = Path("~/discordBot/outputs/space/next_launch.csv")
+        output_path = Path(os.path.expanduser("~/discordBot/outputs/space/next_launch.csv"))
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Write launch info to CSV

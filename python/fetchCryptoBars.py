@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# fetchCryptoBars.py — fetch crypto bars from Alpaca API
+# fetchCryptoBars.py - fetch crypto bars from Alpaca API
 # Usage: python3 fetchCryptoBars.py <SYMBOL> <TIMEFRAME>
 # Symbols: BTC, ETH, DOGE
 # Timeframes: intraday, 1w, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, max
@@ -23,6 +23,7 @@ if not API_KEY or not API_SECRET:
 SYMBOL_MAP = {
     "BTC":  "BTC/USD",
     "ETH":  "ETH/USD",
+    "SOL":  "SOL/USD",
     "DOGE": "DOGE/USD",
 }
 

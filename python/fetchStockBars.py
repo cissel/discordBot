@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# fetchStockBars.py — fetch stock bars from Alpaca API
+# fetchStockBars.py - fetch stock bars from Alpaca API
 # Usage: python3 fetchStockBars.py <TICKER> <TIMEFRAME>
 # Timeframes: 1d, 1w, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, max, intraday
 

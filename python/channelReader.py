@@ -1,5 +1,5 @@
 """
-channelReader.py  —  backfill server messages into server_messages.csv
+channelReader.py  -  backfill server messages into server_messages.csv
 
 Run modes:
   python channelReader.py          # fetch all messages newer than latest in CSV
@@ -79,15 +79,15 @@ async def on_ready():
         return
 
     if FULL_MODE:
-        print("Full re-fetch mode — wiping existing CSV")
+        print("Full re-fetch mode - wiping existing CSV")
         CSV_PATH.unlink(missing_ok=True)
         after_dt = None
     else:
         after_dt = get_latest_timestamp()
         if after_dt:
-            print(f"Incremental fetch — only messages after {after_dt.isoformat()}")
+            print(f"Incremental fetch - only messages after {after_dt.isoformat()}")
         else:
-            print("CSV empty/missing — doing full backfill")
+            print("CSV empty/missing - doing full backfill")
 
     total = 0
     for channel in guild.text_channels:
@@ -111,7 +111,7 @@ async def on_ready():
         except Exception as e:
             print(f"  Could not fetch #{channel.name}: {e}")
 
-    print(f"✅ Done — {total} new messages written to {CSV_PATH}")
+    print(f"✅ Done - {total} new messages written to {CSV_PATH}")
     await client.close()
 
 

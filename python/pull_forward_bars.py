@@ -7,7 +7,7 @@ For each block event in block_events.csv, pulls 30 days of forward
   - How far did price move toward/away from the block level?
   - Max drawdown toward and away from block price in the forward window
 
-Saves results to block_outcomes.csv. Safe to re-run — only processes
+Saves results to block_outcomes.csv. Safe to re-run - only processes
 events where forward_bars_pulled == False.
 """
 

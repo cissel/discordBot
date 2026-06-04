@@ -31,7 +31,7 @@ def main():
 
     dates = data.get("dates", [])
     if not dates:
-        # No games today — write empty file so caller knows we ran fine
+        # No games today - write empty file so caller knows we ran fine
         OUTPUT.write_text("matchup,time\n")
         print("[mlbToday] no games today")
         return

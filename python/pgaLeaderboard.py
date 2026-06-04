@@ -3,8 +3,8 @@
 # No API key required.
 #
 # Writes two files:
-#   outputs/sports/pga/leaderboard.csv   — top 10 players
-#   outputs/sports/pga/tournament.csv    — tournament metadata
+#   outputs/sports/pga/leaderboard.csv   - top 10 players
+#   outputs/sports/pga/tournament.csv    - tournament metadata
 #
 # leaderboard.csv columns:  position, name, score, today, thru, round
 # tournament.csv columns:   name, course, city, state, round, status, detail
@@ -93,7 +93,7 @@ def main():
             "detail": status_short,
         })
 
-    # Leaderboard — competitors are already sorted by position
+    # Leaderboard - competitors are already sorted by position
     competitors = comp.get("competitors", [])
 
     rows = []
@@ -102,7 +102,7 @@ def main():
         name      = athlete.get("displayName", "Unknown")
         stats     = comp_entry.get("statistics", [])
 
-        # ESPN golf stats list varies — index by name
+        # ESPN golf stats list varies - index by name
         stat_map  = {s["name"]: s.get("displayValue", "–") for s in stats}
 
         position  = comp_entry.get("status", {}).get("position", {}).get("displayName", "–")
@@ -130,7 +130,7 @@ def main():
         w.writeheader()
         w.writerows(rows)
 
-    print(f"[pgaLeaderboard] wrote {len(rows)} players — {tourn_name} ({status_short})")
+    print(f"[pgaLeaderboard] wrote {len(rows)} players - {tourn_name} ({status_short})")
 
 if __name__ == "__main__":
     main()

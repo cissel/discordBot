@@ -51,7 +51,7 @@ def fetch_free_agents(position: str, size: int = 50):
         print(f"Found {len(starters_tomorrow)} probable starters tomorrow")
         print("DEBUG starters tomorrow:", sorted(starters_tomorrow))
 
-    # PP is just SP under the hood — fetch SP free agents then filter
+    # PP is just SP under the hood - fetch SP free agents then filter
     espn_position = "SP" if position == "PP" else position
     league = League(league_id=LEAGUE_ID, year=YEAR)
     agents = league.free_agents(size=size*4, position=espn_position)  # fetch more so we have enough after filtering
@@ -86,5 +86,6 @@ def fetch_free_agents(position: str, size: int = 50):
 
 
 if __name__ == "__main__":
-    pos = sys.argv[1] if len(sys.argv) > 1 else "SP"
-    fetch_free_agents(pos)
+    pos  = sys.argv[1] if len(sys.argv) > 1 else "SP"
+    size = int(sys.argv[2]) if len(sys.argv) > 2 else 50
+    fetch_free_agents(pos, size)

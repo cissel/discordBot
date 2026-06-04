@@ -1,9 +1,10 @@
 import csv
+import os
 from espn_api.baseball import League
 
 LEAGUE_ID = 1858112591
 YEAR      = 2026
-CSV_PATH  = "~/discordBot/outputs/sports/mlb/fantasy/roster.csv"
+CSV_PATH  = os.path.expanduser("~/discordBot/outputs/sports/mlb/fantasy/roster.csv")
 
 
 def fetch_roster():

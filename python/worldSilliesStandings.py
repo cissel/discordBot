@@ -1,9 +1,10 @@
 import csv
+import os
 from espn_api.baseball import League
 
 LEAGUE_ID = 1858112591  # Replace with your actual league ID
 YEAR = 2026         # Replace with the current season year
-CSV_PATH = "~/discordBot/outputs/sports/mlb/fantasy/standings.csv"
+CSV_PATH = os.path.expanduser("~/discordBot/outputs/sports/mlb/fantasy/standings.csv")
  
 def fetch_standings():
     league = League(league_id=LEAGUE_ID, year=YEAR)

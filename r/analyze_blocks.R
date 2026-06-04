@@ -214,7 +214,7 @@ all_results <- bind_rows(
                     labels = c("1 Day","3 Days","1 Week","2 Weeks","1 Month"))
   )
 
-##### Plot 1: Reach Rate — All vs ADF vs Lit #####
+##### Plot 1: Reach Rate - All vs ADF vs Lit #####
 p1 <- all_results |>
   filter(label %in% c("All Events", "ADF Dark Pool", "Lit Exchange")) |>
   ggplot(aes(x = window, y = rate * 100, fill = label)) +
@@ -229,7 +229,7 @@ p1 <- all_results |>
   )) +
   scale_y_continuous(limits = c(0, 112), labels = function(x) paste0(x, "%")) +
   labs(
-    title    = "SPY Block Print — Reach Rate by Exchange Type",
+    title    = "SPY Block Print - Reach Rate by Exchange Type",
     subtitle = "Does price reach the block level within each forward window?",
     x = "Forward Window", y = "Reach Rate", fill = NULL,
     caption  = paste("n =", nrow(df), "total block events")
@@ -240,7 +240,7 @@ ggsave(file.path(PLOTS_DIR, "reach_rate_by_exchange.png"), p1,
        width = 10, height = 5.5, dpi = 300)
 cat("\nSaved: reach_rate_by_exchange.png\n")
 
-##### Plot 2: Sensitivity — Batch Exclusion #####
+##### Plot 2: Sensitivity - Batch Exclusion #####
 p2 <- all_results |>
   filter(label %in% c("All Events", "Excl. Batch Timestamps", "ADF Excl. Batch")) |>
   ggplot(aes(x = window, y = rate * 100, fill = label)) +
@@ -253,7 +253,7 @@ p2 <- all_results |>
   )) +
   scale_y_continuous(limits = c(0, 112), labels = function(x) paste0(x, "%")) +
   labs(
-    title    = "SPY Block Print — Sensitivity to Batch Timestamp Exclusion",
+    title    = "SPY Block Print - Sensitivity to Batch Timestamp Exclusion",
     subtitle = "Do results hold after removing suspicious batch-reported prints?",
     x = "Forward Window", y = "Reach Rate", fill = NULL,
     caption  = paste("Batch events excluded:", sum(df$is_batch, na.rm = TRUE))
@@ -264,7 +264,7 @@ ggsave(file.path(PLOTS_DIR, "reach_rate_sensitivity.png"), p2,
        width = 10, height = 5.5, dpi = 300)
 cat("Saved: reach_rate_sensitivity.png\n")
 
-##### Plot 3: % Toward Block — ADF vs Lit #####
+##### Plot 3: % Toward Block - ADF vs Lit #####
 toward_long <- df |>
   select(exchange_type, is_batch, starts_with("pct_toward_")) |>
   pivot_longer(
@@ -288,7 +288,7 @@ p3 <- ggplot(toward_long, aes(x = window, y = pct_toward, fill = exchange_type))
   )) +
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   labs(
-    title    = "SPY Block Print — % Movement Toward Block Price",
+    title    = "SPY Block Print - % Movement Toward Block Price",
     subtitle = "ADF dark pool vs lit exchange prints",
     x = "Forward Window", y = "% of Gap Closed Toward Block Price",
     fill = "Exchange Type",

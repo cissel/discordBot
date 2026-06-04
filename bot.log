@@ -1,0 +1,231 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2843.10it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'top_p', 'max_new_tokens', 'temperature', 'top_k', 'do_sample'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2906.15it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'do_sample', 'max_new_tokens', 'top_k', 'top_p', 'temperature'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2906.57it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'temperature', 'top_p', 'max_new_tokens', 'top_k', 'do_sample'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2819.06it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'max_new_tokens', 'do_sample', 'temperature', 'top_k', 'top_p'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2652.65it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'temperature', 'top_k', 'top_p', 'max_new_tokens', 'do_sample'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+GPT-2 model loaded!
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2855.60it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'top_k', 'temperature', 'do_sample', 'max_new_tokens', 'top_p'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+GPT-2 model loaded!
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2942.45it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'max_new_tokens', 'top_k', 'do_sample', 'temperature', 'top_p'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+GPT-2 model loaded!
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2905.01it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'max_new_tokens', 'do_sample', 'top_p', 'temperature', 'top_k'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+GPT-2 model loaded!
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2770.90it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'temperature', 'max_new_tokens', 'top_k', 'do_sample', 'top_p'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+GPT-2 model loaded!
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[opus] loaded successfully
+Loading GPT-2 model...
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2833.33it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'do_sample', 'top_k', 'temperature', 'max_new_tokens', 'top_p'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+GPT-2 model loaded!
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+[setup] 35 commands registered
+Synced 35 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[mlbToday] wrote 9 games to /home/jhcv/discordBot/outputs/sports/mlb/gamesToday.csv
+Saved 1 games to /home/jhcv/discordBot/outputs/sports/nba/gamesToday.csv
+                                                     matchup                      time
+New York Knicks (53-29) @ San Antonio Spurs (62-20) - 105-95 Final @ Frost Bank Center
+[pgaLeaderboard] wrote 10 players - the Memorial Tournament pres. by Workday (Round 1 - In Progress)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Warning message:
+`fast_scraper_schedules()` was deprecated in nflfastR 5.2.0.
+ℹ Please use `nflreadr::load_schedules()` instead. 

@@ -70,7 +70,7 @@ for (i in 1:nrow(gt)) {
     gt$home_team_score[i] != "" && gt$away_team_score[i] != ""
   
   if (has_scores && (is_live(gt$game_status_text[i]) || is_final(gt$game_status_text[i]))) {
-    score_text <- paste0(" — Score: ", gt$away_team_score[i], "-", gt$home_team_score[i])
+    score_text <- paste0(" - Score: ", gt$away_team_score[i], "-", gt$home_team_score[i])
     matchup <- paste0(matchup, score_text)
   }
   

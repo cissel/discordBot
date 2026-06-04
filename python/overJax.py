@@ -28,11 +28,37 @@ TILE_SIZE  = 256
 OUTPUT     = Path("~/discordBot/outputs/aerospace/jaxPlanes.png").expanduser()
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
-# CartoDB Dark Matter tiles — free, no API key
+# CartoDB Dark Matter tiles - free, no API key
 TILE_URL = "https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
 HEADERS  = {"User-Agent": "discordBot/1.0 personal project"}
 
 BG_COLOR = (26, 26, 46, 255)
+
+# ── Font loading ───────────────────────────────────────────────────────────────
+def load_fonts():
+    """Try system TTF fonts in order; fall back to PIL default."""
+    candidates = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+    ]
+    ttf_path = None
+    for p in candidates:
+        if Path(p).exists():
+            ttf_path = p
+            break
+
+    if ttf_path:
+        return (
+            ImageFont.truetype(ttf_path, 11),  # font_sm
+            ImageFont.truetype(ttf_path, 13),  # font_md
+            ImageFont.truetype(ttf_path, 15),  # font_lg
+        )
+    else:
+        default = ImageFont.load_default()
+        return default, default, default
+
+FONT_SM, FONT_MD, FONT_LG = load_fonts()
 
 # ── Web Mercator math (no pyproj needed) ───────────────────────────────────────
 def ll_to_tile(lat, lon, zoom):
@@ -77,8 +103,9 @@ def fetch_tile(z, x, y):
 def build_basemap(center_lat, center_lon, zoom, display_nm):
     """Fetch and stitch tiles cropped exactly to display_nm radius."""
     # How many pixels is display_nm at this zoom?
+    # Multiply by 1.4 to reach ~980px minimum output size
     half_px      = nm_to_px(display_nm, center_lat, zoom)
-    img_size     = half_px * 2
+    img_size     = int(half_px * 2 * 1.4)
 
     ctx, cty     = ll_to_tile(center_lat, center_lon, zoom)
     tiles_needed = math.ceil(img_size / TILE_SIZE) + 2
@@ -101,11 +128,12 @@ def build_basemap(center_lat, center_lon, zoom, display_nm):
             py   = (ty - y0) * TILE_SIZE
             canvas.paste(tile, (px, py))
 
-    # crop precisely to half_px in each direction from center
+    # crop precisely to half_px*1.4 in each direction from center
+    half_px_scaled = img_size // 2
     cx_px  = (ctx - x0) * TILE_SIZE
     cy_px  = (cty - y0) * TILE_SIZE
-    left   = int(cx_px - half_px)
-    top    = int(cy_px - half_px)
+    left   = int(cx_px - half_px_scaled)
+    top    = int(cy_px - half_px_scaled)
     right  = left + img_size
     bottom = top  + img_size
     cropped = canvas.crop((left, top, right, bottom))
@@ -132,7 +160,7 @@ def alt_label(alt):
     except: return "???"
 
 # ── draw aircraft triangle pointing in track direction ─────────────────────────
-def draw_aircraft(draw, px, py, track_deg, color, size=7):
+def draw_aircraft(draw, px, py, track_deg, color, size=11):
     if track_deg is None:
         track_deg = 0
     rad  = math.radians(track_deg)
@@ -142,7 +170,7 @@ def draw_aircraft(draw, px, py, track_deg, color, size=7):
     right= (px + size * 0.5 * math.sin(rad + 2.4),
             py - size * 0.5 * math.cos(rad + 2.4))
     draw.polygon([tip, left, (px, py), right], fill=color,
-                 outline=(0, 0, 0, 180))
+                 outline=(0, 0, 0, 220))
 
 # ── range rings ───────────────────────────────────────────────────────────────
 def draw_range_rings(draw, cx, cy, lat, zoom, max_nm=250):
@@ -153,9 +181,9 @@ def draw_range_rings(draw, cx, cy, lat, zoom, max_nm=250):
         r = nm_to_px(nm, lat, zoom)
         bbox = [cx - r, cy - r, cx + r, cy + r]
         draw.ellipse(bbox, outline=ring_color, width=1)
-        # label at top
+        # label at top using font_sm with brighter color
         draw.text((cx + 3, cy - r - 12), f"{nm}nm",
-                  fill=(80, 100, 140, 200), font=None)
+                  fill=(120, 150, 200, 220), font=FONT_SM)
 
 # ── fetch aircraft ─────────────────────────────────────────────────────────────
 def fetch_aircraft():
@@ -178,17 +206,19 @@ def draw_legend(draw, img_size):
         ((255,  68, 68, 220), "<5k ft"),
         ((255, 204,  0, 220), "On ground"),
     ]
-    x, y = 12, img_size - 14 - (len(items) * 18) - 10
-    # background box
-    box_h = len(items) * 18 + 20
-    draw.rectangle([x - 4, y - 8, x + 100, y + box_h],
+    swatch = 14   # swatch size (was 10)
+    spacing = 22  # spacing between items (was 18)
+    x, y = 12, img_size - 14 - (len(items) * spacing) - 10
+    # background box sized for new swatch + spacing
+    box_h = len(items) * spacing + 20
+    draw.rectangle([x - 4, y - 8, x + 110, y + box_h],
                    fill=(13, 13, 30, 210), outline=(42, 42, 74, 200))
-    draw.text((x + 2, y - 5), "Altitude", fill=(170, 170, 170, 220))
+    draw.text((x + 2, y - 5), "Altitude", fill=(170, 170, 170, 220), font=FONT_SM)
     y += 14
     for color, label in items:
-        draw.rectangle([x, y, x + 10, y + 10], fill=color, outline=(0,0,0,150))
-        draw.text((x + 14, y - 1), label, fill=(200, 200, 200, 220))
-        y += 18
+        draw.rectangle([x, y, x + swatch, y + swatch], fill=color, outline=(0,0,0,150))
+        draw.text((x + swatch + 4, y), label, fill=(200, 200, 200, 220), font=FONT_SM)
+        y += spacing
 
 # ── main ───────────────────────────────────────────────────────────────────────
 def main():
@@ -231,29 +261,44 @@ def main():
 
         if is_ground:
             on_ground += 1
-            draw.rectangle([px-4, py-4, px+4, py+4],
+            # increased ground square from 4px to 6px half-size (12x12 total)
+            draw.rectangle([px-6, py-6, px+6, py+6],
                            fill=color, outline=(0,0,0,180))
         else:
             airborne += 1
-            draw_aircraft(draw, px, py, track, color, size=8)
+            draw_aircraft(draw, px, py, track, color, size=11)
             if call:
+                # semi-transparent dark background behind callsign label
+                bbox = draw.textbbox((px + 6, py - 8), call, font=FONT_MD)
+                pad = 2
+                draw.rectangle(
+                    [bbox[0] - pad, bbox[1] - pad, bbox[2] + pad, bbox[3] + pad],
+                    fill=(13, 13, 30, 180)
+                )
                 draw.text((px + 6, py - 8), call,
-                          fill=(210, 210, 210, 200))
+                          fill=(210, 210, 210, 200), font=FONT_MD)
 
     # legend
     draw_legend(draw, IMG_SIZE)
 
-    # timestamp + count banner
+    # timestamp + count banner - height increased to 30px, text vertically centered
+    BANNER_H = 30
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     banner = (f"Live Air Traffic  |  {DISPLAY_NM}nm of Jacksonville  |  "
               f"{len(plotable)} aircraft ({airborne} airborne, {on_ground} on ground)  |  {ts}")
-    draw.rectangle([0, 0, IMG_SIZE, 22], fill=(13, 13, 30, 210))
-    draw.text((8, 4), banner, fill=(200, 200, 200, 230))
+    draw.rectangle([0, 0, IMG_SIZE, BANNER_H], fill=(13, 13, 30, 210))
+    # vertically center font_lg text in the 30px banner
+    try:
+        text_h = draw.textbbox((0, 0), banner, font=FONT_LG)[3]
+    except Exception:
+        text_h = 15
+    text_y = (BANNER_H - text_h) // 2
+    draw.text((8, text_y), banner, fill=(200, 200, 200, 230), font=FONT_LG)
 
     # composite overlay onto basemap
     result = Image.alpha_composite(basemap.convert("RGBA"), overlay)
     result.convert("RGB").save(OUTPUT, "PNG", optimize=True)
-    print(f"[overJax] saved {OUTPUT}")
+    print(f"[overJax] saved {OUTPUT}  ({result.width}x{result.height})")
 
 if __name__ == "__main__":
     main()

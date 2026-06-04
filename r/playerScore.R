@@ -65,8 +65,8 @@ pull_position_leaderboard <- function(pos_code, fantasy_pos, n) {
       slice_head(n = n) %>%
       transmute(
         PlayerName       = PlayerName,
-        playerid         = playerid,      # FG id — used by game log functions
-        mlbam_id         = xMLBAMID,      # MLBAM id — for reference
+        playerid         = playerid,      # FG id - used by game log functions
+        mlbam_id         = xMLBAMID,      # MLBAM id - for reference
         fantasy_position = fantasy_pos,
         PA, WAR
       )
@@ -267,7 +267,7 @@ pitcher_summary <- if (nrow(pitcher_logs) > 0) {
     ) %>%
     arrange(desc(fantasy_pts))
 } else {
-  message("WARNING: pitcher_logs is empty — check pitcher fetch errors above")
+  message("WARNING: pitcher_logs is empty - check pitcher fetch errors above")
   tibble()
 }
 

@@ -96,7 +96,7 @@ if not frames:
 pa = pd.concat(frames, ignore_index=True)
 print(f"[INFO] Total PA events: {len(pa)} across {pa['batter'].nunique()} batters")
 
-# ── 3. Aggregate per batter — stats only, no names yet ───────────────────────
+# ── 3. Aggregate per batter - stats only, no names yet ───────────────────────
 NON_AB = {"walk","intent_walk","hit_by_pitch","sac_fly","sac_bunt",
            "sac_fly_double_play","catcher_interf"}
 
@@ -125,7 +125,7 @@ stats = (
       .reset_index()
 )
 
-# Filter and sort — take top 30 candidates so we still have 10 after
+# Filter and sort - take top 30 candidates so we still have 10 after
 # filtering out minor leaguers / retired players
 candidates = (
     stats[stats["PA"] >= 5]
@@ -140,7 +140,7 @@ if len(candidates) == 0:
 # ── 4. Look up player info, filter to MLB-only, take top 10 ──────────────────
 print(f"[INFO] Looking up player info for up to {len(candidates)} candidates...")
 
-# The 30 MLB team IDs — anything outside this is MiLB, independent, or foreign
+# The 30 MLB team IDs - anything outside this is MiLB, independent, or foreign
 MLB_TEAM_IDS = {
     108,109,110,111,112,113,114,115,116,117,
     118,119,120,121,133,134,135,136,137,138,
@@ -165,7 +165,7 @@ def get_player_info(mlbam_batter_id: int) -> tuple | None:
         team_name    = current_team.get("name", "Unknown")
 
         if team_id not in MLB_TEAM_IDS:
-            print(f"[INFO] Filtering out {name} — not on an MLB roster (team={team_name}, id={team_id})")
+            print(f"[INFO] Filtering out {name} - not on an MLB roster (team={team_name}, id={team_id})")
             return None
 
         return name, team_name
@@ -175,7 +175,7 @@ def get_player_info(mlbam_batter_id: int) -> tuple | None:
 MAX_NAME_LEN = 20  # characters before abbreviating
 
 def abbreviate(full_name: str) -> str:
-    """'Vladimir Guerrero Jr.' → 'V. Guerrero Jr.' — only if name exceeds MAX_NAME_LEN"""
+    """'Vladimir Guerrero Jr.' → 'V. Guerrero Jr.' - only if name exceeds MAX_NAME_LEN"""
     if len(full_name) <= MAX_NAME_LEN:
         return full_name
     parts = full_name.split()

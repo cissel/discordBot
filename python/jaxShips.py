@@ -25,7 +25,7 @@ OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 API_KEY  = os.environ.get("MYSHIPTRACKING_KEY", "")
 ZONE_URL = "https://api.myshiptracking.com/api/v2/vessel/zone"
 
-# bounding box — ~40nm around JAX
+# bounding box - ~40nm around JAX
 MINLAT = JAX_LAT - 0.6
 MAXLAT = JAX_LAT + 0.6
 MINLON = JAX_LON - 0.8
