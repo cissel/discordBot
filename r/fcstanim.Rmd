@@ -1,0 +1,543 @@
+---
+title: <span style="color:white">Forecast Animation</span>
+author: <span style="color:white"> JHCV </span>
+date: <span style="color:white"> 2023-03-03 </span>
+output: html_document
+---
+
+<body style="background-color:#02233F">
+<font style="color:white">
+
+```{r setup, message = FALSE, include = FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+##### Required Packages #####
+
+library(tidyverse)
+library(readxl)
+library(scales)
+library(plotly)
+library(httr)
+library(jsonlite)
+library(lubridate)
+library(tesseract)
+library(magrittr)
+library(magick)
+library(fredr)
+library(forecast)
+library(sweep)
+library(gganimate)
+
+#####
+
+##### Federal Reserve API Authentication #####
+
+fredr_set_key("d47e2b30bf4826314df23a57408a56a6")
+
+#####
+
+##### Plot Appearance Theme #####
+
+myTheme <- theme(legend.position = "none",
+                 plot.background = element_rect(fill = "#02233F"),
+                 panel.background = element_rect(fill = "#02233F"),
+                 panel.grid = element_line(color = "#274066"),
+                 axis.ticks = element_line(color = "#274066"),
+                 axis.text = element_text(color = "white"),
+                 axis.title = element_text(color = "white"),
+                 plot.title = element_text(color = "white",
+                                           hjust = .5),
+                 plot.subtitle = element_text(color = "white",
+                                              hjust = .5))
+
+#####
+
+##### Legend appearance theme #####
+
+myLegend <- theme(legend.position = "right",
+                  legend.background = element_rect(fill = "#02233F"),
+                  legend.text = element_text(color = "white"),
+                  legend.title = element_text(color = "white"))#,
+                  #legend.key.height = unit(100, "cm"))
+
+#####
+
+```
+
+```{r}
+
+undcon <- fredr_series_observations("UNDCONTNSA") |> select(date, value)
+
+undcon$pct <- 0
+
+for (i in 2:nrow(undcon)) {
+  
+  undcon$pct[i] <- (undcon$value[i]-undcon$value[i-1])/undcon$value[i-1]
+  
+}
+
+undcon <- undcon |> tail(nrow(undcon)-1)
+
+ucp <- ggplot(undcon,
+              aes(x = date,
+                  y = value)) +
+  
+  geom_line(color = "white") +
+  
+  myTheme
+
+ggplotly(ucp)
+
+```
+
+```{r}
+
+ucts <- ts(undcon$value,
+           start = c(1970,1),
+           frequency = 12)
+
+training <- window(ucts, 
+                   start = c(1970,1),
+                   end = c(1997, 12))
+
+validation <- window(ucts,
+                     start = c(1998, 1))
+
+model <- dshw(training, period1 = 3, period2 = 12, h=length(validation))
+#fcst <- forecast(model,
+#                 h = length(validation))
+
+fcstDF <- data.frame("date" = undcon$date)
+
+fcstDF$value <- 0
+fcstDF$type <- "type"
+
+for (i in 1:nrow(fcstDF)) {
+  
+  if (i <= length(training)) {
+    
+    fcstDF$value[i] <- undcon$value[i]
+    fcstDF$type[i] <- "actual"
+    
+  } else {
+    
+    fcstDF$value[i] <- model$mean[i-length(training)]
+    fcstDF$type[i] <- "forecast"
+    
+  }
+  
+}
+
+tbatsp <- ggplot(fcstDF,
+                 aes(x = date,
+                     y = value,
+                     color = factor(type),
+                     alpha = factor(type))) +
+  
+  geom_line() +
+  
+  labs(x = "Time",
+       y = "value",
+       title = "New Privately-Owned Housing Units Under Construction") +
+  
+  scale_y_continuous(labels = comma) +
+  
+  scale_color_manual(values = c("actual" = "cyan",
+                                "forecast" = "white")) +
+  
+  scale_alpha_manual(values = c("actual" = 1,
+                                "forecast" = .75)) +
+  
+  myTheme
+
+ggplotly(tbatsp)
+
+```
+
+```{r}
+
+ldf <- data.frame("fcstDate" = undcon$date)
+
+bdf <- data.frame()
+
+for (i in 1:nrow(ldf)) {
+  
+  df <- subset(undcon, date <= ldf$fcstDate[i]) |> select(date, value)
+  
+  df$fcstDate <- ldf$fcstDate[i]
+  
+  bdf <- rbind(bdf, df)
+  
+}
+
+tail(bdf)
+
+```
+
+```{r}
+
+ndf <- bdf |> group_by(fcstDate) |> nest() |> subset(fcstDate >= "2020-01-01")
+
+names(ndf) <- c("fcstDate", "modelData")
+
+tail(ndf)
+
+```
+
+```{r}
+
+timeStarted <- Sys.time()
+
+idf <- data.frame()
+
+for (i in 1:nrow(ndf)) {
+  
+  md <- ndf$modelData[[i]]
+  
+  ts <- ts(md$value,
+           start = c(year(ndf$fcstDate[i]),
+                     month(ndf$fcstDate[i])),
+           frequency = 12)
+  
+  model <- dshw(ts,
+                period1 = 3,
+                period2 = 12,
+                h = 60)
+  
+  ndf$modelData[[i]]$fitted <- model$fitted
+  
+  futuredf <- data.frame("date" = seq(as.Date(ndf$fcstDate[i])+months(1),
+                                      as.Date(ndf$fcstDate[i])+months(60),
+                                      by = "months"))
+  
+  futuredf$date <- as.Date(futuredf$date)
+  
+  futuredf$pred <- 0
+  
+  for (j in 1:nrow(futuredf)) {
+    
+    futuredf$pred[j] <- model$mean[[j]]
+    
+    futuredf$fcstDate[j] <- ndf$fcstDate[i]
+    
+  }
+  
+  idf <- rbind(idf, futuredf)
+  
+}
+
+idf$fcstDate <- as.Date(idf$fcstDate, origin = "1970-01-01")
+
+timeFinished <- Sys.time()
+
+timeElapsed <- timeFinished-timeStarted
+
+timeElapsed
+
+tail(idf)
+
+```
+
+```{r}
+
+basep <- ggplot(idf) +
+  
+  geom_line(aes(x = date,
+                y = pred,
+                alpha = factor(fcstDate)),
+            color = "white") +
+  
+  myTheme
+
+ggplotly(basep)
+
+```
+
+```{r}
+
+bdf$type <- "actual"
+
+idf$type <- "fcst"
+
+idf$value <- 0
+
+for (i in 1:nrow(idf)) {
+  
+  idf$value[i] <- idf$pred[i]
+  
+}
+
+idf <- idf |> select(date, value, fcstDate, type)
+
+fdf <- rbind(bdf, idf)
+
+```
+
+```{r}
+
+ndu <- ndf |> unnest()
+
+ndut <- data.frame("n" = 1:nrow(ndu))
+
+ndut$fcstDate <- as.Date("1969-04-20")
+ndut$date <- as.Date("1969-04-20")
+ndut$value <- 0
+ndut$type <- "type"
+
+for (i in 1:nrow(ndu)) {
+  
+  ndut$fcstDate[i] <- ndu$fcstDate[i]
+  ndut$date[i] <- ndu$date[i]
+  ndut$value[i] <- ndu$value[i]
+  ndut$type[i] <- "actual"
+  
+}
+
+for (i in 1:nrow(ndu)) {
+  
+  ndut$fcstDate[i] <- ndu$fcstDate[i]
+  ndut$date[i] <- ndu$date[i]
+  ndut$value[i] <- ndu$fitted[i]
+  ndut$type[i] <- "fitted"
+  
+}
+
+ndut <- ndut |> select(date, value, fcstDate, type)
+
+fdf <- rbind(fdf, ndut)
+
+fp <- ggplot(fdf,
+             aes(x = date, 
+                 y = value,
+                 color = factor(type),
+                 alpha = factor(type),
+                 group = factor(fcstDate))) +
+  
+  geom_line() +
+  
+  scale_color_manual(values = c("actual" = "cyan",
+                                "fitted" = "white",
+                                "fcst" = "white")) +
+  
+  scale_alpha_manual(values = c("actual" = 1,
+                                "fitted" = .25,
+                                "fcst" = .5)) +
+  
+  myTheme 
+
+ggplotly(fp)
+
+```
+
+```{r}
+
+fsub <- fdf |> subset(date >= as.Date("2020-01-01"))
+
+fpa <- ggplot(fsub,
+              aes(x = date,
+                  y = value,
+                  color = factor(type),
+                  alpha = factor(type),
+                  group = factor(fcstDate))) +
+  
+  geom_line() +
+  
+  scale_color_manual(values = c("actual" = "cyan",
+                                "fitted" = "white",
+                                "fcst" = "white")) +
+  
+  scale_alpha_manual(values = c("actual" = 1,
+                                "fitted" = .25,
+                                "fcst" = .5)) +
+  
+  labs(x = "Time",
+       y = "Thousands of Units",
+       subtitle = "Forecast as of: {closest_state}",
+       title = "New Privately-Owned Housing Units Under Construction") +
+  
+  myTheme +
+  
+  transition_states(fcstDate) + 
+  ease_aes("elastic-in-out") 
+
+```
+
+```{r}
+
+fff <- fsub |> subset(fcstDate == max(fcstDate))
+
+ffp <- ggplot(fff,
+              aes(x = date,
+                  y = value,
+                  color = factor(type),
+                  alpha = factor(type))) +
+  
+  geom_line() +
+  
+  scale_color_manual(values = c("actual" = "cyan",
+                                "fcst" = "white")) +
+  
+  scale_alpha_manual(values = c("actual" = 1,
+                                "fcst" = .5)) +
+  
+  myTheme
+
+ggplotly(ffp)
+
+```
+
+```{r}
+
+ucnn <- nnetar(undcon$value, size = 35)
+
+summary(ucnn)
+
+```
+
+```{r}
+
+ucnnf <- forecast(ucnn, h = 60) |> sw_sweep()
+
+ucnnf$date <- seq(as.Date(min(undcon$date)),
+                  as.Date(max(undcon$date)+months(60)),
+                  by = "months")
+
+ucnnfp <- ggplot(ucnnf,
+                 aes(x = date,
+                     y = value,
+                     color = factor(key),
+                     alpha = factor(key))) +
+  
+  geom_line() +
+  
+  scale_color_manual(values = c("actual" = "cyan",
+                                "forecast" = "white")) +
+  
+  scale_alpha_manual(values = c("actual" = 1,
+                                "forecast" = .5)) +
+  
+  myTheme
+
+ggplotly(ucnnfp)
+
+```
+
+```{r}
+
+timeStarted <- Sys.time()
+
+ucnnTEST <- undcon |> subset(date >= "2000-01-01")
+
+ucnnL <- data.frame()
+
+for (i in 1:nrow(ucnnTEST)) {
+  
+  sub <- undcon |> select(date, value) |> subset(date <= ucnnTEST$date[i])
+  
+  sub$fcstDate <- ucnnTEST$date[i]
+  
+  sub <- sub |> group_by(fcstDate) |> nest()
+  
+  names(sub) <- c("fcstDate", "modelData")
+  
+  ucnnL <- rbind(ucnnL, sub)
+  
+}
+
+ucnnL <- ucnnL |> subset(fcstDate >= "2000-01-01")
+
+nndf <- data.frame()
+
+for (i in 1:nrow(ucnnL)) {
+  
+  train <- ucnnL$modelData[[i]]
+  
+  model <- nnetar(train$value,
+                  size = 2)
+  
+  fcst <- forecast(model, h = 60) |> sw_sweep()
+  
+  fcst$date <- seq(as.Date(min(train$date)),
+                   as.Date(max(train$date)+months(60)),
+                   by = "months")
+  
+  fcst$fcstDate <- ucnnL$fcstDate[i]
+  
+  nndf <- rbind(nndf, fcst)
+  
+}
+
+nndf$key <- factor(nndf$key)
+
+timeFinished <- Sys.time()
+
+timeElapsed <- timeFinished-timeStarted
+
+summary(nndf)
+
+timeElapsed
+
+```
+
+```{r}
+
+nnfp <- ggplot(nndf,
+               aes(x = date,
+                   y = value,
+                   color = key,
+                   alpha = factor(fcstDate),
+                   size = key)) +
+  
+  geom_line() +
+  
+  scale_color_manual(values = c("actual" = "cyan",
+                                "forecast" = "white")) +
+  
+  #scale_alpha_manual(values = c("actual" = 1,
+  #                              "forecast" = .5)) +
+  
+  scale_size_manual(values = c("actual" = 1,
+                               "forecast" = 2)) +
+  
+  myTheme 
+
+ggplotly(nnfp)
+
+```
+
+```{r}
+
+nnfa <- ggplot(nndf,
+               aes(x = date,
+                   y = value,
+                   color = key,
+                   alpha = key,
+                   size = key,
+                   group = fcstDate)) +
+  
+  geom_line() +
+  
+  labs(x = "Time",
+       y = "Thousands of Units",
+       subtitle = "NNAR Forecast as of: {closest_state}",
+       title = "New Privately-Owned Housing Units Under Construction") +
+  
+  scale_color_manual(values = c("actual" = "cyan",
+                                "forecast" = "red")) +
+  
+  scale_alpha_manual(values = c("actual" = 1,
+                                "forecast" = .5)) +
+  
+  scale_size_manual(values = c("actual" = 1,
+                               "forecast" = 2)) +
+  
+  myTheme +
+  
+  transition_states(fcstDate) +
+  view_follow() +
+  ease_aes("elastic-in-out")
+
+```
+
+

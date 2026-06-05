@@ -229,3 +229,33 @@ New York Knicks (53-29) @ San Antonio Spurs (62-20) - 105-95 Final @ Frost Bank 
 Warning message:
 `fast_scraper_schedules()` was deprecated in nflfastR 5.2.0.
 ℹ Please use `nflreadr::load_schedules()` instead. 
+[pgaLeaderboard] wrote 10 players - the Memorial Tournament pres. by Workday (Round 1 - Play Complete)
+[mlbTomorrow] wrote 15 games to /home/jhcv/discordBot/outputs/sports/mlb/gamesTomorrow.csv
+no hockey tomorrow
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Warning message:
+`fast_scraper_schedules()` was deprecated in nflfastR 5.2.0.
+ℹ Please use `nflreadr::load_schedules()` instead. 
+2026-06-04 21:58:44.454864: Invalid arguments or no league schedule data for 2025-26 available!
+Error in nba_schedule() : object 'games' not found
+Calls: select -> filter -> nba_schedule
+Execution halted
