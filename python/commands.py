@@ -707,6 +707,59 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         await _send(interaction, file=discord.File(img, filename="invite_graph.png"))
 
+    @history_group.command(name="repograph", description="discordBot repo growth - lines of code and commits over time")
+    async def hist_repograph(interaction: discord.Interaction):
+        await _defer(interaction)
+
+        # Step 1: generate CSV from git log (~20-30s for full history)
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                PYTHON, os.path.join(pp, "repoGraph.py"),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
+            except asyncio.TimeoutError:
+                proc.kill()
+                await proc.communicate()
+                await _send(interaction, "⏱️ timed out building repo data, try again", ephemeral=True)
+                return
+        except Exception as e:
+            await _send(interaction, f"❌ failed to build repo data: {e}", ephemeral=True)
+            return
+
+        if proc.returncode != 0 or b"error" in stdout.lower():
+            err = stderr.decode()[-300:] if stderr else stdout.decode()[-300:]
+            await _send(interaction, f"❌ repo data error\n```{err}```", ephemeral=True)
+            return
+
+        # Step 2: render the R plot
+        try:
+            proc2 = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "repoGraph.R"),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout2, stderr2 = await asyncio.wait_for(proc2.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc2.kill()
+                await proc2.communicate()
+                await _send(interaction, "⏱️ R plot timed out, try again", ephemeral=True)
+                return
+        except Exception as e:
+            await _send(interaction, f"❌ R plot failed: {e}", ephemeral=True)
+            return
+
+        img = os.path.expanduser("~/discordBot/outputs/server/repo_graph.png")
+        if not os.path.exists(img):
+            err = stderr2.decode()[-300:] if stderr2 else "no output"
+            await _send(interaction, f"❌ plot not generated\n```{err}```", ephemeral=True)
+            return
+
+        await _send(interaction, file=discord.File(img, filename="repo_graph.png"))
+
     tree.add_command(history_group)
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -2028,6 +2081,214 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         else:
             emb.set_footer(text="source: Yahoo Finance")
         await _send(interaction, embed=emb)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # /markets forecast  - GARCH/SARIMA animated price forecast
+    # ─────────────────────────────────────────────────────────────────────────
+
+    @markets_group.command(name="forecast", description="Animated price/macro forecast - GJR-GARCH, EGARCH, SARIMA with Monte Carlo bands")
+    @app_commands.describe(
+        category="what to forecast",
+        symbol="ticker, coin, or FRED series (e.g. AAPL, BTC, CPI, T10Y2Y)",
+        timeframe="bar granularity for stocks/crypto (ignored for economic)",
+        horizon="how far out to forecast",
+        model="model to use (default: auto selects GJR-GARCH or EGARCH + Monte Carlo)",
+    )
+    @app_commands.choices(
+        category=[
+            app_commands.Choice(name="Stocks",           value="stocks"),
+            app_commands.Choice(name="Crypto",           value="crypto"),
+            app_commands.Choice(name="Economic (FRED)",  value="economic"),
+        ],
+        timeframe=[
+            app_commands.Choice(name="1 Minute",   value="1min"),
+            app_commands.Choice(name="5 Minutes",  value="5min"),
+            app_commands.Choice(name="15 Minutes", value="15min"),
+            app_commands.Choice(name="1 Hour",     value="1h"),
+            app_commands.Choice(name="Daily",      value="1d"),
+        ],
+        horizon=[
+            app_commands.Choice(name="1 Hour",    value="1h"),
+            app_commands.Choice(name="4 Hours",   value="4h"),
+            app_commands.Choice(name="1 Day",     value="1d"),
+            app_commands.Choice(name="1 Week",    value="1w"),
+            app_commands.Choice(name="1 Month",   value="1mo"),
+            app_commands.Choice(name="3 Months",  value="3mo"),
+            app_commands.Choice(name="6 Months",  value="6mo"),
+            app_commands.Choice(name="1 Year",    value="1yr"),
+        ],
+        model=[
+            app_commands.Choice(name="Auto (GJR-GARCH / EGARCH + Monte Carlo)", value="auto"),
+            app_commands.Choice(name="NNETAR (Neural Network AR - no MC)",       value="nnetar"),
+        ],
+    )
+    async def markets_forecast(
+        interaction: discord.Interaction,
+        category: str,
+        symbol: str,
+        timeframe: str = "1d",
+        horizon: str = "3mo",
+        model: str = "auto",
+    ):
+        symbol = symbol.upper().strip()
+        await _defer(interaction)
+
+        # ── step 1: fetch data ──────────────────────────────────────────────
+        await interaction.followup.send(
+            f"📊 fetching data for **{symbol}** ({category}) - this may take a minute...",
+            ephemeral=True
+        )
+
+        fetch_result = await asyncio.to_thread(
+            lambda: subprocess.run(
+                [PYTHON, os.path.join(pp, "fetchForecastData.py"),
+                 category, symbol, timeframe, horizon, model],
+                capture_output=True, text=True, timeout=120
+            )
+        )
+
+        if fetch_result.returncode != 0:
+            err = fetch_result.stderr[-1500:] if fetch_result.stderr else "unknown error"
+            await interaction.followup.send(
+                f"error fetching data for **{symbol}**:\n```{err}```"
+            )
+            return
+
+        # parse metadata from stdout
+        import json as _json
+        meta_line = fetch_result.stdout.strip().splitlines()[-1] if fetch_result.stdout.strip() else ""
+        try:
+            meta = _json.loads(meta_line)
+        except Exception:
+            await interaction.followup.send(
+                f"error parsing data metadata for **{symbol}**\n```{fetch_result.stdout[-800:]}```"
+            )
+            return
+
+        csv_path_out = meta.get("out_path", "")
+        if not csv_path_out or not os.path.exists(csv_path_out):
+            await interaction.followup.send(f"data file not found for **{symbol}** :(")
+            return
+
+        n_bars      = meta.get("n_bars") or meta.get("n_obs", 0)
+        last_price  = meta.get("last_close") or meta.get("last_value", 0)
+        model_used  = meta.get("model", "unknown")
+        mc_sims     = meta.get("mc_sims", 500)
+        horizon_bars = meta.get("horizon_bars", 20)
+        series_name = meta.get("series_name", symbol)
+        display_sym = series_name if category == "economic" else symbol
+
+        safe_sym    = symbol.replace("/", "")
+        gif_out     = os.path.join(op, f"markets/forecast_{safe_sym}_{timeframe}_{horizon}.gif")
+        os.makedirs(os.path.dirname(gif_out), exist_ok=True)
+
+        # ── step 2: run R ───────────────────────────────────────────────────
+        await interaction.followup.send(
+            f"🔢 fitting **{model_used}** {'+ running ' + str(mc_sims) + ' Monte Carlo simulations' if model != 'nnetar' else '(NNETAR - no MC)'} - hang tight...",
+            ephemeral=True
+        )
+
+        r_result = await asyncio.to_thread(
+            lambda: subprocess.run(
+                ["Rscript", os.path.join(rp, "marketForecast.R"),
+                 csv_path_out, category, symbol, str(horizon_bars),
+                 model_used, str(mc_sims), gif_out, display_sym],
+                capture_output=True, text=True, timeout=600
+            )
+        )
+
+        if r_result.returncode != 0:
+            err = r_result.stderr[-2000:] if r_result.stderr else r_result.stdout[-2000:]
+            await interaction.followup.send(
+                f"R error while generating forecast for **{symbol}**:\n```{err}```"
+            )
+            return
+
+        # parse R output JSON
+        r_out_json = {}
+        for line in r_result.stdout.splitlines():
+            if line.startswith("OUTPUT_JSON:"):
+                try:
+                    r_out_json = _json.loads(line[len("OUTPUT_JSON:"):])
+                except Exception:
+                    pass
+                break
+
+        # ── step 3: build embed + send GIFs ────────────────────────────────
+        if category == "stocks":
+            model_desc = "GJR-GARCH(1,1) w/ student-t innovations"
+            color      = 0x00BFFF
+            emoji      = "📈"
+            price_label = "Last Close"
+        elif category == "crypto":
+            model_desc = "EGARCH(1,1) w/ student-t innovations"
+            color      = 0xF7931A
+            emoji      = "🪙"
+            price_label = "Last Price"
+        else:
+            model_desc = f"auto.ARIMA (SARIMA) - {r_out_json.get('model_str', 'auto')}"
+            color      = 0x9B59B6
+            emoji      = "📉"
+            price_label = "Last Value"
+
+        emb = discord.Embed(
+            title=f"{emoji} {display_sym} - Forecast ({horizon})",
+            description=f"**Model:** {model_desc}\n**Bars used:** {n_bars:,}  |  **Forecast steps:** {horizon_bars}",
+            color=color,
+        )
+
+        if category in ("stocks", "crypto"):
+            p50  = r_out_json.get("p50_end")
+            p10  = r_out_json.get("p10_end")
+            p90  = r_out_json.get("p90_end")
+            p25  = r_out_json.get("p25_end")
+            p75  = r_out_json.get("p75_end")
+            mu   = r_out_json.get("mu_ret")
+            sig  = r_out_json.get("sig_ret")
+            kurt = r_out_json.get("kurt")
+
+            emb.add_field(name=price_label,       value=f"`${last_price:,.4f}`",    inline=True)
+            emb.add_field(name="Median Forecast",  value=f"`${p50:,.4f}`" if p50 else "-", inline=True)
+            emb.add_field(name="\u200b",           value="\u200b",                  inline=True)
+            emb.add_field(name="10th / 90th pct",  value=f"`${p10:,.2f}` / `${p90:,.2f}`" if p10 and p90 else "-", inline=False)
+            emb.add_field(name="25th / 75th pct",  value=f"`${p25:,.2f}` / `${p75:,.2f}`" if p25 and p75 else "-", inline=False)
+            if mu is not None and sig is not None:
+                emb.add_field(name="Daily log return - mu / sigma",
+                              value=f"`{mu:.6f}` / `{sig:.6f}`", inline=False)
+            if kurt is not None:
+                excess_k = kurt
+                emb.add_field(name="Excess kurtosis",
+                              value=f"`{excess_k:.3f}` {'- fat tails confirmed' if excess_k > 1 else ''}",
+                              inline=False)
+        else:
+            last_v = r_out_json.get("last_value")
+            mean_e = r_out_json.get("mean_end")
+            lo80   = r_out_json.get("lo80_end")
+            hi80   = r_out_json.get("hi80_end")
+            emb.add_field(name="Last Value",       value=f"`{last_v:,.4f}`"  if last_v else "-", inline=True)
+            emb.add_field(name="Forecast (mean)",  value=f"`{mean_e:,.4f}`"  if mean_e else "-", inline=True)
+            emb.add_field(name="\u200b",           value="\u200b",           inline=True)
+            emb.add_field(name="80% CI",           value=f"`{lo80:,.4f}` to `{hi80:,.4f}`" if lo80 and hi80 else "-", inline=False)
+
+        emb.set_footer(text=f"source: {'Alpaca Markets' if category != 'economic' else 'FRED / St. Louis Fed'} | not financial advice")
+
+        # send GIF 1 (MC paths or rolling for economic)
+        gif1 = r_out_json.get("gif1", "")
+        gif2 = r_out_json.get("gif2", "")
+        dist_png = r_out_json.get("distpng") or r_out_json.get("staticpng", "")
+
+        files_to_send = []
+        if gif1 and os.path.exists(gif1):
+            files_to_send.append(discord.File(gif1, filename=os.path.basename(gif1)))
+        if gif2 and gif2 != gif1 and os.path.exists(gif2):
+            files_to_send.append(discord.File(gif2, filename=os.path.basename(gif2)))
+
+        if files_to_send:
+            await interaction.followup.send(embed=emb, files=files_to_send[:2])
+        else:
+            await interaction.followup.send(embed=emb)
+
+        # distribution PNG generated but not sent - available locally if needed
 
     tree.add_command(markets_group)
 

@@ -16,6 +16,9 @@ import pytz
 import pandas_market_calendars as mcal
 import os
 import time
+from dotenv import load_dotenv
+
+load_dotenv(os.path.expanduser('~/discordBot/.env'))
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 TICKER          = "SPY"
@@ -24,8 +27,8 @@ MIN_DEV_PCT     = 0.005       # minimum price deviation from rolling median (0.5
 ROLLING_WINDOW  = 51          # rolling median window (number of trades)
 LOOKBACK_DAYS   = 300          # how many calendar days back to start
 
-API_KEY         = "AKGNBG6FMQEWRBELM45U"
-API_SECRET      = "86eND4Pe8NJp4wNoBzkFGrS2PAvHo3UhOy4xAIlL"
+API_KEY         = os.getenv('APCA_API_KEY_ID', '').strip()
+API_SECRET      = os.getenv('APCA_API_SECRET_KEY', '').strip()
 BASE_URL        = "https://data.alpaca.markets/v2"
 
 OUT_DIR         = "~/discordBot/outputs/research"

@@ -19,10 +19,13 @@ import pytz
 import pandas_market_calendars as mcal
 import os
 import time
+from dotenv import load_dotenv
+
+load_dotenv(os.path.expanduser('~/discordBot/.env'))
 
 # ── Configuration ─────────────────────────────────────────────────────────────
-API_KEY    = "AKGNBG6FMQEWRBELM45U"
-API_SECRET = "86eND4Pe8NJp4wNoBzkFGrS2PAvHo3UhOy4xAIlL"
+API_KEY    = os.getenv('APCA_API_KEY_ID', '').strip()
+API_SECRET = os.getenv('APCA_API_SECRET_KEY', '').strip()
 BASE_URL   = "https://data.alpaca.markets/v2"
 
 OUT_DIR      = "~/discordBot/outputs/research"
