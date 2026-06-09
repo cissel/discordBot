@@ -1163,7 +1163,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             description=desc,
             color=0x2E7D32,
         )
-        emb.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/PGA_Tour_logo.svg/1200px-PGA_Tour_logo.svg.png")
+        emb.set_thumbnail(url="attachment://pga.png")
 
         # check if tournament has actual scores yet
         real_scores = lb[
@@ -1203,7 +1203,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     inline=False,
                 )
 
-        await _send(interaction, embed=emb)
+        logo_path = os.path.expanduser("~/discordBot/stickers/pga.png")
+        await interaction.followup.send(embed=emb, file=discord.File(logo_path, filename="pga.png"))
 
     @pga_group.command(name="standings", description="PGA Tour season standings - FedEx Cup points")
     async def pga_standings(interaction: discord.Interaction):
@@ -1229,7 +1230,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             description="FedEx Cup Points",
             color=0x2E7D32,
         )
-        emb.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/PGA_Tour_logo.svg/1200px-PGA_Tour_logo.svg.png")
+        emb.set_thumbnail(url="attachment://pga.png")
 
         medals = ["🥇","🥈","🥉"]
         for _, row in df.iterrows():
@@ -1252,7 +1253,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
             emb.add_field(name=f"{prefix} {name}", value=val, inline=False)
 
-        await _send(interaction, embed=emb)
+        logo_path = os.path.expanduser("~/discordBot/stickers/pga.png")
+        await interaction.followup.send(embed=emb, file=discord.File(logo_path, filename="pga.png"))
 
     tree.add_command(pga_group)
 
@@ -1441,7 +1443,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         await asyncio.to_thread(
             lambda: subprocess.run(
-                ["PYTHON", os.path.join(pp, "osrsHiscores.py"), skill],
+                [PYTHON, os.path.join(pp, "osrsHiscores.py"), skill],
                 check=False, timeout=60
             )
         )
@@ -1829,7 +1831,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @markets_group.command(name="trades", description="Return trade level chart for a given timeframe")
     @app_commands.describe(ticker="ticker symbol (e.g. SPY, AAPL)", timeframe="time window to display")
     @app_commands.choices(timeframe=TIMEFRAME_CHOICES)
-    async def chart(interaction: discord.Interaction, ticker: str, timeframe: app_commands.Choice[str]):
+    async def trades(interaction: discord.Interaction, ticker: str, timeframe: app_commands.Choice[str]):
 
         ticker = ticker.upper().strip()
         if not ticker.isalpha() or len(ticker) > 10:
@@ -2537,9 +2539,88 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         for label, val in session_fields:
             emb.add_field(name=label, value=val, inline=True)
         emb.set_footer(text="Data: jolpica-f1 · times in ET")
-        emb.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/500px-F1.svg.png")
+        logo_path = os.path.expanduser("~/discordBot/stickers/f1.png")
+        emb.set_thumbnail(url="attachment://f1.png")
+        await interaction.followup.send(embed=emb, file=discord.File(logo_path, filename="f1.png"))
 
-        await _send(interaction, embed=emb)
+    @f1_group.command(name="standings", description="current F1 driver and constructor standings")
+    async def f1_standings(interaction: discord.Interaction):
+        await _defer(interaction)
+
+        import urllib.request, json
+        def _fetch_drivers():
+            url = "https://api.jolpi.ca/ergast/f1/current/driverStandings.json"
+            with urllib.request.urlopen(url, timeout=15) as r:
+                return json.loads(r.read())
+
+        def _fetch_constructors():
+            url = "https://api.jolpi.ca/ergast/f1/current/constructorStandings.json"
+            with urllib.request.urlopen(url, timeout=15) as r:
+                return json.loads(r.read())
+
+        try:
+            d_data, c_data = await asyncio.gather(
+                asyncio.to_thread(_fetch_drivers),
+                asyncio.to_thread(_fetch_constructors),
+            )
+        except Exception as e:
+            await _send(interaction, f"couldn't fetch F1 standings: {e}", ephemeral=True)
+            return
+
+        try:
+            sl        = d_data["MRData"]["StandingsTable"]["StandingsLists"][0]
+            season    = sl["season"]
+            round_num = sl["round"]
+            drivers   = sl["DriverStandings"]
+            constructors = c_data["MRData"]["StandingsTable"]["StandingsLists"][0]["ConstructorStandings"]
+        except (KeyError, IndexError) as e:
+            await _send(interaction, f"standings data missing: {e}", ephemeral=True)
+            return
+
+        # ── position medals ──────────────────────────────────────────────────────
+        medals = {1: "🥇", 2: "🥈", 3: "🥉"}
+
+        # ── driver standings (top 10) ────────────────────────────────────────────
+        driver_lines = []
+        for d in drivers[:10]:
+            pos      = int(d["position"])
+            medal    = medals.get(pos, f"`{pos:>2}.`")
+            code     = d["Driver"]["code"]
+            team     = d["Constructors"][0]["name"] if d["Constructors"] else ""
+            pts      = d["points"]
+            wins     = d["wins"]
+            win_str  = f" · {wins}W" if int(wins) > 0 else ""
+            driver_lines.append(f"{medal} **{code}** {pts} pts{win_str}  _{team}_")
+
+        # ── constructor standings (all, usually 10) ──────────────────────────────
+        constructor_lines = []
+        for c in constructors[:10]:
+            pos     = int(c["position"])
+            medal   = medals.get(pos, f"`{pos:>2}.`")
+            name    = c["Constructor"]["name"]
+            pts     = c["points"]
+            wins    = c["wins"]
+            win_str = f" · {wins}W" if int(wins) > 0 else ""
+            constructor_lines.append(f"{medal} **{name}** {pts} pts{win_str}")
+
+        emb = discord.Embed(
+            title=f"🏎️  F1 {season} Standings - Round {round_num}",
+            color=0xe10600,
+        )
+        emb.add_field(
+            name="🪖 Drivers (Top 10)",
+            value="\n".join(driver_lines) or "no data",
+            inline=False,
+        )
+        emb.add_field(
+            name="🏭 Constructors",
+            value="\n".join(constructor_lines) or "no data",
+            inline=False,
+        )
+        emb.set_footer(text="Data: jolpica-f1")
+        logo_path = os.path.expanduser("~/discordBot/stickers/f1.png")
+        emb.set_thumbnail(url="attachment://f1.png")
+        await interaction.followup.send(embed=emb, file=discord.File(logo_path, filename="f1.png"))
 
     tree.add_command(f1_group)
 
@@ -4177,3 +4258,84 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             return
         await _send(interaction, f"✈ here's what's flying over jax right now (within {radius}nm):",
                     file=discord.File(img))
+
+    # ── /jax group ────────────────────────────────────────────────────────────
+    jax_group = app_commands.Group(name="jax", description="Jacksonville local data", guild_ids=[guild.id])
+
+    @jax_group.command(name="realestate", description="recent Duval County single family home sales scatter plot")
+    @app_commands.describe(view="which chart to show")
+    @app_commands.choices(view=[
+        app_commands.Choice(name="Price vs Square Feet", value="sqft"),
+        app_commands.Choice(name="Price Over Time",      value="time"),
+    ])
+    async def jax_realestate(interaction: discord.Interaction, view: str = "sqft"):
+        await _defer(interaction)
+
+        # Step 1: fetch/refresh the sales data (~90s on cold run, fast if cached today)
+        csv_path = os.path.expanduser("~/discordBot/outputs/jax/realestate_sales.csv")
+        needs_refresh = True
+        if os.path.exists(csv_path):
+            age_hours = (datetime.now().timestamp() - os.path.getmtime(csv_path)) / 3600
+            needs_refresh = age_hours > 12  # refresh if older than 12 hours
+
+        if needs_refresh:
+            await interaction.followup.send("fetching latest sales data from Duval County PAO... (this takes ~90s on first run)", ephemeral=True)
+            try:
+                proc = await asyncio.create_subprocess_exec(
+                    PYTHON, os.path.join(pp, "jaxRealestate.py"),
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                try:
+                    stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=180)
+                except asyncio.TimeoutError:
+                    proc.kill()
+                    await proc.communicate()
+                    await _send(interaction, "⏱️ data fetch timed out, try again", ephemeral=True)
+                    return
+            except Exception as e:
+                await _send(interaction, f"❌ data fetch failed: {e}", ephemeral=True)
+                return
+
+            if proc.returncode != 0 or b"error" in stdout.lower():
+                err = stderr.decode()[-300:] if stderr else stdout.decode()[-300:]
+                await _send(interaction, f"❌ sales data error\n```{err}```", ephemeral=True)
+                return
+
+        if not os.path.exists(csv_path):
+            await _send(interaction, "❌ no sales data found", ephemeral=True)
+            return
+
+        # Step 2: render the R plot
+        r_script = "jaxRealestateSqft.R" if view == "sqft" else "jaxRealestateTime.R"
+        img_path  = os.path.expanduser(
+            "~/discordBot/outputs/jax/realestate_sqft.png" if view == "sqft"
+            else "~/discordBot/outputs/jax/realestate_time.png"
+        )
+
+        try:
+            proc2 = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, r_script),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout2, stderr2 = await asyncio.wait_for(proc2.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc2.kill()
+                await proc2.communicate()
+                await _send(interaction, "⏱️ R plot timed out", ephemeral=True)
+                return
+        except Exception as e:
+            await _send(interaction, f"❌ plot failed: {e}", ephemeral=True)
+            return
+
+        if not os.path.exists(img_path):
+            err = stderr2.decode()[-300:] if stderr2 else "no output"
+            await _send(interaction, f"❌ plot not generated\n```{err}```", ephemeral=True)
+            return
+
+        label = "Price vs Square Feet" if view == "sqft" else "Price Over Time"
+        await _send(interaction, f"🏠 JAX real estate - {label}:", file=discord.File(img_path))
+
+    tree.add_command(jax_group)

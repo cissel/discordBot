@@ -13,7 +13,6 @@ Built so I could send a message from my phone and have it run scripts, pull data
 - **Python** (discord.py) - slash command handling, data fetching, ESPN/MLB/NHL APIs
 - **R** (ggplot2, gganimate) - all chart and plot generation
 - **Raspberry Pi** (aarch64, systemd service) - always-on host
-- **GPT-2** - on-message listener for natural language responses
 
 ---
 

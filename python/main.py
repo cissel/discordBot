@@ -1,33 +1,32 @@
-# main.py  ──  startup, lifecycle, GPT-2 "mr bot" listener
-# pip install discord.py python-dotenv transformers torch pandas
+# main.py  --  startup, lifecycle, message logger
+# pip install discord.py python-dotenv pandas
 #
 # All slash commands live in commands.py.
 # This file only handles:
-#   • GPT-2 "mr bot / jarvis / siri" keyword listener  (kept as on_message)
-#   • on_ready startup message
-#   • graceful Ctrl-C shutdown
-#   • daily mismatch precompute task (9am ET)
+#   - on_ready startup message
+#   - graceful Ctrl-C shutdown
+#   - daily mismatch precompute task (9am ET)
+#   - live message CSV append (on_message)
+#   - invite tracking (on_member_join)
+#   - launch alert background loop
 
 import asyncio
 import csv
 import os
-import datetime
 from pathlib import Path
 
 import discord
 from discord import app_commands
 from dotenv import load_dotenv
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-import torch
 
-# ── load libopus for voice audio ───────────────────────────────────────────────
+# -- load libopus for voice audio -----------------------------------------------
 try:
     discord.opus.load_opus("/usr/lib/aarch64-linux-gnu/libopus.so.0")
     print("[opus] loaded successfully")
 except Exception as _e:
     print(f"[opus] load failed: {_e}")
 
-# ── env ────────────────────────────────────────────────────────────────────────
+# -- env ------------------------------------------------------------------------
 load_dotenv()
 TOKEN               = os.getenv("DISCORD_TOKEN", "").strip()
 GUILD_ID            = int(os.getenv("GUILD_ID", "0"))
@@ -62,50 +61,14 @@ def _append_message(message: discord.Message):
     except Exception as e:
         print(f"[history] failed to append message: {e}")
 
-# ── path constants (shared with commands.py) ───────────────────────────────────
+# -- path constants (shared with commands.py) -----------------------------------
 R_PATH      = os.path.expanduser("~/discordBot/r/")
 PYTHON_PATH = os.path.expanduser("~/discordBot/python/")
 OUTPUT_PATH = os.path.expanduser("~/discordBot/outputs/")
 
-# ── GPT-2 ──────────────────────────────────────────────────────────────────────
-MODEL_NAME = "gpt2"
-device     = torch.device("cpu")
-
-print("Loading GPT-2 model...")
-tokenizer      = AutoTokenizer.from_pretrained(MODEL_NAME)
-model          = AutoModelForCausalLM.from_pretrained(MODEL_NAME).to(device)
-gpt2_pipeline  = pipeline(
-    "text-generation", model=model, tokenizer=tokenizer,
-    max_new_tokens=200, do_sample=False, temperature=1.0,
-    top_k=50, top_p=0.90, device=-1,
-)
-print("GPT-2 model loaded!")
-
-BOT_PERSONA = (
-    "A really clever and very funny & kind bot is joking around "
-    "in a groupchat with a bunch of his buddies."
-)
-
-async def generate_ai_response(user_message: str) -> str:
-    prompt = f"{BOT_PERSONA}\n\nUser: {user_message}\nBot:"
-    try:
-        response = await asyncio.to_thread(
-            gpt2_pipeline, prompt,
-            max_new_tokens=100, do_sample=True,
-            temperature=0.75, top_k=50, top_p=0.90,
-        )
-        if not response:
-            return "what were we talking about again?"
-        bot_reply = response[0]["generated_text"].split("Bot:")[-1].strip()
-        bot_reply = bot_reply.split("User:")[0].strip()
-        return bot_reply or "uhhhhh wait what?"
-    except Exception as e:
-        print(f"GPT-2 error: {e}")
-        return "Oops, something went wrong!"
-
-# ── bot / tree ──────────────────────────────────────────────────────────────────
+# -- bot / tree -----------------------------------------------------------------
 intents = discord.Intents.default()
-intents.message_content = True          # needed for the GPT-2 on_message trigger
+intents.message_content = True          # needed for live CSV append
 intents.members         = True          # needed for invite tracking / on_member_join
 intents.reactions       = True          # needed for launch alert opt-in tracking
 
@@ -225,28 +188,9 @@ class BotClient(discord.Client):
         if message.author == self.user:
             return
 
-        # ── live CSV append ───────────────────────────────────────────────────
+        # -- live CSV append ---------------------------------------------------
         if hasattr(message.channel, "id") and message.channel.id in ALLOWED_CHANNELS:
             _append_message(message)
-
-        content = message.content.lower()
-
-        # ── GPT-2 trigger (keyword, not slash) ────────────────────────────────
-        if (
-            ("mr" in content and "bot" in content)
-            or "jarvis" in content
-            or "siri" in content
-        ):
-            print(f"GPT-2 triggered by: {message.content}")
-            try:
-                reply = await generate_ai_response(message.content)
-                if not reply.strip():
-                    await message.channel.send("wait what did u say sorry i got really stoned earlier")
-                    return
-                await message.channel.send(reply)
-            except Exception as e:
-                print(f"GPT-2 on_message error: {e}")
-                await message.channel.send("error - something went wrong")
 
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """Track reactions to launch alert messages for 1h/5m opt-in."""
@@ -268,7 +212,7 @@ class BotClient(discord.Client):
             uid     = payload.user_id
 
             for lid, entry in tracked.items():
-                # React 🚀 to 24h message -> opt into 1h alert
+                # React rocket to 24h message -> opt into 1h alert
                 if emoji == "🚀" and entry.get("msg_24h_id") == msg_id:
                     if uid not in entry["reactors_1h"]:
                         entry["reactors_1h"].append(uid)
@@ -276,7 +220,7 @@ class BotClient(discord.Client):
                         print(f"[launchAlert] user {uid} opted into 1h alert for {entry['name']}")
                     break
 
-                # React 🔥 to 1h message -> opt into 5m alert
+                # React fire to 1h message -> opt into 5m alert
                 if emoji == "🔥" and entry.get("msg_1h_id") == msg_id:
                     if uid not in entry["reactors_5m"]:
                         entry["reactors_5m"].append(uid)
@@ -355,12 +299,12 @@ class BotClient(discord.Client):
                         description=f"**{name}**",
                         color=0x5865F2,
                     )
-                    emb.add_field(name="🗓️ Launch Window", value=time_et,  inline=True)
-                    emb.add_field(name="🏢 Agency",         value=provider, inline=True)
-                    emb.add_field(name="📍 Pad",             value=pad,      inline=True)
-                    emb.add_field(name="📋 Status",          value=status,   inline=True)
+                    emb.add_field(name="Launch Window", value=time_et,  inline=True)
+                    emb.add_field(name="Agency",        value=provider, inline=True)
+                    emb.add_field(name="Pad",           value=pad,      inline=True)
+                    emb.add_field(name="Status",        value=status,   inline=True)
                     if mission:
-                        emb.add_field(name="🛸 Mission",    value=mission,  inline=False)
+                        emb.add_field(name="Mission",  value=mission,  inline=False)
                     if react_p:
                         emb.set_footer(text=react_p)
                     if image and image.startswith("http"):
@@ -425,7 +369,7 @@ class BotClient(discord.Client):
         await super().close()
 
 
-# ── run ─────────────────────────────────────────────────────────────────────────
+# -- run ------------------------------------------------------------------------
 client = BotClient()
 print(f"[startup] token present: {bool(TOKEN)}, token length: {len(TOKEN)}", flush=True)
 
