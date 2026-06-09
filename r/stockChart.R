@@ -86,7 +86,7 @@ p <- ggplot(df,
        subtitle = paste0("$", tail(df$close, 1),
                          " (", round(tail(df$pct * 100, 1), 2), "%)"),
        title = paste0("$", ticker, " - ", tf_label, " as of ", max(df$time)),
-       caption = "JHCV") +
+       caption = "Source: Alpaca Markets | JHCV") +
   scale_y_continuous(labels = scales::dollar) +
   myTheme
 

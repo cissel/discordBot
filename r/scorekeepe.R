@@ -278,7 +278,7 @@ sbp <- ggplot(scoreboard,
   
   labs(x = "Team",
        y = "Score",
-       caption = "JHCV",
+       caption = "Source: ESPN Fantasy Football API | JHCV",
        subtitle = paste(sdf$season,
                         " | Week ",
                         sdf$week,

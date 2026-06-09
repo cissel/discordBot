@@ -86,7 +86,8 @@ p <- ggplot(df,
     x        = "Time",
     y        = "Share Price (USD)",
     title    = title_text,
-    subtitle = subtitle_text
+    subtitle = subtitle_text,
+    caption  = "Source: Alpaca Markets | JHCV"
   ) +
   
   scale_y_continuous(labels = scales::dollar) +

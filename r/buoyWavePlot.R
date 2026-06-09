@@ -58,7 +58,7 @@ p <- ggplot(df,
   
   labs(x = "Time",
        y = "Wave Height (ft)",
-       caption = "JHCV",
+       caption = "Source: NOAA NDBC Buoy #41117 | JHCV",
        subtitle = paste(head(df$dt, 1),
                         ": ",
                         round(head(df$WVHT, 1), 2),

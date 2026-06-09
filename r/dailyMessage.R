@@ -96,7 +96,7 @@ dmp <- ggplot(cdm,
     x = "Time", 
     y = "Messages Sent",
     #legend = "Channel",
-    caption = "JHCV", 
+    caption = "Source: Discord message log | JHCV", 
     subtitle = max(dm$date, na.rm = TRUE),
     title = "Room 40 Daily Activity") +
   

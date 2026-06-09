@@ -61,27 +61,16 @@ for (i in 2:nrow(df)) {
   df$pct[i] <- (df$close[i] - df$close[i-1]) / df$close[i-1]
 }
 
-lr <- lm(df$close ~ as.numeric(df$time))
-
 p <- ggplot(df,
             aes(x = time,
                 y = close)) +
-  geom_abline(aes(slope = lr$coefficients[2],
-                  intercept = lr$coefficients[1]),
-              color = "white") +
-  geom_abline(aes(slope = lr$coefficients[2],
-                  intercept = lr$coefficients[1] + (sd(lr$residuals) * 2)),
-              color = "red") +
-  geom_abline(aes(slope = lr$coefficients[2],
-                  intercept = lr$coefficients[1] - (sd(lr$residuals) * 2)),
-              color = "green") +
   geom_line(color = "white") +
   labs(x = "Time",
        y = "Price (USD)",
        subtitle = paste0("$", formatC(tail(df$close, 1), format = "f", digits = 2),
                          " (", round(tail(df$pct * 100, 1), 2), "%)"),
        title = paste0(symbol, "/USD - ", tf_label, " as of ", max(df$time)),
-       caption = "JHCV") +
+       caption = "Source: Alpaca Markets | JHCV") +
   scale_y_continuous(labels = scales::dollar) +
   myTheme
 

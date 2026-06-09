@@ -96,7 +96,7 @@ ysp <- ggplot(all_data, aes(x = date, y = value, color = label)) +
     x = "Date",
     y = "Yield",
     color = "Maturity",
-    caption = "JHCV"
+    caption = "Source: FRED / St. Louis Fed (T10Y2Y) | JHCV"
   ) +
   myTheme + myLegend
 

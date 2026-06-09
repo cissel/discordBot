@@ -84,7 +84,7 @@ cap <- ggplot(ca,
                         "messages as of",
                         max(ca$date),
                         sep = " "),
-       caption = "JHCV") +
+       caption = "Source: Discord message log | JHCV") +
   
   myTheme #+
   #myLegend

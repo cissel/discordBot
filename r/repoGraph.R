@@ -81,7 +81,7 @@ p2 <- ggplot(df, aes(x = week, y = commits)) +
   labs(
     x       = NULL,
     y       = "Commits / Week",
-    caption = "JHCV"
+    caption = "Source: git log | JHCV"
   ) +
   myTheme +
   theme(plot.margin = margin(2, 16, 10, 16))

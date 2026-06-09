@@ -84,7 +84,7 @@ uap <- ggplot(ua,
                         "messages as of",
                         max(ua$date),
                         sep = " "),
-       caption = "JHCV") +
+       caption = "Source: Discord message log | JHCV") +
   
   #scale_y_log10() +
   

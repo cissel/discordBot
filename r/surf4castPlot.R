@@ -273,7 +273,7 @@ plotSurfFcst <- function() {
     
     labs(x = "Time",
          y = "Swell Height (ft)",
-         caption = "JHCV",
+         caption = "Source: Open-Meteo Marine API | JHCV",
          subtitle = Sys.Date(),
          title = "Jax Beach Surf Forecast") +
     

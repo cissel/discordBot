@@ -234,7 +234,7 @@ lp <- ggplot(leaderboard,
   labs(x = "Points Against",
        y = "Points Scored",
        color = "Wins",
-       caption = "JHCV",
+       caption = "Source: ESPN Fantasy Football API | JHCV",
        subtitle = today(),
        title = "Room 40") +
   

@@ -312,25 +312,73 @@ elif category == "crypto":
             symbol = symbol + "/USD"
 
     safe_symbol = symbol.replace("/", "")
+    coin        = symbol.split("/")[0]  # e.g. "BTC"
 
     bar_tf       = ALPACA_BAR_MAP[timeframe]
-    history_days = HISTORY_BARS[timeframe][horizon]
     horizon_bars = HORIZON_BARS[timeframe][horizon]
 
-    start_dt = datetime.combine(today - timedelta(days=history_days), datetime.min.time()).replace(tzinfo=timezone.utc)
-    end_dt   = today_utc
+    # ── full-history cache check (daily only) ─────────────────────────────────
+    # If we have a <COIN>_max_bars.csv that's < 25 hours old and user wants daily
+    # bars, use it as the training set - it has far more history than the 1825-day
+    # Alpaca cap and gives EGARCH a much richer volatility signal.
+    CACHE_MAX_AGE_HOURS = 25
+    cache_path = os.path.join(out_dir, f"{coin}_max_bars.csv")
+    use_cache  = False
 
-    bars = fetch_alpaca_bars(symbol, bar_tf, start_dt, end_dt, asset_class="crypto")
+    if timeframe == "1d" and os.path.exists(cache_path):
+        cache_age_h = (datetime.now() - datetime.fromtimestamp(os.path.getmtime(cache_path))).total_seconds() / 3600
+        if cache_age_h < CACHE_MAX_AGE_HOURS:
+            use_cache = True
 
-    if not bars:
-        print(f"ERROR: No crypto data returned for {symbol}", file=sys.stderr)
-        sys.exit(1)
+    if use_cache:
+        print(f"[fetchForecastData] using full-history cache: {cache_path}", file=sys.stderr)
+        raw = pd.read_csv(cache_path)
 
-    df = pd.DataFrame(bars)
-    df = df.rename(columns={"t":"timestamp","o":"open","h":"high","l":"low","c":"close","v":"volume"})
-    df["timestamp"] = pd.to_datetime(df["timestamp"])
-    df["timestamp"] = df["timestamp"].dt.tz_convert("America/New_York")
-    df = df.sort_values("timestamp").reset_index(drop=True)
+        # normalize column names - BTC has date/open/high/low/close/volume;
+        # ETH/DOGE have close/high/low/n/open/date/volume/vw
+        raw.columns = [c.lower() for c in raw.columns]
+        if "date" in raw.columns and "timestamp" not in raw.columns:
+            raw = raw.rename(columns={"date": "timestamp"})
+        # keep only the columns marketForecast.R expects
+        keep = [c for c in ["timestamp", "open", "high", "low", "close", "volume"] if c in raw.columns]
+        df = raw[keep].copy()
+        df["timestamp"] = pd.to_datetime(df["timestamp"]).dt.tz_localize(None)  # naive UTC dates
+        df = df.sort_values("timestamp").dropna(subset=["close"]).reset_index(drop=True)
+
+        # append today's bar from Alpaca if cache doesn't include it yet
+        last_cache_date = pd.to_datetime(df["timestamp"].iloc[-1]).date()
+        if last_cache_date < today:
+            print(f"[fetchForecastData] cache ends {last_cache_date}, fetching recent bars from Alpaca", file=sys.stderr)
+            patch_start = datetime.combine(last_cache_date + timedelta(days=1), datetime.min.time()).replace(tzinfo=timezone.utc)
+            new_bars = fetch_alpaca_bars(symbol, "1Day", patch_start, today_utc, asset_class="crypto")
+            if new_bars:
+                nb = pd.DataFrame(new_bars)
+                nb = nb.rename(columns={"t": "timestamp", "o": "open", "h": "high",
+                                        "l": "low", "c": "close", "v": "volume"})
+                nb["timestamp"] = pd.to_datetime(nb["timestamp"]).dt.tz_localize(None)
+                nb = nb[[c for c in ["timestamp", "open", "high", "low", "close", "volume"] if c in nb.columns]]
+                df = pd.concat([df, nb], ignore_index=True).drop_duplicates("timestamp").sort_values("timestamp").reset_index(drop=True)
+
+        data_source = f"full-history cache ({len(df)} bars from {pd.to_datetime(df['timestamp'].iloc[0]).date()})"
+
+    else:
+        # fallback: pull from Alpaca with the standard lookback window
+        history_days = HISTORY_BARS[timeframe][horizon]
+        start_dt = datetime.combine(today - timedelta(days=history_days), datetime.min.time()).replace(tzinfo=timezone.utc)
+        end_dt   = today_utc
+        print(f"[fetchForecastData] no cache - fetching {history_days}d from Alpaca", file=sys.stderr)
+
+        bars = fetch_alpaca_bars(symbol, bar_tf, start_dt, end_dt, asset_class="crypto")
+        if not bars:
+            print(f"ERROR: No crypto data returned for {symbol}", file=sys.stderr)
+            sys.exit(1)
+
+        df = pd.DataFrame(bars)
+        df = df.rename(columns={"t": "timestamp", "o": "open", "h": "high",
+                                 "l": "low", "c": "close", "v": "volume"})
+        df["timestamp"] = pd.to_datetime(df["timestamp"]).dt.tz_convert("America/New_York")
+        df = df.sort_values("timestamp").reset_index(drop=True)
+        data_source = f"Alpaca ({len(df)} bars)"
 
     out_path = os.path.join(out_dir, f"forecast_{safe_symbol}_{timeframe}_{horizon}.csv")
     df.to_csv(out_path, index=False)
@@ -350,6 +398,7 @@ elif category == "crypto":
         "model":         "NNETAR" if model_arg == "nnetar" else "EGARCH(1,1)-t",
         "dist":          "student-t",
         "mc_sims":       0 if model_arg == "nnetar" else 500,
+        "data_source":   data_source,
     }
 
 # ── ECONOMIC (FRED) ───────────────────────────────────────────────────────────

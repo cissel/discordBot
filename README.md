@@ -8,14 +8,6 @@ Built so I could send a message from my phone and have it run scripts, pull data
 
 ---
 
-## tech stack
-
-- **Python** (discord.py) - slash command handling, data fetching, ESPN/MLB/NHL APIs
-- **R** (ggplot2, gganimate) - all chart and plot generation
-- **Raspberry Pi** (aarch64, systemd service) - always-on host
-
----
-
 ## commands
 
 ### `/weather`
@@ -30,6 +22,10 @@ Built so I could send a message from my phone and have it run scripts, pull data
 | `hurricane` | NOAA 7-day tropical weather outlook |
 | `alerts` | active NWS alerts for northeast Florida |
 
+![weather today](outputs/weather/weatherTd.png)
+![jax radar](outputs/weather/nwsJaxRadar.gif)
+![hurricane](outputs/weather/two7d.png)
+
 ### `/surf`
 | command | description |
 |---|---|
@@ -38,6 +34,11 @@ Built so I could send a message from my phone and have it run scripts, pull data
 | `windmap` | wind speed & direction forecast map GIF |
 | `buoy waves` | wave height plot from NOAA NDBC buoy #41117 off St. Augustine |
 | `tide plot` | tide forecast for Mayport Bar Pilots Dock |
+
+![surf forecast](outputs/weather/surf_fcst.png)
+![buoy waves](outputs/weather/buoyWaves.png)
+![tide plot](outputs/weather/mayportTides.png)
+![wind plot](outputs/weather/mayportWinds.png)
 
 ### `/ball`
 One command. All sports. Returns today's (or tomorrow's) schedule and scores across NHL, MLB, NBA, PGA, and NFL in a single multi-embed response.
@@ -53,6 +54,10 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 
 ### `/nfl`
 Next game info and Jaguars-specific commands under `/jags`.
+
+![epa map](outputs/sports/nfl/epaMap.png)
+![target share](outputs/sports/nfl/tgtShr.png)
+![room40 map](outputs/sports/nfl/room40map.png)
 
 ### `/nba`
 | command | description |
@@ -86,8 +91,14 @@ Next game info and Jaguars-specific commands under `/jags`.
 | `fantasyrisk` | risk flags across your roster (injury, cold streak, bad matchup) |
 | `zonemap` | pitch location subplots by pitch type for any pitcher |
 
+![fantasy risk](outputs/sports/mlb/fantasy/fantasyRisk.png)
+![pitch zone map](outputs/sports/mlb/pitchzone_656641.png)
+
 ### `/f1`
-Next race info.
+| command | description |
+|---|---|
+| `nextrace` | next Formula 1 race weekend |
+| `standings` | current F1 driver and constructor standings |
 
 ### `/markets`
 | command | description |
@@ -106,6 +117,15 @@ Next race info.
 | `crypto` | price chart for BTC, ETH, SOL, or DOGE |
 | `forecast` | GJR-GARCH / EGARCH / SARIMA animated forecast GIF with Monte Carlo paths |
 
+![stock chart](outputs/markets/stockchart.png)
+![trade chart](outputs/markets/tradechart.png)
+![yield curve](outputs/markets/yield_curve.png)
+![yield spread](outputs/markets/yield_spread.png)
+![crude oil](outputs/markets/crudewti.png)
+![fed rate](outputs/markets/dfedtaru.png)
+![crypto chart](outputs/markets/cryptochart.png)
+![forecast](outputs/markets/forecast_SPY_1d_1yr_mcpaths.gif)
+
 ### `/space`
 | command | description |
 |---|---|
@@ -118,11 +138,23 @@ Live traffic camera grid from FL511 - searchable by location name (Dames Point, 
 ### `/jaxplanes`
 Plot of active aircraft within 150nm of KJAX.
 
+![jax planes](outputs/aerospace/jaxPlanes.png)
+
 ### `/jaxships`
 Maritime traffic map for the St. Johns River and Jacksonville port.
 
+![jax ships](outputs/maritime/jaxShips.png)
+
+### `/jax realestate`
+Duval County residential real estate - median price per sqft by zip code, and price trends over time.
+
+![realestate sqft](outputs/jax/realestate_sqft.png)
+![realestate time](outputs/jax/realestate_time.png)
+
 ### `/osrs`
 Old School RuneScape hiscores lookup.
+
+![osrs](outputs/osrs/osrs.png)
 
 ### `/dj`
 Plays music from a Pioneer rekordbox USB library in a voice channel. Supports queue, skip, stop, and playlist browsing by genre or artist.
@@ -137,15 +169,12 @@ Plays music from a Pioneer rekordbox USB library in a voice channel. Supports qu
 | `invitegraph` | bubble network of who invited who to the server |
 | `repograph` | repo growth over time - cumulative lines of code + weekly commits |
 
+![server history](outputs/metrics/allMessages.png)
+![channel history](outputs/metrics/channelMessages.png)
+![user history](outputs/metrics/userMessages.png)
+![daily messages](outputs/metrics/dailyMessages.png)
+![invite graph](outputs/server/invite_graph.png)
+![repo graph](outputs/server/repo_graph.png)
+
 ### misc
 `/ping`, `/duval`, `/westside`, `/ts`, `/goodmorning`, `/dontavius`, `/r2`, `/chucktronic`, `/serversdown`, and a handful of others best discovered in the wild.
-
----
-
-## sample output
-
-![stock chart](outputs/markets/stockchart.png)
-![yield curve](outputs/markets/yield_curve.png)
-![jax planes](outputs/aerospace/jaxPlanes.png)
-![jax ships](outputs/maritime/jaxShips.png)
-![yield spread](outputs/markets/yield_spread.png)

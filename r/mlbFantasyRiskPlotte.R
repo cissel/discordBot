@@ -120,7 +120,7 @@ p <- ggplot(df,
        size = "Fantasy Points",
        title = "MLB Fantasy Points per Game",
        subtitle = paste(position, "- as of", as.Date(max(logs$game_date, na.rm = TRUE))),
-       caption = "JHCV") +
+       caption = "Source: ESPN Fantasy Baseball API / Statcast | JHCV") +
   
   myTheme +
   myLegend

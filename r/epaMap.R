@@ -96,7 +96,7 @@ ep <- ggplot(epa25,
   
   labs(x = "Defense",
        y = "Offense",
-       caption = "JHCV",
+       caption = "Source: nflfastR | JHCV",
        subtitle = today(),
        title = "NFL Mean EPA per Play") +
   

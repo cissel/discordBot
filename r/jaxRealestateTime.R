@@ -165,7 +165,7 @@ p2 <- ggplot(df_weekly, aes(x = week_start, y = count)) +
   labs(
     x       = NULL,
     y       = 'Sales / Week',
-    caption = 'JHCV | Source: Duval County Property Appraiser | Qualified sales only'
+    caption = 'Source: Duval County Property Appraiser | Qualified sales only | JHCV'
   ) +
 
   myTheme +

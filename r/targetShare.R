@@ -107,7 +107,7 @@ tgtShrPlot <- ggplot(top_5_receivers_df,
   labs(x = "Receiver Rank",  # Label x-axis as Receiver Rank
        y = "Target Share", 
        subtitle = today(),
-       caption = "JHCV",
+       caption = "Source: nflfastR | JHCV",
        title = "NFL WR Target Share by Team") 
 
 # Interactive plot

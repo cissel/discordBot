@@ -80,7 +80,7 @@ p <- ggplot(df,
                         sep = ""),
        x = "Date",
        y = "Yield",
-       caption = "JHCV") +
+       caption = "Source: FRED / St. Louis Fed (DFEDTARU) | JHCV") +
   myTheme
 
 #####

@@ -2233,9 +2233,13 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             emoji      = "📉"
             price_label = "Last Value"
 
+        data_src    = meta.get("data_source", "")
+        bars_detail = f"**Bars used:** {n_bars:,}"
+        if data_src:
+            bars_detail += f"  ({data_src})"
         emb = discord.Embed(
             title=f"{emoji} {display_sym} - Forecast ({horizon})",
-            description=f"**Model:** {model_desc}\n**Bars used:** {n_bars:,}  |  **Forecast steps:** {horizon_bars}",
+            description=f"**Model:** {model_desc}\n{bars_detail}  |  **Forecast steps:** {horizon_bars}",
             color=color,
         )
 
@@ -2292,11 +2296,428 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # distribution PNG generated but not sent - available locally if needed
 
+    # ─────────────────────────────────────────────────────────────────────────
+    # /markets regress  - multivariate OLS on returns
+    # ─────────────────────────────────────────────────────────────────────────
+
+    # shared regressor choices across all var slots
+    _VAR_CHOICES = [
+        # equities
+        app_commands.Choice(name="S&P 500 (SPY)",        value="SPY"),
+        app_commands.Choice(name="Nasdaq 100 (QQQ)",     value="QQQ"),
+        app_commands.Choice(name="Dow Jones (DIA)",      value="DIA"),
+        app_commands.Choice(name="Russell 2000 (IWM)",   value="IWM"),
+        app_commands.Choice(name="Gold ETF (GLD)",       value="GLD"),
+        app_commands.Choice(name="Oil ETF (USO)",        value="USO"),
+        # crypto
+        app_commands.Choice(name="Ethereum returns (ETH)",  value="ETH"),
+        app_commands.Choice(name="Solana returns (SOL)",    value="SOL"),
+        app_commands.Choice(name="BTC Hashrate (log)",      value="HASHRATE"),
+        # FRED macro
+        app_commands.Choice(name="VIX - Volatility Index",  value="VIX"),
+        app_commands.Choice(name="M2 Money Supply",         value="M2"),
+        app_commands.Choice(name="Unemployment Rate",       value="UNRATE"),
+        app_commands.Choice(name="CPI - Inflation",         value="CPI"),
+        app_commands.Choice(name="Yield Spread (10Y-2Y)",   value="T10Y2Y"),
+        app_commands.Choice(name="Fed Funds Rate",          value="FEDFUNDS"),
+        app_commands.Choice(name="WTI Crude Oil (FRED)",    value="WTI"),
+        app_commands.Choice(name="US Dollar Index (DXY)",   value="DXY"),
+        # FX
+        app_commands.Choice(name="EUR/USD",  value="EUR_USD"),
+        app_commands.Choice(name="GBP/USD",  value="GBP_USD"),
+        app_commands.Choice(name="JPY/USD",  value="JPY_USD"),
+        app_commands.Choice(name="CNY/USD",  value="CNY_USD"),
+        app_commands.Choice(name="CAD/USD",  value="CAD_USD"),
+        app_commands.Choice(name="BRL/USD",  value="BRL_USD"),
+        app_commands.Choice(name="MXN/USD",  value="MXN_USD"),
+        app_commands.Choice(name="AUD/USD",  value="AUD_USD"),
+    ]
+
+    _TARGET_CHOICES = [
+        app_commands.Choice(name="Bitcoin  (BTC)",        value="BTC"),
+        app_commands.Choice(name="Ethereum (ETH)",        value="ETH"),
+        app_commands.Choice(name="Solana   (SOL)",        value="SOL"),
+        app_commands.Choice(name="Dogecoin (DOGE)",       value="DOGE"),
+        app_commands.Choice(name="S&P 500  (SPY)",        value="SPY"),
+        app_commands.Choice(name="Nasdaq   (QQQ)",        value="QQQ"),
+        app_commands.Choice(name="Apple    (AAPL)",       value="AAPL"),
+        app_commands.Choice(name="Nvidia   (NVDA)",       value="NVDA"),
+        app_commands.Choice(name="Tesla    (TSLA)",       value="TSLA"),
+        app_commands.Choice(name="Gold ETF (GLD)",        value="GLD"),
+        app_commands.Choice(name="Custom   (type below)", value="CUSTOM"),
+    ]
+
+    @markets_group.command(
+        name="regress",
+        description="Multivariate OLS regression - pick what drives a stock or crypto from dropdowns"
+    )
+    @app_commands.describe(
+        target_type   = "type of the variable you want to explain",
+        target_symbol = "asset to explain (or pick Custom and fill in custom_symbol)",
+        custom_symbol = "custom ticker/coin if you picked Custom above (e.g. MSFT, AMZN)",
+        lookback      = "how much history to train on",
+        var1          = "regressor 1 (required)",
+        var2          = "regressor 2 (optional)",
+        var3          = "regressor 3 (optional)",
+        var4          = "regressor 4 (optional)",
+        var5          = "regressor 5 (optional)",
+        lags          = "autoregressive/distributed lag depth (default: none)",
+    )
+    @app_commands.choices(
+        target_type=[
+            app_commands.Choice(name="Crypto",  value="crypto"),
+            app_commands.Choice(name="Stocks",  value="stocks"),
+        ],
+        target_symbol=_TARGET_CHOICES,
+        lookback=[
+            app_commands.Choice(name="1 Year",  value="1yr"),
+            app_commands.Choice(name="2 Years", value="2yr"),
+            app_commands.Choice(name="3 Years", value="3yr"),
+            app_commands.Choice(name="5 Years", value="5yr"),
+            app_commands.Choice(name="Max",     value="max"),
+        ],
+        var1=_VAR_CHOICES,
+        var2=_VAR_CHOICES,
+        var3=_VAR_CHOICES,
+        var4=_VAR_CHOICES,
+        var5=_VAR_CHOICES,
+        lags=[
+            app_commands.Choice(name="None (no lags)",                                   value="none"),
+            app_commands.Choice(name="AR - lag target only: 1,2,5,10,15,30,90,126,252d", value="ar"),
+            app_commands.Choice(name="Short - lag all: 1,2,3,5d",                        value="short"),
+            app_commands.Choice(name="Medium - lag all: 1,2,3,5,10,15,30,90d",           value="medium"),
+            app_commands.Choice(name="Full - lag all: 1-5,10,15,30,90,126,252d",         value="full"),
+        ],
+    )
+    async def markets_regress(
+        interaction  : discord.Interaction,
+        target_type  : str,
+        target_symbol: str,
+        var1         : str,
+        custom_symbol: str = "",
+        lookback     : str = "2yr",
+        lags         : str = "none",
+        var2         : str = "",
+        var3         : str = "",
+        var4         : str = "",
+        var5         : str = "",
+    ):
+        # resolve custom symbol
+        if target_symbol == "CUSTOM":
+            if not custom_symbol.strip():
+                await interaction.response.send_message(
+                    "you picked Custom but didn't fill in `custom_symbol` - try again", ephemeral=True)
+                return
+            target_symbol = custom_symbol.upper().strip()
+
+        await _defer(interaction)
+
+        # build ordered unique regressor list
+        var_keys = [v for v in [var1, var2, var3, var4, var5] if v]
+        # deduplicate preserving order
+        seen, var_keys_dedup = set(), []
+        for v in var_keys:
+            if v not in seen:
+                seen.add(v)
+                var_keys_dedup.append(v)
+        var_keys_str = ",".join(var_keys_dedup)
+
+        await interaction.followup.send(
+            f"📐 fetching data for **{target_symbol}** ~ **{var_keys_str}** ({lookback}, lags={lags})...",
+            ephemeral=True
+        )
+
+        # ── step 1: fetch + align ─────────────────────────────────────────────
+        try:
+            fetch_proc = await asyncio.create_subprocess_exec(
+                PYTHON, os.path.join(pp, "fetchRegressData.py"),
+                target_type, target_symbol, var_keys_str, lookback, "1d", lags,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            fetch_out, fetch_err = await asyncio.wait_for(fetch_proc.communicate(), timeout=120)
+        except asyncio.TimeoutError:
+            try: fetch_proc.kill()
+            except Exception: pass
+            await interaction.followup.send("data fetch timed out (>120s) - try a shorter lookback")
+            return
+        except Exception as e:
+            await interaction.followup.send(f"data fetch error: {e}")
+            return
+
+        fetch_stdout = fetch_out.decode("utf-8", errors="replace")
+        fetch_stderr = fetch_err.decode("utf-8", errors="replace")
+
+        if fetch_proc.returncode != 0:
+            err = fetch_stderr[-1500:] if fetch_stderr else "unknown error"
+            await interaction.followup.send(f"error fetching data:\n```{err}```")
+            return
+
+        import json as _json
+        meta_line = fetch_stdout.strip().splitlines()[-1] if fetch_stdout.strip() else ""
+        try:
+            meta = _json.loads(meta_line)
+        except Exception:
+            await interaction.followup.send(f"error parsing metadata\n```{fetch_stdout[-600:]}```")
+            return
+
+        csv_path   = meta.get("out_path", "")
+        target_col = meta.get("target_col", "")
+        reg_cols   = meta.get("regressor_cols", [])
+        n_obs      = meta.get("n_obs", 0)
+        n_params   = meta.get("n_params", len(reg_cols) + 1)
+        obs_ratio  = meta.get("obs_ratio", 999)
+        lag_preset = meta.get("lag_preset", "none")
+        lag_depths = meta.get("lag_depths", [])
+        date_start = meta.get("date_start", "")
+        date_end   = meta.get("date_end", "")
+
+        if not csv_path or not os.path.exists(csv_path):
+            await interaction.followup.send("data file not found :(")
+            return
+
+        # ── step 2: run R ─────────────────────────────────────────────────────
+        reg_str   = ",".join(reg_cols)
+        title_str = f"{target_symbol} ~ {' + '.join(reg_cols)}"
+        safe_sym  = target_symbol.replace("/", "")
+        safe_keys = "_".join(var_keys_dedup)[:40]
+        png_out   = os.path.join(op, f"markets/regress_{safe_sym}_{safe_keys}_{lookback}.png")
+        os.makedirs(os.path.dirname(png_out), exist_ok=True)
+
+        await interaction.followup.send(
+            f"🔢 fitting OLS with **{len(reg_cols)} regressors** on **{n_obs:,} obs** ({date_start} to {date_end})...",
+            ephemeral=True
+        )
+
+        try:
+            r_proc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "marketRegress.R"),
+                csv_path, target_col, reg_str, png_out, title_str,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            r_out, r_err = await asyncio.wait_for(r_proc.communicate(), timeout=180)
+        except asyncio.TimeoutError:
+            try: r_proc.kill()
+            except Exception: pass
+            await interaction.followup.send("R timed out (>180s) - try fewer regressors")
+            return
+        except Exception as e:
+            await interaction.followup.send(f"R launch error: {e}")
+            return
+
+        r_stdout = r_out.decode("utf-8", errors="replace")
+        r_stderr = r_err.decode("utf-8", errors="replace")
+
+        if r_proc.returncode != 0:
+            err = r_stderr[-2000:] if r_stderr else r_stdout[-2000:]
+            await interaction.followup.send(f"R error:\n```{err}```")
+            return
+
+        r_json = {}
+        for line in r_stdout.splitlines():
+            if line.startswith("OUTPUT_JSON:"):
+                try: r_json = _json.loads(line[len("OUTPUT_JSON:"):])
+                except Exception: pass
+                break
+
+        # ── step 3: build embed ────────────────────────────────────────────────
+        try:
+            r2      = r_json.get("r2", 0)
+            adj_r2  = r_json.get("adj_r2", 0)
+            f_stat  = r_json.get("f_stat", 0)
+            f_p     = r_json.get("f_p", 1)
+            bp_p    = r_json.get("bp_p", 1)
+            dw_stat = r_json.get("dw_stat", 2)
+            dw_p    = r_json.get("dw_p", 1)
+            aic_val = r_json.get("aic", 0)
+            bic_val = r_json.get("bic", 0)
+            coefs   = r_json.get("coef", [])
+            vif_d   = r_json.get("vif", {})
+            if isinstance(vif_d, list):
+                vif_d = dict(zip(reg_cols, vif_d))
+
+            lag_str = f"lags={lag_preset} {lag_depths}" if lag_preset != "none" else "no lags"
+            ratio_flag = " - overfit risk" if obs_ratio < 10 else ""
+
+            # title: show target ~ contemp regressors only, not all lag col names
+            contemp_cols = [c for c in reg_cols if "_lag" not in c]
+            title_short  = f"{target_symbol} ~ {' + '.join(contemp_cols)}"
+            if len(title_short) > 250:
+                title_short = title_short[:247] + "..."
+
+            emb = discord.Embed(
+                title=f"📐 OLS: {title_short}",
+                description=(
+                    f"**n = {n_obs:,}** obs  |  {date_start} to {date_end}  |  {lag_str}\n"
+                    f"**R2 = {r2:.4f}**  |  **adj-R2 = {adj_r2:.4f}**  |  "
+                    f"F = {f_stat:.2f} (p={f_p:.4f})\n"
+                    f"obs/params = {n_obs}/{n_params} = {obs_ratio:.1f}{ratio_flag}"
+                ),
+                color=0xFF8C00 if obs_ratio < 10 else 0x00BFFF,
+            )
+
+            # coefficients - split into multiple fields if > 1024 chars
+            coef_lines = []
+            for c in coefs:
+                term = c.get("term", "")
+                est  = c.get("estimate", 0)
+                p_nw = c.get("p_nw", 1)
+                sig  = "***" if p_nw < 0.001 else ("**" if p_nw < 0.01 else ("*" if p_nw < 0.05 else ""))
+                coef_lines.append(f"`{term:<22}` {est:>+.6f}  p={p_nw:.4f} {sig}")
+
+            # chunk into <=1024-char fields
+            if coef_lines:
+                chunk, chunks = [], []
+                running = 0
+                for line in coef_lines:
+                    if running + len(line) + 1 > 1020:
+                        chunks.append("\n".join(chunk))
+                        chunk, running = [], 0
+                    chunk.append(line)
+                    running += len(line) + 1
+                if chunk:
+                    chunks.append("\n".join(chunk))
+                for i, ch in enumerate(chunks):
+                    fname = "Coefficients (NW-HAC)" if i == 0 else f"Coefficients (cont. {i+1})"
+                    emb.add_field(name=fname, value=ch, inline=False)
+
+            het_flag = "FAIL" if bp_p < 0.05 else "pass"
+            ac_flag  = "FAIL" if dw_p  < 0.05 else "pass"
+            emb.add_field(
+                name="Diagnostics",
+                value=(
+                    f"Breusch-Pagan het: p={bp_p:.4f} {het_flag} | "
+                    f"DW auto: {dw_stat:.3f} p={dw_p:.4f} {ac_flag}\n"
+                    f"AIC={aic_val:.1f}  BIC={bic_val:.1f}"
+                ),
+                inline=False
+            )
+
+            # VIF - only for contemp regressors, chunk if needed
+            if vif_d:
+                vif_lines = []
+                for var, val in vif_d.items():
+                    if "_lag" in var:
+                        continue   # skip lag VIFs - not meaningful
+                    flag = " HIGH" if val > 10 else (" mod" if val > 5 else "")
+                    vif_lines.append(f"`{var:<22}` VIF={val:.2f}{flag}")
+                if vif_lines:
+                    vif_text = "\n".join(vif_lines)
+                    if len(vif_text) > 1020:
+                        vif_text = vif_text[:1017] + "..."
+                    emb.add_field(name="VIF (contemp regressors)", value=vif_text, inline=False)
+
+            emb.set_footer(text="NW-HAC robust SEs - not financial advice")
+
+            if os.path.exists(png_out):
+                await interaction.followup.send(
+                    embed=emb,
+                    files=[discord.File(png_out, filename=os.path.basename(png_out))]
+                )
+            else:
+                await interaction.followup.send(embed=emb)
+
+        except Exception as e:
+            import traceback
+            await interaction.followup.send(f"error building embed:\n```{traceback.format_exc()[-1500:]}```")
+
     tree.add_command(markets_group)
 
     # ─────────────────────────────────────────────────────────────────────────
-    # /markets crypto  (moved under markets group)
+    # /markets model  - render and post the living SPY model document
     # ─────────────────────────────────────────────────────────────────────────
+
+    @markets_group.command(
+        name="model",
+        description="Render and post the SPY returns model (OLS + NW-HAC + AR lags + options)"
+    )
+    @app_commands.describe(
+        asset   = "which asset model to render (default: SPY)",
+        lookback= "lookback window in days (default: 756 = 3yr)",
+    )
+    @app_commands.choices(
+        asset=[
+            app_commands.Choice(name="SPY (S&P 500)", value="SPY"),
+        ],
+        lookback=[
+            app_commands.Choice(name="1 Year  (252d)",  value="252"),
+            app_commands.Choice(name="2 Years (504d)",  value="504"),
+            app_commands.Choice(name="3 Years (756d)",  value="756"),
+            app_commands.Choice(name="5 Years (1260d)", value="1260"),
+            app_commands.Choice(name="Max",             value="9999"),
+        ],
+    )
+    async def markets_model(
+        interaction: discord.Interaction,
+        asset:       str = "SPY",
+        lookback:    str = "756",
+    ):
+        await _defer(interaction)
+        await interaction.followup.send(
+            f"📊 rendering **{asset}** model (lookback={lookback}d) - hang tight ~20s...",
+            ephemeral=True
+        )
+
+        rmd_path = os.path.join(rp, "research", f"{asset.lower()}_model.Rmd")
+        html_out = os.path.join(op, f"research/{asset.lower()}_model.html")
+        os.makedirs(os.path.dirname(html_out), exist_ok=True)
+
+        if not os.path.exists(rmd_path):
+            await interaction.followup.send(f"no model document found for {asset} at `{rmd_path}`")
+            return
+
+        pandoc_bin = "/home/jhcv/.local/share/r-pandoc/3.10/pandoc-3.10/bin"
+        env_str    = f"RSTUDIO_PANDOC={pandoc_bin}"
+
+        try:
+            r_proc = await asyncio.create_subprocess_exec(
+                "env", f"RSTUDIO_PANDOC={pandoc_bin}",
+                "Rscript", "-e",
+                f"rmarkdown::render('{rmd_path}', output_file='{html_out}', "
+                f"params=list(lookback_days={lookback}), quiet=TRUE)",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            r_out, r_err = await asyncio.wait_for(r_proc.communicate(), timeout=180)
+        except asyncio.TimeoutError:
+            try: r_proc.kill()
+            except Exception: pass
+            await interaction.followup.send("model render timed out (>180s)")
+            return
+        except Exception as e:
+            await interaction.followup.send(f"render error: {e}")
+            return
+
+        if r_proc.returncode != 0:
+            err = r_err.decode("utf-8", errors="replace")[-1500:]
+            await interaction.followup.send(f"render failed:\n```{err}```")
+            return
+
+        if not os.path.exists(html_out):
+            await interaction.followup.send("render completed but output file not found :(")
+            return
+
+        size_kb = os.path.getsize(html_out) // 1024
+        emb = discord.Embed(
+            title=f"📊 {asset} Returns Model",
+            description=(
+                f"Full interactive report rendered - open the attached HTML in any browser.\n\n"
+                f"**Sections:** Data overview, correlation matrix, OLS coefficients (NW-HAC), "
+                f"residual diagnostics, rolling R2, CUSUM structural break test"
+                + (", options variables" if os.path.exists(os.path.join(op, "research", f"{asset}_options_daily.csv")) else
+                   "\n\n*Options variables accumulating - cron runs daily at 4:15pm ET*")
+            ),
+            color=0x00BFFF,
+        )
+        emb.set_footer(text=f"lookback={lookback}d | NW-HAC robust SEs | not financial advice | {size_kb}KB")
+
+        await interaction.followup.send(
+            embed=emb,
+            files=[discord.File(html_out, filename=f"{asset.lower()}_model.html")]
+        )
+
+
     CRYPTO_TIMEFRAME_CHOICES = [
         app_commands.Choice(name="Intraday - today 1min bars",  value="intraday"),
         app_commands.Choice(name="1 Week",                       value="1w"),
@@ -2310,14 +2731,15 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         app_commands.Choice(name="Max",                          value="max"),
     ]
 
-    @markets_group.command(name="crypto", description="Crypto price chart - BTC, ETH, SOL, DOGE")
-    @app_commands.describe(coin="which coin", timeframe="time window (default: 6mo)")
+    @markets_group.command(name="crypto", description="Crypto price chart - BTC, ETH, SOL, DOGE - or BTC hashrate")
+    @app_commands.describe(coin="which coin (or BTC Hashrate)", timeframe="time window (default: 6mo)")
     @app_commands.choices(
         coin=[
-            app_commands.Choice(name="Bitcoin  (BTC)",  value="BTC"),
-            app_commands.Choice(name="Ethereum (ETH)",  value="ETH"),
-            app_commands.Choice(name="Solana   (SOL)",  value="SOL"),
-            app_commands.Choice(name="Dogecoin (DOGE)", value="DOGE"),
+            app_commands.Choice(name="Bitcoin  (BTC)",      value="BTC"),
+            app_commands.Choice(name="Ethereum (ETH)",      value="ETH"),
+            app_commands.Choice(name="Solana   (SOL)",      value="SOL"),
+            app_commands.Choice(name="Dogecoin (DOGE)",     value="DOGE"),
+            app_commands.Choice(name="BTC Hashrate (EH/s)", value="HASHRATE"),
         ],
         timeframe=CRYPTO_TIMEFRAME_CHOICES,
     )
@@ -2327,6 +2749,26 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         symbol = coin.value
         tf     = timeframe.value if timeframe else "6mo"
         await interaction.response.defer()
+
+        # ── hashrate: special case - runs btcHashrate.R directly ─────────────
+        if symbol == "HASHRATE":
+            png_out = os.path.join(op, "markets/btcHashrate.png")
+            hr_result = subprocess.run(
+                ["Rscript", os.path.join(rp, "btcHashrate.R"), png_out],
+                capture_output=True, text=True
+            )
+            if hr_result.returncode != 0:
+                await interaction.followup.send(f"Error generating hashrate chart:\n```{hr_result.stderr[-1200:]}```")
+                return
+            if not os.path.exists(png_out):
+                await interaction.followup.send("hashrate chart not found after render :(")
+                return
+            await interaction.followup.send(
+                "here's the BTC network hashrate:",
+                files=[discord.File(png_out, filename="btcHashrate.png")]
+            )
+            return
+
         fetch_result = subprocess.run(
             [PYTHON, os.path.join(pp, "fetchCryptoBars.py"), symbol, tf],
             capture_output=True, text=True

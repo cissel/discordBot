@@ -198,7 +198,7 @@ if (category %in% c("stocks", "crypto")) {
         subtitle = sprintf("Neural Network AR | residual noise bands | %d paths", n_paths),
         x        = NULL,
         y        = "Price",
-        caption  = "Source: Alpaca Markets | Not financial advice"
+        caption  = "Source: Alpaca Markets | Not financial advice | JHCV"
       ) +
 
       scale_y_continuous(labels = comma) +
@@ -396,7 +396,7 @@ if (category %in% c("stocks", "crypto")) {
       subtitle = sprintf("GJR-GARCH(1,1) + student-t | %d paths | 50/80/90%% bands", mc_sims),
       x        = NULL,
       y        = "Price",
-      caption  = "Model: rugarch | Source: Alpaca Markets | Not financial advice"
+      caption  = "Model: rugarch | Source: Alpaca Markets | Not financial advice | JHCV"
     ) +
 
     scale_y_continuous(labels = comma) +
@@ -546,7 +546,7 @@ if (category %in% c("stocks", "crypto")) {
         subtitle = "Forecast as of: {closest_state}",
         x        = NULL,
         y        = "Price",
-        caption  = "Each frame = model refit on all data up to that date | Not financial advice"
+        caption  = "Each frame = model refit on all data up to that date | Not financial advice | JHCV"
       ) +
 
       scale_y_continuous(labels = comma) +
@@ -633,7 +633,7 @@ if (category %in% c("stocks", "crypto")) {
       subtitle = sprintf("n=%d observations | Fat tails expected", length(returns_vec)),
       x        = "Log Return",
       y        = "Density",
-      caption  = "Orange = student-t fit | Red = normal reference"
+      caption  = "Orange = student-t fit | Red = normal reference | JHCV"
     ) +
 
     myTheme +
@@ -811,7 +811,7 @@ if (category %in% c("stocks", "crypto")) {
       subtitle = "Forecast as of: {closest_state}",
       x        = NULL,
       y        = "Value",
-      caption  = "auto.ARIMA (SARIMA) | Source: FRED / St. Louis Fed | Not financial advice"
+      caption  = "auto.ARIMA (SARIMA) | Source: FRED / St. Louis Fed | Not financial advice | JHCV"
     ) +
 
     scale_y_continuous(labels = comma) +
@@ -864,7 +864,7 @@ if (category %in% c("stocks", "crypto")) {
       subtitle = sprintf("Model: %s | %d obs", as.character(model), nrow(df)),
       x        = NULL,
       y        = "Value",
-      caption  = "50/80/95% CI | Not financial advice"
+      caption  = "50/80/95% CI | Not financial advice | JHCV"
     ) +
 
     scale_y_continuous(labels = comma) +

@@ -1,0 +1,469 @@
+---
+title: "SPY Returns Model"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    theme: darkly
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    fig_width: 12
+    fig_height: 6
+    self_contained: true
+params:
+  lookback_days: 756   # 3 years default; override with rmarkdown::render(..., params=list(lookback_days=X))
+  lag_depths: !r c(1, 2, 5, 10, 15, 30, 90, 126, 252)
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, fig.align="center")
+
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(scales)
+  library(lmtest)
+  library(sandwich)
+  library(broom)
+  library(corrplot)
+  library(gridExtra)
+  library(zoo)
+  library(strucchange)
+  library(lubridate)
+})
+
+BOT_DIR   <- path.expand("~/discordBot")
+MKT_DIR   <- file.path(BOT_DIR, "outputs/markets")
+RES_DIR   <- file.path(BOT_DIR, "outputs/research")
+CACHE_DIR <- file.path(MKT_DIR, "cache")
+
+BG     <- "#1a1a2e"
+GRID   <- "#2d2d44"
+CYAN   <- "#00d4ff"
+WHITE  <- "#e8e8e8"
+ORANGE <- "#ff8c42"
+GREEN  <- "#44ff88"
+RED    <- "#ff4455"
+YELLOW <- "#ffd700"
+PURPLE <- "#b388ff"
+
+theme_model <- theme_minimal(base_size = 11) +
+  theme(
+    plot.background   = element_rect(fill=BG,   color=NA),
+    panel.background  = element_rect(fill=BG,   color=NA),
+    panel.grid.major  = element_line(color=GRID, linewidth=0.3),
+    panel.grid.minor  = element_line(color=GRID, linewidth=0.15),
+    axis.text         = element_text(color=WHITE),
+    axis.title        = element_text(color=WHITE),
+    plot.title        = element_text(color=WHITE, face="bold"),
+    plot.subtitle     = element_text(color=WHITE),
+    plot.caption      = element_text(color=GRID),
+    legend.background = element_rect(fill=BG, color=NA),
+    legend.text       = element_text(color=WHITE),
+    legend.title      = element_text(color=WHITE),
+    strip.background  = element_rect(fill=GRID, color=NA),
+    strip.text        = element_text(color=WHITE)
+  )
+```
+
+```{r load-data}
+# ── helper: load cache CSV, normalize columns, compute log return or diff ─────
+load_cache <- function(key, type = c("return", "delta", "level")) {
+  type <- match.arg(type)
+  p    <- file.path(CACHE_DIR, paste0(key, ".csv"))
+  if (!file.exists(p)) return(NULL)
+  df <- read_csv(p, show_col_types = FALSE)
+  # normalize date column
+  date_col <- intersect(c("date", "timestamp"), names(df))[1]
+  df <- df |> rename(date = all_of(date_col))
+  df$date <- as.Date(df$date)
+  # find the value column (non-date)
+  val_col <- setdiff(names(df), "date")[1]
+  df <- df |> select(date, value = all_of(val_col)) |>
+    arrange(date) |>
+    filter(!is.na(value))
+  if (type == "return") df$value <- c(NA, diff(log(df$value)))
+  if (type == "delta")  df$value <- c(NA, diff(df$value))
+  df |> filter(!is.na(value)) |> rename(!!paste0(key, if(type=="return") "_ret" else if(type=="delta") "_chg" else "_val") := value)
+}
+
+# ── load SPY (target) ─────────────────────────────────────────────────────────
+spy_raw <- load_cache("SPY", "return")
+if (is.null(spy_raw)) {
+  spy_bars <- read_csv(file.path(MKT_DIR, "SPY_max_bars.csv"), show_col_types=FALSE)
+  spy_bars$date <- as.Date(spy_bars$date)
+  spy_raw <- spy_bars |> arrange(date) |>
+    transmute(date, SPY_ret = c(NA, diff(log(close)))) |>
+    filter(!is.na(SPY_ret))
+}
+
+# ── load external regressors ──────────────────────────────────────────────────
+vix      <- load_cache("VIX",     "delta")    # ΔVIX
+t10y2y   <- load_cache("T10Y2Y",  "delta")    # Δyield spread
+wti      <- load_cache("WTI",     "delta")    # ΔWTI crude
+dxy      <- load_cache("DXY",     "delta")    # Δdollar index
+m2       <- load_cache("M2",      "delta")    # ΔM2 money supply
+fedfunds <- load_cache("FEDFUNDS","delta")    # Δfed funds
+eur_usd  <- load_cache("EUR_USD", "return")   # EUR/USD log return
+gbp_usd  <- load_cache("GBP_USD", "return")   # GBP/USD log return
+jpy_usd  <- load_cache("JPY_USD", "return")   # JPY/USD log return
+gold     <- load_cache("GOLD",    "delta")    # Δgold price
+hashrate <- load_cache("HASHRATE","delta")    # Δlog(BTC hashrate)
+
+# ── load options data (if enough history) ─────────────────────────────────────
+opts_path <- file.path(RES_DIR, "SPY_options_daily.csv")
+opts <- NULL
+if (file.exists(opts_path)) {
+  opts_raw <- read_csv(opts_path, show_col_types = FALSE) |>
+    mutate(date = as.Date(date)) |>
+    arrange(date)
+  if (nrow(opts_raw) >= 5) {
+    opts <- opts_raw |> transmute(
+      date,
+      atm_iv_avg_chg  = c(NA, diff(atm_iv_avg)),   # Δatm IV
+      iv_skew_chg     = c(NA, diff(iv_skew_otm)),   # Δskew
+      pcr_vol_chg     = c(NA, diff(pcr_vol)),        # Δput/call ratio
+      iv_term_chg     = c(NA, diff(iv_term_slope))   # Δterm structure
+    ) |> filter(!is.na(atm_iv_avg_chg))
+    cat(sprintf("[model] options data: %d rows from %s to %s\n",
+                nrow(opts), min(opts_raw$date), max(opts_raw$date)))
+  } else {
+    cat(sprintf("[model] options data: only %d rows - need more history (accumulating daily)\n", nrow(opts_raw)))
+  }
+}
+
+# ── join everything ───────────────────────────────────────────────────────────
+cutoff <- Sys.Date() - params$lookback_days
+
+frames <- list(spy_raw, vix, t10y2y, wti, dxy, m2, fedfunds, eur_usd, gbp_usd, jpy_usd, gold, hashrate)
+frames <- Filter(Negate(is.null), frames)
+
+merged <- Reduce(function(a, b) inner_join(a, b, by = "date"), frames) |>
+  filter(date >= cutoff) |>
+  arrange(date) |>
+  drop_na()
+
+if (!is.null(opts) && nrow(opts) >= 5) {
+  merged <- inner_join(merged, opts, by = "date") |> drop_na()
+  cat("[model] options variables included\n")
+}
+
+cat(sprintf("[model] final dataset: %d obs from %s to %s\n",
+            nrow(merged), min(merged$date), max(merged$date)))
+```
+
+## Data Overview
+
+```{r data-summary}
+cat(sprintf("**Observations:** %d  |  **Period:** %s to %s  |  **Variables:** %d\n\n",
+            nrow(merged), min(merged$date), max(merged$date), ncol(merged)-1))
+
+# Variable summary table
+merged |>
+  select(-date) |>
+  pivot_longer(everything(), names_to = "variable", values_to = "value") |>
+  group_by(variable) |>
+  summarise(
+    n      = n(),
+    mean   = mean(value, na.rm=TRUE),
+    sd     = sd(value, na.rm=TRUE),
+    min    = min(value, na.rm=TRUE),
+    max    = max(value, na.rm=TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(across(where(is.numeric), ~round(.x, 6))) |>
+  knitr::kable(caption = "Summary statistics for all variables")
+```
+
+## Correlation Matrix
+
+```{r corr-matrix, fig.height=8}
+cor_cols <- names(merged)[names(merged) != "date"]
+# Only include base regressors (no lags yet)
+base_cols <- cor_cols[!grepl("_lag", cor_cols)]
+cor_mat   <- cor(merged[, base_cols], use = "pairwise.complete.obs")
+
+corrplot::corrplot(
+  cor_mat,
+  method     = "color",
+  type       = "upper",
+  tl.col     = WHITE,
+  tl.cex     = 0.8,
+  col        = colorRampPalette(c(RED, BG, GREEN))(200),
+  bg         = BG,
+  addCoef.col = WHITE,
+  number.cex = 0.6,
+  cl.col     = WHITE,
+  title      = "Pairwise Correlations",
+  mar        = c(0, 0, 2, 0)
+)
+```
+
+## Baseline OLS Model
+
+```{r baseline-model}
+# ── add AR lags of the target ─────────────────────────────────────────────────
+# Only use lags we have room for given the dataset size
+max_feasible_lag <- max(1, floor(nrow(merged) * 0.8))
+lags <- params$lag_depths[params$lag_depths <= max_feasible_lag]
+if (length(lags) == 0) lags <- c(1, 2, 5)
+
+for (lag in lags) {
+  merged[[paste0("SPY_ret_lag", lag)]] <- lag(merged$SPY_ret, lag)
+}
+merged_lagged <- merged |> drop_na()
+
+if (nrow(merged_lagged) < 30) {
+  cat(sprintf("WARNING: only %d obs after lagging - extending lookback or reducing lags\n", nrow(merged_lagged)))
+  # fall back to short lags only
+  lags <- c(1, 2, 5)
+  merged_lagged <- merged
+  for (lag in lags) merged_lagged[[paste0("SPY_ret_lag", lag)]] <- lag(merged_lagged$SPY_ret, lag)
+  merged_lagged <- merged_lagged |> drop_na()
+}
+
+cat(sprintf("[model] %d obs after adding %d AR lags (max lag = %d)\n",
+            nrow(merged_lagged), length(lags), max(lags)))
+
+# ── ensure no NA/Inf/NaN in any model column before lm() ─────────────────────
+model_cols    <- names(merged_lagged)[names(merged_lagged) != "date"]
+merged_lagged <- merged_lagged |>
+  filter(if_all(all_of(model_cols), ~is.finite(.x)))
+
+cat(sprintf("[model] %d obs after finite filter\n", nrow(merged_lagged)))
+
+# ── drop near-zero-variance columns (monthly series all-zero after daily diff) ─
+nzv_cols <- sapply(merged_lagged[, model_cols], function(x) sd(x, na.rm=TRUE))
+zero_cols <- names(nzv_cols[nzv_cols < 1e-10])
+if (length(zero_cols) > 0) {
+  cat(sprintf("[model] dropping zero-variance columns: %s\n", paste(zero_cols, collapse=", ")))
+  merged_lagged <- merged_lagged |> select(-all_of(zero_cols))
+  model_cols    <- model_cols[!model_cols %in% zero_cols]
+}
+
+# Base regressors (no lags, no options yet)
+base_regs <- setdiff(names(merged_lagged), c("date", "SPY_ret",
+                       grep("_lag", names(merged_lagged), value=TRUE),
+                       grep("atm_iv|iv_skew|pcr_vol|iv_term", names(merged_lagged), value=TRUE)))
+
+# AR terms
+ar_terms   <- paste0("SPY_ret_lag", lags)
+
+formula_base <- as.formula(paste("SPY_ret ~", paste(c(base_regs, ar_terms), collapse=" + ")))
+fit_base     <- lm(formula_base, data = merged_lagged)
+sum_base     <- summary(fit_base)
+
+# Newey-West HAC standard errors
+nw_lag    <- max(1, floor(4 * (nrow(merged_lagged)/100)^(2/9)))
+hac_vcov  <- sandwich::NeweyWest(fit_base, lag=nw_lag, prewhite=FALSE)
+nw_coefs  <- lmtest::coeftest(fit_base, vcov=hac_vcov)
+
+cat(sprintf("**Formula:** SPY_ret ~ %d contemp regressors + %d AR lags\n\n",
+            length(base_regs), length(lags)))
+cat(sprintf("**n = %d**  |  R2 = %.4f  |  adj-R2 = %.4f  |  F = %.2f (p = %.4f)\n\n",
+            nrow(merged_lagged), sum_base$r.squared, sum_base$adj.r.squared,
+            sum_base$fstatistic[1], pf(sum_base$fstatistic[1], sum_base$fstatistic[2], sum_base$fstatistic[3], lower.tail=FALSE)))
+cat(sprintf("NW lag = %d  |  AIC = %.1f  |  BIC = %.1f\n\n", nw_lag, AIC(fit_base), BIC(fit_base)))
+
+# BP and DW tests
+bp  <- tryCatch(lmtest::bptest(fit_base), error=function(e) list(statistic=NA, p.value=NA))
+dw  <- tryCatch(lmtest::dwtest(fit_base), error=function(e) list(statistic=NA, p.value=NA))
+cat(sprintf("Breusch-Pagan (het): stat=%.3f p=%.4f %s\n",
+            bp$statistic, bp$p.value, ifelse(is.na(bp$p.value) || bp$p.value < 0.05, "FAIL", "pass")))
+cat(sprintf("Durbin-Watson (auto): DW=%.3f p=%.4f %s\n\n",
+            dw$statistic, dw$p.value, ifelse(is.na(dw$p.value) || dw$p.value < 0.05, "FAIL", "pass")))
+
+# Coefficient table with both OLS and NW-HAC SEs
+tidy_base <- tidy(fit_base) |>
+  left_join(
+    as.data.frame(nw_coefs[,]) |>
+      rownames_to_column("term") |>
+      select(term, se_nw = `Std. Error`, t_nw = `t value`, p_nw = `Pr(>|t|)`),
+    by = "term"
+  ) |>
+  mutate(
+    sig    = case_when(p_nw < 0.001 ~ "***", p_nw < 0.01 ~ "**", p_nw < 0.05 ~ "*", TRUE ~ ""),
+    across(where(is.numeric), ~round(.x, 6))
+  )
+
+tidy_base |>
+  select(term, estimate, se_nw, t_nw, p_nw, sig) |>
+  knitr::kable(caption = "Coefficients (NW-HAC robust standard errors)", digits=6)
+```
+
+## Coefficient Plot
+
+```{r coef-plot, fig.height=6}
+coef_df <- tidy_base |>
+  filter(term != "(Intercept)") |>
+  mutate(
+    lo95   = estimate - 1.96 * se_nw,
+    hi95   = estimate + 1.96 * se_nw,
+    signif = p_nw < 0.05,
+    group  = case_when(
+      grepl("_lag", term)   ~ "AR Lags",
+      grepl("_chg|_ret", term) ~ "Contemporaneous",
+      TRUE                  ~ "Other"
+    )
+  )
+
+ggplot(coef_df, aes(x = reorder(term, estimate), y = estimate,
+                    color = signif, shape = group)) +
+  geom_hline(yintercept = 0, color = ORANGE, linetype = "dashed", linewidth = 0.5) +
+  geom_errorbar(aes(ymin = lo95, ymax = hi95), width = 0.3, linewidth = 0.6) +
+  geom_point(size = 2.5) +
+  scale_color_manual(values = c("TRUE" = GREEN, "FALSE" = RED),
+                     labels = c("TRUE" = "p<0.05", "FALSE" = "n.s."),
+                     name = "Significance") +
+  scale_shape_manual(values = c("AR Lags" = 16, "Contemporaneous" = 17, "Other" = 15),
+                     name = "Type") +
+  coord_flip() +
+  labs(title = "Coefficient Estimates (NW-HAC 95% CI)",
+       subtitle = "Green = significant at 5%, Red = not significant",
+       x = NULL, y = "Estimate") +
+  theme_model
+```
+
+## Residual Diagnostics
+
+```{r residuals, fig.height=8}
+res_df <- merged_lagged |>
+  mutate(
+    fitted   = fitted(fit_base),
+    resid    = residuals(fit_base),
+    std_resid = resid / sd(resid)
+  )
+
+p1 <- ggplot(res_df, aes(x = date, y = resid)) +
+  geom_hline(yintercept = 0, color = ORANGE, linetype = "dashed") +
+  geom_line(color = CYAN, alpha = 0.6, linewidth = 0.4) +
+  labs(title = "Residuals Over Time", x = NULL, y = "Residual") +
+  theme_model
+
+p2 <- ggplot(res_df, aes(x = fitted, y = SPY_ret)) +
+  geom_point(color = CYAN, alpha = 0.3, size = 0.8) +
+  geom_abline(slope=1, intercept=0, color=ORANGE, linetype="dashed") +
+  geom_smooth(method="lm", se=FALSE, color=GREEN, linewidth=0.6) +
+  labs(title = "Actual vs Fitted", x = "Fitted", y = "Actual") +
+  theme_model
+
+p3 <- ggplot(res_df, aes(x = resid)) +
+  geom_histogram(aes(y = after_stat(density)), bins=50, fill=CYAN, alpha=0.6) +
+  stat_function(fun=dnorm, args=list(mean=mean(res_df$resid), sd=sd(res_df$resid)),
+                color=ORANGE, linewidth=0.7) +
+  labs(title = "Residual Distribution", x = "Residual", y = "Density") +
+  theme_model
+
+p4 <- ggplot(res_df, aes(sample = std_resid)) +
+  stat_qq(color=CYAN, alpha=0.5, size=0.8) +
+  stat_qq_line(color=ORANGE, linewidth=0.7) +
+  labs(title = "Normal Q-Q Plot", x = "Theoretical", y = "Sample") +
+  theme_model
+
+grid.arrange(p1, p2, p3, p4, nrow=2)
+```
+
+## Rolling R-Squared (90-day window)
+
+```{r rolling-r2, fig.height=4}
+window <- 90
+n      <- nrow(merged_lagged)
+
+if (n >= window + 10) {
+  roll_r2 <- sapply((window+1):n, function(i) {
+    sub <- merged_lagged[(i-window):i, ]
+    fit <- tryCatch(lm(formula_base, data=sub), error=function(e) NULL)
+    if (is.null(fit)) return(NA)
+    summary(fit)$r.squared
+  })
+
+  roll_df <- tibble(
+    date = merged_lagged$date[(window+1):n],
+    r2   = roll_r2
+  )
+
+  ggplot(roll_df, aes(x=date, y=r2)) +
+    geom_ribbon(aes(ymin=0, ymax=r2), fill=CYAN, alpha=0.2) +
+    geom_line(color=CYAN, linewidth=0.7) +
+    geom_hline(yintercept=mean(roll_r2, na.rm=TRUE),
+               color=ORANGE, linetype="dashed", linewidth=0.5) +
+    scale_y_continuous(labels=percent_format()) +
+    labs(title = sprintf("Rolling 90-day R-Squared (mean=%.3f)", mean(roll_r2, na.rm=TRUE)),
+         x=NULL, y="R2") +
+    theme_model
+} else {
+  cat("Not enough observations for rolling window analysis.\n")
+}
+```
+
+## Structural Break Test (CUSUM)
+
+```{r cusum, fig.height=4}
+if (nrow(merged_lagged) >= 50) {
+  cusum_test <- strucchange::efp(formula_base, data=merged_lagged, type="OLS-CUSUM")
+  bp_breaks  <- tryCatch(strucchange::breakpoints(formula_base, data=merged_lagged, h=0.15),
+                         error=function(e) NULL)
+
+  cusum_df <- tibble(
+    t     = seq_along(cusum_test$process),
+    cusum = as.numeric(cusum_test$process)
+  )
+
+  # critical bounds at 5% level
+  n_proc <- length(cusum_test$process)
+  bound  <- 1.358  # 5% critical value for OLS-CUSUM
+
+  ggplot(cusum_df, aes(x=t, y=cusum)) +
+    geom_hline(yintercept=c(-bound, bound), color=RED, linetype="dashed", linewidth=0.5) +
+    geom_hline(yintercept=0, color=GRID, linewidth=0.3) +
+    geom_ribbon(aes(ymin=-bound, ymax=bound), fill=GREEN, alpha=0.05) +
+    geom_line(color=CYAN, linewidth=0.7) +
+    labs(title="CUSUM Structural Break Test",
+         subtitle="Exceeding red dashed lines suggests parameter instability",
+         x="Observation", y="Cumulative Sum") +
+    theme_model
+} else {
+  cat("Not enough observations for CUSUM test.\n")
+}
+```
+
+## Options Variables {#options}
+
+```{r options-section}
+if (!is.null(opts) && nrow(opts) >= 5) {
+  # Model with options variables added
+  opts_regs     <- grep("atm_iv|iv_skew|pcr_vol|iv_term", names(merged_lagged), value=TRUE)
+  if (length(opts_regs) > 0) {
+    formula_opts  <- as.formula(paste("SPY_ret ~",
+                                      paste(c(base_regs, ar_terms, opts_regs), collapse=" + ")))
+    fit_opts      <- lm(formula_opts, data=merged_lagged)
+    sum_opts      <- summary(fit_opts)
+    hac_opts      <- sandwich::NeweyWest(fit_opts, lag=nw_lag, prewhite=FALSE)
+    nw_opts       <- lmtest::coeftest(fit_opts, vcov=hac_opts)
+
+    cat(sprintf("**With options variables:** R2=%.4f  adj-R2=%.4f  AIC=%.1f  BIC=%.1f\n",
+                sum_opts$r.squared, sum_opts$adj.r.squared, AIC(fit_opts), BIC(fit_opts)))
+    cat(sprintf("**Baseline model:**         R2=%.4f  adj-R2=%.4f  AIC=%.1f  BIC=%.1f\n\n",
+                sum_base$r.squared, sum_base$adj.r.squared, AIC(fit_base), BIC(fit_base)))
+
+    # Show only options coefficients
+    opts_coef_df <- as.data.frame(nw_opts[grep("atm_iv|iv_skew|pcr_vol|iv_term",
+                                                 rownames(nw_opts)), , drop=FALSE])
+    opts_coef_df |>
+      round(6) |>
+      knitr::kable(caption="Options variable coefficients (NW-HAC)")
+  }
+} else {
+  n_rows <- if (!is.null(opts)) nrow(read_csv(opts_path, show_col_types=FALSE)) else 0
+  cat(sprintf(
+    "Options data accumulating - **%d trading days** captured so far.\n\n",
+    n_rows))
+  cat("The daily cron job runs at 4:15pm ET each trading day.\n")
+  cat("Options variables will be included automatically once sufficient history exists.\n")
+}
+```
+
+---
+
+*Last rendered: `r format(Sys.time(), '%Y-%m-%d %H:%M %Z')`*
+*Model: OLS with Newey-West HAC standard errors (lag=`r nw_lag`)*
+*Data: Alpaca Markets, FRED St. Louis Fed, Blockchain.com, ECB via Frankfurter*

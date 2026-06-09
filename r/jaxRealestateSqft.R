@@ -179,7 +179,7 @@ p <- ggplot(df, aes(x = sqft, y = sale_price, color = zip)) +
     subtitle = subtitle_txt,
     x        = 'Square Feet',
     y        = 'Sale Price',
-    caption  = 'JHCV | Source: Duval County Property Appraiser | Qualified sales only'
+    caption  = 'Source: Duval County Property Appraiser | Qualified sales only | JHCV'
   ) +
 
   myTheme

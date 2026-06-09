@@ -81,7 +81,7 @@ aap <- ggplot(aa,
                         "messages as of",
                         max(aa$date),
                         sep = " "),
-       caption = "JHCV") +
+       caption = "Source: Discord message log | JHCV") +
   
   myTheme #+
   #myLegend

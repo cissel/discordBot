@@ -109,7 +109,7 @@ ycp <- ggplot(ycdf, aes(x = yte, y = last)) +
     y = "Interest Rate",
     subtitle = max(ycdf$asOf),
     title = "Market Yield on U.S. Treasury Securities at Constant Maturity",
-    caption = "JHCV"
+    caption = "Source: FRED / St. Louis Fed | JHCV"
   ) +
   scale_x_log10(
     breaks = ycdf$yte,

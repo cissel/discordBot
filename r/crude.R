@@ -81,7 +81,7 @@ p <- ggplot(df,
                         sep = ""),
        x = "Date",
        y = "Price per Barrel (USD)",
-       caption = "JHCV") +
+       caption = "Source: FRED / St. Louis Fed (DCOILWTICO) | JHCV") +
   myTheme
 
 #####

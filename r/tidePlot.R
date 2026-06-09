@@ -104,7 +104,7 @@ tidePlot <- ggplot(mayport,
 
   labs(x        = "Time",
        y        = "Water Level (ft, STND)",
-       caption  = "Source: NOAA CO-OPS | Mayport Bar Pilots Dock",
+       caption  = "Source: NOAA CO-OPS | Mayport Bar Pilots Dock | JHCV",
        subtitle = format(last_obs_time, "%Y-%m-%d %H:%M %Z"),
        title    = "Mayport Tides") +
 
