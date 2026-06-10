@@ -7,6 +7,7 @@ library(dplyr)
 library(ggplot2)
 library(ggthemes)
 library(scales)
+library(patchwork)
 
 #####
 
@@ -61,20 +62,46 @@ for (i in 2:nrow(df)) {
   df$pct[i] <- (df$close[i] - df$close[i-1]) / df$close[i-1]
 }
 
-p <- ggplot(df,
-            aes(x = time,
-                y = close)) +
+df <- df %>% mutate(vol_color = if_else(close >= open, "up", "down"))
+
+# ── price plot ────────────────────────────────────────────────────────────────
+p_price <- ggplot(df, aes(x = time, y = close)) +
   geom_line(color = "white") +
-  labs(x = "Time",
+  labs(x = NULL,
        y = "Price (USD)",
        subtitle = paste0("$", formatC(tail(df$close, 1), format = "f", digits = 2),
                          " (", round(tail(df$pct * 100, 1), 2), "%)"),
        title = paste0(symbol, "/USD - ", tf_label, " as of ", max(df$time)),
-       caption = "Source: Alpaca Markets | JHCV") +
+       caption = NULL) +
   scale_y_continuous(labels = scales::dollar) +
-  myTheme
+  myTheme +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+# ── volume plot ───────────────────────────────────────────────────────────────
+# crypto volume is in coin units - use raw with smart labels
+vol_max <- max(df$volume, na.rm = TRUE)
+if (vol_max >= 1e6) {
+  vol_scale <- 1e6; vol_unit <- "M"
+} else if (vol_max >= 1e3) {
+  vol_scale <- 1e3; vol_unit <- "K"
+} else {
+  vol_scale <- 1;   vol_unit <- ""
+}
+
+p_vol <- ggplot(df, aes(x = time, y = volume / vol_scale, fill = vol_color)) +
+  geom_bar(stat = "identity", width = if (timeframe == "intraday") 0.002 else 0.8) +
+  scale_fill_manual(values = c("up" = "#26a69a", "down" = "#ef5350")) +
+  scale_y_continuous(labels = function(x) paste0(x, vol_unit)) +
+  labs(x = "Time", y = "Volume",
+       caption = "Source: Alpaca Markets | JHCV") +
+  myTheme +
+  theme(plot.title = element_blank(), plot.subtitle = element_blank())
+
+# ── combine 70/30 ─────────────────────────────────────────────────────────────
+combined <- p_price / p_vol + plot_layout(heights = c(7, 3)) &
+  theme(plot.background = element_rect(fill = "#02233F", color = NA))
 
 ggsave(path.expand("~/discordBot/outputs/markets/cryptochart.png"),
-       p, width = 8, height = 4.5, dpi = 300)
+       combined, width = 8, height = 5.5, dpi = 300)
 
 #####

@@ -89,16 +89,33 @@ cat("Output path:", out_path, "\n")
 
 # ── your analysis goes here ────────────────────────────────────────────────────
 
+# ── minimum games threshold + top-N cap (only applied when scope is ALL) ───────
+# Keeps the "all players" plot readable by filtering out low-sample players
+# and capping to the top performers by total fantasy points.
+# FA/SP-starter scopes pass a name filter so these filters are skipped.
+if (fa_filter == "ALL") {
+  min_games <- if (position %in% PITCHER_POSITIONS) 8L else 15L
+  top_n_cap <- if (position == "OF") 60L else if (position %in% PITCHER_POSITIONS) 60L else 30L
+} else {
+  min_games <- 1L
+  top_n_cap <- Inf
+}
+
 df <- logs |>
   
   group_by(playerid,
            player_name,
            team) |>
   
-  summarize("tot"=sum(fantasy_pts),
-            "m"=mean(fantasy_pts),
-            "sd"=sd(fantasy_pts),
-            "sharpe"=mean(fantasy_pts)/sd(fantasy_pts)) 
+  summarize("n"     = n(),
+            "tot"   = sum(fantasy_pts),
+            "m"     = mean(fantasy_pts),
+            "sd"    = sd(fantasy_pts),
+            "sharpe"= mean(fantasy_pts)/sd(fantasy_pts),
+            .groups = "drop") |>
+  
+  filter(n >= min_games) |>
+  slice_max(order_by = tot, n = top_n_cap, with_ties = FALSE)
 
 p <- ggplot(df,
             aes(x = sd,
@@ -119,7 +136,8 @@ p <- ggplot(df,
        color = "Sharpe",
        size = "Fantasy Points",
        title = "MLB Fantasy Points per Game",
-       subtitle = paste(position, "- as of", as.Date(max(logs$game_date, na.rm = TRUE))),
+       subtitle = paste0(position, " - as of ", as.Date(max(logs$game_date, na.rm = TRUE)),
+                         if (fa_filter == "ALL") paste0("  (min ", min_games, " games)") else ""),
        caption = "Source: ESPN Fantasy Baseball API / Statcast | JHCV") +
   
   myTheme +

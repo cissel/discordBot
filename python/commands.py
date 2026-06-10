@@ -3909,6 +3909,66 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             file=discord.File(img_path, filename="zonemap.png")
         )
 
+    @mlb_group.command(name="fantasyownership", description="Fantasy points vs ownership % - spot underowned value and overowned duds")
+    @app_commands.describe(
+        position="Position group to display (default: all)",
+        pool="All players or free agents only (default: all)",
+    )
+    @app_commands.choices(
+        position=[
+            app_commands.Choice(name="All Positions", value="all"),
+            app_commands.Choice(name="Batters",       value="batters"),
+            app_commands.Choice(name="Pitchers",      value="pitchers"),
+            app_commands.Choice(name="SP",            value="SP"),
+            app_commands.Choice(name="RP",            value="RP"),
+            app_commands.Choice(name="C",             value="C"),
+            app_commands.Choice(name="1B",            value="1B"),
+            app_commands.Choice(name="2B",            value="2B"),
+            app_commands.Choice(name="3B",            value="3B"),
+            app_commands.Choice(name="SS",            value="SS"),
+            app_commands.Choice(name="OF",            value="OF"),
+        ],
+        pool=[
+            app_commands.Choice(name="All Players",       value="all"),
+            app_commands.Choice(name="Free Agents Only",  value="fa"),
+        ],
+    )
+    async def mlb_ownership(interaction: discord.Interaction, position: str = "all", pool: str = "all"):
+        await _defer(interaction)
+
+        out_img = os.path.join(op, "sports/mlb/fantasy/ownership_plot.png")
+
+        # refresh ownership data
+        proc = await asyncio.create_subprocess_exec(
+            PYTHON, os.path.join(pp, "mlbOwnership.py"),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, _ = await asyncio.wait_for(proc.communicate(), timeout=120)
+        except asyncio.TimeoutError:
+            proc.kill()
+            await proc.communicate()
+            await _send(interaction, "⏱️ ownership fetch timed out - try again in a moment", ephemeral=True)
+            return
+
+        # render plot - pass position and pool as separate args
+        await asyncio.to_thread(
+            _run, "Rscript", os.path.join(rp, "mlbOwnershipPlot.R"), position, pool, out_img
+        )
+
+        if not os.path.exists(out_img):
+            await _send(interaction, "❌ couldn't generate ownership plot", ephemeral=True)
+            return
+
+        pos_label  = {"all": "All Positions", "batters": "Batters", "pitchers": "Pitchers"}.get(position, position)
+        pool_label = "Free Agents Only" if pool == "fa" else "All Players"
+        await _send(interaction,
+            content=f"⚾ **Fantasy Points vs Ownership** - {pos_label} - {pool_label}",
+            file=discord.File(out_img, filename="ownership_plot.png")
+        )
+
+
     @mlb_group.command(name="lineup", description="Daily start/sit card for dock ellis fan club")
     @app_commands.describe(day="Today's games (default) or tomorrow's")
     @app_commands.choices(day=[
@@ -4053,7 +4113,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, f"❌ failed to run comparison: {e}", ephemeral=True)
             return
 
-        import json as _json
+        import json as _json, csv as _csv
         cmp_path = os.path.join(op, "sports/mlb/fantasy/compare.json")
         if not os.path.exists(cmp_path):
             err = stderr.decode()[-500:] if stderr else "no output"
@@ -4062,6 +4122,103 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         with open(cmp_path) as f:
             data = _json.load(f)
+
+        # ── load my roster for drop suggestions ──────────────────────────────
+        MY_TEAM      = "dock ellis fan club"
+        roster_path  = os.path.join(op, "sports/mlb/fantasy/roster.csv")
+        my_roster    = []
+        if os.path.exists(roster_path):
+            with open(roster_path, newline="") as rf:
+                for row in _csv.DictReader(rf):
+                    if row.get("team_name") == MY_TEAM:
+                        my_roster.append(row)
+
+        # build lookup dicts: player_name -> season stats
+        _ptch_stats = {}
+        _ptch_path  = os.path.join(op, "sports/mlb/fantasy/playerData/pitcher_season_summary.csv")
+        if os.path.exists(_ptch_path):
+            with open(_ptch_path, newline="") as pf:
+                for row in _csv.DictReader(pf):
+                    _ptch_stats[row["player_name"].lower()] = row
+
+        _bat_stats  = {}
+        _bat_path   = os.path.join(op, "sports/mlb/fantasy/playerData/batter_season_summary.csv")
+        if os.path.exists(_bat_path):
+            with open(_bat_path, newline="") as bf:
+                for row in _csv.DictReader(bf):
+                    _bat_stats[row["player_name"].lower()] = row
+
+        def _drop_suggestion(cmp_player: dict) -> str:
+            """Return a 'consider dropping: X' string or empty string."""
+            if not my_roster:
+                return ""
+            signal = cmp_player.get("roster_signal", "") + cmp_player.get("stream_signal", "")
+            # only suggest a drop when the verdict is positive
+            if not any(kw in signal for kw in ("ADD", "START", "✅")):
+                return ""
+
+            is_pitcher  = cmp_player.get("is_pitcher", False)
+            PITCHER_POS = {"SP", "RP", "P"}
+
+            # candidates: same type, not on IL slot, not the player being compared
+            cmp_name = cmp_player.get("name", "").lower()
+            candidates = []
+            for r in my_roster:
+                if r.get("slot_position") == "IL":
+                    continue
+                rpos = r.get("position", "")
+                if is_pitcher and rpos not in PITCHER_POS:
+                    continue
+                if not is_pitcher and rpos in PITCHER_POS:
+                    continue
+                if r.get("player_name", "").lower() == cmp_name:
+                    continue
+                try:
+                    pts = float(r.get("points", 0) or 0)
+                except ValueError:
+                    pts = 0.0
+                candidates.append((pts, r.get("slot_position", ""), r.get("player_name", ""), r.get("injury_status", "")))
+
+            if not candidates:
+                return ""
+
+            # sort: bench (BE) first, then by points ascending
+            candidates.sort(key=lambda x: (0 if x[1] == "BE" else 1, x[0]))
+            pts, slot, name, inj = candidates[0]
+            inj_tag = " ⚠️ injured" if inj not in ("ACTIVE", "") else ""
+
+            # stat snippet from season summary
+            key = name.lower()
+            stat_snippet = ""
+            if is_pitcher and key in _ptch_stats:
+                s = _ptch_stats[key]
+                era  = s.get("ERA",  "")
+                whip = s.get("WHIP", "")
+                fpts = s.get("fantasy_pts", "")
+                parts = []
+                if era:  parts.append(f"ERA {float(era):.2f}")
+                if whip: parts.append(f"WHIP {float(whip):.2f}")
+                if fpts: parts.append(f"{float(fpts):.0f} fpts")
+                if parts:
+                    stat_snippet = f" - {', '.join(parts)}"
+            elif not is_pitcher and key in _bat_stats:
+                s = _bat_stats[key]
+                fpts = s.get("fantasy_pts", "")
+                # compute OPS from summary columns if available
+                ab  = float(s.get("AB",  0) or 0)
+                h   = float(s.get("H",   0) or 0)
+                bb  = float(s.get("BB",  0) or 0)
+                tb  = float(s.get("TB",  0) or 0)
+                pa  = ab + bb
+                ops = ((h + bb) / pa + tb / ab) if ab > 0 and pa > 0 else None
+                parts = []
+                if ops:  parts.append(f"OPS {ops:.3f}")
+                if fpts: parts.append(f"{float(fpts):.0f} fpts")
+                if parts:
+                    stat_snippet = f" - {', '.join(parts)}"
+
+            return f"\n✂️ **drop candidate:** {name} ({slot}{inj_tag}{stat_snippet})"
+
 
         players  = data.get("players", [])
         day_label = "Today" if day == "today" else "Tomorrow"
@@ -4100,6 +4257,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             medal = ["🥇","🥈","🥉","4️⃣"][min(i, 3)]
 
             # stat line - use whatever keys are present
+            pkey = name.lower()
             if not p.get("is_pitcher"):
                 ops   = p.get("season_ops")
                 iso   = p.get("season_iso")
@@ -4110,6 +4268,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 if iso:   parts.append(f"`ISO {iso:.3f}`")
                 if obp:   parts.append(f"`OBP {obp:.3f}`")
                 if r_ops: parts.append(f"`L14 OPS {r_ops:.3f}`")
+                # season fantasy pts from summary
+                _bfpts = _bat_stats.get(pkey, {}).get("fantasy_pts", "")
+                if _bfpts: parts.append(f"`{float(_bfpts):.0f} fpts`")
                 stat_line = "  ".join(parts)
             else:
                 era  = p.get("season_era")
@@ -4121,16 +4282,21 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 if whip:  parts.append(f"`WHIP {whip:.2f}`")
                 if k9:    parts.append(f"`K/9 {k9:.1f}`")
                 if r_era: parts.append(f"`L14 ERA {r_era:.2f}`")
+                # season fantasy pts from summary
+                _pfpts = _ptch_stats.get(pkey, {}).get("fantasy_pts", "")
+                if _pfpts: parts.append(f"`{float(_pfpts):.0f} fpts`")
                 stat_line = "  ".join(parts)
 
             stream_block = "\n".join(f"  · {r}" for r in s_reas[:3]) if s_reas else "  · no data"
             roster_block = "\n".join(f"  · {r}" for r in r_reas[:3]) if r_reas else "  · no data"
+            drop_line    = _drop_suggestion(p)
 
             val = (
                 f"**{team}  ·  {pos}**\n"
                 f"{stat_line or '-'}\n"
                 f"**Stream `{ss}`** - {s_sig}\n{stream_block}\n"
                 f"**Roster `{rs}`** - {r_sig}\n{roster_block}"
+                f"{drop_line}"
             )
 
             emb.add_field(

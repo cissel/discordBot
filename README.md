@@ -92,7 +92,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 |---|---|
 | `today` | today's MLB schedule with live/final scores |
 | `tomorrow` | tomorrow's schedule |
-| `compare` | sabermetric head-to-head for 2-4 players (stream score + roster score) |
+| `compare` | sabermetric head-to-head for 2-4 players - stream + roster score, season stats, drop candidate |
 | `lineup` | start/sit card for your fantasy roster with scoring signals |
 | `pickup` | scans the full FA pool, surfaces top 3 batter + pitcher adds |
 | `fantasystandings` | World Sillies league standings |
@@ -106,9 +106,11 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `mismatch` | batter vs pitcher matchup OPS from 5 years of Statcast data |
 | `fantasyrisk` | risk flags across your roster (injury, cold streak, bad matchup) |
 | `zonemap` | pitch location subplots by pitch type for any pitcher |
+| `fantasyownership` | fantasy points vs ownership % scatter (log scale) - filter by position and FA/all |
 
 ![fantasy risk](outputs/sports/mlb/fantasy/fantasyRisk.png)
 ![pitch zone map](outputs/sports/mlb/pitchzone_example.png)
+![fantasy ownership](outputs/sports/mlb/fantasy/ownership_plot.png)
 
 ### `/f1`
 | command | description |
@@ -119,7 +121,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 ### `/markets`
 | command | description |
 |---|---|
-| `chart` | price chart for any stock ticker |
+| `chart` | price + volume chart for any stock ticker |
 | `fedrate` | fed funds target rate history |
 | `yieldcurve` | latest US Treasury yield curve |
 | `yieldspread` | 10Y-2Y spread history (2mo or full) |
@@ -130,7 +132,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `earnings` | upcoming earnings (7 days) or earnings history for a ticker |
 | `options` | options flow for a ticker |
 | `short` | most shorted stocks |
-| `crypto` | price chart for BTC, ETH, SOL, or DOGE |
+| `crypto` | price + volume chart for BTC, ETH, SOL, or DOGE - or BTC hashrate |
 | `forecast` | GJR-GARCH / EGARCH / SARIMA animated forecast GIF with Monte Carlo paths |
 | `regress` | multivariate OLS regression with dropdown variable selection and NW-HAC robust SEs |
 

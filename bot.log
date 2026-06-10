@@ -3327,3 +3327,1888 @@ Online as several bots#0340
 [setup] 36 commands registered
 Synced 36 slash command(s) to guild 1286546740211613706
 Online as several bots#0340
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Rows: 6033 Columns: 5
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (4): user_name, user_display_name, channel, message
+dttm (1): datetime
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+Found 26 probable starters for tomorrow (2026-06-10)
+  Andre Pallante (St. Louis Cardinals) - St. Louis Cardinals @ New York Mets
+  Brady Singer (Cincinnati Reds) - Cincinnati Reds @ San Diego Padres
+  Brandon Young (Baltimore Orioles) - Seattle Mariners @ Baltimore Orioles
+  Carlos Rodón (New York Yankees) - New York Yankees @ Cleveland Guardians
+  Chris Sale (Atlanta Braves) - Atlanta Braves @ Chicago White Sox
+  Christian Scott (New York Mets) - St. Louis Cardinals @ New York Mets
+  Drew Rasmussen (Tampa Bay Rays) - Boston Red Sox @ Tampa Bay Rays
+  Foster Griffin (Washington Nationals) - Washington Nationals @ San Francisco Giants
+  Framber Valdez (Detroit Tigers) - Minnesota Twins @ Detroit Tigers
+  George Kirby (Seattle Mariners) - Seattle Mariners @ Baltimore Orioles
+  Jack Perkins (Athletics) - Milwaukee Brewers @ Athletics
+  Jared Jones (Pittsburgh Pirates) - Los Angeles Dodgers @ Pittsburgh Pirates
+  Jesús Luzardo (Philadelphia Phillies) - Philadelphia Phillies @ Toronto Blue Jays
+  MacKenzie Gore (Texas Rangers) - Texas Rangers @ Kansas City Royals
+  Max Scherzer (Toronto Blue Jays) - Philadelphia Phillies @ Toronto Blue Jays
+  Michael King (San Diego Padres) - Cincinnati Reds @ San Diego Padres
+  Michael Lorenzen (Colorado Rockies) - Chicago Cubs @ Colorado Rockies
+  Parker Messick (Cleveland Guardians) - New York Yankees @ Cleveland Guardians
+  Peter Lambert (Houston Astros) - Houston Astros @ Los Angeles Angels
+  Reid Detmers (Los Angeles Angels) - Houston Astros @ Los Angeles Angels
+  Robbie Ray (San Francisco Giants) - Washington Nationals @ San Francisco Giants
+  Ryan Gusto (Miami Marlins) - Arizona Diamondbacks @ Miami Marlins
+  Ryne Nelson (Arizona Diamondbacks) - Arizona Diamondbacks @ Miami Marlins
+  Seth Lugo (Kansas City Royals) - Texas Rangers @ Kansas City Royals
+  Shohei Ohtani (Los Angeles Dodgers) - Los Angeles Dodgers @ Pittsburgh Pirates
+  Shota Imanaga (Chicago Cubs) - Chicago Cubs @ Colorado Rockies
+Written to /home/jhcv/discordBot/outputs/sports/mlb/probableStarters.csv
+[INFO] 26 probable starters - fetching Statcast in parallel...
+
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+    [--] 2024: no data
+    [--] 2022: no data
+    [OK] 2026: 104 PA events
+    [--] 2023: no data
+    [OK] 2026: 214 PA events
+    [OK] 2026: 274 PA events
+    [OK] 2026: 258 PA events
+    [OK] 2023: 286 PA events
+    [OK] 2025: 256 PA events
+  [INFO] 470 total PA events for Brandon Young
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Brandon Young
+    [OK] 2022: 25 PA events
+    [OK] 2023: 302 PA events
+    [OK] 2022: 457 PA events
+    [OK] 2024: 509 PA events
+    [OK] 2022: 621 PA events
+    [OK] 2026: 294 PA events
+    [OK] 2023: 702 PA events
+    [OK] 2024: 762 PA events
+    [OK] 2023: 425 PA events
+    [OK] 2024: 736 PA events
+    [OK] 2022: 710 PA events
+    [OK] 2025: 716 PA events
+  [INFO] 3059 total PA events for Brady Singer
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Brady Singer
+    [OK] 2025: 715 PA events
+  [INFO] 2257 total PA events for Andre Pallante
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Andre Pallante
+    [OK] 2025: 789 PA events
+  [INFO] 2625 total PA events for Carlos Rodón
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Carlos Rodón
+    [OK] 2024: 702 PA events
+    [--] 2024: no data
+    [--] 2025: no data
+    [--] 2023: no data
+    [OK] 2022: 32 PA events
+    [OK] 2026: 258 PA events
+    [OK] 2026: 297 PA events
+  [INFO] 329 total PA events for Foster Griffin
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Foster Griffin
+    [--] 2025: no data
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2024: 116 PA events
+    [OK] 2025: 510 PA events
+  [INFO] 1956 total PA events for Chris Sale
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Chris Sale
+    [OK] 2026: 156 PA events
+    [OK] 2023: 177 PA events
+    [OK] 2026: 317 PA events
+    [OK] 2025: 585 PA events
+    [OK] 2024: 197 PA events
+  [INFO] 353 total PA events for Christian Scott
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Christian Scott
+    [OK] 2022: 584 PA events
+  [INFO] 1720 total PA events for Drew Rasmussen
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Drew Rasmussen
+    [OK] 2026: 323 PA events
+    [--] 2024: no data
+    [OK] 2026: 42 PA events
+    [--] 2022: no data
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2026: 144 PA events
+    [--] 2025: no data
+    [OK] 2024: 703 PA events
+    [OK] 2022: 542 PA events
+    [--] 2023: no data
+    [OK] 2025: 802 PA events
+    [OK] 2023: 808 PA events
+    [OK] 2022: 827 PA events
+  [INFO] 3457 total PA events for Framber Valdez
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Framber Valdez
+    [OK] 2025: 524 PA events
+    [OK] 2023: 757 PA events
+    [OK] 2025: 161 PA events
+  [INFO] 305 total PA events for Jack Perkins
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jack Perkins
+    [OK] 2024: 504 PA events
+  [INFO] 546 total PA events for Jared Jones
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jared Jones
+    [OK] 2024: 778 PA events
+  [INFO] 2924 total PA events for George Kirby
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for George Kirby
+    [OK] 2026: 312 PA events
+    [OK] 2026: 84 PA events
+    [OK] 2024: 274 PA events
+    [OK] 2026: 283 PA events
+    [OK] 2024: 177 PA events
+    [OK] 2022: 400 PA events
+    [OK] 2022: 309 PA events
+    [OK] 2025: 358 PA events
+    [OK] 2026: 296 PA events
+    [OK] 2022: 199 PA events
+    [OK] 2025: 308 PA events
+    [OK] 2022: 565 PA events
+    [OK] 2025: 758 PA events
+    [OK] 2023: 431 PA events
+    [OK] 2025: 679 PA events
+    [OK] 2023: 741 PA events
+  [INFO] 2485 total PA events for Jesús Luzardo
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jesús Luzardo
+    [OK] 2023: 621 PA events
+  [INFO] 1805 total PA events for Max Scherzer
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Max Scherzer
+    [OK] 2024: 731 PA events
+    [--] 2023: no data
+    [--] 2022: no data
+    [--] 2024: no data
+    [OK] 2024: 726 PA events
+  [INFO] 1960 total PA events for Michael King
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Michael King
+    [OK] 2023: 582 PA events
+  [INFO] 2584 total PA events for MacKenzie Gore
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for MacKenzie Gore
+    [--] 2022: no data
+    [--] 2025: no data
+    [OK] 2026: 301 PA events
+    [OK] 2026: 295 PA events
+    [OK] 2025: 165 PA events
+  [INFO] 460 total PA events for Parker Messick
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Parker Messick
+    [OK] 2022: 411 PA events
+    [OK] 2026: 214 PA events
+    [OK] 2026: 309 PA events
+    [OK] 2023: 624 PA events
+    [OK] 2023: 19 PA events
+    [OK] 2024: 535 PA events
+    [OK] 2024: 280 PA events
+    [OK] 2023: 375 PA events
+  [INFO] 869 total PA events for Peter Lambert
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Peter Lambert
+    [OK] 2025: 606 PA events
+  [INFO] 2477 total PA events for Michael Lorenzen
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Michael Lorenzen
+    [OK] 2024: 391 PA events
+    [OK] 2025: 266 PA events
+    [OK] 2024: 129 PA events
+    [OK] 2022: 539 PA events
+    [OK] 2022: 69 PA events
+    [OK] 2026: 290 PA events
+    [OK] 2023: 644 PA events
+  [INFO] 2149 total PA events for Reid Detmers
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Reid Detmers
+    [OK] 2026: 304 PA events
+    [OK] 2022: 775 PA events
+    [--] 2024: no data
+    [--] 2022: no data
+    [OK] 2026: 24 PA events
+    [--] 2023: no data
+    [OK] 2026: 321 PA events
+    [OK] 2024: 630 PA events
+    [OK] 2025: 755 PA events
+  [INFO] 1968 total PA events for Robbie Ray
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Robbie Ray
+    [OK] 2023: 619 PA events
+    [OK] 2025: 619 PA events
+  [INFO] 2241 total PA events for Ryne Nelson
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Ryne Nelson
+    [OK] 2022: 272 PA events
+    [--] 2023: no data
+    [--] 2022: no data
+    [OK] 2023: 604 PA events
+    [OK] 2025: 453 PA events
+  [INFO] 477 total PA events for Ryan Gusto
+[DONE] Statcast loaded for Ryan Gusto
+    [OK] 2026: 308 PA events
+    [--] 2024: no data
+    [OK] 2025: 611 PA events
+    [OK] 2024: 836 PA events
+  [INFO] 2644 total PA events for Seth Lugo
+[DONE] Statcast loaded for Seth Lugo
+    [OK] 2025: 187 PA events
+    [OK] 2025: 567 PA events
+    [OK] 2023: 531 PA events
+    [OK] 2024: 694 PA events
+  [INFO] 1569 total PA events for Shota Imanaga
+[DONE] Statcast loaded for Shota Imanaga
+    [OK] 2026: 233 PA events
+    [OK] 2022: 660 PA events
+  [INFO] 1611 total PA events for Shohei Ohtani
+[DONE] Statcast loaded for Shohei Ohtani
+
+[INFO] Computing matchups...
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+
+[INFO] 67 matchups written to /home/jhcv/discordBot/outputs/sports/mlb/mismatch.csv
+
+[TOP 5 BATTER-FAVORED]
+  Corey Seager vs Seth Lugo: OPS 2.167 (2H 1HR in 6PA)
+  Pete Alonso vs George Kirby: OPS 1.914 (3H 1HR in 7PA)
+  Bryson Stott vs Max Scherzer: OPS 1.335 (8H 0HR in 14PA)
+  Mark Vientos vs Andre Pallante: OPS 1.262 (2H 1HR in 7PA)
+  Byron Buxton vs Framber Valdez: OPS 1.238 (3H 0HR in 7PA)
+
+[TOP 5 PITCHER-FAVORED]
+  Willi Castro vs Shota Imanaga: OPS 0 (0H 0HR in 6PA)
+  Jake McCarthy vs Shota Imanaga: OPS 0 (0H 0HR in 6PA)
+  Wyatt Langford vs Seth Lugo: OPS 0 (0H 0HR in 6PA)
+  Ezequiel Duran vs Seth Lugo: OPS 0 (0H 0HR in 5PA)
+  Elias Díaz vs Seth Lugo: OPS 0 (0H 0HR in 8PA)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ purrr     1.2.2
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Position: SP 
+Rows loaded: 2725 
+Players: 250 
+Output path: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/fantasyRisk.png 
+`summarise()` has regrouped the output.
+ℹ Summaries were computed grouped by playerid, player_name, and team.
+ℹ Output is grouped by playerid and player_name.
+ℹ Use `summarise(.groups = "drop_last")` to silence this message.
+ℹ Use `summarise(.by = c(playerid, player_name, team))` for per-operation
+  grouping (`?dplyr::dplyr_by`) instead.
+Warning message:
+Removed 10 rows containing missing values or values outside the scale range
+(`geom_text()`). 
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ purrr     1.2.2
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Position: SP 
+Rows loaded: 2725 
+Players: 250 
+Output path: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/fantasyRisk.png 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb ownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Saved: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/ownership_plot.png 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Saved: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/ownership_plot.png 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Saved: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/ownership_plot.png 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+No shared levels found between `names(values)` of the manual scale and the
+data's colour values. 
+Saved: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/ownership_plot.png 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+No shared levels found between `names(values)` of the manual scale and the
+data's colour values. 
+Saved: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/ownership_plot.png 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+No shared levels found between `names(values)` of the manual scale and the
+data's colour values. 
+Saved: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/ownership_plot.png 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
