@@ -4,7 +4,7 @@ There are many discord bots but this one is mine. I love it dearly.
 
 Built so I could send a message from my phone and have it run scripts, pull data, and post results back to the server - even if I'm not at the helm. Runs on a Raspberry Pi. Speaks Python and R.
 
-**183 commits · 18,000+ lines · March 2025 - present**
+**191 commits · 15,500+ lines · March 2025 - present**
 
 ---
 
@@ -121,27 +121,34 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 ### `/markets`
 | command | description |
 |---|---|
-| `chart` | price + volume chart for any stock ticker |
-| `fedrate` | fed funds target rate history |
+| `chart` | price + volume chart for any stock or ETF ticker (3M/6M/1Y/5Y/10Y) |
+| `crypto` | price + volume chart for BTC, ETH, SOL, or DOGE - or BTC on-chain: hashrate, rainbow, NUPL, MVRV, dominance |
+| `forecast` | GJR-GARCH / EGARCH / SARIMA animated forecast GIF with Monte Carlo paths - stocks and crypto |
+| `regress` | multivariate OLS regression with NW-HAC robust SEs, ADL lags, VIF - 25-variable dropdowns for target and regressors |
+| `macro` | 6-panel macro dashboard - Fed funds rate, 10Y yield, TIPS, CPI, M2, DXY (FRED data, timeframe dropdown) |
+| `series` | individual FRED series chart with recession shading - DXY, M2, TIPS, CPI, Fed Funds, 10Y (timeframe dropdown) |
+| `sector` | S&P 500 sector treemap - 503 stocks sized by live market cap, colored by daily % change |
+| `corr` | 11-asset correlation matrix - SPY, BTC, ETH, gold, VIX, DXY, 10Y, TIPS, CPI, M2, Fed Funds (hierarchically clustered, timeframe dropdown) |
+| `vix` | VIX term structure curve (9D / 30D / 3M / 6M / 1Y) + VVIX vol-of-vol gauge with zone bands |
+| `commodities` | commodities dashboard - all 12 panels (metals / energy / softs) or filter by category (timeframe dropdown) |
+| `fx` | FX dashboard - EUR, GBP, JPY, CHF, CAD, AUD, CNY, MXN vs USD (ECB data, timeframe dropdown) |
+| `bonds` | bonds dashboard - TLT, IEF, SHY, HYG, LQD, EMB normalized returns + credit spreads (timeframe dropdown) |
+| `news` | latest market headlines from Alpaca news feed - optional ticker filter |
+| `fomc` | next 6 FOMC meeting dates with CME-implied Fed Funds rate at each meeting |
+| `fedrate` | Fed funds target rate history |
 | `yieldcurve` | latest US Treasury yield curve |
-| `yieldspread` | 10Y-2Y spread history (2mo or full) |
+| `yieldspread` | 10Y-2Y spread history (timeframe dropdown) |
 | `crudeoil` | WTI crude oil price chart |
-| `trades` | recent trade chart |
 | `fear` | CNN Fear & Greed Index |
 | `movers` | top market gainers and losers |
 | `earnings` | upcoming earnings (7 days) or earnings history for a ticker |
-| `options` | options flow for a ticker |
+| `options` | options flow snapshot for a ticker |
 | `short` | most shorted stocks |
-| `crypto` | price + volume chart for BTC, ETH, SOL, or DOGE - or BTC hashrate |
-| `forecast` | GJR-GARCH / EGARCH / SARIMA animated forecast GIF with Monte Carlo paths |
-| `regress` | multivariate OLS regression with dropdown variable selection and NW-HAC robust SEs |
+| `trades` | recent trade chart |
 
 ![stock chart](outputs/markets/stockchart.png)
-![trade chart](outputs/markets/tradechart.png)
 ![yield curve](outputs/markets/yield_curve.png)
 ![yield spread](outputs/markets/yield_spread.png)
-![crude oil](outputs/markets/crudewti.png)
-![fed rate](outputs/markets/dfedtaru.png)
 ![crypto chart](outputs/markets/cryptochart.png)
 ![forecast](outputs/markets/forecast_SPY_1d_1mo_mcpaths.gif)
 
