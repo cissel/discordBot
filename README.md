@@ -53,7 +53,23 @@ One command. All sports. Returns today's (or tomorrow's) schedule and scores acr
 Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat celebrations, and more.
 
 ### `/nfl`
-Next game info and Jaguars-specific commands under `/jags`.
+| command | description |
+|---|---|
+| `nextgame` | next NFL game on the schedule |
+| `wr` | top WR target share chart for the current season |
+| `fantasyscoreboard` | Room 40 fantasy football scoreboard |
+| `epamap` | mean EPA choropleth map by NFL team |
+| `room40points` | Room 40 fantasy points map |
+| `amonra` | I RUN THIS SHIT |
+
+### `/jags`
+| command | description |
+|---|---|
+| `next` | next Jacksonville Jaguars game |
+| `today` | i just wanna party with you |
+| `takemyenergy` | ༼ つ ◕◕ ༽つ TAKE MY ENERGY |
+| `win` | jags win! |
+| `howbout` | how bout them jags |
 
 ![epa map](outputs/sports/nfl/epaMap.png)
 ![target share](outputs/sports/nfl/tgtShr.png)
@@ -92,7 +108,7 @@ Next game info and Jaguars-specific commands under `/jags`.
 | `zonemap` | pitch location subplots by pitch type for any pitcher |
 
 ![fantasy risk](outputs/sports/mlb/fantasy/fantasyRisk.png)
-![pitch zone map](outputs/sports/mlb/pitchzone_656641.png)
+![pitch zone map](outputs/sports/mlb/pitchzone_example.png)
 
 ### `/f1`
 | command | description |
@@ -116,6 +132,7 @@ Next game info and Jaguars-specific commands under `/jags`.
 | `short` | most shorted stocks |
 | `crypto` | price chart for BTC, ETH, SOL, or DOGE |
 | `forecast` | GJR-GARCH / EGARCH / SARIMA animated forecast GIF with Monte Carlo paths |
+| `regress` | multivariate OLS regression with dropdown variable selection and NW-HAC robust SEs |
 
 ![stock chart](outputs/markets/stockchart.png)
 ![trade chart](outputs/markets/tradechart.png)
