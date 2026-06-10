@@ -141,7 +141,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 ![crude oil](outputs/markets/crudewti.png)
 ![fed rate](outputs/markets/dfedtaru.png)
 ![crypto chart](outputs/markets/cryptochart.png)
-![forecast](outputs/markets/forecast_SPY_1d_1yr_mcpaths.gif)
+![forecast](outputs/markets/forecast_SPY_1d_1mo_mcpaths.gif)
 
 ### `/space`
 | command | description |
