@@ -2731,15 +2731,361 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         app_commands.Choice(name="Max",                          value="max"),
     ]
 
-    @markets_group.command(name="crypto", description="Crypto price chart - BTC, ETH, SOL, DOGE - or BTC hashrate")
-    @app_commands.describe(coin="which coin (or BTC Hashrate)", timeframe="time window (default: 6mo)")
+    # ── /markets macro ────────────────────────────────────────────────────────
+    # ── /markets corr ─────────────────────────────────────────────────────────
+    # shared timeframe choices for dashboard commands
+    DASH_TF_CHOICES = [
+        app_commands.Choice(name="3 Months",  value="90"),
+        app_commands.Choice(name="6 Months",  value="180"),
+        app_commands.Choice(name="1 Year",    value="365"),
+        app_commands.Choice(name="5 Years",   value="1825"),
+        app_commands.Choice(name="10 Years",  value="3650"),
+    ]
+
+    @markets_group.command(name="corr", description="Correlation matrix - SPY, BTC, ETH, rates, DXY, VIX, gold (default 3Y)")
+    @app_commands.describe(timeframe="lookback window (default: 3 years)")
+    @app_commands.choices(timeframe=DASH_TF_CHOICES)
+    async def markets_corr(interaction: discord.Interaction, timeframe: app_commands.Choice[str] = None):
+        await interaction.response.defer()
+        days    = timeframe.value if timeframe else "756"
+        png_out = os.path.join(op, f"markets/correlMatrix_{days}d.png")
+        proc = await asyncio.create_subprocess_exec(
+            "Rscript", os.path.join(rp, "correlMatrix.R"), png_out, days,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+        except asyncio.TimeoutError:
+            proc.kill(); await proc.communicate()
+            await interaction.followup.send("⏱️ correlation matrix timed out"); return
+        if not os.path.exists(png_out):
+            await interaction.followup.send(f"❌ correlation matrix failed\n```{stderr.decode()[-800:]}```"); return
+        lbl = timeframe.name if timeframe else "3 Years"
+        await interaction.followup.send(
+            f"📐 **Correlation Matrix** - {lbl} daily returns",
+            files=[discord.File(png_out, filename="correlMatrix.png")]
+        )
+
+
+    # ── /markets news ─────────────────────────────────────────────────────────
+    @markets_group.command(name="news", description="Latest market news - optionally filtered by ticker")
+    @app_commands.describe(ticker="stock ticker to filter news (optional - leave blank for market-wide)")
+    async def markets_news(interaction: discord.Interaction, ticker: str = ""):
+        await interaction.response.defer()
+        import aiohttp, datetime as _dt
+        ticker = ticker.upper().strip()
+        base_url = "https://data.alpaca.markets/v1beta1/news"
+        params = {"limit": 10, "sort": "desc"}
+        if ticker:
+            params["symbols"] = ticker
+        headers = {
+            "APCA-API-KEY-ID":     os.getenv("APCA_API_KEY_ID", ""),
+            "APCA-API-SECRET-KEY": os.getenv("APCA_API_SECRET_KEY", ""),
+        }
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base_url, params=params, headers=headers, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                    if resp.status != 200:
+                        await interaction.followup.send(f"❌ news fetch failed (HTTP {resp.status})"); return
+                    data = await resp.json()
+        except Exception as e:
+            await interaction.followup.send(f"❌ news error: {e}"); return
+
+        articles = data.get("news", [])
+        if not articles:
+            await interaction.followup.send(f"no recent news found{' for **' + ticker + '**' if ticker else ''}"); return
+
+        title = f"📰 Latest News{' - ' + ticker if ticker else ''}"
+        emb = discord.Embed(title=title, color=0x00bfff)
+        for a in articles[:8]:
+            headline = a.get("headline", "")[:200]
+            source   = a.get("source", "").capitalize()
+            url      = a.get("url", "")
+            syms     = ", ".join(a.get("symbols", [])[:4])
+            ts_raw   = a.get("created_at", "")
+            try:
+                ts = _dt.datetime.fromisoformat(ts_raw.replace("Z", "+00:00"))
+                age_h = (_dt.datetime.now(_dt.timezone.utc) - ts).total_seconds() / 3600
+                if age_h < 1:
+                    age_str = f"{int(age_h*60)}m ago"
+                elif age_h < 24:
+                    age_str = f"{age_h:.1f}h ago"
+                else:
+                    age_str = f"{age_h/24:.1f}d ago"
+            except Exception:
+                age_str = ""
+            sym_str = f" `{syms}`" if syms else ""
+            val = f"[{source}]({url}) - {age_str}{sym_str}" if url else f"{source} - {age_str}{sym_str}"
+            emb.add_field(name=headline, value=val, inline=False)
+        emb.set_footer(text="Source: Alpaca Markets / Benzinga | JHCV")
+        await interaction.followup.send(embed=emb)
+
+    # ── /markets fomc ─────────────────────────────────────────────────────────
+    @markets_group.command(name="fomc", description="FOMC meeting calendar with Fed Funds futures implied rate probabilities")
+    async def markets_fomc(interaction: discord.Interaction):
+        await interaction.response.defer()
+        fomc_script = os.path.join(pp, "marketsFomc.py")
+        proc = await asyncio.create_subprocess_exec(
+            PYTHON, fomc_script,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=30)
+        except asyncio.TimeoutError:
+            proc.kill(); await proc.communicate()
+            await interaction.followup.send("⏱️ FOMC data timed out"); return
+        try:
+            import json as _json
+            data = _json.loads(stdout.decode())
+        except Exception:
+            await interaction.followup.send(f"❌ FOMC parse error\n```{stderr.decode()[-600:]}```"); return
+
+        cur_rate  = data.get("current_rate", "?")
+        cur_range = data.get("current_range", "?")
+        meetings  = data.get("meetings", [])
+
+        emb = discord.Embed(
+            title="🏦 FOMC Meeting Calendar",
+            description=f"**Current Fed Funds Rate: {cur_rate:.2f}%** (target range {cur_range}%)\n*Implied rates from 30-day Fed Funds futures (ZQ)*",
+            color=0x00bfff
+        )
+        for m in meetings[:6]:
+            label      = m.get("label", "?")
+            days_away  = m.get("days_away", 0)
+            impl_rate  = m.get("implied_rate", cur_rate)
+            p_hold     = m.get("prob_hold", 100)
+            p_cut      = m.get("prob_cut25", 0)
+            p_hike     = m.get("prob_hike25", 0)
+            chg        = impl_rate - cur_rate
+            chg_str    = f"{chg:+.2f}%" if abs(chg) > 0.01 else "unch"
+            bar_hold  = "🟦" * max(1, round(p_hold  / 20))
+            bar_cut   = "🟥" * max(0, round(p_cut   / 20)) if p_cut  > 5 else ""
+            bar_hike  = "🟩" * max(0, round(p_hike  / 20)) if p_hike > 5 else ""
+            val = (
+                f"Implied: **{impl_rate:.2f}%** ({chg_str})  |  {days_away}d away\n"
+                f"Hold {p_hold:.0f}% {bar_hold}  Cut {p_cut:.0f}% {bar_cut}  Hike {p_hike:.0f}% {bar_hike}"
+            )
+            emb.add_field(name=f"📅 {label}", value=val, inline=False)
+        emb.set_footer(text="Source: FRED + Yahoo Finance (ZQ futures) | JHCV - simplified linear interpolation, not official CME probabilities")
+        await interaction.followup.send(embed=emb)
+
+    # ── /markets vix ──────────────────────────────────────────────────────────
+    @markets_group.command(name="vix", description="VIX term structure (9D/30D/3M/6M/1Y) + VVIX vol-of-vol gauge")
+    async def markets_vix(interaction: discord.Interaction):
+        await interaction.response.defer()
+        png_out = os.path.join(op, "markets/vixTerm.png")
+        proc = await asyncio.create_subprocess_exec(
+            "Rscript", os.path.join(rp, "vixTerm.R"), png_out,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+        except asyncio.TimeoutError:
+            proc.kill(); await proc.communicate()
+            await interaction.followup.send("⏱️ VIX chart timed out"); return
+        if not os.path.exists(png_out):
+            await interaction.followup.send(f"❌ VIX chart failed\n```{stderr.decode()[-800:]}```"); return
+        await interaction.followup.send(
+            "😨 **VIX Term Structure** - fear curve (9D to 1Y) + VVIX vol-of-vol",
+            files=[discord.File(png_out, filename="vixTerm.png")]
+        )
+
+    # ── /markets commodities ──────────────────────────────────────────────────
+    COMM_CAT_CHOICES = [
+        app_commands.Choice(name="All (12-panel)",  value="all"),
+        app_commands.Choice(name="Metals",          value="Metals"),
+        app_commands.Choice(name="Energy",          value="Energy"),
+        app_commands.Choice(name="Softs / Grains",  value="Softs"),
+    ]
+
+    @markets_group.command(name="commodities", description="Commodities dashboard - all 12 panels or filter by Metals / Energy / Softs")
+    @app_commands.describe(
+        category="category filter (default: all 12)",
+        timeframe="lookback window (default: 3 months)"
+    )
+    @app_commands.choices(category=COMM_CAT_CHOICES, timeframe=DASH_TF_CHOICES)
+    async def markets_commodities(
+        interaction: discord.Interaction,
+        category: app_commands.Choice[str] = None,
+        timeframe: app_commands.Choice[str] = None
+    ):
+        await interaction.response.defer()
+        days    = timeframe.value if timeframe else "90"
+        cat_val = category.value if category else "all"
+        cat_lbl = category.name  if category else "All"
+        tf_lbl  = timeframe.name if timeframe else "3 Months"
+        png_out = os.path.join(op, f"markets/commoditiesChart_{cat_val}_{days}d.png")
+        proc = await asyncio.create_subprocess_exec(
+            "Rscript", os.path.join(rp, "commoditiesChart.R"), png_out, days, cat_val,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, stderr = await asyncio.wait_for(proc.communicate(), timeout=90)
+        except asyncio.TimeoutError:
+            proc.kill(); await proc.communicate()
+            await interaction.followup.send("⏱️ commodities chart timed out"); return
+        if not os.path.exists(png_out):
+            await interaction.followup.send(f"❌ commodities chart failed\n```{stderr.decode()[-800:]}```"); return
+        await interaction.followup.send(
+            f"🥇 **Commodities - {cat_lbl}** | {tf_lbl}",
+            files=[discord.File(png_out, filename="commoditiesChart.png")]
+        )
+
+    # ── /markets fx ───────────────────────────────────────────────────────────
+    @markets_group.command(name="fx", description="FX dashboard - EUR/USD, GBP/USD, USD/JPY and 5 more major pairs")
+    @app_commands.describe(timeframe="lookback window (default: 3 months)")
+    @app_commands.choices(timeframe=DASH_TF_CHOICES)
+    async def markets_fx(interaction: discord.Interaction, timeframe: app_commands.Choice[str] = None):
+        await interaction.response.defer()
+        days    = timeframe.value if timeframe else "90"
+        png_out = os.path.join(op, f"markets/fxDashboard_{days}d.png")
+        proc = await asyncio.create_subprocess_exec(
+            "Rscript", os.path.join(rp, "fxDashboard.R"), png_out, days,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+        except asyncio.TimeoutError:
+            proc.kill(); await proc.communicate()
+            await interaction.followup.send("⏱️ FX dashboard timed out"); return
+        if not os.path.exists(png_out):
+            await interaction.followup.send(f"❌ FX dashboard failed\n```{stderr.decode()[-800:]}```"); return
+        lbl = timeframe.name if timeframe else "3 Months"
+        await interaction.followup.send(
+            f"💱 **FX Dashboard** - {lbl}",
+            files=[discord.File(png_out, filename="fxDashboard.png")]
+        )
+
+    # ── /markets bonds ────────────────────────────────────────────────────────
+    @markets_group.command(name="bonds", description="Bond market dashboard - TLT/IEF/SHY (duration) + HYG/LQD/EMB (credit), normalized")
+    @app_commands.describe(timeframe="lookback window (default: 3 months)")
+    @app_commands.choices(timeframe=DASH_TF_CHOICES)
+    async def markets_bonds(interaction: discord.Interaction, timeframe: app_commands.Choice[str] = None):
+        await interaction.response.defer()
+        days    = timeframe.value if timeframe else "90"
+        png_out = os.path.join(op, f"markets/bondsChart_{days}d.png")
+        proc = await asyncio.create_subprocess_exec(
+            "Rscript", os.path.join(rp, "bondsChart.R"), png_out, days,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+        except asyncio.TimeoutError:
+            proc.kill(); await proc.communicate()
+            await interaction.followup.send("⏱️ bonds chart timed out"); return
+        if not os.path.exists(png_out):
+            await interaction.followup.send(f"❌ bonds chart failed\n```{stderr.decode()[-800:]}```"); return
+        lbl = timeframe.name if timeframe else "3 Months"
+        await interaction.followup.send(
+            f"📈 **Bond Market Dashboard** - {lbl}, blue=duration / orange=credit",
+            files=[discord.File(png_out, filename="bondsChart.png")]
+        )
+
+
+    @markets_group.command(name="macro", description="Macro dashboard - Fed rate, 10Y Treasury, real yield, CPI, M2, DXY")
+    @app_commands.describe(timeframe="lookback window (default: 5 years)")
+    @app_commands.choices(timeframe=DASH_TF_CHOICES)
+    async def markets_macro(interaction: discord.Interaction, timeframe: app_commands.Choice[str] = None):
+        await interaction.response.defer()
+        days    = timeframe.value if timeframe else "1825"
+        png_out = os.path.join(op, f"markets/macroDashboard_{days}d.png")
+        proc = await asyncio.create_subprocess_exec(
+            "Rscript", os.path.join(rp, "macroDashboard.R"), png_out, days,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, stderr = await asyncio.wait_for(proc.communicate(), timeout=90)
+        except asyncio.TimeoutError:
+            proc.kill(); await proc.communicate()
+            await interaction.followup.send("⏱️ macro dashboard timed out"); return
+        if not os.path.exists(png_out):
+            await interaction.followup.send(f"❌ macro dashboard failed\n```{stderr.decode()[-800:]}```"); return
+        lbl = timeframe.name if timeframe else "5 Years"
+        await interaction.followup.send(
+            f"📊 **Macro Dashboard** - {lbl}",
+            files=[discord.File(png_out, filename="macroDashboard.png")]
+        )
+
+    # ── /markets sector ───────────────────────────────────────────────────────
+    @markets_group.command(name="sector", description="S&P 500 heatmap - full 503-stock Finviz-style or sector ETF summary")
+    @app_commands.describe(view="full S&P 500 heatmap (default) or sector ETF summary")
+    @app_commands.choices(view=[
+        app_commands.Choice(name="Full S&P 500 (all stocks)",  value="sp500"),
+        app_commands.Choice(name="Sector ETF summary (XLK/XLF/...)", value="etf"),
+    ])
+    async def markets_sector(interaction: discord.Interaction, view: app_commands.Choice[str] = None):
+        await interaction.response.defer()
+        use_sp500 = (view is None or view.value == "sp500")
+        if use_sp500:
+            png_out = os.path.join(op, "markets/sp500Heatmap.png")
+            script  = os.path.join(rp, "sp500Heatmap.R")
+            label   = "📊 **S&P 500 Heatmap** - all 503 stocks by sector"
+            fname   = "sp500Heatmap.png"
+            tmt     = 120
+        else:
+            png_out = os.path.join(op, "markets/sectorHeatmap.png")
+            script  = os.path.join(rp, "sectorHeatmap.R")
+            label   = "🗂️ **S&P 500 Sector ETF Performance**"
+            fname   = "sectorHeatmap.png"
+            tmt     = 60
+        proc = await asyncio.create_subprocess_exec(
+            "Rscript", script, png_out,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, stderr = await asyncio.wait_for(proc.communicate(), timeout=tmt)
+        except asyncio.TimeoutError:
+            proc.kill(); await proc.communicate()
+            await interaction.followup.send("⏱️ sector heatmap timed out"); return
+        if not os.path.exists(png_out):
+            await interaction.followup.send(f"❌ sector heatmap failed\n```{stderr.decode()[-800:]}```"); return
+        await interaction.followup.send(label, files=[discord.File(png_out, filename=fname)])
+
+    # ── /markets series ───────────────────────────────────────────────────────
+    @markets_group.command(name="series", description="Individual macro series chart - DXY, M2, real yield, CPI, Fed Funds, 10Y")
+    @app_commands.describe(indicator="which macro indicator to chart")
+    @app_commands.choices(indicator=[
+        app_commands.Choice(name="DXY - Broad Dollar Index",  value="DXY"),
+        app_commands.Choice(name="M2 Money Supply",           value="M2"),
+        app_commands.Choice(name="10Y Real Yield (TIPS)",     value="REALYIELD"),
+        app_commands.Choice(name="CPI - Year over Year %",    value="CPI"),
+        app_commands.Choice(name="Fed Funds Rate",            value="FEDFUNDS"),
+        app_commands.Choice(name="10Y Treasury Yield",        value="10Y"),
+    ])
+    async def markets_series(interaction: discord.Interaction, indicator: app_commands.Choice[str]):
+        await interaction.response.defer()
+        series = indicator.value
+        safe_s = series.replace("/", "_")
+        png_out = os.path.join(op, f"markets/macro_{safe_s}.png")
+        proc = await asyncio.create_subprocess_exec(
+            "Rscript", os.path.join(rp, "macroSeries.R"), series, png_out,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, stderr = await asyncio.wait_for(proc.communicate(), timeout=90)
+        except asyncio.TimeoutError:
+            proc.kill(); await proc.communicate()
+            await interaction.followup.send(f"⏱️ {indicator.name} chart timed out"); return
+        if not os.path.exists(png_out):
+            await interaction.followup.send(f"❌ {indicator.name} failed\n```{stderr.decode()[-800:]}```"); return
+        await interaction.followup.send(
+            f"📈 **{indicator.name}**",
+            files=[discord.File(png_out, filename=f"macro_{safe_s}.png")]
+        )
+
+    @markets_group.command(name="crypto", description="Crypto price chart - BTC, ETH, SOL, DOGE - or BTC on-chain metrics")
+    @app_commands.describe(coin="which coin or metric", timeframe="time window (default: 6mo)")
     @app_commands.choices(
         coin=[
-            app_commands.Choice(name="Bitcoin  (BTC)",      value="BTC"),
-            app_commands.Choice(name="Ethereum (ETH)",      value="ETH"),
-            app_commands.Choice(name="Solana   (SOL)",      value="SOL"),
-            app_commands.Choice(name="Dogecoin (DOGE)",     value="DOGE"),
-            app_commands.Choice(name="BTC Hashrate (EH/s)", value="HASHRATE"),
+            app_commands.Choice(name="Bitcoin  (BTC)",         value="BTC"),
+            app_commands.Choice(name="Ethereum (ETH)",         value="ETH"),
+            app_commands.Choice(name="Solana   (SOL)",         value="SOL"),
+            app_commands.Choice(name="Dogecoin (DOGE)",        value="DOGE"),
+            app_commands.Choice(name="BTC Hashrate (EH/s)",    value="HASHRATE"),
+            app_commands.Choice(name="BTC Rainbow Chart",      value="RAINBOW"),
+            app_commands.Choice(name="BTC NUPL",               value="NUPL"),
+            app_commands.Choice(name="BTC MVRV Ratio",         value="MVRV"),
+            app_commands.Choice(name="BTC Dominance",          value="DOMINANCE"),
         ],
         timeframe=CRYPTO_TIMEFRAME_CHOICES,
     )
@@ -2750,22 +3096,103 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         tf     = timeframe.value if timeframe else "6mo"
         await interaction.response.defer()
 
-        # ── hashrate: special case - runs btcHashrate.R directly ─────────────
+        # ── hashrate ──────────────────────────────────────────────────────────
         if symbol == "HASHRATE":
             png_out = os.path.join(op, "markets/btcHashrate.png")
-            hr_result = subprocess.run(
-                ["Rscript", os.path.join(rp, "btcHashrate.R"), png_out],
-                capture_output=True, text=True
+            proc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "btcHashrate.R"), png_out,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
             )
-            if hr_result.returncode != 0:
-                await interaction.followup.send(f"Error generating hashrate chart:\n```{hr_result.stderr[-1200:]}```")
-                return
+            try:
+                _, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc.kill(); await proc.communicate()
+                await interaction.followup.send("⏱️ hashrate chart timed out"); return
             if not os.path.exists(png_out):
-                await interaction.followup.send("hashrate chart not found after render :(")
-                return
+                await interaction.followup.send(f"❌ hashrate chart failed\n```{stderr.decode()[-800:]}```"); return
             await interaction.followup.send(
-                "here's the BTC network hashrate:",
+                "⛏️ **BTC Network Hashrate**",
                 files=[discord.File(png_out, filename="btcHashrate.png")]
+            )
+            return
+
+        # ── rainbow chart ─────────────────────────────────────────────────────
+        if symbol == "RAINBOW":
+            png_out = os.path.join(op, "markets/btcRainbow.png")
+            proc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "btcRainbow.R"), png_out,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                _, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc.kill(); await proc.communicate()
+                await interaction.followup.send("⏱️ rainbow chart timed out"); return
+            if not os.path.exists(png_out):
+                await interaction.followup.send(f"❌ rainbow chart failed\n```{stderr.decode()[-800:]}```"); return
+            await interaction.followup.send(
+                "🌈 **BTC Rainbow Chart** - power law regression + halving cycles",
+                files=[discord.File(png_out, filename="btcRainbow.png")]
+            )
+            return
+
+        # ── NUPL ──────────────────────────────────────────────────────────────
+        if symbol == "NUPL":
+            png_out = os.path.join(op, "markets/btcNUPL.png")
+            proc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "btcNUPL.R"), png_out,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                _, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc.kill(); await proc.communicate()
+                await interaction.followup.send("⏱️ NUPL chart timed out"); return
+            if not os.path.exists(png_out):
+                await interaction.followup.send(f"❌ NUPL chart failed\n```{stderr.decode()[-800:]}```"); return
+            await interaction.followup.send(
+                "📊 **BTC NUPL** - Net Unrealized Profit/Loss by sentiment zone",
+                files=[discord.File(png_out, filename="btcNUPL.png")]
+            )
+            return
+
+        # ── MVRV ──────────────────────────────────────────────────────────────
+        if symbol == "MVRV":
+            png_out = os.path.join(op, "markets/btcMVRV.png")
+            proc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "btcMVRV.R"), png_out,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                _, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc.kill(); await proc.communicate()
+                await interaction.followup.send("⏱️ MVRV chart timed out"); return
+            if not os.path.exists(png_out):
+                await interaction.followup.send(f"❌ MVRV chart failed\n```{stderr.decode()[-800:]}```"); return
+            await interaction.followup.send(
+                "📊 **BTC MVRV Ratio** - Market Value to Realized Value",
+                files=[discord.File(png_out, filename="btcMVRV.png")]
+            )
+            return
+
+        # ── BTC Dominance ─────────────────────────────────────────────────────
+        if symbol == "DOMINANCE":
+            png_out = os.path.join(op, "markets/btcDominance.png")
+            proc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "btcDominance.R"), png_out,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                _, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc.kill(); await proc.communicate()
+                await interaction.followup.send("⏱️ BTC dominance chart timed out"); return
+            if not os.path.exists(png_out):
+                await interaction.followup.send(f"❌ BTC dominance chart failed\n```{stderr.decode()[-800:]}```"); return
+            await interaction.followup.send(
+                "🟠 **BTC Dominance** - % of total crypto market cap",
+                files=[discord.File(png_out, filename="btcDominance.png")]
             )
             return
 
