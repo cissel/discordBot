@@ -37,7 +37,7 @@ symbol    <- toupper(args[1])
 timeframe <- if (length(args) >= 2) args[2] else "6mo"
 
 tf_label <- switch(timeframe,
-                   intraday = "Today (Intraday)",
+                   intraday = "Last 24 Hours (1-min)",
                    `1w`     = "1 Week",
                    `1mo`    = "1 Month",
                    `3mo`    = "3 Months",
@@ -58,8 +58,10 @@ df <- read_csv(bars_csv, show_col_types = FALSE) %>%
   arrange(time)
 
 df$pct <- 0
-for (i in 2:nrow(df)) {
-  df$pct[i] <- (df$close[i] - df$close[i-1]) / df$close[i-1]
+if (nrow(df) >= 2) {
+  for (i in 2:nrow(df)) {
+    df$pct[i] <- (df$close[i] - df$close[i-1]) / df$close[i-1]
+  }
 }
 
 df <- df %>% mutate(vol_color = if_else(close >= open, "up", "down"))
@@ -77,31 +79,37 @@ p_price <- ggplot(df, aes(x = time, y = close)) +
   myTheme +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 
-# ── volume plot ───────────────────────────────────────────────────────────────
-# crypto volume is in coin units - use raw with smart labels
-vol_max <- max(df$volume, na.rm = TRUE)
-if (vol_max >= 1e6) {
-  vol_scale <- 1e6; vol_unit <- "M"
-} else if (vol_max >= 1e3) {
-  vol_scale <- 1e3; vol_unit <- "K"
+# ── volume plot (skipped for intraday - no volume data from Alpaca crypto) ───
+if (timeframe != "intraday") {
+  vol_max <- max(df$volume, na.rm = TRUE)
+  if (vol_max >= 1e6) {
+    vol_scale <- 1e6; vol_unit <- "M"
+  } else if (vol_max >= 1e3) {
+    vol_scale <- 1e3; vol_unit <- "K"
+  } else {
+    vol_scale <- 1;   vol_unit <- ""
+  }
+
+  p_vol <- ggplot(df, aes(x = time, y = volume / vol_scale, fill = vol_color)) +
+    geom_bar(stat = "identity", width = 0.8) +
+    scale_fill_manual(values = c("up" = "#26a69a", "down" = "#ef5350")) +
+    scale_y_continuous(labels = function(x) paste0(x, vol_unit)) +
+    labs(x = "Time", y = "Volume",
+         caption = "Source: Alpaca Markets | JHCV") +
+    myTheme +
+    theme(plot.title = element_blank(), plot.subtitle = element_blank())
+
+  combined <- p_price / p_vol + plot_layout(heights = c(7, 3)) &
+    theme(plot.background = element_rect(fill = "#02233F", color = NA))
 } else {
-  vol_scale <- 1;   vol_unit <- ""
+  p_price <- p_price +
+    labs(x = "Time", caption = "Source: Alpaca Markets | JHCV") +
+    theme(axis.text.x = element_text(color = "white"), axis.ticks.x = element_line(color = "#274066"))
+  combined <- p_price &
+    theme(plot.background = element_rect(fill = "#02233F", color = NA))
 }
 
-p_vol <- ggplot(df, aes(x = time, y = volume / vol_scale, fill = vol_color)) +
-  geom_bar(stat = "identity", width = if (timeframe == "intraday") 0.002 else 0.8) +
-  scale_fill_manual(values = c("up" = "#26a69a", "down" = "#ef5350")) +
-  scale_y_continuous(labels = function(x) paste0(x, vol_unit)) +
-  labs(x = "Time", y = "Volume",
-       caption = "Source: Alpaca Markets | JHCV") +
-  myTheme +
-  theme(plot.title = element_blank(), plot.subtitle = element_blank())
-
-# ── combine 70/30 ─────────────────────────────────────────────────────────────
-combined <- p_price / p_vol + plot_layout(heights = c(7, 3)) &
-  theme(plot.background = element_rect(fill = "#02233F", color = NA))
-
 ggsave(path.expand("~/discordBot/outputs/markets/cryptochart.png"),
-       combined, width = 8, height = 5.5, dpi = 300)
+       combined, width = 8, height = if (timeframe == "intraday") 4.5 else 5.5, dpi = 300)
 
 #####

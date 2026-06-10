@@ -12,7 +12,7 @@ import os
 import sys
 import requests
 import pandas as pd
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime, timezone
 from dotenv import load_dotenv
 
 load_dotenv(os.path.expanduser("~/discordBot/.env"))
@@ -98,29 +98,19 @@ headers = {
     "APCA-API-SECRET-KEY": API_SECRET,
 }
 
+# ── intraday: rolling 24-hour window using RFC3339 datetimes ─────────────────
+now_utc   = datetime.now(timezone.utc)
+start_24h = now_utc - timedelta(hours=24)
+
 TIMEFRAME_MAP = {
-    "intraday": (today,                         today,  "1Min"),
+    "intraday": (start_24h.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                 now_utc.strftime("%Y-%m-%dT%H:%M:%SZ"),  "1Min"),
     "1w":       (today - timedelta(weeks=1),    today,  "1Hour"),
     "1mo":      (today - timedelta(days=30),    today,  "1Day"),
     "3mo":      (today - timedelta(days=90),    today,  "1Day"),
     "6mo":      (today - timedelta(days=180),   today,  "1Day"),
     "1y":       (today - timedelta(days=365),   today,  "1Day"),
 }
-
-# ── for intraday, crypto trades 24/7 so just use today ───────────────────────
-# but if no data yet (very early UTC), fall back to yesterday
-if timeframe == "intraday":
-    test_resp = requests.get(
-        "https://data.alpaca.markets/v1beta3/crypto/us/bars",
-        headers=headers,
-        params={"symbols": symbol, "timeframe": "1Min",
-                "start": today.isoformat(), "limit": 1}
-    )
-    if test_resp.status_code == 200 and test_resp.json().get("bars", {}).get(symbol):
-        TIMEFRAME_MAP["intraday"] = (today, today, "1Min")
-    else:
-        yesterday = today - timedelta(days=1)
-        TIMEFRAME_MAP["intraday"] = (yesterday, yesterday, "1Min")
 
 if timeframe not in TIMEFRAME_MAP:
     print(f"ERROR: Unknown timeframe '{timeframe}'. Choose from: {', '.join(TIMEFRAME_MAP)}", file=sys.stderr)
@@ -133,8 +123,8 @@ url = "https://data.alpaca.markets/v1beta3/crypto/us/bars"
 params = {
     "symbols":   symbol,
     "timeframe": bar_tf,
-    "start":     start_date.isoformat(),
-    "end":       end_date.isoformat(),
+    "start":     start_date if isinstance(start_date, str) else start_date.isoformat(),
+    "end":       end_date   if isinstance(end_date,   str) else end_date.isoformat(),
     "limit":     10000,
 }
 

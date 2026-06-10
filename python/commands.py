@@ -1958,9 +1958,17 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         args = [PYTHON, os.path.join(pp, "marketEarnings.py")]
         if ticker.strip():
             args.append(ticker.upper().strip())
-        result = await asyncio.to_thread(
-            lambda: subprocess.run(args, capture_output=True, text=True, timeout=120)
+        proc = await asyncio.create_subprocess_exec(
+            *args,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.DEVNULL,
         )
+        try:
+            await asyncio.wait_for(proc.communicate(), timeout=120)
+        except asyncio.TimeoutError:
+            proc.kill()
+            await _send(interaction, "earnings fetch timed out - try again :(", ephemeral=True)
+            return
         if ticker.strip():
             csv_path = os.path.join(op, "markets/earnings_ticker.csv")
             if not os.path.exists(csv_path):
@@ -3085,7 +3093,10 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             app_commands.Choice(name="BTC Rainbow Chart",      value="RAINBOW"),
             app_commands.Choice(name="BTC NUPL",               value="NUPL"),
             app_commands.Choice(name="BTC MVRV Ratio",         value="MVRV"),
+            app_commands.Choice(name="BTC S2F Power Law",       value="S2F"),
             app_commands.Choice(name="BTC Dominance",          value="DOMINANCE"),
+            app_commands.Choice(name="BTC Realized Price",     value="REALIZED"),
+            app_commands.Choice(name="BTC Miner Capitulation",  value="MINERCAP"),
         ],
         timeframe=CRYPTO_TIMEFRAME_CHOICES,
     )
@@ -3176,6 +3187,26 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             )
             return
 
+        # ── BTC S2F Power Law ─────────────────────────────────────────────────
+        if symbol == "S2F":
+            png_out = os.path.join(op, "markets/btcS2F.png")
+            proc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "btcS2F.R"), png_out,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                _, stderr = await asyncio.wait_for(proc.communicate(), timeout=90)
+            except asyncio.TimeoutError:
+                proc.kill(); await proc.communicate()
+                await interaction.followup.send("⏱️ S2F chart timed out"); return
+            if not os.path.exists(png_out):
+                await interaction.followup.send(f"❌ S2F chart failed\n```{stderr.decode()[-800:]}```"); return
+            await interaction.followup.send(
+                "📐 **BTC Stock-to-Flow (S2F) Power Law** - ln(P) = a + b·ln(S2F)",
+                files=[discord.File(png_out, filename="btcS2F.png")]
+            )
+            return
+
         # ── BTC Dominance ─────────────────────────────────────────────────────
         if symbol == "DOMINANCE":
             png_out = os.path.join(op, "markets/btcDominance.png")
@@ -3196,19 +3227,68 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             )
             return
 
-        fetch_result = subprocess.run(
-            [PYTHON, os.path.join(pp, "fetchCryptoBars.py"), symbol, tf],
-            capture_output=True, text=True
-        )
-        if fetch_result.returncode != 0:
-            await interaction.followup.send(f"Error fetching data for **{symbol}**.\n```{fetch_result.stderr[-1500:]}```")
+        if symbol == "MINERCAP":
+            png_out = os.path.join(op, "markets/btcMinerCap.png")
+            proc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "btcMinerCapitulation.R"), png_out,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                _, stderr = await asyncio.wait_for(proc.communicate(), timeout=90)
+            except asyncio.TimeoutError:
+                proc.kill(); await proc.communicate()
+                await interaction.followup.send("⏱️ miner capitulation chart timed out"); return
+            if not os.path.exists(png_out):
+                await interaction.followup.send(f"❌ miner capitulation chart failed\n```{stderr.decode()[-800:]}```"); return
+            await interaction.followup.send(
+                "⛏️ **BTC Miner Capitulation** - Price / Price at Difficulty Bottom, colored by blocks since bottom",
+                files=[discord.File(png_out, filename="btcMinerCap.png")]
+            )
             return
-        chart_result = subprocess.run(
-            ["Rscript", os.path.join(rp, "cryptoChart.R"), symbol, tf],
-            capture_output=True, text=True
+
+        if symbol == "REALIZED":
+            png_out = os.path.join(op, "markets/btcRealizedPrice.png")
+            proc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "btcRealizedPrice.R"), png_out,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                _, stderr = await asyncio.wait_for(proc.communicate(), timeout=90)
+            except asyncio.TimeoutError:
+                proc.kill(); await proc.communicate()
+                await interaction.followup.send("⏱️ realized price chart timed out"); return
+            if not os.path.exists(png_out):
+                await interaction.followup.send(f"❌ realized price chart failed\n```{stderr.decode()[-800:]}```"); return
+            await interaction.followup.send(
+                "📊 **BTC Realized Price** - Realized Price / True Market Mean / Active Investor Mean / STH Cost Basis",
+                files=[discord.File(png_out, filename="btcRealizedPrice.png")]
+            )
+            return
+
+        fetch_proc = await asyncio.create_subprocess_exec(
+            PYTHON, os.path.join(pp, "fetchCryptoBars.py"), symbol, tf,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
         )
-        if chart_result.returncode != 0:
-            await interaction.followup.send(f"Error generating chart for **{symbol}**.\n```{chart_result.stderr[-1500:]}```")
+        try:
+            _, fetch_err = await asyncio.wait_for(fetch_proc.communicate(), timeout=60)
+        except asyncio.TimeoutError:
+            fetch_proc.kill(); await fetch_proc.communicate()
+            await interaction.followup.send(f"Data fetch timed out for **{symbol}**."); return
+        if fetch_proc.returncode != 0:
+            await interaction.followup.send(f"Error fetching data for **{symbol}**.\n```{fetch_err.decode()[-1500:]}```")
+            return
+
+        chart_proc = await asyncio.create_subprocess_exec(
+            "Rscript", os.path.join(rp, "cryptoChart.R"), symbol, tf,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _, chart_err = await asyncio.wait_for(chart_proc.communicate(), timeout=60)
+        except asyncio.TimeoutError:
+            chart_proc.kill(); await chart_proc.communicate()
+            await interaction.followup.send(f"Chart generation timed out for **{symbol}**."); return
+        if chart_proc.returncode != 0:
+            await interaction.followup.send(f"Error generating chart for **{symbol}**.\n```{chart_err.decode()[-1500:]}```")
             return
         out = os.path.join(op, "markets/cryptochart.png")
         if os.path.exists(out):

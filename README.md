@@ -4,7 +4,7 @@ There are many discord bots but this one is mine. I love it dearly.
 
 Built so I could send a message from my phone and have it run scripts, pull data, and post results back to the server - even if I'm not at the helm. Runs on a Raspberry Pi. Speaks Python and R.
 
-**191 commits · 15,500+ lines · March 2025 - present**
+**191+ commits · 15,500+ lines · March 2025 - present**
 
 ---
 
@@ -122,7 +122,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | command | description |
 |---|---|
 | `chart` | price + volume chart for any stock or ETF ticker (3M/6M/1Y/5Y/10Y) |
-| `crypto` | price + volume chart for BTC, ETH, SOL, or DOGE - or BTC on-chain: hashrate, rainbow, NUPL, MVRV, dominance |
+| `crypto` | price chart for BTC, ETH, SOL, DOGE - or BTC on-chain metrics (see below) |
 | `forecast` | GJR-GARCH / EGARCH / SARIMA animated forecast GIF with Monte Carlo paths - stocks and crypto |
 | `regress` | multivariate OLS regression with NW-HAC robust SEs, ADL lags, VIF - 25-variable dropdowns for target and regressors |
 | `macro` | 6-panel macro dashboard - Fed funds rate, 10Y yield, TIPS, CPI, M2, DXY (FRED data, timeframe dropdown) |
@@ -146,11 +146,24 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `short` | most shorted stocks |
 | `trades` | recent trade chart |
 
+#### `/markets crypto` - BTC on-chain metrics
+| coin/metric | description |
+|---|---|
+| `BTC / ETH / SOL / DOGE` | price chart - last 24h (1-min bars), 1W, 1M, 3M, 6M, 1Y, 2Y, 5Y, 10Y, max |
+| `BTC Hashrate` | network hashrate (EH/s) over time |
+| `BTC Rainbow Chart` | power law regression + halving cycle bands |
+| `BTC NUPL` | Net Unrealized Profit/Loss by sentiment zone |
+| `BTC MVRV Ratio` | Market Value to Realized Value |
+| `BTC S2F Power Law` | Stock-to-Flow log-linear model fit on historical data with forecast through next 2 halvings (~2028, ~2032) |
+| `BTC Dominance` | BTC % of total crypto market cap |
+| `BTC Realized Price` | on-chain cost basis layers - realized price, true market mean, active investor mean, STH realized price |
+| `BTC Miner Capitulation` | price relative to last difficulty bottom, colored by blocks elapsed since capitulation event |
+
 ![stock chart](outputs/markets/stockchart.png)
-![yield curve](outputs/markets/yield_curve.png)
-![yield spread](outputs/markets/yield_spread.png)
 ![crypto chart](outputs/markets/cryptochart.png)
+![btc s2f](outputs/markets/btcS2F.png)
 ![forecast](outputs/markets/forecast_SPY_1d_1mo_mcpaths.gif)
+![yield curve](outputs/markets/yield_curve.png)
 
 ### `/space`
 | command | description |
