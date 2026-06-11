@@ -9578,3 +9578,724 @@ Online as several bots#0340
 [setup] 36 commands registered
 Synced 36 slash command(s) to guild 1286546740211613706
 Online as several bots#0340
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ purrr     1.2.2
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Position: SP 
+Rows loaded: 2725 
+Players: 250 
+Output path: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/fantasyRisk.png 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+Found 15 probable starters for tomorrow (2026-06-11)
+  Bryan Woo (Seattle Mariners) - Seattle Mariners @ Baltimore Orioles
+  Christian Scott (New York Mets) - St. Louis Cardinals @ New York Mets
+  Edward Cabrera (Chicago Cubs) - Chicago Cubs @ Colorado Rockies
+  Hunter Dobbins (St. Louis Cardinals) - St. Louis Cardinals @ New York Mets
+  Justin Wrobleski (Los Angeles Dodgers) - Los Angeles Dodgers @ Pittsburgh Pirates
+  Keider Montero (Detroit Tigers) - Minnesota Twins @ Detroit Tigers
+  Kumar Rocker (Texas Rangers) - Texas Rangers @ Kansas City Royals
+  Kyle Bradish (Baltimore Orioles) - Seattle Mariners @ Baltimore Orioles
+  Martín Pérez (Atlanta Braves) - Atlanta Braves @ Chicago White Sox
+  Merrill Kelly (Arizona Diamondbacks) - Arizona Diamondbacks @ Miami Marlins
+  Michael Wacha (Kansas City Royals) - Texas Rangers @ Kansas City Royals
+  Mitch Keller (Pittsburgh Pirates) - Los Angeles Dodgers @ Pittsburgh Pirates
+  Ryan Feltner (Colorado Rockies) - Chicago Cubs @ Colorado Rockies
+  Tyler Phillips (Miami Marlins) - Arizona Diamondbacks @ Miami Marlins
+  Zebby Matthews (Minnesota Twins) - Minnesota Twins @ Detroit Tigers
+Written to /home/jhcv/discordBot/outputs/sports/mlb/probableStarters.csv
+[INFO] 15 probable starters - fetching Statcast in parallel...
+
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+    [--] 2022: no data
+    [OK] 2026: 53 PA events
+    [--] 2025: no data
+    [--] 2022: no data
+    [--] 2022: no data
+    [--] 2024: no data
+    [--] 2023: no data
+    [OK] 2026: 156 PA events
+    [--] 2023: no data
+    [OK] 2026: 247 PA events
+    [OK] 2026: 306 PA events
+    [OK] 2025: 256 PA events
+  [INFO] 309 total PA events for Hunter Dobbins
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Hunter Dobbins
+    [OK] 2024: 197 PA events
+  [INFO] 353 total PA events for Christian Scott
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Christian Scott
+    [--] 2023: no data
+    [--] 2022: no data
+    [OK] 2022: 291 PA events
+    [--] 2023: no data
+    [OK] 2023: 371 PA events
+    [--] 2022: no data
+    [OK] 2025: 581 PA events
+    [OK] 2025: 731 PA events
+    [OK] 2026: 264 PA events
+    [OK] 2026: 274 PA events
+    [OK] 2023: 434 PA events
+    [OK] 2025: 280 PA events
+    [OK] 2024: 154 PA events
+  [INFO] 708 total PA events for Justin Wrobleski
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Justin Wrobleski
+    [OK] 2024: 472 PA events
+  [INFO] 1880 total PA events for Bryan Woo
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Bryan Woo
+    [--] 2023: no data
+    [--] 2022: no data
+    [OK] 2024: 55 PA events
+    [OK] 2025: 389 PA events
+    [OK] 2024: 417 PA events
+  [INFO] 1970 total PA events for Edward Cabrera
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Edward Cabrera
+    [OK] 2026: 262 PA events
+    [OK] 2024: 412 PA events
+  [INFO] 1065 total PA events for Keider Montero
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Keider Montero
+    [OK] 2026: 302 PA events
+    [OK] 2025: 287 PA events
+  [INFO] 604 total PA events for Kumar Rocker
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Kumar Rocker
+    [OK] 2024: 163 PA events
+    [OK] 2025: 126 PA events
+    [OK] 2025: 228 PA events
+    [OK] 2026: 327 PA events
+    [OK] 2022: 509 PA events
+    [OK] 2026: 259 PA events
+    [OK] 2024: 300 PA events
+    [OK] 2026: 225 PA events
+    [OK] 2023: 671 PA events
+  [INFO] 1771 total PA events for Kyle Bradish
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Kyle Bradish
+    [OK] 2025: 716 PA events
+    [OK] 2024: 685 PA events
+    [OK] 2025: 748 PA events
+    [OK] 2022: 515 PA events
+    [OK] 2022: 804 PA events
+    [OK] 2023: 553 PA events
+  [INFO] 2796 total PA events for Michael Wacha
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Michael Wacha
+    [OK] 2023: 721 PA events
+  [INFO] 2832 total PA events for Merrill Kelly
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Merrill Kelly
+    [OK] 2022: 821 PA events
+    [OK] 2026: 305 PA events
+    [OK] 2023: 608 PA events
+    [--] 2022: no data
+    [OK] 2026: 130 PA events
+    [OK] 2024: 590 PA events
+  [INFO] 2472 total PA events for Martín Pérez
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Martín Pérez
+    [--] 2023: no data
+    [OK] 2026: 189 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2024: 160 PA events
+    [OK] 2026: 122 PA events
+    [OK] 2025: 749 PA events
+    [OK] 2025: 135 PA events
+    [OK] 2023: 201 PA events
+    [OK] 2022: 687 PA events
+    [OK] 2024: 773 PA events
+    [OK] 2025: 313 PA events
+  [INFO] 662 total PA events for Tyler Phillips
+[DONE] Statcast loaded for Tyler Phillips
+    [OK] 2025: 354 PA events
+    [OK] 2024: 177 PA events
+  [INFO] 653 total PA events for Zebby Matthews
+[DONE] Statcast loaded for Zebby Matthews
+    [OK] 2022: 428 PA events
+    [OK] 2023: 825 PA events
+  [INFO] 3339 total PA events for Mitch Keller
+[DONE] Statcast loaded for Mitch Keller
+    [OK] 2024: 692 PA events
+  [INFO] 1586 total PA events for Ryan Feltner
+[DONE] Statcast loaded for Ryan Feltner
+
+[INFO] Computing matchups...
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+  [INFO] No lineup posted - falling back to active roster
+
+[INFO] 35 matchups written to /home/jhcv/discordBot/outputs/sports/mlb/mismatch.csv
+
+[TOP 5 BATTER-FAVORED]
+  Shohei Ohtani vs Mitch Keller: OPS 2.181 (4H 2HR in 9PA)
+  Kerry Carpenter vs Zebby Matthews: OPS 2.067 (3H 1HR in 6PA)
+  Otto Lopez vs Merrill Kelly: OPS 1.857 (5H 0HR in 7PA)
+  Byron Buxton vs Keider Montero: OPS 1.833 (3H 1HR in 6PA)
+  Colt Keith vs Zebby Matthews: OPS 1.667 (2H 0HR in 6PA)
+
+[TOP 5 PITCHER-FAVORED]
+  Taylor Ward vs Bryan Woo: OPS 0 (0H 0HR in 13PA)
+  Michael Conforto vs Ryan Feltner: OPS 0.25 (0H 0HR in 8PA)
+  Mookie Betts vs Mitch Keller: OPS 0.25 (0H 0HR in 12PA)
+  Will Smith vs Mitch Keller: OPS 0.364 (2H 0HR in 11PA)
+  Santiago Espinal vs Mitch Keller: OPS 0.444 (2H 0HR in 9PA)
+Found 15 probable starters tomorrow
+DEBUG starters tomorrow: ['bryan woo', 'christian scott', 'edward cabrera', 'hunter dobbins', 'justin wrobleski', 'keider montero', 'kumar rocker', 'kyle bradish', 'martin perez', 'merrill kelly', 'michael wacha', 'mitch keller', 'ryan feltner', 'tyler phillips', 'zebby matthews']
+Free agents written to /home/jhcv/discordBot/outputs/sports/mlb/fantasy/freeagents.csv
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ purrr     1.2.2
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+FA filter applied: 50 rows, 5 players remaining
+Position: SP 
+Rows loaded: 50 
+Players: 5 
+Output path: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/fantasyRisk.png 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Rows: 6057 Columns: 5
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (4): user_name, user_display_name, channel, message
+dttm (1): datetime
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+Attaching package: ‘zoo’
+
+The following objects are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+Rows: 6057 Columns: 5
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (4): user_name, user_display_name, channel, message
+dttm (1): datetime
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+Warning messages:
+1: Removed 6 rows containing missing values or values outside the scale range
+(`geom_line()`). 
+2: Removed 29 rows containing missing values or values outside the scale range
+(`geom_line()`). 

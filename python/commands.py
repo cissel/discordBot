@@ -4586,17 +4586,23 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         player3="third player (optional)",
         player4="fourth player (optional)",
         day="today or tomorrow (default: today)",
+        mode="rank by streaming value or long-term roster value (default: stream)",
     )
     @app_commands.choices(day=[
         app_commands.Choice(name="Today",    value="today"),
         app_commands.Choice(name="Tomorrow", value="tomorrow"),
+    ])
+    @app_commands.choices(mode=[
+        app_commands.Choice(name="Stream",  value="stream"),
+        app_commands.Choice(name="Roster",  value="roster"),
     ])
     async def mlb_compare(interaction: discord.Interaction,
                           player1: str,
                           player2: str,
                           player3: str = "",
                           player4: str = "",
-                          day:     str = "today"):
+                          day:     str = "today",
+                          mode:    str = "stream"):
         await _defer(interaction)
 
         names = [p.strip() for p in [player1, player2, player3, player4] if p.strip()]
@@ -4727,17 +4733,22 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             return f"\n✂️ **drop candidate:** {name} ({slot}{inj_tag}{stat_snippet})"
 
 
-        players  = data.get("players", [])
+        players   = data.get("players", [])
         day_label = "Today" if day == "today" else "Tomorrow"
+
+        # re-sort by the requested mode (mlbCompare.py always sorts by stream_score)
+        if mode == "roster":
+            players = sorted(players, key=lambda x: -x.get("roster_score", 0))
 
         if not players:
             await _send(interaction, "❌ no results returned - check player name spelling", ephemeral=True)
             return
 
         # ── stream ranking embed ──────────────────────────────────────────────
+        mode_label = "Stream" if mode == "stream" else "Roster"
         emb = discord.Embed(
-            title=f"⚾ Player Comparison - {day_label}",
-            description=f"Ranked by stream score - {len(players)} players - {CURRENT_YEAR} season",
+            title=f"⚾ Player Comparison - {day_label} - {mode_label} View",
+            description=f"Ranked by {'stream' if mode == 'stream' else 'roster'} score - {len(players)} players - {CURRENT_YEAR} season",
             color=0x002D72,
         )
 
@@ -4798,13 +4809,20 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             roster_block = "\n".join(f"  · {r}" for r in r_reas[:3]) if r_reas else "  · no data"
             drop_line    = _drop_suggestion(p)
 
-            val = (
-                f"**{team}  ·  {pos}**\n"
-                f"{stat_line or '-'}\n"
-                f"**Stream `{ss}`** - {s_sig}\n{stream_block}\n"
-                f"**Roster `{rs}`** - {r_sig}\n{roster_block}"
-                f"{drop_line}"
-            )
+            if mode == "stream":
+                val = (
+                    f"**{team}  ·  {pos}**\n"
+                    f"{stat_line or '-'}\n"
+                    f"**Stream `{ss}`** - {s_sig}\n{stream_block}"
+                    f"{drop_line}"
+                )
+            else:
+                val = (
+                    f"**{team}  ·  {pos}**\n"
+                    f"{stat_line or '-'}\n"
+                    f"**Roster `{rs}`** - {r_sig}\n{roster_block}"
+                    f"{drop_line}"
+                )
 
             emb.add_field(
                 name=f"{medal} {name}",
@@ -4812,7 +4830,11 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 inline=False,
             )
 
-        emb.set_footer(text=f"Stream = start value for {day_label}  ·  Roster = long-term add value  ·  data: Baseball Savant")
+        if mode == "stream":
+            footer = f"Stream score - start value for {day_label}  -  data: Baseball Savant"
+        else:
+            footer = "Roster score - long-term add value  -  data: Baseball Savant"
+        emb.set_footer(text=footer)
         await _send(interaction, embed=emb)
 
     @mlb_group.command(name="pickup", description="top free agent pickups for World Sillies - sabermetric ranked")
