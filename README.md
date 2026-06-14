@@ -112,6 +112,13 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 ![pitch zone map](outputs/sports/mlb/pitchzone_example.png)
 ![fantasy ownership](outputs/sports/mlb/fantasy/ownership_plot.png)
 
+### `/worldcup`
+| command | description |
+|---|---|
+| `today` | 2026 FIFA World Cup matches today - live scores, kickoff times, venues |
+| `tomorrow` | World Cup matches scheduled for tomorrow |
+| `standings` | Current group stage standings (all 12 groups A-L, or filter by one) |
+
 ### `/f1`
 | command | description |
 |---|---|
@@ -146,6 +153,12 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `short` | most shorted stocks |
 | `trades` | recent trade chart |
 
+![stock chart](outputs/markets/stockchart.png)
+![crypto chart](outputs/markets/cryptochart.png)
+![btc s2f](outputs/markets/btcS2F.png)
+![forecast](outputs/markets/forecast_SPY_1d_1mo_mcpaths.gif)
+![yield curve](outputs/markets/yield_curve.png)
+
 #### `/markets crypto` - BTC on-chain metrics
 | coin/metric | description |
 |---|---|
@@ -158,12 +171,6 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `BTC Dominance` | BTC % of total crypto market cap |
 | `BTC Realized Price` | on-chain cost basis layers - realized price, true market mean, active investor mean, STH realized price |
 | `BTC Miner Capitulation` | price relative to last difficulty bottom, colored by blocks elapsed since capitulation event |
-
-![stock chart](outputs/markets/stockchart.png)
-![crypto chart](outputs/markets/cryptochart.png)
-![btc s2f](outputs/markets/btcS2F.png)
-![forecast](outputs/markets/forecast_SPY_1d_1mo_mcpaths.gif)
-![yield curve](outputs/markets/yield_curve.png)
 
 ### `/space`
 | command | description |
@@ -201,10 +208,11 @@ Plays music from a Pioneer rekordbox USB library in a voice channel. Supports qu
 ### `/history`
 | command | description |
 |---|---|
-| `server` | total server message history chart |
+| `server` | total server message history - cumulative messages by channel over time |
 | `channel` | per-channel message history |
-| `user` | message history for a specific user |
+| `user` | cumulative message history by user |
 | `daily` | daily message volume plot |
+| `userreport` | channel activity breakdown for a specific user - same stacked area as server but filtered to one person |
 | `invitegraph` | bubble network of who invited who to the server |
 | `repograph` | repo growth over time - cumulative lines of code + weekly commits |
 

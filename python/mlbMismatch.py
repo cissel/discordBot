@@ -16,9 +16,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 MLB_DIR = Path("~/discordBot/outputs/sports/mlb").expanduser()
 
 # accepts optional arg: "today" or "tomorrow" (default: tomorrow)
-_which       = sys.argv[1] if len(sys.argv) > 1 else "tomorrow"
-STARTERS_CSV = MLB_DIR / ("probableStartersToday.csv" if _which == "today" else "probableStarters.csv")
-OUT_CSV      = MLB_DIR / ("mismatchToday.csv" if _which == "today" else "mismatch.csv")
+_which          = sys.argv[1] if len(sys.argv) > 1 else "tomorrow"
+STARTERS_CSV    = MLB_DIR / ("probableStartersToday.csv" if _which == "today" else "probableStarters.csv")
+OUT_CSV         = MLB_DIR / ("mismatchToday.csv"         if _which == "today" else "mismatch.csv")
+OUT_PITCHER_CSV = MLB_DIR / ("mismatchPitcherToday.csv"  if _which == "today" else "mismatchPitcher.csv")
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -218,23 +219,99 @@ def calc_matchup(pa_df: pd.DataFrame, batter_id: int) -> dict | None:
 
     return {"PA":pa,"AB":ab,"H":h,"HR":hr,"BB":bb,"K":k,"AVG":avg,"OBP":obp,"SLG":slg,"OPS":ops}
 
-# ── 7. Main ───────────────────────────────────────────────────────────────────
+# ── 7. Aggregate pitcher score vs full opposing lineup ────────────────────────
+def calc_pitcher_lineup_score(pa_df: pd.DataFrame, batters: list[dict]) -> dict | None:
+    """
+    Score a pitcher against every batter in the opposing lineup.
+    Returns a composite dict, or None if fewer than 3 batters have >= MIN_PA history.
+
+    Composite OPS-against is PA-weighted across all qualifying matchups so that
+    a pitcher who has faced the 3-4-5 hitters 20 times each outweighs one who
+    has only 5 PA against the 8-hole.
+    """
+    qualifying = []   # matchups that clear MIN_PA
+    zero_pa    = 0    # batters with no history at all
+
+    for batter in batters:
+        ev = pa_df[pa_df["batter"] == batter["id"]]["events"]
+        total_pa = len(ev)
+        if total_pa == 0:
+            zero_pa += 1
+            continue
+        if total_pa < MIN_PA:
+            continue  # some history but too thin — skip, don't penalise
+
+        ab  = (~ev.isin(NON_AB)).sum()
+        h   = ev.isin({"single","double","triple","home_run"}).sum()
+        bb  = ev.isin({"walk","intent_walk"}).sum()
+        hbp = (ev == "hit_by_pitch").sum()
+        sf  = ev.isin({"sac_fly","sac_fly_double_play"}).sum()
+        hr  = (ev == "home_run").sum()
+        k   = ev.isin({"strikeout","strikeout_double_play"}).sum()
+        tb  = (ev.isin({"single"}).sum()       * 1 +
+               (ev == "double").sum()          * 2 +
+               (ev == "triple").sum()          * 3 +
+               hr                             * 4)
+
+        obp = (h + bb + hbp) / (ab + bb + hbp + sf) if (ab + bb + hbp + sf) > 0 else 0.0
+        slg = tb / ab                                  if ab > 0               else 0.0
+        ops = obp + slg
+
+        qualifying.append({
+            "name": batter["name"],
+            "pa": total_pa,
+            "ops": ops,
+            "h": int(h), "hr": int(hr), "k": int(k), "bb": int(bb),
+        })
+
+    n_qual  = len(qualifying)
+    n_total = len(batters)
+    if n_qual < 3:
+        return None   # not enough history to say anything meaningful
+
+    # PA-weighted composite OPS-against
+    total_pa_weight = sum(m["pa"] for m in qualifying)
+    w_ops = sum(m["ops"] * m["pa"] for m in qualifying) / total_pa_weight
+
+    # Best individual matchup (highest OPS-against = toughest for the pitcher)
+    worst = max(qualifying, key=lambda m: m["ops"])
+    # Best individual matchup for the pitcher (lowest OPS-against)
+    best  = min(qualifying, key=lambda m: m["ops"])
+
+    return {
+        "coverage":       f"{n_qual}/{n_total}",   # "6/9"
+        "n_qualifying":   n_qual,
+        "n_total":        n_total,
+        "zero_pa":        zero_pa,
+        "composite_ops":  round(w_ops, 3),
+        "total_pa":       total_pa_weight,
+        "best_batter":    best["name"],
+        "best_ops":       round(best["ops"], 3),
+        "best_pa":        best["pa"],
+        "worst_batter":   worst["name"],
+        "worst_ops":      round(worst["ops"], 3),
+        "worst_pa":       worst["pa"],
+    }
+
+
+# ── 8. Main ───────────────────────────────────────────────────────────────────
 def main():
     if OUT_CSV.exists():
         OUT_CSV.unlink()
+    if OUT_PITCHER_CSV.exists():
+        OUT_PITCHER_CSV.unlink()
 
     starters = load_starters()
     print(f"[INFO] {len(starters)} probable starters - fetching Statcast in parallel...\n")
 
     tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+    game_date = datetime.date.today().strftime("%Y-%m-%d") if _which == "today" else tomorrow
 
     # ── Resolve all pitcher IDs upfront (fast, sequential) ───────────────────
     for entry in starters:
         entry["pitcher_id"] = resolve_player_id(entry["pitcher_name"])
 
     # ── Fetch Statcast for all pitchers concurrently (4 at a time) ───────────
-    # Each pitcher itself fires 5 year-requests in parallel, so this is
-    # up to 4 × 5 = 20 concurrent requests - polite but fast.
     def fetch_entry(entry):
         pid = entry.get("pitcher_id")
         if not pid:
@@ -252,7 +329,8 @@ def main():
 
     # ── Process matchups ──────────────────────────────────────────────────────
     print("\n[INFO] Computing matchups...")
-    all_rows = []
+    all_rows         = []   # per-pair rows (batter-favored CSV)
+    pitcher_rows     = []   # per-pitcher rows (pitcher-favored CSV)
 
     for entry in starters:
         pitcher_name = entry["pitcher_name"]
@@ -267,10 +345,11 @@ def main():
         if pa_df.empty:
             continue
 
-        batters = get_opposing_batters(opposing_team, tomorrow)
+        batters = get_opposing_batters(opposing_team, game_date)
         if not batters:
             continue
 
+        # ── Per-pair rows (existing batter-favored logic) ─────────────────
         for batter in batters:
             stats = calc_matchup(pa_df, batter["id"])
             if stats is None:
@@ -284,27 +363,64 @@ def main():
                 **stats
             })
 
+        # ── Per-pitcher composite score (new pitcher-favored logic) ───────
+        score = calc_pitcher_lineup_score(pa_df, batters)
+        if score is None:
+            print(f"  [SKIP] {pitcher_name}: <3 qualifying matchups vs {opposing_team}")
+            continue
+        pitcher_rows.append({
+            "pitcher":        pitcher_name,
+            "pitcher_team":   pitcher_team,
+            "opposing_team":  opposing_team,
+            "matchup":        matchup,
+            **score,
+        })
+        print(f"  [SCORE] {pitcher_name} vs {opposing_team}: "
+              f"composite OPS {score['composite_ops']} ({score['coverage']} batters, "
+              f"{score['total_pa']} total PA)")
+
+    # ── Write batter-favored CSV (sorted by OPS desc = batter best at top) ──
     if not all_rows:
-        sys.exit("[ERROR] No matchup data found with sufficient PA history.")
+        print("[WARN] No per-pair matchup data found.")
+    else:
+        all_rows.sort(key=lambda r: r["OPS"], reverse=True)
+        fieldnames = [
+            "pitcher","pitcher_team","batter","opposing_team","matchup",
+            "PA","AB","H","HR","BB","K","AVG","OBP","SLG","OPS"
+        ]
+        with open(OUT_CSV, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(all_rows)
+        print(f"\n[INFO] {len(all_rows)} batter-pair matchups written to {OUT_CSV}")
+        print(f"\n[TOP 5 BATTER-FAVORED]")
+        for r in all_rows[:5]:
+            print(f"  {r['batter']} vs {r['pitcher']}: OPS {r['OPS']} ({r['H']}H {r['HR']}HR in {r['PA']}PA)")
+        print(f"\n[TOP 5 PITCHER-FAVORED (individual pairs)]")
+        for r in all_rows[-5:][::-1]:
+            print(f"  {r['batter']} vs {r['pitcher']}: OPS {r['OPS']} ({r['H']}H {r['HR']}HR in {r['PA']}PA)")
 
-    all_rows.sort(key=lambda r: r["OPS"], reverse=True)
-
-    fieldnames = [
-        "pitcher","pitcher_team","batter","opposing_team","matchup",
-        "PA","AB","H","HR","BB","K","AVG","OBP","SLG","OPS"
-    ]
-    with open(OUT_CSV, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(all_rows)
-
-    print(f"\n[INFO] {len(all_rows)} matchups written to {OUT_CSV}")
-    print(f"\n[TOP 5 BATTER-FAVORED]")
-    for r in all_rows[:5]:
-        print(f"  {r['batter']} vs {r['pitcher']}: OPS {r['OPS']} ({r['H']}H {r['HR']}HR in {r['PA']}PA)")
-    print(f"\n[TOP 5 PITCHER-FAVORED]")
-    for r in all_rows[-5:][::-1]:
-        print(f"  {r['batter']} vs {r['pitcher']}: OPS {r['OPS']} ({r['H']}H {r['HR']}HR in {r['PA']}PA)")
+    # ── Write pitcher-favored CSV (sorted by composite OPS asc = best pitcher) ──
+    if not pitcher_rows:
+        print("[WARN] No pitcher composite scores computed.")
+    else:
+        pitcher_rows.sort(key=lambda r: r["composite_ops"])
+        fieldnames_p = [
+            "pitcher","pitcher_team","opposing_team","matchup",
+            "composite_ops","coverage","n_qualifying","n_total","zero_pa","total_pa",
+            "best_batter","best_ops","best_pa",
+            "worst_batter","worst_ops","worst_pa",
+        ]
+        with open(OUT_PITCHER_CSV, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames_p)
+            writer.writeheader()
+            writer.writerows(pitcher_rows)
+        print(f"\n[INFO] {len(pitcher_rows)} pitcher scores written to {OUT_PITCHER_CSV}")
+        print(f"\n[TOP 5 PITCHER-FAVORED (composite lineup)]")
+        for r in pitcher_rows[:5]:
+            print(f"  {r['pitcher']} vs {r['opposing_team']}: "
+                  f"OPS-against {r['composite_ops']} ({r['coverage']} batters, "
+                  f"best: {r['best_batter']} {r['best_ops']})")
 
 if __name__ == "__main__":
     main()

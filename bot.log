@@ -10299,3 +10299,4025 @@ Warning messages:
 (`geom_line()`). 
 2: Removed 29 rows containing missing values or values outside the scale range
 (`geom_line()`). 
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+Found 26 probable starters for tomorrow (2026-06-12)
+  Andrew Painter (Philadelphia Phillies) - Philadelphia Phillies @ Milwaukee Brewers
+  Braxton Ashcraft (Pittsburgh Pirates) - Miami Marlins @ Pittsburgh Pirates
+  Bryce Miller (Seattle Mariners) - Seattle Mariners @ Washington Nationals
+  Eduardo Rodriguez (Arizona Diamondbacks) - Arizona Diamondbacks @ Cincinnati Reds
+  Gage Jump (Athletics) - Colorado Rockies @ Athletics
+  Griffin Canning (San Diego Padres) - San Diego Padres @ Baltimore Orioles
+  Jack Flaherty (Detroit Tigers) - Detroit Tigers @ Cleveland Guardians
+  Jack Leiter (Texas Rangers) - Texas Rangers @ Boston Red Sox
+  Jacob Misiorowski (Milwaukee Brewers) - Philadelphia Phillies @ Milwaukee Brewers
+  Joe Ryan (Minnesota Twins) - St. Louis Cardinals @ Minnesota Twins
+  Kyle Leahy (St. Louis Cardinals) - St. Louis Cardinals @ Minnesota Twins
+  Landen Roupp (San Francisco Giants) - Chicago Cubs @ San Francisco Giants
+  Luinder Avila (Kansas City Royals) - Houston Astros @ Kansas City Royals
+  Nick Lodolo (Cincinnati Reds) - Arizona Diamondbacks @ Cincinnati Reds
+  Nolan McLean (New York Mets) - Atlanta Braves @ New York Mets
+  Roki Sasaki (Los Angeles Dodgers) - Los Angeles Dodgers @ Chicago White Sox
+  Ryan Weathers (New York Yankees) - New York Yankees @ Toronto Blue Jays
+  Sam Aldegheri (Los Angeles Angels) - Tampa Bay Rays @ Los Angeles Angels
+  Sandy Alcantara (Miami Marlins) - Miami Marlins @ Pittsburgh Pirates
+  Shane Baz (Baltimore Orioles) - San Diego Padres @ Baltimore Orioles
+  Shane McClanahan (Tampa Bay Rays) - Tampa Bay Rays @ Los Angeles Angels
+  Sonny Gray (Boston Red Sox) - Texas Rangers @ Boston Red Sox
+  Spencer Strider (Atlanta Braves) - Atlanta Braves @ New York Mets
+  Tanner Bibee (Cleveland Guardians) - Detroit Tigers @ Cleveland Guardians
+  Tatsuya Imai (Houston Astros) - Houston Astros @ Kansas City Royals
+  Zack Littell (Washington Nationals) - Seattle Mariners @ Washington Nationals
+Written to /home/jhcv/discordBot/outputs/sports/mlb/probableStarters.csv
+[INFO] 26 probable starters - fetching Statcast in parallel...
+
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+    [OK] 2026: 99 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [--] 2025: no data
+    [OK] 2026: 322 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2026: 261 PA events
+    [--] 2024: no data
+    [--] 2024: no data
+  [INFO] 261 total PA events for Andrew Painter
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Andrew Painter
+    [--] 2022: no data
+    [OK] 2026: 321 PA events
+    [--] 2025: no data
+    [OK] 2024: 224 PA events
+    [OK] 2026: 73 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [--] 2024: no data
+  [INFO] 73 total PA events for Gage Jump
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Gage Jump
+    [OK] 2022: 391 PA events
+    [OK] 2025: 694 PA events
+    [OK] 2026: 139 PA events
+    [OK] 2023: 621 PA events
+  [INFO] 2251 total PA events for Eduardo Rodriguez
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Eduardo Rodriguez
+    [--] 2022: no data
+    [OK] 2023: 537 PA events
+    [OK] 2025: 292 PA events
+  [INFO] 614 total PA events for Braxton Ashcraft
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Braxton Ashcraft
+    [OK] 2024: 704 PA events
+    [OK] 2026: 293 PA events
+    [OK] 2025: 392 PA events
+  [INFO] 1732 total PA events for Bryce Miller
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Bryce Miller
+    [OK] 2025: 327 PA events
+    [OK] 2026: 310 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [--] 2023: no data
+    [--] 2022: no data
+    [--] 2024: no data
+    [OK] 2025: 272 PA events
+    [OK] 2026: 302 PA events
+  [INFO] 574 total PA events for Jacob Misiorowski
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jacob Misiorowski
+    [OK] 2025: 681 PA events
+    [OK] 2023: 650 PA events
+    [OK] 2022: 167 PA events
+    [OK] 2023: 536 PA events
+    [OK] 2024: 173 PA events
+    [OK] 2024: 649 PA events
+  [INFO] 2440 total PA events for Jack Flaherty
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jack Flaherty
+    [OK] 2026: 308 PA events
+    [--] 2022: no data
+    [OK] 2023: 15 PA events
+    [OK] 2024: 739 PA events
+  [INFO] 1741 total PA events for Griffin Canning
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Griffin Canning
+    [OK] 2026: 269 PA events
+    [OK] 2025: 689 PA events
+    [OK] 2025: 646 PA events
+  [INFO] 1129 total PA events for Jack Leiter
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jack Leiter
+    [OK] 2022: 604 PA events
+    [OK] 2024: 538 PA events
+    [OK] 2025: 363 PA events
+    [--] 2023: no data
+    [--] 2024: no data
+    [--] 2022: no data
+    [OK] 2026: 134 PA events
+    [OK] 2026: 293 PA events
+    [OK] 2023: 672 PA events
+  [INFO] 2811 total PA events for Joe Ryan
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Joe Ryan
+    [OK] 2025: 476 PA events
+    [OK] 2025: 56 PA events
+    [--] 2022: no data
+    [OK] 2026: 145 PA events
+    [--] 2023: no data
+  [INFO] 190 total PA events for Luinder Avila
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Luinder Avila
+    [OK] 2024: 191 PA events
+  [INFO] 838 total PA events for Kyle Leahy
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Kyle Leahy
+    [OK] 2023: 166 PA events
+    [--] 2024: no data
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2025: 188 PA events
+    [OK] 2022: 441 PA events
+    [OK] 2026: 247 PA events
+    [OK] 2024: 217 PA events
+  [INFO] 986 total PA events for Landen Roupp
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Landen Roupp
+    [--] 2022: no data
+    [OK] 2024: 493 PA events
+    [--] 2023: no data
+    [OK] 2026: 299 PA events
+  [INFO] 487 total PA events for Nolan McLean
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Nolan McLean
+    [--] 2024: no data
+    [OK] 2025: 73 PA events
+    [OK] 2026: 51 PA events
+    [OK] 2025: 642 PA events
+  [INFO] 1887 total PA events for Nick Lodolo
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Nick Lodolo
+    [OK] 2025: 161 PA events
+  [INFO] 408 total PA events for Roki Sasaki
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Roki Sasaki
+    [OK] 2026: 285 PA events
+    [OK] 2026: 374 PA events
+    [OK] 2026: 331 PA events
+    [--] 2023: no data
+    [--] 2024: no data
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2024: 67 PA events
+  [INFO] 191 total PA events for Sam Aldegheri
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Sam Aldegheri
+    [OK] 2025: 711 PA events
+    [OK] 2022: 21 PA events
+    [OK] 2022: 117 PA events
+    [--] 2024: no data
+    [--] 2025: no data
+    [OK] 2023: 257 PA events
+    [OK] 2025: 745 PA events
+    [OK] 2024: 319 PA events
+  [INFO] 1478 total PA events for Shane Baz
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Shane Baz
+    [OK] 2024: 367 PA events
+    [OK] 2023: 762 PA events
+    [OK] 2025: 166 PA events
+  [INFO] 1096 total PA events for Ryan Weathers
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Ryan Weathers
+    [OK] 2026: 247 PA events
+    [OK] 2026: 233 PA events
+    [OK] 2023: 469 PA events
+    [OK] 2022: 886 PA events
+  [INFO] 2767 total PA events for Sandy Alcantara
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Sandy Alcantara
+    [OK] 2026: 148 PA events
+    [OK] 2024: 42 PA events
+    [--] 2022: no data
+    [OK] 2025: 753 PA events
+    [OK] 2026: 317 PA events
+    [OK] 2022: 640 PA events
+  [INFO] 1356 total PA events for Shane McClanahan
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Shane McClanahan
+    [OK] 2022: 528 PA events
+    [--] 2025: no data
+    [OK] 2025: 762 PA events
+    [OK] 2022: 488 PA events
+    [OK] 2025: 539 PA events
+    [OK] 2024: 671 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [--] 2024: no data
+    [OK] 2023: 754 PA events
+  [INFO] 2899 total PA events for Sonny Gray
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Sonny Gray
+    [OK] 2026: 150 PA events
+  [INFO] 150 total PA events for Tatsuya Imai
+[DONE] Statcast loaded for Tatsuya Imai
+    [OK] 2023: 585 PA events
+    [OK] 2024: 710 PA events
+  [INFO] 2374 total PA events for Tanner Bibee
+[DONE] Statcast loaded for Tanner Bibee
+    [OK] 2023: 763 PA events
+  [INFO] 2020 total PA events for Spencer Strider
+[DONE] Statcast loaded for Spencer Strider
+    [OK] 2026: 278 PA events
+    [OK] 2022: 190 PA events
+    [OK] 2023: 379 PA events
+    [OK] 2025: 759 PA events
+    [OK] 2024: 656 PA events
+  [INFO] 2262 total PA events for Zack Littell
+[DONE] Statcast loaded for Zack Littell
+
+[INFO] Computing matchups...
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Andrew Painter: <3 qualifying matchups vs Milwaukee Brewers
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Braxton Ashcraft: <3 qualifying matchups vs Miami Marlins
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Bryce Miller: <3 qualifying matchups vs Washington Nationals
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Eduardo Rodriguez vs Cincinnati Reds: composite OPS 0.64 (4/13 batters, 25 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Gage Jump: <3 qualifying matchups vs Colorado Rockies
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Griffin Canning vs Baltimore Orioles: composite OPS 1.018 (5/13 batters, 38 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Jack Flaherty vs Cleveland Guardians: composite OPS 0.552 (7/13 batters, 89 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Jack Leiter: <3 qualifying matchups vs Boston Red Sox
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Jacob Misiorowski: <3 qualifying matchups vs Philadelphia Phillies
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Joe Ryan: <3 qualifying matchups vs St. Louis Cardinals
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Kyle Leahy: <3 qualifying matchups vs Minnesota Twins
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Landen Roupp vs Chicago Cubs: composite OPS 0.851 (5/13 batters, 28 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Luinder Avila: <3 qualifying matchups vs Houston Astros
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Nick Lodolo: <3 qualifying matchups vs Arizona Diamondbacks
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Nolan McLean: <3 qualifying matchups vs Atlanta Braves
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Roki Sasaki: <3 qualifying matchups vs Chicago White Sox
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Ryan Weathers: <3 qualifying matchups vs Toronto Blue Jays
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Sam Aldegheri: <3 qualifying matchups vs Tampa Bay Rays
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Sandy Alcantara vs Pittsburgh Pirates: composite OPS 0.774 (3/13 batters, 40 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Shane Baz: <3 qualifying matchups vs San Diego Padres
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Shane McClanahan vs Los Angeles Angels: composite OPS 0.35 (3/13 batters, 20 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Sonny Gray vs Texas Rangers: composite OPS 0.632 (6/13 batters, 53 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Spencer Strider vs New York Mets: composite OPS 0.647 (6/13 batters, 53 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Tanner Bibee vs Detroit Tigers: composite OPS 0.689 (10/13 batters, 157 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Tatsuya Imai: <3 qualifying matchups vs Kansas City Royals
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Zack Littell vs Seattle Mariners: composite OPS 0.264 (3/13 batters, 20 total PA)
+
+[INFO] 61 batter-pair matchups written to /home/jhcv/discordBot/outputs/sports/mlb/mismatch.csv
+
+[TOP 5 BATTER-FAVORED]
+  Lars Nootbaar vs Joe Ryan: OPS 1.867 (3H 1HR in 6PA)
+  Gunnar Henderson vs Griffin Canning: OPS 1.569 (4H 1HR in 9PA)
+  Michael Conforto vs Landen Roupp: OPS 1.547 (4H 0HR in 7PA)
+  Nathaniel Lowe vs Eduardo Rodriguez: OPS 1.404 (3H 0HR in 7PA)
+  Pete Crow-Armstrong vs Landen Roupp: OPS 1.4 (2H 1HR in 5PA)
+
+[TOP 5 PITCHER-FAVORED (individual pairs)]
+  Julio Rodríguez vs Zack Littell: OPS 0 (0H 0HR in 7PA)
+  Dominic Canzone vs Zack Littell: OPS 0 (0H 0HR in 5PA)
+  Mark Vientos vs Spencer Strider: OPS 0 (0H 0HR in 5PA)
+  Marcus Semien vs Spencer Strider: OPS 0 (0H 0HR in 5PA)
+  Nolan Arenado vs Nick Lodolo: OPS 0 (0H 0HR in 5PA)
+
+[INFO] 10 pitcher scores written to /home/jhcv/discordBot/outputs/sports/mlb/mismatchPitcher.csv
+
+[TOP 5 PITCHER-FAVORED (composite lineup)]
+  Zack Littell vs Seattle Mariners: OPS-against 0.264 (3/13 batters, best: Dominic Canzone 0.0)
+  Shane McClanahan vs Los Angeles Angels: OPS-against 0.35 (3/13 batters, best: Trey Mancini 0.1)
+  Jack Flaherty vs Cleveland Guardians: OPS-against 0.552 (7/13 batters, best: Daniel Schneemann 0.077)
+  Sonny Gray vs Texas Rangers: OPS-against 0.632 (6/13 batters, best: Nicky Lopez 0.237)
+  Eduardo Rodriguez vs Cincinnati Reds: OPS-against 0.64 (4/13 batters, best: Dane Myers 0.167)
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+Found 28 probable starters for today (2026-06-12)
+  Andrew Painter (Philadelphia Phillies) - Philadelphia Phillies @ Milwaukee Brewers
+  Anthony Kay (Chicago White Sox) - Los Angeles Dodgers @ Chicago White Sox
+  Braxton Ashcraft (Pittsburgh Pirates) - Miami Marlins @ Pittsburgh Pirates
+  Bryce Miller (Seattle Mariners) - Seattle Mariners @ Washington Nationals
+  Eduardo Rodriguez (Arizona Diamondbacks) - Arizona Diamondbacks @ Cincinnati Reds
+  Gage Jump (Athletics) - Colorado Rockies @ Athletics
+  Griffin Canning (San Diego Padres) - San Diego Padres @ Baltimore Orioles
+  Jack Flaherty (Detroit Tigers) - Detroit Tigers @ Cleveland Guardians
+  Jack Leiter (Texas Rangers) - Texas Rangers @ Boston Red Sox
+  Jacob Misiorowski (Milwaukee Brewers) - Philadelphia Phillies @ Milwaukee Brewers
+  Javier Assad (Chicago Cubs) - Chicago Cubs @ San Francisco Giants
+  Joe Ryan (Minnesota Twins) - St. Louis Cardinals @ Minnesota Twins
+  Kyle Leahy (St. Louis Cardinals) - St. Louis Cardinals @ Minnesota Twins
+  Landen Roupp (San Francisco Giants) - Chicago Cubs @ San Francisco Giants
+  Luinder Avila (Kansas City Royals) - Houston Astros @ Kansas City Royals
+  Nick Lodolo (Cincinnati Reds) - Arizona Diamondbacks @ Cincinnati Reds
+  Nolan McLean (New York Mets) - Atlanta Braves @ New York Mets
+  Roki Sasaki (Los Angeles Dodgers) - Los Angeles Dodgers @ Chicago White Sox
+  Ryan Weathers (New York Yankees) - New York Yankees @ Toronto Blue Jays
+  Sam Aldegheri (Los Angeles Angels) - Tampa Bay Rays @ Los Angeles Angels
+  Sandy Alcantara (Miami Marlins) - Miami Marlins @ Pittsburgh Pirates
+  Shane Baz (Baltimore Orioles) - San Diego Padres @ Baltimore Orioles
+  Shane McClanahan (Tampa Bay Rays) - Tampa Bay Rays @ Los Angeles Angels
+  Sonny Gray (Boston Red Sox) - Texas Rangers @ Boston Red Sox
+  Spencer Strider (Atlanta Braves) - Atlanta Braves @ New York Mets
+  Tanner Bibee (Cleveland Guardians) - Detroit Tigers @ Cleveland Guardians
+  Tatsuya Imai (Houston Astros) - Houston Astros @ Kansas City Royals
+  Zack Littell (Washington Nationals) - Seattle Mariners @ Washington Nationals
+Written to /home/jhcv/discordBot/outputs/sports/mlb/probableStartersToday.csv
+[INFO] 28 probable starters - fetching Statcast in parallel...
+
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+    [--] 2024: no data
+    [--] 2025: no data
+    [--] 2025: no data
+    [--] 2024: no data
+    [--] 2024: no data
+    [--] 2023: no data
+    [--] 2023: no data
+    [--] 2022: no data
+    [--] 2022: no data
+    [OK] 2022: 10 PA events
+    [--] 2022: no data
+    [OK] 2026: 99 PA events
+    [OK] 2026: 261 PA events
+  [INFO] 261 total PA events for Andrew Painter
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Andrew Painter
+    [OK] 2025: 292 PA events
+    [OK] 2026: 279 PA events
+    [OK] 2023: 66 PA events
+  [INFO] 355 total PA events for Anthony Kay
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Anthony Kay
+    [OK] 2026: 322 PA events
+  [INFO] 614 total PA events for Braxton Ashcraft
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Braxton Ashcraft
+    [OK] 2025: 392 PA events
+    [--] 2025: no data
+    [--] 2024: no data
+    [--] 2022: no data
+    [--] 2022: no data
+    [OK] 2024: 224 PA events
+    [--] 2023: no data
+    [OK] 2026: 73 PA events
+  [INFO] 73 total PA events for Gage Jump
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Gage Jump
+    [OK] 2026: 321 PA events
+    [OK] 2026: 139 PA events
+    [OK] 2023: 537 PA events
+    [OK] 2025: 327 PA events
+    [OK] 2024: 704 PA events
+  [INFO] 1732 total PA events for Bryce Miller
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Bryce Miller
+    [OK] 2022: 391 PA events
+    [OK] 2025: 694 PA events
+    [OK] 2026: 293 PA events
+    [OK] 2023: 621 PA events
+  [INFO] 2251 total PA events for Eduardo Rodriguez
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Eduardo Rodriguez
+    [OK] 2023: 536 PA events
+    [OK] 2024: 173 PA events
+    [--] 2024: no data
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2024: 739 PA events
+  [INFO] 1741 total PA events for Griffin Canning
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Griffin Canning
+    [--] 2023: no data
+    [OK] 2022: 167 PA events
+    [--] 2022: no data
+    [OK] 2026: 302 PA events
+    [OK] 2025: 153 PA events
+    [OK] 2026: 129 PA events
+    [OK] 2024: 649 PA events
+    [OK] 2026: 310 PA events
+    [OK] 2025: 272 PA events
+  [INFO] 574 total PA events for Jacob Misiorowski
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jacob Misiorowski
+    [OK] 2022: 166 PA events
+    [OK] 2025: 681 PA events
+    [OK] 2023: 650 PA events
+  [INFO] 2440 total PA events for Jack Flaherty
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jack Flaherty
+    [OK] 2025: 646 PA events
+  [INFO] 1129 total PA events for Jack Leiter
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jack Leiter
+    [OK] 2024: 638 PA events
+    [OK] 2023: 15 PA events
+    [OK] 2026: 308 PA events
+    [--] 2022: no data
+    [OK] 2024: 191 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2023: 449 PA events
+  [INFO] 1535 total PA events for Javier Assad
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Javier Assad
+    [OK] 2026: 269 PA events
+    [OK] 2024: 217 PA events
+    [OK] 2026: 293 PA events
+    [--] 2024: no data
+    [OK] 2025: 363 PA events
+  [INFO] 838 total PA events for Kyle Leahy
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Kyle Leahy
+    [--] 2023: no data
+    [OK] 2024: 538 PA events
+    [OK] 2025: 56 PA events
+    [--] 2022: no data
+    [OK] 2026: 134 PA events
+  [INFO] 190 total PA events for Luinder Avila
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Luinder Avila
+    [OK] 2022: 604 PA events
+    [OK] 2025: 476 PA events
+  [INFO] 986 total PA events for Landen Roupp
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Landen Roupp
+    [OK] 2023: 672 PA events
+    [OK] 2025: 689 PA events
+  [INFO] 2811 total PA events for Joe Ryan
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Joe Ryan
+    [--] 2023: no data
+    [OK] 2026: 145 PA events
+    [--] 2022: no data
+    [OK] 2022: 21 PA events
+    [OK] 2025: 166 PA events
+    [OK] 2025: 188 PA events
+    [--] 2024: no data
+    [OK] 2026: 285 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2024: 367 PA events
+    [OK] 2024: 493 PA events
+    [--] 2024: no data
+    [OK] 2023: 257 PA events
+  [INFO] 1096 total PA events for Ryan Weathers
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Ryan Weathers
+    [OK] 2026: 299 PA events
+  [INFO] 487 total PA events for Nolan McLean
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Nolan McLean
+    [OK] 2025: 642 PA events
+    [OK] 2023: 166 PA events
+    [OK] 2022: 441 PA events
+  [INFO] 1887 total PA events for Nick Lodolo
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Nick Lodolo
+    [--] 2022: no data
+    [--] 2024: no data
+    [OK] 2026: 51 PA events
+    [OK] 2025: 73 PA events
+    [--] 2023: no data
+    [OK] 2025: 161 PA events
+    [OK] 2026: 247 PA events
+  [INFO] 408 total PA events for Roki Sasaki
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Roki Sasaki
+    [--] 2023: no data
+    [OK] 2024: 67 PA events
+  [INFO] 191 total PA events for Sam Aldegheri
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Sam Aldegheri
+    [--] 2025: no data
+    [OK] 2022: 117 PA events
+    [OK] 2026: 331 PA events
+    [OK] 2024: 319 PA events
+    [OK] 2026: 233 PA events
+    [OK] 2026: 247 PA events
+    [--] 2024: no data
+    [OK] 2026: 374 PA events
+    [OK] 2025: 711 PA events
+  [INFO] 1478 total PA events for Shane Baz
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Shane Baz
+    [OK] 2024: 671 PA events
+    [OK] 2023: 762 PA events
+    [OK] 2025: 745 PA events
+    [OK] 2023: 469 PA events
+    [OK] 2022: 640 PA events
+  [INFO] 1356 total PA events for Shane McClanahan
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Shane McClanahan
+    [OK] 2022: 488 PA events
+    [OK] 2025: 753 PA events
+    [OK] 2023: 754 PA events
+  [INFO] 2899 total PA events for Sonny Gray
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Sonny Gray
+    [--] 2025: no data
+    [--] 2022: no data
+    [--] 2024: no data
+    [--] 2023: no data
+    [OK] 2024: 42 PA events
+    [OK] 2022: 886 PA events
+  [INFO] 2767 total PA events for Sandy Alcantara
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Sandy Alcantara
+    [OK] 2026: 150 PA events
+  [INFO] 150 total PA events for Tatsuya Imai
+[DONE] Statcast loaded for Tatsuya Imai
+    [OK] 2026: 317 PA events
+    [OK] 2026: 148 PA events
+    [--] 2022: no data
+    [OK] 2026: 278 PA events
+    [OK] 2022: 190 PA events
+    [OK] 2025: 539 PA events
+    [OK] 2023: 763 PA events
+    [OK] 2024: 710 PA events
+    [OK] 2025: 762 PA events
+    [OK] 2024: 656 PA events
+    [OK] 2022: 528 PA events
+  [INFO] 2020 total PA events for Spencer Strider
+[DONE] Statcast loaded for Spencer Strider
+    [OK] 2025: 759 PA events
+    [OK] 2023: 585 PA events
+  [INFO] 2374 total PA events for Tanner Bibee
+[DONE] Statcast loaded for Tanner Bibee
+    [OK] 2023: 379 PA events
+  [INFO] 2262 total PA events for Zack Littell
+[DONE] Statcast loaded for Zack Littell
+
+[INFO] Computing matchups...
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Andrew Painter: <3 qualifying matchups vs Milwaukee Brewers
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Anthony Kay: <3 qualifying matchups vs Los Angeles Dodgers
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Braxton Ashcraft: <3 qualifying matchups vs Miami Marlins
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Bryce Miller: <3 qualifying matchups vs Washington Nationals
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Eduardo Rodriguez vs Cincinnati Reds: composite OPS 0.64 (4/13 batters, 25 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Gage Jump: <3 qualifying matchups vs Colorado Rockies
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Griffin Canning vs Baltimore Orioles: composite OPS 1.018 (5/13 batters, 38 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Jack Flaherty vs Cleveland Guardians: composite OPS 0.552 (7/13 batters, 89 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Jack Leiter: <3 qualifying matchups vs Boston Red Sox
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Jacob Misiorowski: <3 qualifying matchups vs Philadelphia Phillies
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Javier Assad vs San Francisco Giants: composite OPS 0.58 (3/13 batters, 23 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Joe Ryan: <3 qualifying matchups vs St. Louis Cardinals
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Kyle Leahy: <3 qualifying matchups vs Minnesota Twins
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Landen Roupp vs Chicago Cubs: composite OPS 0.851 (5/13 batters, 28 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Luinder Avila: <3 qualifying matchups vs Houston Astros
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Nick Lodolo: <3 qualifying matchups vs Arizona Diamondbacks
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Nolan McLean: <3 qualifying matchups vs Atlanta Braves
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Roki Sasaki: <3 qualifying matchups vs Chicago White Sox
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Ryan Weathers: <3 qualifying matchups vs Toronto Blue Jays
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Sam Aldegheri: <3 qualifying matchups vs Tampa Bay Rays
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Sandy Alcantara vs Pittsburgh Pirates: composite OPS 0.774 (3/13 batters, 40 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Shane Baz: <3 qualifying matchups vs San Diego Padres
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Shane McClanahan vs Los Angeles Angels: composite OPS 0.35 (3/13 batters, 20 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Sonny Gray vs Texas Rangers: composite OPS 0.632 (6/13 batters, 53 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Spencer Strider vs New York Mets: composite OPS 0.647 (6/13 batters, 53 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Tanner Bibee vs Detroit Tigers: composite OPS 0.689 (10/13 batters, 157 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Tatsuya Imai: <3 qualifying matchups vs Kansas City Royals
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Zack Littell vs Seattle Mariners: composite OPS 0.264 (3/13 batters, 20 total PA)
+
+[INFO] 64 batter-pair matchups written to /home/jhcv/discordBot/outputs/sports/mlb/mismatchToday.csv
+
+[TOP 5 BATTER-FAVORED]
+  Lars Nootbaar vs Joe Ryan: OPS 1.867 (3H 1HR in 6PA)
+  Gunnar Henderson vs Griffin Canning: OPS 1.569 (4H 1HR in 9PA)
+  Michael Conforto vs Landen Roupp: OPS 1.547 (4H 0HR in 7PA)
+  Nathaniel Lowe vs Eduardo Rodriguez: OPS 1.404 (3H 0HR in 7PA)
+  Pete Crow-Armstrong vs Landen Roupp: OPS 1.4 (2H 1HR in 5PA)
+
+[TOP 5 PITCHER-FAVORED (individual pairs)]
+  Julio Rodríguez vs Zack Littell: OPS 0 (0H 0HR in 7PA)
+  Dominic Canzone vs Zack Littell: OPS 0 (0H 0HR in 5PA)
+  Mark Vientos vs Spencer Strider: OPS 0 (0H 0HR in 5PA)
+  Marcus Semien vs Spencer Strider: OPS 0 (0H 0HR in 5PA)
+  Nolan Arenado vs Nick Lodolo: OPS 0 (0H 0HR in 5PA)
+
+[INFO] 11 pitcher scores written to /home/jhcv/discordBot/outputs/sports/mlb/mismatchPitcherToday.csv
+
+[TOP 5 PITCHER-FAVORED (composite lineup)]
+  Zack Littell vs Seattle Mariners: OPS-against 0.264 (3/13 batters, best: Dominic Canzone 0.0)
+  Shane McClanahan vs Los Angeles Angels: OPS-against 0.35 (3/13 batters, best: Trey Mancini 0.1)
+  Jack Flaherty vs Cleveland Guardians: OPS-against 0.552 (7/13 batters, best: Daniel Schneemann 0.077)
+  Javier Assad vs San Francisco Giants: OPS-against 0.58 (3/13 batters, best: Matt Chapman 0.4)
+  Sonny Gray vs Texas Rangers: OPS-against 0.632 (6/13 batters, best: Nicky Lopez 0.237)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+Attaching package: ‘zoo’
+
+The following objects are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+Rows: 6059 Columns: 5
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (4): user_name, user_display_name, channel, message
+dttm (1): datetime
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+Warning messages:
+1: Removed 6 rows containing missing values or values outside the scale range
+(`geom_line()`). 
+2: Removed 29 rows containing missing values or values outside the scale range
+(`geom_line()`). 
+/home/jhcv/discordBot/outputs/space/next_launch.csv
+None
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+[startup] FATAL: Cannot connect to host discord.com:443 ssl:default [Temporary failure in name resolution]
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1365, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/resolver.py", line 39, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 939, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/usr/lib/python3.13/socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/python/main.py", line 382, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/jhcv/discordBot/python/main.py", line 378, in main
+    await client.start(TOKEN)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 850, in start
+    await self.login(token)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 679, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/http.py", line 844, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/http.py", line 659, in request
+    async with self.__session.request(method, url, **kwargs) as response:
+               ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1371, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host discord.com:443 ssl:default [Temporary failure in name resolution]
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1365, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/resolver.py", line 39, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 939, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/usr/lib/python3.13/socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/python/main.py", line 382, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/jhcv/discordBot/python/main.py", line 378, in main
+    await client.start(TOKEN)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 850, in start
+    await self.login(token)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 679, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/http.py", line 844, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/http.py", line 659, in request
+    async with self.__session.request(method, url, **kwargs) as response:
+               ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1371, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host discord.com:443 ssl:default [Temporary failure in name resolution]
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+[startup] FATAL: Cannot connect to host discord.com:443 ssl:default [Temporary failure in name resolution]
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1365, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/resolver.py", line 39, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 939, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/usr/lib/python3.13/socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/python/main.py", line 382, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/jhcv/discordBot/python/main.py", line 378, in main
+    await client.start(TOKEN)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 850, in start
+    await self.login(token)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 679, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/http.py", line 844, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/http.py", line 659, in request
+    async with self.__session.request(method, url, **kwargs) as response:
+               ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1371, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host discord.com:443 ssl:default [Temporary failure in name resolution]
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1365, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/resolver.py", line 39, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 939, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/usr/lib/python3.13/socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/python/main.py", line 382, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/jhcv/discordBot/python/main.py", line 378, in main
+    await client.start(TOKEN)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 850, in start
+    await self.login(token)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 679, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/http.py", line 844, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/http.py", line 659, in request
+    async with self.__session.request(method, url, **kwargs) as response:
+               ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1371, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host discord.com:443 ssl:default [Temporary failure in name resolution]
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+[setup] 36 commands registered
+Synced 36 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+Found 29 probable starters for tomorrow (2026-06-14)
+  Andrew Abbott (Cincinnati Reds) - Arizona Diamondbacks @ Cincinnati Reds
+  Bryce Elder (Atlanta Braves) - Atlanta Braves @ New York Mets
+  Casey Mize (Detroit Tigers) - Detroit Tigers @ Cleveland Guardians
+  Colin Rea (Chicago Cubs) - Chicago Cubs @ San Francisco Giants
+  Connelly Early (Boston Red Sox) - Texas Rangers @ Boston Red Sox
+  Cristopher Sánchez (Philadelphia Phillies) - Philadelphia Phillies @ Milwaukee Brewers
+  Emerson Hancock (Seattle Mariners) - Seattle Mariners @ Washington Nationals
+  Emmet Sheehan (Los Angeles Dodgers) - Los Angeles Dodgers @ Chicago White Sox
+  Erick Fedde (Chicago White Sox) - Los Angeles Dodgers @ Chicago White Sox
+  Freddy Peralta (New York Mets) - Atlanta Braves @ New York Mets
+  Gavin Williams (Cleveland Guardians) - Detroit Tigers @ Cleveland Guardians
+  Grayson Rodriguez (Los Angeles Angels) - Tampa Bay Rays @ Los Angeles Angels
+  Jeffrey Springs (Athletics) - Colorado Rockies @ Athletics
+  Kyle Harrison (Milwaukee Brewers) - Philadelphia Phillies @ Milwaukee Brewers
+  Logan Webb (San Francisco Giants) - Chicago Cubs @ San Francisco Giants
+  Max Meyer (Miami Marlins) - Miami Marlins @ Pittsburgh Pirates
+  Michael McGreevy (St. Louis Cardinals) - St. Louis Cardinals @ Minnesota Twins
+  Miles Mikolas (Washington Nationals) - Seattle Mariners @ Washington Nationals
+  Nathan Eovaldi (Texas Rangers) - Texas Rangers @ Boston Red Sox
+  Patrick Corbin (Toronto Blue Jays) - New York Yankees @ Toronto Blue Jays
+  Paul Skenes (Pittsburgh Pirates) - Miami Marlins @ Pittsburgh Pirates
+  Spencer Arrighetti (Houston Astros) - Houston Astros @ Kansas City Royals
+  Stephen Kolek (Kansas City Royals) - Houston Astros @ Kansas City Royals
+  Taj Bradley (Minnesota Twins) - St. Louis Cardinals @ Minnesota Twins
+  Tomoyuki Sugano (Colorado Rockies) - Colorado Rockies @ Athletics
+  Trevor Rogers (Baltimore Orioles) - San Diego Padres @ Baltimore Orioles
+  Walker Buehler (San Diego Padres) - San Diego Padres @ Baltimore Orioles
+  Will Warren (New York Yankees) - New York Yankees @ Toronto Blue Jays
+  Zac Gallen (Arizona Diamondbacks) - Arizona Diamondbacks @ Cincinnati Reds
+Written to /home/jhcv/discordBot/outputs/sports/mlb/probableStarters.csv
+[INFO] 29 probable starters - fetching Statcast in parallel...
+
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+    [--] 2023: no data
+    [OK] 2022: 45 PA events
+    [--] 2022: no data
+    [--] 2022: no data
+    [OK] 2026: 304 PA events
+    [OK] 2026: 185 PA events
+    [OK] 2026: 322 PA events
+    [OK] 2022: 227 PA events
+    [OK] 2024: 226 PA events
+    [OK] 2026: 342 PA events
+    [OK] 2023: 459 PA events
+    [OK] 2024: 452 PA events
+    [OK] 2025: 662 PA events
+    [OK] 2023: 517 PA events
+    [OK] 2025: 627 PA events
+  [INFO] 1309 total PA events for Casey Mize
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Casey Mize
+    [OK] 2025: 684 PA events
+    [OK] 2024: 586 PA events
+  [INFO] 2051 total PA events for Andrew Abbott
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Andrew Abbott
+    [OK] 2024: 714 PA events
+  [INFO] 2197 total PA events for Colin Rea
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Colin Rea
+    [--] 2022: no data
+    [--] 2024: no data
+    [--] 2023: no data
+    [OK] 2025: 679 PA events
+    [OK] 2023: 732 PA events
+  [INFO] 2206 total PA events for Bryce Elder
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Bryce Elder
+    [--] 2022: no data
+    [OK] 2026: 300 PA events
+    [OK] 2026: 375 PA events
+    [--] 2022: no data
+    [OK] 2025: 79 PA events
+  [INFO] 379 total PA events for Connelly Early
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Connelly Early
+    [OK] 2023: 49 PA events
+    [OK] 2026: 292 PA events
+    [--] 2024: no data
+    [OK] 2022: 177 PA events
+    [OK] 2025: 291 PA events
+    [OK] 2023: 396 PA events
+    [OK] 2023: 248 PA events
+    [OK] 2024: 266 PA events
+    [OK] 2025: 385 PA events
+  [INFO] 992 total PA events for Emerson Hancock
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Emerson Hancock
+    [OK] 2026: 248 PA events
+  [INFO] 787 total PA events for Emmet Sheehan
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Emmet Sheehan
+    [OK] 2024: 754 PA events
+    [--] 2023: no data
+    [--] 2022: no data
+    [OK] 2025: 807 PA events
+  [INFO] 2509 total PA events for Cristopher Sánchez
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Cristopher Sánchez
+    [OK] 2026: 276 PA events
+    [--] 2025: no data
+    [--] 2022: no data
+    [OK] 2026: 337 PA events
+    [OK] 2026: 345 PA events
+    [OK] 2026: 111 PA events
+    [OK] 2022: 573 PA events
+    [OK] 2022: 317 PA events
+    [OK] 2024: 332 PA events
+    [OK] 2023: 345 PA events
+    [OK] 2024: 491 PA events
+    [OK] 2023: 515 PA events
+  [INFO] 1117 total PA events for Grayson Rodriguez
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Grayson Rodriguez
+    [OK] 2025: 704 PA events
+  [INFO] 1726 total PA events for Gavin Williams
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Gavin Williams
+    [OK] 2023: 680 PA events
+    [OK] 2025: 623 PA events
+    [OK] 2024: 725 PA events
+    [OK] 2024: 726 PA events
+  [INFO] 2198 total PA events for Erick Fedde
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Erick Fedde
+    [OK] 2025: 723 PA events
+  [INFO] 2782 total PA events for Freddy Peralta
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Freddy Peralta
+    [--] 2023: no data
+    [OK] 2024: 142 PA events
+    [OK] 2022: 26 PA events
+    [OK] 2026: 320 PA events
+    [--] 2022: no data
+    [OK] 2026: 278 PA events
+    [OK] 2023: 147 PA events
+    [OK] 2026: 325 PA events
+    [OK] 2023: 55 PA events
+    [OK] 2025: 285 PA events
+    [OK] 2026: 246 PA events
+    [OK] 2024: 248 PA events
+  [INFO] 884 total PA events for Max Meyer
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Max Meyer
+    [OK] 2025: 156 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2022: 549 PA events
+    [OK] 2024: 86 PA events
+    [OK] 2024: 532 PA events
+  [INFO] 1081 total PA events for Kyle Harrison
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Kyle Harrison
+    [OK] 2026: 285 PA events
+    [OK] 2025: 713 PA events
+  [INFO] 1779 total PA events for Jeffrey Springs
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jeffrey Springs
+    [OK] 2022: 787 PA events
+    [OK] 2023: 850 PA events
+    [OK] 2025: 856 PA events
+    [OK] 2025: 400 PA events
+  [INFO] 771 total PA events for Michael McGreevy
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Michael McGreevy
+    [OK] 2024: 841 PA events
+  [INFO] 3612 total PA events for Logan Webb
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Logan Webb
+    [OK] 2026: 337 PA events
+    [OK] 2026: 252 PA events
+    [OK] 2026: 262 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2026: 303 PA events
+    [OK] 2025: 496 PA events
+    [OK] 2022: 460 PA events
+    [OK] 2024: 514 PA events
+    [OK] 2025: 669 PA events
+    [OK] 2022: 713 PA events
+    [OK] 2025: 663 PA events
+    [OK] 2025: 733 PA events
+  [INFO] 1550 total PA events for Paul Skenes
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Paul Skenes
+    [OK] 2024: 720 PA events
+    [OK] 2023: 860 PA events
+    [OK] 2022: 805 PA events
+  [INFO] 3316 total PA events for Miles Mikolas
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Miles Mikolas
+    [OK] 2023: 790 PA events
+    [OK] 2023: 577 PA events
+    [--] 2023: no data
+    [--] 2022: no data
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2024: 696 PA events
+  [INFO] 2566 total PA events for Nathan Eovaldi
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Nathan Eovaldi
+    [OK] 2024: 211 PA events
+    [OK] 2024: 764 PA events
+  [INFO] 3182 total PA events for Patrick Corbin
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Patrick Corbin
+    [OK] 2026: 243 PA events
+    [OK] 2026: 172 PA events
+    [--] 2022: no data
+    [--] 2022: no data
+    [OK] 2025: 156 PA events
+    [--] 2023: no data
+    [--] 2024: no data
+    [OK] 2026: 284 PA events
+    [OK] 2026: 287 PA events
+    [OK] 2025: 461 PA events
+  [INFO] 844 total PA events for Stephen Kolek
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Stephen Kolek
+    [OK] 2023: 460 PA events
+    [OK] 2025: 605 PA events
+    [OK] 2023: 79 PA events
+    [OK] 2024: 632 PA events
+  [INFO] 1031 total PA events for Spencer Arrighetti
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Spencer Arrighetti
+    [OK] 2024: 578 PA events
+  [INFO] 1927 total PA events for Taj Bradley
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Taj Bradley
+    [OK] 2026: 266 PA events
+    [OK] 2025: 675 PA events
+  [INFO] 962 total PA events for Tomoyuki Sugano
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Tomoyuki Sugano
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2025: 423 PA events
+    [OK] 2026: 291 PA events
+    [OK] 2022: 477 PA events
+    [OK] 2026: 312 PA events
+    [OK] 2026: 266 PA events
+    [--] 2023: no data
+    [OK] 2024: 110 PA events
+    [OK] 2024: 562 PA events
+  [INFO] 1807 total PA events for Trevor Rogers
+[DONE] Statcast loaded for Trevor Rogers
+    [OK] 2022: 274 PA events
+    [OK] 2024: 621 PA events
+    [OK] 2022: 714 PA events
+    [OK] 2024: 344 PA events
+    [OK] 2025: 813 PA events
+    [OK] 2025: 564 PA events
+  [INFO] 1448 total PA events for Walker Buehler
+[DONE] Statcast loaded for Walker Buehler
+    [OK] 2023: 846 PA events
+  [INFO] 3306 total PA events for Zac Gallen
+[DONE] Statcast loaded for Zac Gallen
+    [OK] 2025: 711 PA events
+  [INFO] 1112 total PA events for Will Warren
+[DONE] Statcast loaded for Will Warren
+
+[INFO] Computing matchups...
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Andrew Abbott vs Arizona Diamondbacks: composite OPS 0.934 (4/13 batters, 41 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Bryce Elder: <3 qualifying matchups vs New York Mets
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Casey Mize vs Cleveland Guardians: composite OPS 0.606 (7/13 batters, 57 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Colin Rea vs San Francisco Giants: composite OPS 1.578 (5/13 batters, 30 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Connelly Early: <3 qualifying matchups vs Texas Rangers
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Cristopher Sánchez vs Milwaukee Brewers: composite OPS 0.667 (3/13 batters, 18 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Emerson Hancock: <3 qualifying matchups vs Washington Nationals
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Emmet Sheehan: <3 qualifying matchups vs Chicago White Sox
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Erick Fedde vs Los Angeles Dodgers: composite OPS 0.908 (6/13 batters, 42 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Freddy Peralta vs Atlanta Braves: composite OPS 0.845 (5/13 batters, 48 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Gavin Williams vs Detroit Tigers: composite OPS 0.416 (10/14 batters, 111 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Grayson Rodriguez: <3 qualifying matchups vs Tampa Bay Rays
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Jeffrey Springs: <3 qualifying matchups vs Colorado Rockies
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Kyle Harrison vs Philadelphia Phillies: composite OPS 1.65 (4/13 batters, 20 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Logan Webb vs Chicago Cubs: composite OPS 0.816 (9/13 batters, 84 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Max Meyer: <3 qualifying matchups vs Pittsburgh Pirates
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Michael McGreevy: <3 qualifying matchups vs Minnesota Twins
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Miles Mikolas vs Seattle Mariners: composite OPS 0.754 (6/13 batters, 55 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Nathan Eovaldi vs Boston Red Sox: composite OPS 0.863 (6/13 batters, 49 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Patrick Corbin vs New York Yankees: composite OPS 1.049 (8/13 batters, 79 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Paul Skenes: <3 qualifying matchups vs Miami Marlins
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Spencer Arrighetti: <3 qualifying matchups vs Kansas City Royals
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Stephen Kolek: <3 qualifying matchups vs Houston Astros
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Taj Bradley: <3 qualifying matchups vs St. Louis Cardinals
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Tomoyuki Sugano: <3 qualifying matchups vs Athletics
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Trevor Rogers: <3 qualifying matchups vs San Diego Padres
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Walker Buehler vs Baltimore Orioles: composite OPS 0.848 (5/13 batters, 31 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Will Warren vs Toronto Blue Jays: composite OPS 0.894 (3/13 batters, 17 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Zac Gallen vs Cincinnati Reds: composite OPS 0.467 (4/13 batters, 26 total PA)
+
+[INFO] 95 batter-pair matchups written to /home/jhcv/discordBot/outputs/sports/mlb/mismatch.csv
+
+[TOP 5 BATTER-FAVORED]
+  Rafael Devers vs Colin Rea: OPS 2.8 (3H 1HR in 5PA)
+  Kyle Schwarber vs Kyle Harrison: OPS 2.8 (2H 1HR in 5PA)
+  Paul Goldschmidt vs Patrick Corbin: OPS 2.283 (6H 2HR in 11PA)
+  Kyle Tucker vs Erick Fedde: OPS 2.067 (3H 1HR in 6PA)
+  Taylor Ward vs Walker Buehler: OPS 2.0 (1H 1HR in 6PA)
+
+[TOP 5 PITCHER-FAVORED (individual pairs)]
+  Adley Rutschman vs Walker Buehler: OPS 0 (0H 0HR in 5PA)
+  Ceddanne Rafaela vs Nathan Eovaldi: OPS 0 (0H 0HR in 6PA)
+  Victor Robles vs Miles Mikolas: OPS 0 (0H 0HR in 6PA)
+  Willi Castro vs Jeffrey Springs: OPS 0 (0H 0HR in 5PA)
+  Andy Pages vs Erick Fedde: OPS 0 (0H 0HR in 6PA)
+
+[INFO] 15 pitcher scores written to /home/jhcv/discordBot/outputs/sports/mlb/mismatchPitcher.csv
+
+[TOP 5 PITCHER-FAVORED (composite lineup)]
+  Gavin Williams vs Detroit Tigers: OPS-against 0.416 (10/14 batters, best: Dillon Dingler 0.143)
+  Zac Gallen vs Cincinnati Reds: OPS-against 0.467 (4/13 batters, best: Spencer Steer 0.125)
+  Casey Mize vs Cleveland Guardians: OPS-against 0.606 (7/13 batters, best: Rhys Hoskins 0.167)
+  Cristopher Sánchez vs Milwaukee Brewers: OPS-against 0.667 (3/13 batters, best: William Contreras 0.333)
+  Miles Mikolas vs Seattle Mariners: OPS-against 0.754 (6/13 batters, best: Victor Robles 0.0)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ purrr     1.2.2
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Position: OF 
+Rows loaded: 3782 
+Players: 80 
+Output path: /home/jhcv/discordBot/outputs/sports/mlb/fantasy/fantasyRisk.png 
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+Attaching package: ‘rvest’
+
+The following object is masked from ‘package:readr’:
+
+    guess_encoding
+
+Linking to ImageMagick 7.1.1.43
+Enabled features: fontconfig, freetype, fftw, heic, lcms, raw, webp, x11
+Disabled features: cairo, ghostscript, pango, rsvg
+Using 3 threads
+trying URL 'https://radar.weather.gov/ridge/standard/KJAX_loop.gif'
+Content type 'image/gif' length 756595 bytes (738 KB)
+==================================================
+downloaded 738 KB
+
+Found 29 probable starters for tomorrow (2026-06-14)
+  Andrew Abbott (Cincinnati Reds) - Arizona Diamondbacks @ Cincinnati Reds
+  Bryce Elder (Atlanta Braves) - Atlanta Braves @ New York Mets
+  Casey Mize (Detroit Tigers) - Detroit Tigers @ Cleveland Guardians
+  Colin Rea (Chicago Cubs) - Chicago Cubs @ San Francisco Giants
+  Connelly Early (Boston Red Sox) - Texas Rangers @ Boston Red Sox
+  Cristopher Sánchez (Philadelphia Phillies) - Philadelphia Phillies @ Milwaukee Brewers
+  Emerson Hancock (Seattle Mariners) - Seattle Mariners @ Washington Nationals
+  Emmet Sheehan (Los Angeles Dodgers) - Los Angeles Dodgers @ Chicago White Sox
+  Erick Fedde (Chicago White Sox) - Los Angeles Dodgers @ Chicago White Sox
+  Freddy Peralta (New York Mets) - Atlanta Braves @ New York Mets
+  Gavin Williams (Cleveland Guardians) - Detroit Tigers @ Cleveland Guardians
+  Grayson Rodriguez (Los Angeles Angels) - Tampa Bay Rays @ Los Angeles Angels
+  Jeffrey Springs (Athletics) - Colorado Rockies @ Athletics
+  Kyle Harrison (Milwaukee Brewers) - Philadelphia Phillies @ Milwaukee Brewers
+  Logan Webb (San Francisco Giants) - Chicago Cubs @ San Francisco Giants
+  Max Meyer (Miami Marlins) - Miami Marlins @ Pittsburgh Pirates
+  Michael McGreevy (St. Louis Cardinals) - St. Louis Cardinals @ Minnesota Twins
+  Miles Mikolas (Washington Nationals) - Seattle Mariners @ Washington Nationals
+  Nathan Eovaldi (Texas Rangers) - Texas Rangers @ Boston Red Sox
+  Patrick Corbin (Toronto Blue Jays) - New York Yankees @ Toronto Blue Jays
+  Paul Skenes (Pittsburgh Pirates) - Miami Marlins @ Pittsburgh Pirates
+  Spencer Arrighetti (Houston Astros) - Houston Astros @ Kansas City Royals
+  Stephen Kolek (Kansas City Royals) - Houston Astros @ Kansas City Royals
+  Taj Bradley (Minnesota Twins) - St. Louis Cardinals @ Minnesota Twins
+  Tomoyuki Sugano (Colorado Rockies) - Colorado Rockies @ Athletics
+  Trevor Rogers (Baltimore Orioles) - San Diego Padres @ Baltimore Orioles
+  Walker Buehler (San Diego Padres) - San Diego Padres @ Baltimore Orioles
+  Will Warren (New York Yankees) - New York Yankees @ Toronto Blue Jays
+  Zac Gallen (Arizona Diamondbacks) - Arizona Diamondbacks @ Cincinnati Reds
+Written to /home/jhcv/discordBot/outputs/sports/mlb/probableStarters.csv
+[INFO] 29 probable starters - fetching Statcast in parallel...
+
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+    [--] 2022: no data
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2022: 45 PA events
+    [OK] 2024: 226 PA events
+    [OK] 2026: 185 PA events
+    [OK] 2026: 322 PA events
+    [OK] 2026: 304 PA events
+    [OK] 2022: 227 PA events
+    [OK] 2024: 452 PA events
+    [OK] 2026: 342 PA events
+    [OK] 2023: 459 PA events
+    [OK] 2024: 714 PA events
+    [OK] 2025: 627 PA events
+  [INFO] 1309 total PA events for Casey Mize
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Casey Mize
+    [OK] 2024: 586 PA events
+    [OK] 2025: 679 PA events
+    [OK] 2023: 517 PA events
+    [OK] 2025: 662 PA events
+  [INFO] 2197 total PA events for Colin Rea
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Colin Rea
+    [OK] 2025: 684 PA events
+  [INFO] 2051 total PA events for Andrew Abbott
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Andrew Abbott
+    [OK] 2023: 732 PA events
+  [INFO] 2206 total PA events for Bryce Elder
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Bryce Elder
+    [--] 2022: no data
+    [OK] 2023: 49 PA events
+    [--] 2024: no data
+    [OK] 2022: 177 PA events
+    [--] 2022: no data
+    [--] 2023: no data
+    [--] 2024: no data
+    [--] 2022: no data
+    [OK] 2026: 375 PA events
+    [OK] 2025: 79 PA events
+    [OK] 2025: 385 PA events
+    [OK] 2026: 292 PA events
+    [OK] 2025: 291 PA events
+    [OK] 2026: 248 PA events
+    [OK] 2024: 266 PA events
+  [INFO] 992 total PA events for Emerson Hancock
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Emerson Hancock
+    [OK] 2026: 300 PA events
+  [INFO] 379 total PA events for Connelly Early
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Connelly Early
+    [OK] 2023: 248 PA events
+  [INFO] 787 total PA events for Emmet Sheehan
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Emmet Sheehan
+    [OK] 2023: 396 PA events
+    [--] 2022: no data
+    [OK] 2025: 807 PA events
+    [--] 2023: no data
+    [OK] 2023: 345 PA events
+    [OK] 2024: 332 PA events
+    [OK] 2024: 754 PA events
+  [INFO] 2509 total PA events for Cristopher Sánchez
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Cristopher Sánchez
+    [OK] 2026: 345 PA events
+    [--] 2022: no data
+    [--] 2025: no data
+    [OK] 2026: 111 PA events
+    [OK] 2022: 317 PA events
+    [OK] 2025: 704 PA events
+  [INFO] 1726 total PA events for Gavin Williams
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Gavin Williams
+    [OK] 2026: 337 PA events
+    [OK] 2026: 276 PA events
+    [OK] 2023: 680 PA events
+    [OK] 2022: 573 PA events
+    [OK] 2025: 723 PA events
+    [OK] 2024: 142 PA events
+    [OK] 2025: 623 PA events
+    [OK] 2026: 320 PA events
+    [OK] 2023: 515 PA events
+    [OK] 2023: 55 PA events
+    [OK] 2024: 491 PA events
+  [INFO] 1117 total PA events for Grayson Rodriguez
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Grayson Rodriguez
+    [OK] 2022: 549 PA events
+    [OK] 2024: 726 PA events
+  [INFO] 2198 total PA events for Erick Fedde
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Erick Fedde
+    [--] 2022: no data
+    [OK] 2025: 713 PA events
+  [INFO] 1779 total PA events for Jeffrey Springs
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Jeffrey Springs
+    [OK] 2024: 725 PA events
+  [INFO] 2782 total PA events for Freddy Peralta
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Freddy Peralta
+    [OK] 2022: 26 PA events
+    [--] 2023: no data
+    [--] 2023: no data
+    [--] 2022: no data
+    [OK] 2023: 147 PA events
+    [OK] 2025: 156 PA events
+    [OK] 2024: 86 PA events
+    [OK] 2026: 246 PA events
+    [OK] 2024: 248 PA events
+    [OK] 2026: 278 PA events
+    [OK] 2025: 285 PA events
+    [OK] 2025: 400 PA events
+    [OK] 2026: 285 PA events
+  [INFO] 771 total PA events for Michael McGreevy
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Michael McGreevy
+    [OK] 2026: 325 PA events
+  [INFO] 884 total PA events for Max Meyer
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Max Meyer
+    [OK] 2022: 787 PA events
+    [OK] 2024: 532 PA events
+  [INFO] 1081 total PA events for Kyle Harrison
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Kyle Harrison
+    [OK] 2026: 262 PA events
+    [OK] 2024: 841 PA events
+    [OK] 2025: 856 PA events
+    [OK] 2023: 850 PA events
+  [INFO] 3612 total PA events for Logan Webb
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Logan Webb
+    [--] 2023: no data
+    [--] 2022: no data
+    [OK] 2022: 460 PA events
+    [OK] 2025: 669 PA events
+    [OK] 2024: 720 PA events
+    [OK] 2023: 577 PA events
+    [OK] 2026: 303 PA events
+    [OK] 2026: 252 PA events
+    [OK] 2026: 337 PA events
+    [OK] 2025: 663 PA events
+    [OK] 2024: 696 PA events
+    [OK] 2023: 860 PA events
+    [OK] 2022: 713 PA events
+    [OK] 2024: 764 PA events
+    [OK] 2023: 790 PA events
+  [INFO] 3182 total PA events for Patrick Corbin
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Patrick Corbin
+    [OK] 2024: 514 PA events
+    [OK] 2025: 496 PA events
+  [INFO] 2566 total PA events for Nathan Eovaldi
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Nathan Eovaldi
+    [OK] 2022: 805 PA events
+  [INFO] 3316 total PA events for Miles Mikolas
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Miles Mikolas
+    [--] 2022: no data
+    [OK] 2025: 733 PA events
+  [INFO] 1550 total PA events for Paul Skenes
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Paul Skenes
+    [--] 2022: no data
+    [--] 2023: no data
+    [--] 2024: no data
+    [--] 2022: no data
+    [--] 2023: no data
+    [--] 2022: no data
+    [OK] 2024: 211 PA events
+    [OK] 2026: 172 PA events
+    [OK] 2026: 284 PA events
+    [OK] 2026: 287 PA events
+    [OK] 2025: 461 PA events
+  [INFO] 844 total PA events for Stephen Kolek
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Stephen Kolek
+    [OK] 2023: 460 PA events
+    [--] 2023: no data
+    [OK] 2025: 156 PA events
+    [OK] 2024: 578 PA events
+    [OK] 2026: 243 PA events
+    [OK] 2025: 605 PA events
+  [INFO] 1927 total PA events for Taj Bradley
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Taj Bradley
+    [OK] 2025: 675 PA events
+  [INFO] 962 total PA events for Tomoyuki Sugano
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Tomoyuki Sugano
+    [OK] 2026: 266 PA events
+    [--] 2023: no data
+    [--] 2022: no data
+    [--] 2023: no data
+    [OK] 2023: 79 PA events
+    [OK] 2024: 632 PA events
+  [INFO] 1031 total PA events for Spencer Arrighetti
+  [INFO] Fetching Statcast (5 seasons in parallel)...
+[DONE] Statcast loaded for Spencer Arrighetti
+    [OK] 2025: 423 PA events
+    [OK] 2022: 274 PA events
+    [OK] 2026: 266 PA events
+    [OK] 2022: 477 PA events
+    [OK] 2024: 562 PA events
+  [INFO] 1807 total PA events for Trevor Rogers
+[DONE] Statcast loaded for Trevor Rogers
+    [OK] 2024: 344 PA events
+    [OK] 2024: 110 PA events
+    [OK] 2026: 291 PA events
+    [OK] 2025: 564 PA events
+  [INFO] 1448 total PA events for Walker Buehler
+[DONE] Statcast loaded for Walker Buehler
+    [OK] 2026: 312 PA events
+    [OK] 2025: 711 PA events
+  [INFO] 1112 total PA events for Will Warren
+[DONE] Statcast loaded for Will Warren
+    [OK] 2024: 621 PA events
+    [OK] 2025: 813 PA events
+    [OK] 2022: 714 PA events
+    [OK] 2023: 846 PA events
+  [INFO] 3306 total PA events for Zac Gallen
+[DONE] Statcast loaded for Zac Gallen
+
+[INFO] Computing matchups...
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Andrew Abbott vs Arizona Diamondbacks: composite OPS 0.934 (4/13 batters, 41 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Bryce Elder: <3 qualifying matchups vs New York Mets
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Casey Mize vs Cleveland Guardians: composite OPS 0.606 (7/13 batters, 57 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Colin Rea vs San Francisco Giants: composite OPS 1.578 (5/13 batters, 30 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Connelly Early: <3 qualifying matchups vs Texas Rangers
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Cristopher Sánchez vs Milwaukee Brewers: composite OPS 0.667 (3/13 batters, 18 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Emerson Hancock: <3 qualifying matchups vs Washington Nationals
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Emmet Sheehan: <3 qualifying matchups vs Chicago White Sox
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Erick Fedde vs Los Angeles Dodgers: composite OPS 0.908 (6/13 batters, 42 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Freddy Peralta vs Atlanta Braves: composite OPS 0.845 (5/13 batters, 48 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Gavin Williams vs Detroit Tigers: composite OPS 0.416 (10/14 batters, 111 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Grayson Rodriguez: <3 qualifying matchups vs Tampa Bay Rays
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Jeffrey Springs: <3 qualifying matchups vs Colorado Rockies
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Kyle Harrison vs Philadelphia Phillies: composite OPS 1.65 (4/13 batters, 20 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Logan Webb vs Chicago Cubs: composite OPS 0.816 (9/13 batters, 84 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Max Meyer: <3 qualifying matchups vs Pittsburgh Pirates
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Michael McGreevy: <3 qualifying matchups vs Minnesota Twins
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Miles Mikolas vs Seattle Mariners: composite OPS 0.754 (6/13 batters, 55 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Nathan Eovaldi vs Boston Red Sox: composite OPS 0.863 (6/13 batters, 49 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Patrick Corbin vs New York Yankees: composite OPS 1.049 (8/13 batters, 79 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Paul Skenes: <3 qualifying matchups vs Miami Marlins
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Spencer Arrighetti: <3 qualifying matchups vs Kansas City Royals
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Stephen Kolek: <3 qualifying matchups vs Houston Astros
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Taj Bradley: <3 qualifying matchups vs St. Louis Cardinals
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Tomoyuki Sugano: <3 qualifying matchups vs Athletics
+  [INFO] No lineup posted - falling back to active roster
+  [SKIP] Trevor Rogers: <3 qualifying matchups vs San Diego Padres
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Walker Buehler vs Baltimore Orioles: composite OPS 0.848 (5/13 batters, 31 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Will Warren vs Toronto Blue Jays: composite OPS 0.894 (3/13 batters, 17 total PA)
+  [INFO] No lineup posted - falling back to active roster
+  [SCORE] Zac Gallen vs Cincinnati Reds: composite OPS 0.467 (4/13 batters, 26 total PA)
+
+[INFO] 95 batter-pair matchups written to /home/jhcv/discordBot/outputs/sports/mlb/mismatch.csv
+
+[TOP 5 BATTER-FAVORED]
+  Rafael Devers vs Colin Rea: OPS 2.8 (3H 1HR in 5PA)
+  Kyle Schwarber vs Kyle Harrison: OPS 2.8 (2H 1HR in 5PA)
+  Paul Goldschmidt vs Patrick Corbin: OPS 2.283 (6H 2HR in 11PA)
+  Kyle Tucker vs Erick Fedde: OPS 2.067 (3H 1HR in 6PA)
+  Taylor Ward vs Walker Buehler: OPS 2.0 (1H 1HR in 6PA)
+
+[TOP 5 PITCHER-FAVORED (individual pairs)]
+  Adley Rutschman vs Walker Buehler: OPS 0 (0H 0HR in 5PA)
+  Ceddanne Rafaela vs Nathan Eovaldi: OPS 0 (0H 0HR in 6PA)
+  Victor Robles vs Miles Mikolas: OPS 0 (0H 0HR in 6PA)
+  Willi Castro vs Jeffrey Springs: OPS 0 (0H 0HR in 5PA)
+  Andy Pages vs Erick Fedde: OPS 0 (0H 0HR in 6PA)
+
+[INFO] 15 pitcher scores written to /home/jhcv/discordBot/outputs/sports/mlb/mismatchPitcher.csv
+
+[TOP 5 PITCHER-FAVORED (composite lineup)]
+  Gavin Williams vs Detroit Tigers: OPS-against 0.416 (10/14 batters, best: Dillon Dingler 0.143)
+  Zac Gallen vs Cincinnati Reds: OPS-against 0.467 (4/13 batters, best: Spencer Steer 0.125)
+  Casey Mize vs Cleveland Guardians: OPS-against 0.606 (7/13 batters, best: Rhys Hoskins 0.167)
+  Cristopher Sánchez vs Milwaukee Brewers: OPS-against 0.667 (3/13 batters, best: William Contreras 0.333)
+  Miles Mikolas vs Seattle Mariners: OPS-against 0.754 (6/13 batters, best: Victor Robles 0.0)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+Attaching package: ‘rvest’
+
+The following object is masked from ‘package:readr’:
+
+    guess_encoding
+
+Linking to ImageMagick 7.1.1.43
+Enabled features: fontconfig, freetype, fftw, heic, lcms, raw, webp, x11
+Disabled features: cairo, ghostscript, pango, rsvg
+Using 3 threads
+trying URL 'https://radar.weather.gov/ridge/standard/KJAX_loop.gif'
+Content type 'image/gif' length 311590 bytes (304 KB)
+==================================================
+downloaded 304 KB
+
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+Attaching package: ‘rvest’
+
+The following object is masked from ‘package:readr’:
+
+    guess_encoding
+
+Linking to ImageMagick 7.1.1.43
+Enabled features: fontconfig, freetype, fftw, heic, lcms, raw, webp, x11
+Disabled features: cairo, ghostscript, pango, rsvg
+Using 3 threads
+trying URL 'https://cdn.star.nesdis.noaa.gov/WFO/jax/GEOCOLOR/GOES19-JAX-GEOCOLOR-600x600.gif'
+Content type 'image/gif' length 5007664 bytes (4.8 MB)
+==================================================
+downloaded 4.8 MB
+
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf surf
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets regress
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb fantasyrisk
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+[setup] 37 commands registered
+Synced 37 slash command(s) to guild 1286546740211613706
+Online as several bots#0340

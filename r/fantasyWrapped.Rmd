@@ -1,0 +1,1099 @@
+---
+title: ""
+output:
+  html_document:
+    theme: null
+    highlight: null
+    self_contained: true
+    css: !expr NULL
+params:
+  data_path: "/tmp/sleeper_data.json"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE,
+                      fig.width=10, fig.height=6,
+                      out.width="100%", dpi=150)
+
+library(jsonlite); library(dplyr); library(tidyr); library(ggplot2)
+library(ggrepel);  library(scales); library(stringr); library(tibble)
+library(purrr);    library(forcats); library(knitr)
+
+`%||%` <- function(a, b) if (is.null(a)) b else a
+
+# ---- Palette ----
+bg_dark  <- "#0A1628"; bg_mid <- "#0D1F3C"; bg_card <- "#112244"
+col_blue <- "#4A9EDB"; col_white <- "#FFFFFF"; col_dim <- "#8AAAC8"
+col_green <- "#5CBF8A"; col_red <- "#E05C5C"; col_gold <- "#F0C040"
+
+tw <- function(base_size=11) {
+  theme_minimal(base_size=base_size) %+replace% theme(
+    plot.background  = element_rect(fill=bg_dark,  color=NA),
+    panel.background = element_rect(fill=bg_mid,   color=NA),
+    panel.grid.major = element_line(color="#1A2E50", linewidth=0.4),
+    panel.grid.minor = element_blank(),
+    axis.text        = element_text(color=col_dim),
+    axis.title       = element_text(color=col_white),
+    plot.title       = element_text(color=col_white, face="bold", size=base_size+2),
+    plot.subtitle    = element_text(color=col_dim, size=base_size-1),
+    plot.caption     = element_text(color=col_dim, size=base_size-3),
+    legend.background= element_rect(fill=bg_mid, color=NA),
+    legend.text      = element_text(color=col_dim),
+    legend.title     = element_text(color=col_white),
+    strip.background = element_rect(fill=bg_card, color=NA),
+    strip.text       = element_text(color=col_white, face="bold")
+  )
+}
+
+# ---- NFL team colors ----
+nfl1 <- c(ARI="#97233F",ATL="#A71930",BAL="#241773",BUF="#00338D",CAR="#0085CA",
+  CHI="#0B162A",CIN="#FB4F14",CLE="#311D00",DAL="#003594",DEN="#FB4F14",
+  DET="#0076B6",GB="#203731",HOU="#03202F",IND="#002C5F",JAX="#006778",
+  KC="#E31837",LAC="#0080C6",LAR="#003594",LV="#A5ACAF",MIA="#008E97",
+  MIN="#4F2683",NE="#002244",NO="#D3BC8D",NYG="#0B2265",NYJ="#125740",
+  PHI="#004C54",PIT="#FFB612",SEA="#002244",SF="#AA0000",TB="#D50A0A",
+  TEN="#0C2340",WAS="#773141",FA="#555555")
+nfl2 <- c(ARI="#FFB612",ATL="#000000",BAL="#9E7C0C",BUF="#C60C30",CAR="#000000",
+  CHI="#C83803",CIN="#000000",CLE="#FF3C00",DAL="#869397",DEN="#002244",
+  DET="#B0B7BC",GB="#FFB612",HOU="#C9243F",IND="#A2AAAD",JAX="#D7A22A",
+  KC="#FFB81C",LAC="#FFC20E",LAR="#FFA300",LV="#000000",MIA="#FC4C02",
+  MIN="#FFC62F",NE="#C60C30",NO="#101820",NYG="#A71930",NYJ="#000000",
+  PHI="#A5ACAF",PIT="#101820",SEA="#69BE28",SF="#B3995D",TB="#FF7900",
+  TEN="#4B92DB",WAS="#FFB612",FA="#888888")
+gc1 <- function(t) { v<-nfl1[t]; if(is.na(v)) "#555555" else v }
+gc2 <- function(t) { v<-nfl2[t]; if(is.na(v)) "#888888" else v }
+
+# ---- Load data ----
+raw <- fromJSON(params$data_path, simplifyVector=FALSE)
+
+roster_df <- bind_rows(lapply(names(raw$roster_map), function(id) {
+  r <- raw$roster_map[[id]]
+  tibble(roster_id=id, display_name=r$display_name, team_name=r$team_name,
+         wins=r$wins, losses=r$losses, fpts=r$fpts, fpts_against=r$fpts_against)
+}))
+
+# owner_id -> display_name for trade creator lookup
+owner_to_disp <- setNames(roster_df$display_name,
+  sapply(names(raw$roster_map), function(id) raw$roster_map[[id]]$owner_id))
+
+players_df <- bind_rows(lapply(names(raw$players), function(pid) {
+  p <- raw$players[[pid]]
+  tibble(player_id=pid, full_name=p$full_name, position=p$position,
+         team=p$team, search_rank=p$search_rank)
+}))
+
+draft_df <- bind_rows(lapply(raw$draft_picks, function(p) {
+  tibble(pick_no=p$pick_no, round=p$round, draft_slot=p$draft_slot,
+         player_id=p$player_id, roster_id=p$roster_id,
+         team_name=p$team_name, display_name=p$display_name,
+         player_name=p$player_name, position=p$position, nfl_team=p$nfl_team)
+}))
+
+# Roster positions (for optimal lineup)
+roster_pos <- as.character(unlist(raw$roster_positions %||% list()))
+starter_slots <- roster_pos[!roster_pos %in% c("BN","IR")]
+n_qb  <- sum(starter_slots=="QB");  n_rb <- sum(starter_slots=="RB")
+n_wr  <- sum(starter_slots=="WR");  n_te <- sum(starter_slots=="TE")
+n_k   <- sum(starter_slots=="K");   n_def<- sum(starter_slots=="DEF")
+n_flex<- sum(starter_slots=="FLEX")
+flex_pos <- c("RB","WR","TE")
+
+# ---- Load data ----
+# player_weekly_pts pre-computed by fetchSleeperData.py:
+# matchup players_points (authoritative for rostered players) +
+# gap-filled FA player stats from Sleeper /stats/nfl/regular/2025/{wk}
+player_weekly_pts <- raw$player_weekly_pts
+
+player_season_pts <- lapply(player_weekly_pts, function(wks) sum(unlist(wks)))
+
+player_pts_df <- tibble(
+  player_id=names(player_season_pts),
+  season_pts=unlist(player_season_pts)
+) %>% left_join(players_df, by="player_id") %>%
+  filter(!is.na(full_name), full_name!="")
+
+# Matchup frame (all 17 weeks)
+matchup_df <- bind_rows(lapply(names(raw$matchups), function(wk) {
+  bind_rows(lapply(raw$matchups[[wk]], function(m) {
+    tibble(week=as.integer(wk), roster_id=as.character(m$roster_id),
+           matchup_id=m$matchup_id, points=m$points)
+  }))
+}))
+
+# Regular-season results (weeks 1-14)
+matchup_results <- matchup_df %>%
+  filter(week<=14) %>%
+  group_by(week, matchup_id) %>%
+  filter(n()==2, !is.na(matchup_id)) %>%
+  arrange(week, matchup_id, desc(points)) %>%
+  mutate(result=c("W","L")) %>%
+  ungroup()
+
+# ---- Optimal lineup / sit-start accuracy ----
+get_pos <- function(pid) {
+  p <- raw$players[[pid]]; if(is.null(p)) "UNK" else as.character(p$position %||% "UNK")
+}
+
+optimal_lineup_pts <- function(pp_list, pos_map) {
+  # pp_list: named list pid->pts; pos_map: pid->position
+  pids <- names(pp_list)
+  pts  <- as.numeric(unlist(pp_list))
+  pos  <- sapply(pids, function(p) pos_map[[p]] %||% "UNK")
+  df   <- tibble(pid=pids, pts=pts, pos=pos) %>% filter(pid!="BYE") %>% arrange(desc(pts))
+  # greedy optimal: fill slots in order QB, RB*n, WR*n, TE, FLEX, K, DEF
+  used <- rep(FALSE, nrow(df))
+  total <- 0
+  pick_best <- function(positions, n) {
+    count <- 0
+    for (i in seq_len(nrow(df))) {
+      if (!used[i] && df$pos[i] %in% positions) {
+        total <<- total + df$pts[i]; used[i] <<- TRUE; count <- count+1
+        if (count==n) break
+      }
+    }
+  }
+  pick_best("QB",  n_qb);  pick_best("RB",  n_rb)
+  pick_best("WR",  n_wr);  pick_best("TE",  n_te)
+  pick_best(flex_pos, n_flex)
+  pick_best("K",   n_k);   pick_best("DEF", n_def)
+  total
+}
+
+# Build pos_map from players data
+pos_map <- setNames(
+  lapply(names(raw$players), function(pid) as.character(raw$players[[pid]]$position %||% "UNK")),
+  names(raw$players)
+)
+
+sit_start_df <- bind_rows(lapply(names(raw$matchups), function(wk) {
+  bind_rows(lapply(raw$matchups[[wk]], function(m) {
+    rid   <- as.character(m$roster_id)
+    starters <- as.character(unlist(m$starters %||% list()))
+    pp    <- m$players_points
+    if (length(starters)==0 || length(pp)==0) return(NULL)
+    actual_pts  <- sum(as.numeric(sapply(starters, function(p) pp[[p]] %||% 0)))
+    optimal_pts <- optimal_lineup_pts(pp, pos_map)
+    tibble(week=as.integer(wk), roster_id=rid,
+           actual=actual_pts, optimal=optimal_pts,
+           efficiency=if(optimal_pts>0) actual_pts/optimal_pts else NA_real_)
+  }))
+})) %>%
+  left_join(roster_df %>% select(roster_id, team_name, display_name), by="roster_id")
+
+# ---- Post-transaction pts helper ----
+pts_from_week <- function(pid, from_week) {
+  wks <- player_weekly_pts[[pid]]
+  if (is.null(wks)) return(0)
+  sum(unlist(wks[as.character(seq(from_week, 17))]), na.rm=TRUE)
+}
+
+eval_txns <- function(txn_list) {
+  rows <- lapply(txn_list, function(t) {
+    wk   <- as.integer(t$week)
+    rids <- as.character(unlist(t$roster_ids))
+    if (length(rids)==0) return(NULL)
+    inner <- lapply(rids, function(rid) {
+      rec_pids  <- as.character(unlist(t$adds[[rid]]  %||% character(0)))
+      gave_pids <- as.character(unlist(t$drops[[rid]] %||% character(0)))
+      rec_pids  <- rec_pids[!is.na(rec_pids)  & nchar(rec_pids)>0]
+      gave_pids <- gave_pids[!is.na(gave_pids) & nchar(gave_pids)>0]
+      rec_pts  <- if(length(rec_pids)>0)  sum(vapply(rec_pids,  pts_from_week, numeric(1), from_week=wk)) else 0
+      gave_pts <- if(length(gave_pids)>0) sum(vapply(gave_pids, pts_from_week, numeric(1), from_week=wk)) else 0
+      rec_pos <- if(length(rec_pids)>0)
+        paste(vapply(rec_pids, function(p){ pl<-raw$players[[p]]; if(is.null(pl)) "UNK" else as.character(pl$position %||% "UNK") }, character(1)), collapse=",")
+      else ""
+      rec_names  <- paste(vapply(rec_pids,  function(p){pl<-raw$players[[p]];if(is.null(pl))p else as.character(pl$full_name)},character(1)),collapse=", ")
+      gave_names <- paste(vapply(gave_pids, function(p){pl<-raw$players[[p]];if(is.null(pl))p else as.character(pl$full_name)},character(1)),collapse=", ")
+      dp_txt <- if(length(t$draft_picks)>0) paste0("+ ",length(t$draft_picks)," pick(s)") else ""
+      tibble(
+        week=wk, transaction_id=as.character(t$transaction_id), roster_id=rid,
+        team_name  ={tm<-roster_df$team_name[roster_df$roster_id==rid];  if(length(tm)==0) rid else tm[1]},
+        display_name={dn<-roster_df$display_name[roster_df$roster_id==rid];if(length(dn)==0) rid else dn[1]},
+        received   =paste(c(rec_names,dp_txt)[nchar(c(rec_names,dp_txt))>0],collapse=" "),
+        gave=gave_names,
+        rec_position=rec_pos,
+        received_pts=as.numeric(rec_pts), gave_pts=as.numeric(gave_pts),
+        net_pts=as.numeric(rec_pts)-as.numeric(gave_pts)
+      )
+    })
+    bind_rows(Filter(Negate(is.null), inner))
+  })
+  bind_rows(Filter(Negate(is.null), rows))
+}
+
+trades_raw  <- raw$trades  %||% list()
+waivers_raw <- raw$waivers %||% list()
+trade_sum   <- if(length(trades_raw)>0)  eval_txns(trades_raw)  else tibble()
+waiver_sum  <- if(length(waivers_raw)>0) eval_txns(waivers_raw) else tibble()
+
+# ---- Waiver position normalization ----
+# A QB pickup scores ~4x more raw pts than a WR just by position norms.
+# For each waiver row, subtract the median received_pts for that position
+# across ALL waiver adds of that position. net_pts_adj = how much better
+# (or worse) your add was vs a replacement-level add at the same position.
+if (nrow(waiver_sum) > 0 && "rec_position" %in% names(waiver_sum)) {
+  pos_median_waiver <- waiver_sum %>%
+    filter(nchar(rec_position) > 0, rec_position != "UNK", received_pts > 0) %>%
+    # Use only the primary position (first if comma-separated multi-player txn)
+    mutate(primary_pos = str_extract(rec_position, "^[^,]+")) %>%
+    group_by(primary_pos) %>%
+    summarise(pos_med_rec = median(received_pts, na.rm=TRUE), .groups="drop")
+
+  waiver_sum <- waiver_sum %>%
+    mutate(primary_pos = str_extract(rec_position, "^[^,]+")) %>%
+    left_join(pos_median_waiver, by="primary_pos") %>%
+    mutate(
+      pos_med_rec  = replace_na(pos_med_rec, 0),
+      # Adjusted net: pts above position median for the add (drop side removed —
+      # position normalization on the received side already makes this apples-to-apples)
+      net_pts_adj  = received_pts - pos_med_rec
+    )
+} else {
+  waiver_sum <- waiver_sum %>% mutate(net_pts_adj = net_pts)
+}
+
+# Trade verdicts with villain/victim
+trade_verdicts <- if(nrow(trade_sum)>0) {
+  creator_map <- setNames(
+    sapply(trades_raw, function(t) owner_to_disp[as.character(t$creator)] %||% as.character(t$creator)),
+    sapply(trades_raw, function(t) as.character(t$transaction_id))
+  )
+  trade_sum %>%
+    group_by(transaction_id, week) %>%
+    mutate(
+      winner_dn = display_name[which.max(net_pts)],
+      loser_dn  = display_name[which.min(net_pts)],
+      winner_net= max(net_pts), loser_net=min(net_pts),
+      imbalance = abs(winner_net-loser_net),
+      initiator = creator_map[transaction_id]
+    ) %>% ungroup()
+} else tibble()
+
+# ---- GM Score components ----
+trade_mgr <- if(nrow(trade_sum)>0)
+  trade_sum %>% group_by(display_name,team_name) %>%
+    summarise(trade_net=sum(net_pts), n_trades=n(), .groups="drop") else
+  roster_df %>% transmute(display_name, team_name, trade_net=0, n_trades=0)
+
+waiver_mgr <- if(nrow(waiver_sum)>0)
+  waiver_sum %>% group_by(display_name) %>%
+    summarise(waiver_net=mean(net_pts_adj), n_waivers=n(), .groups="drop") else
+  roster_df %>% transmute(display_name, waiver_net=0, n_waivers=0)
+
+draft_voe_mgr <- draft_df %>%
+  left_join(player_pts_df %>% select(player_id, season_pts), by="player_id") %>%
+  mutate(season_pts=replace_na(season_pts,0)) %>%
+  group_by(round) %>% mutate(round_med=median(season_pts,na.rm=TRUE)) %>% ungroup() %>%
+  mutate(voe=season_pts-round_med) %>%
+  group_by(display_name, team_name=team_name) %>%
+  summarise(draft_voe=sum(voe,na.rm=TRUE), .groups="drop")
+
+sit_start_mgr <- sit_start_df %>%
+  filter(week<=14) %>%
+  group_by(display_name, team_name) %>%
+  summarise(avg_eff=mean(efficiency,na.rm=TRUE), .groups="drop") %>%
+  mutate(eff_z=(avg_eff-mean(avg_eff,na.rm=TRUE))/sd(avg_eff,na.rm=TRUE))
+
+gm_df <- roster_df %>% select(display_name, team_name) %>%
+  left_join(trade_mgr  %>% select(display_name, trade_net, n_trades),  by="display_name") %>%
+  left_join(waiver_mgr %>% select(display_name, waiver_net, n_waivers),by="display_name") %>%
+  left_join(draft_voe_mgr %>% select(display_name, draft_voe), by="display_name") %>%
+  left_join(sit_start_mgr %>% select(display_name, avg_eff, eff_z),   by="display_name") %>%
+  mutate(
+    across(c(trade_net,waiver_net,draft_voe,avg_eff,eff_z), ~replace_na(.,0)),
+    across(c(n_trades, n_waivers), ~replace_na(as.integer(.),0L)),
+    # Z-score each component then combine
+    z_trade  = (trade_net   - mean(trade_net,  na.rm=TRUE)) / (sd(trade_net,  na.rm=TRUE)+1),
+    z_waiver = (waiver_net  - mean(waiver_net, na.rm=TRUE)) / (sd(waiver_net, na.rm=TRUE)+1),
+    z_draft  = (draft_voe   - mean(draft_voe,  na.rm=TRUE)) / (sd(draft_voe,  na.rm=TRUE)+1),
+    gm_score = z_trade + z_waiver + z_draft + eff_z
+  ) %>%
+  arrange(desc(gm_score))
+```
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@page { size: 11in 14in; margin: 0.6in 0.5in; }
+* { box-sizing: border-box; }
+body { background-color: #0A1628; color: #FFFFFF; font-family: 'Segoe UI', Tahoma, sans-serif; max-width: 100%; overflow-x: hidden; padding: 0 8px; }
+h1 { color: #FFFFFF; border-bottom: 2px solid #4A9EDB; padding-bottom: 8px; font-size: clamp(1.2rem, 4vw, 2rem); }
+h2, h3, h4 { color: #4A9EDB; font-size: clamp(1rem, 3vw, 1.5rem); }
+.section-header { background: #112244; border-left: 4px solid #4A9EDB; padding: 8px 16px; margin: 24px 0 12px 0; border-radius: 0 4px 4px 0; }
+.section-header h2 { color: #FFFFFF; margin: 0; }
+hr { border-color: #1A2E50; }
+table { background: #0D1F3C; color: #FFFFFF; border-collapse: collapse; width: 100%; margin-bottom: 16px; table-layout: auto; word-wrap: break-word; font-size: clamp(0.65rem, 2vw, 0.9rem); }
+th { background: #112244; color: #4A9EDB; padding: 8px 6px; border-bottom: 2px solid #4A9EDB; text-align: left; }
+td { padding: 6px 6px; border-bottom: 1px solid #1A2E50; }
+tr:hover td { background: #152A4A; }
+.table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+img { max-width: 85% !important; width: 85% !important; height: auto !important; display: block; margin: 0 auto; }
+figure, .figure { width: 85% !important; max-width: 85% !important; margin: 0 auto 16px auto; }
+.plot-container, p > img { width: 85%; margin: 0 auto; }
+blockquote { border-left: 3px solid #4A9EDB; padding-left: 12px; color: #8AAAC8; margin: 8px 0; font-size: clamp(0.8rem, 2.5vw, 1rem); }
+pre.bracket { font-family: 'Courier New', monospace; background: #0D1F3C; padding: 16px; border-radius: 6px; line-height: 2; color: #FFFFFF; border-left: 3px solid #4A9EDB; white-space: pre; overflow-x: auto; font-size: clamp(0.6rem, 2vw, 0.9rem); }
+@media (max-width: 600px) {
+  img { max-width: 100% !important; width: 100% !important; }
+  figure, .figure { width: 100% !important; max-width: 100% !important; }
+  .plot-container, p > img { width: 100%; }
+  body { padding: 0 4px; }
+}
+</style>
+
+# Room 40 - 2025 Fantasy Football Season Wrapped
+
+---
+
+## Final Standings
+
+```{r standings-table}
+# Playoff finish lookup (determined from bracket data)
+finish_map <- c(
+  LeChuckski  = "1st - Champion",
+  comfyboxers = "2nd - Runner-up",
+  jhcv        = "3rd Place",
+  MullyMammoth= "4th Place"
+)
+
+roster_df %>%
+  mutate(
+    finish_rank = case_when(
+      display_name == "LeChuckski"  ~ 1,
+      display_name == "comfyboxers" ~ 2,
+      display_name == "jhcv"        ~ 3,
+      display_name == "MullyMammoth"~ 4,
+      TRUE                          ~ 4L + rank(desc(wins + fpts/10000), ties.method="first")[match(display_name, display_name)]
+    )
+  ) %>%
+  arrange(finish_rank) %>%
+  mutate(
+    Rank   = row_number(),
+    Record = paste0(wins,"-",losses),
+    `Pts For`    = round(fpts, 1),
+    `Pts Against`= round(fpts_against, 1),
+    Finish = ifelse(display_name %in% names(finish_map), finish_map[display_name], paste0("RS #",rank(desc(wins+fpts/10000), ties.method="first")[match(display_name,display_name)]))
+  ) %>%
+  select(Rank, Team=team_name, Manager=display_name, Record, `Pts For`, `Pts Against`, Finish) %>%
+  knitr::kable(align=c("c","l","l","c","r","r","l"))
+```
+
+> LeChuckski won the championship (156.1-109.6 over comfyboxers in Week 17).
+
+---
+
+## Playoff Bracket
+
+```{r playoff-bracket, fig.height=7, fig.width=10}
+# Build bracket data from matchup results
+get_bracket_week <- function(wk) {
+  matchup_df %>% filter(week==wk, !is.na(matchup_id)) %>%
+    left_join(roster_df %>% select(roster_id, display_name, team_name), by="roster_id") %>%
+    group_by(matchup_id) %>%
+    arrange(desc(points)) %>%
+    summarise(
+      w_name=first(display_name), w_pts=first(points),
+      l_name=last(display_name),  l_pts=last(points),
+      .groups="drop"
+    ) %>% arrange(matchup_id)
+}
+
+w15 <- get_bracket_week(15)
+w16 <- get_bracket_week(16)
+w17 <- get_bracket_week(17)
+
+# Build a visual bracket as a ggplot
+# Layout: 3 columns (weeks 15, 16, 17), rows = matchups
+bracket_data <- bind_rows(
+  w15 %>% mutate(round="Wk 15\nFirst Round",  round_x=1, matchup_y=as.numeric(matchup_id)*2),
+  w16 %>% mutate(round="Wk 16\nSemifinals",   round_x=2, matchup_y=as.numeric(matchup_id)*2),
+  w17 %>% mutate(round="Wk 17\nChampionship", round_x=3, matchup_y=as.numeric(matchup_id)*2)
+)
+
+# Draw as a table-style ggplot
+ggplot() +
+  # Background panels per round
+  annotate("rect", xmin=0.55, xmax=1.45, ymin=-Inf, ymax=Inf, fill=bg_card, alpha=0.5) +
+  annotate("rect", xmin=1.55, xmax=2.45, ymin=-Inf, ymax=Inf, fill=bg_card, alpha=0.5) +
+  annotate("rect", xmin=2.55, xmax=3.45, ymin=-Inf, ymax=Inf, fill=bg_card, alpha=0.5) +
+  # Round labels
+  annotate("text", x=1, y=11, label="Wk 15 - First Round", color=col_blue, size=4.5, fontface="bold") +
+  annotate("text", x=2, y=11, label="Wk 16 - Semifinals",  color=col_blue, size=4.5, fontface="bold") +
+  annotate("text", x=3, y=11, label="Wk 17 - Finals",       color=col_blue, size=4.5, fontface="bold") +
+  # Week 15 matchups
+  {rows15 <- w15; lapply(seq_len(nrow(rows15)), function(i) {
+    r <- rows15[i,]; y_base <- (5-i)*2
+    list(
+      annotate("rect",  xmin=0.6,xmax=1.4, ymin=y_base-0.45,ymax=y_base+0.45, fill=col_green,  alpha=0.25, color=col_green,  linewidth=0.4),
+      annotate("rect",  xmin=0.6,xmax=1.4, ymin=y_base-1.35,ymax=y_base-0.55, fill=col_red,    alpha=0.15, color=col_red,    linewidth=0.4),
+      annotate("text",  x=0.65, y=y_base,    label=paste0(r$w_name," (",round(r$w_pts,1),")"), hjust=0, color=col_white, size=3.1, fontface="bold"),
+      annotate("text",  x=0.65, y=y_base-0.9,label=paste0(r$l_name," (",round(r$l_pts,1),")"), hjust=0, color=col_dim,   size=3.0)
+    )
+  })} +
+  # Week 16 matchups
+  {rows16 <- w16; lapply(seq_len(nrow(rows16)), function(i) {
+    r <- rows16[i,]; y_base <- (3.5-i)*2
+    list(
+      annotate("rect",  xmin=1.6,xmax=2.4, ymin=y_base-0.45,ymax=y_base+0.45, fill=col_green, alpha=0.25, color=col_green, linewidth=0.4),
+      annotate("rect",  xmin=1.6,xmax=2.4, ymin=y_base-1.35,ymax=y_base-0.55, fill=col_red,   alpha=0.15, color=col_red,   linewidth=0.4),
+      annotate("text",  x=1.65, y=y_base,    label=paste0(r$w_name," (",round(r$w_pts,1),")"), hjust=0, color=col_white, size=3.1, fontface="bold"),
+      annotate("text",  x=1.65, y=y_base-0.9,label=paste0(r$l_name," (",round(r$l_pts,1),")"), hjust=0, color=col_dim,   size=3.0)
+    )
+  })} +
+  # Week 17 matchups
+  {rows17 <- w17; lapply(seq_len(nrow(rows17)), function(i) {
+    r <- rows17[i,]; y_base <- (2.5-i)*2.5
+    crown <- if(i==1) " [CHAMP]" else ""
+    list(
+      annotate("rect",  xmin=2.6,xmax=3.4, ymin=y_base-0.45,ymax=y_base+0.45, fill=ifelse(i==1,col_gold,col_green), alpha=0.25, color=ifelse(i==1,col_gold,col_green), linewidth=0.5),
+      annotate("rect",  xmin=2.6,xmax=3.4, ymin=y_base-1.35,ymax=y_base-0.55, fill=col_red, alpha=0.15, color=col_red, linewidth=0.4),
+      annotate("text",  x=2.65, y=y_base,    label=paste0(r$w_name,crown," (",round(r$w_pts,1),")"), hjust=0, color=ifelse(i==1,col_gold,col_white), size=3.1, fontface="bold"),
+      annotate("text",  x=2.65, y=y_base-0.9,label=paste0(r$l_name," (",round(r$l_pts,1),")"),       hjust=0, color=col_dim,   size=3.0)
+    )
+  })} +
+  scale_x_continuous(limits=c(0.5,3.5), breaks=NULL) +
+  scale_y_continuous(limits=c(-2, 12),  breaks=NULL) +
+  labs(title="2025 Room 40 Playoff Bracket", x=NULL, y=NULL) +
+  tw() + theme(panel.grid=element_blank(), axis.text=element_blank())
+```
+
+---
+
+<div class="section-header"><h2>Section 1: The Draft</h2></div>
+
+```{r draft-adp-scatter, fig.height=7}
+draft_plot <- draft_df %>%
+  left_join(player_pts_df %>% select(player_id, season_pts), by="player_id") %>%
+  mutate(season_pts=replace_na(season_pts,0),
+         c1=sapply(nfl_team, gc1), c2=sapply(nfl_team, gc2),
+         label=ifelse(round<=4|season_pts>300|(pick_no>60&season_pts>200), player_name, NA))
+
+ggplot(draft_plot, aes(x=pick_no, y=season_pts)) +
+  geom_hline(yintercept=median(draft_plot$season_pts,na.rm=TRUE),
+             color=col_dim, linetype="dashed", linewidth=0.5) +
+  # Use formula=y~x with scale_x_log10() — the scale handles the log transform,
+  # so formula=y~log(x) would double-log and produce NaN/Inf, hiding the line
+  stat_smooth(method="lm", formula=y~x, se=TRUE, geom="ribbon",
+              fill=col_blue, alpha=0.22) +
+  stat_smooth(method="lm", formula=y~x, se=FALSE, geom="line",
+              color=col_blue, linewidth=1.4) +
+  geom_point(aes(fill=c1, color=c2), size=3.5, alpha=0.92, shape=21, stroke=1.2) +
+  scale_fill_identity() + scale_color_identity() +
+  scale_x_log10(breaks=c(1,5,10,20,40,80,140), labels=c("1","5","10","20","40","80","140")) +
+  geom_text_repel(aes(label=label), color=col_white, size=2.8,
+                  max.overlaps=25, segment.color=col_dim, segment.size=0.3,
+                  box.padding=0.35, na.rm=TRUE) +
+  labs(title="Draft Pick vs Season Fantasy Points",
+       subtitle="Log x-axis. Blue band = regression. Dots = NFL team colors.",
+       x="Overall Draft Pick (log scale)", y="Total Fantasy Points") +
+  tw()
+```
+
+```{r draft-vs-adp, fig.height=6}
+# ---- League vs Industry ADP ----
+adp_raw <- raw$adp_map %||% list()
+
+clean_for_adp <- function(n) {
+  n <- str_to_lower(str_trim(n))
+  n <- str_replace(n, "\\s+(jr\\.?|sr\\.?|ii|iii|iv)$", "")
+  n
+}
+
+adp_df <- draft_df %>%
+  filter(!position %in% c("K","DEF")) %>%
+  mutate(
+    name_key   = clean_for_adp(player_name),
+    adp        = as.numeric(sapply(name_key, function(n) adp_raw[[n]] %||% NA_real_)),
+    reach      = adp - pick_no,   # positive = value (drafted later than ADP), negative = reach
+    reach_lbl  = ifelse(reach >= 0,
+                        paste0("+", round(reach, 1)),
+                        as.character(round(reach, 1)))
+  ) %>%
+  filter(!is.na(adp))
+
+if (nrow(adp_df) > 0) {
+  # Plot 1: Pick # vs ADP scatter — above diagonal = reached, below = value
+  ggplot(adp_df, aes(x=pick_no, y=adp)) +
+    geom_abline(slope=1, intercept=0, color=col_white, linetype="dashed", linewidth=0.6) +
+    geom_point(aes(fill=reach, color=reach), size=3, alpha=0.85, shape=21, stroke=0.8) +
+    scale_fill_gradient2(low=col_green, mid=col_gold, high=col_red,
+                         midpoint=0, name="Value\n(+ = value, - = reach)") +
+    scale_color_gradient2(low=col_green, mid=col_gold, high=col_red,
+                          midpoint=0, guide="none") +
+    geom_text_repel(
+      data=adp_df %>% filter(abs(reach) > 15),
+      aes(label=paste0(player_name, " (", round(reach,0), ")")),
+      color=col_white, size=2.6, segment.color=col_dim, segment.size=0.3,
+      max.overlaps=20, box.padding=0.3
+    ) +
+    labs(title="Room 40 Draft Pick vs Industry ADP",
+         subtitle="Dashed line = perfect consensus alignment. Green = value (drafted later than ADP), red = reach.",
+         x="Room 40 Pick #", y="Industry ADP (FantasyPros Half-PPR)") +
+    tw() + theme(legend.position="right")
+} else {
+  cat("ADP data not available — re-run /nfl fantasywrapped to fetch fresh data.\n")
+}
+```
+
+```{r draft-sharpness, fig.height=5}
+if (exists("adp_df") && nrow(adp_df) > 0) {
+  # Per-manager reach/value summary
+  mgr_adp <- adp_df %>%
+    group_by(display_name, team_name) %>%
+    summarise(
+      avg_reach   = mean(reach, na.rm=TRUE),
+      n_picks     = n(),
+      n_value     = sum(reach > 5, na.rm=TRUE),
+      n_reach     = sum(reach < -5, na.rm=TRUE),
+      .groups="drop"
+    ) %>% arrange(desc(avg_reach))
+
+  ggplot(mgr_adp, aes(x=fct_reorder(team_name, avg_reach), y=avg_reach, fill=avg_reach)) +
+    geom_col(alpha=0.9) +
+    geom_hline(yintercept=0, color=col_white, linewidth=0.5) +
+    geom_text(aes(label=paste0(ifelse(avg_reach>=0,"+",""), round(avg_reach,1),
+                               " (", n_picks, " picks)")),
+              hjust=ifelse(mgr_adp$avg_reach>=0,-0.08,1.08),
+              color=col_white, size=3.3) +
+    scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                         midpoint=0, guide="none") +
+    scale_y_continuous(expand=expansion(mult=c(0.15,0.2))) +
+    coord_flip() +
+    labs(title="Draft Sharpness by Manager",
+         subtitle="Avg (industry ADP - pick #). Positive = consistently got value vs consensus, negative = reached.",
+         x=NULL, y="Avg ADP Value (+= drafted later than consensus)") +
+    tw()
+}
+```
+
+```{r draft-voe, fig.height=6}
+round_med <- draft_plot %>% group_by(round) %>%
+  summarise(rmed=median(season_pts,na.rm=TRUE),.groups="drop")
+
+voe_df <- draft_plot %>% left_join(round_med,by="round") %>%
+  mutate(voe=season_pts-rmed, bar_color=ifelse(voe>=0,col_green,col_red)) %>%
+  arrange(desc(voe))
+
+voe_plot <- bind_rows(slice_head(voe_df,n=15),slice_tail(voe_df,n=15)) %>%
+  distinct(player_name,.keep_all=TRUE) %>%
+  mutate(
+    owner_label = ifelse(!is.na(display_name) & nchar(display_name)>0,
+                         paste0(player_name, " (", display_name, ")"),
+                         player_name)
+  )
+
+ggplot(voe_plot, aes(x=reorder(owner_label,voe), y=voe, fill=bar_color)) +
+  geom_col(alpha=0.9) + scale_fill_identity() + coord_flip() +
+  geom_hline(yintercept=0, color=col_white, linewidth=0.5) +
+  geom_text(aes(label=paste0(ifelse(voe>=0,"+",""),round(voe,0)),
+                hjust=ifelse(voe>=0,-0.1,1.1)), color=col_white, size=2.8) +
+  scale_y_continuous(expand=expansion(mult=c(0.12,0.12))) +
+  labs(title="Draft Value Over Expected - Top 15 Steals & Busts",
+       subtitle="Points above/below round median. Green = steal, red = bust. Owner shown in parentheses.",
+       x=NULL, y="Points vs Round Median") +
+  tw() + theme(axis.text.y=element_text(size=9, color=col_white))
+```
+
+```{r draft-voe-by-team, fig.height=5, fig.width=10}
+# Per-team per-player VOE facet grid — top 4 / mid 4 / bottom 4 by cumulative VOE
+team_voe_order <- draft_voe_mgr %>% arrange(desc(draft_voe)) %>% pull(team_name)
+
+# Join VOE data with team ordering
+voe_team_df <- voe_df %>%
+  mutate(
+    tier = case_when(
+      team_name %in% team_voe_order[1:4]  ~ "Top Drafters",
+      team_name %in% team_voe_order[5:8]  ~ "Mid Drafters",
+      TRUE                                 ~ "Bottom Drafters"
+    ),
+    tier = factor(tier, levels=c("Top Drafters","Mid Drafters","Bottom Drafters")),
+    team_name = factor(team_name, levels=team_voe_order)
+  )
+
+make_team_voe_plot <- function(teams_subset) {
+  df <- voe_team_df %>% filter(team_name %in% teams_subset) %>%
+    mutate(team_name = factor(team_name, levels=teams_subset))
+  ggplot(df, aes(x=reorder(player_name, -voe), y=voe, fill=voe)) +
+    geom_col(alpha=0.9) +
+    geom_hline(yintercept=0, color=col_white, linewidth=0.4) +
+    scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                         midpoint=0, guide="none") +
+    scale_y_continuous(expand=expansion(mult=c(0.1,0.15))) +
+    facet_wrap(~team_name, nrow=1, scales="free_x") +
+    labs(x=NULL, y="VOE") +
+    tw() + theme(
+      axis.text.x  = element_text(size=6, color=col_white, angle=45, hjust=1),
+      axis.text.y  = element_text(size=7),
+      strip.text   = element_text(size=8, face="bold"),
+      plot.margin  = margin(2,4,2,4)
+    )
+}
+
+make_team_voe_plot(team_voe_order[1:4])
+```
+
+```{r draft-voe-by-team-mid, fig.height=5, fig.width=10}
+make_team_voe_plot(team_voe_order[5:8])
+```
+
+```{r draft-voe-by-team-bot, fig.height=5, fig.width=10}
+make_team_voe_plot(team_voe_order[9:12])
+```
+
+```{r draft-voe-manager, fig.height=5}
+ggplot(draft_voe_mgr, aes(x=fct_reorder(team_name,draft_voe),y=draft_voe,
+                            fill=draft_voe)) +
+  geom_col(alpha=0.9) +
+  geom_hline(yintercept=0, color=col_white, linewidth=0.5) +
+  geom_text(aes(label=paste0(ifelse(draft_voe>=0,"+",""),round(draft_voe,1)),
+                hjust=ifelse(draft_voe>=0,-0.1,1.1)), color=col_white, size=3.5) +
+  scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                       midpoint=0, guide="none") +
+  scale_y_continuous(expand=expansion(mult=c(0.15,0.15))) +
+  coord_flip() +
+  labs(title="Cumulative Draft VOE by Manager",
+       subtitle="Sum of (player pts - round median) across all picks. Who drafted better?",
+       x=NULL, y="Total VOE") +
+  tw()
+```
+
+---
+
+<div class="section-header"><h2>Section 2: Position Leaders</h2></div>
+
+```{r pos-leaders-setup}
+# End-of-season roster ownership: find the last week each player appeared
+# on a roster, and use that manager as their "owner"
+last_week_ownership <- bind_rows(lapply(names(raw$matchups), function(wk) {
+  bind_rows(lapply(raw$matchups[[wk]], function(m) {
+    pids <- as.character(unlist(m$players %||% list()))
+    if(length(pids)==0) return(NULL)
+    tibble(week=as.integer(wk), roster_id=as.character(m$roster_id), player_id=pids)
+  }))
+})) %>%
+  left_join(roster_df %>% select(roster_id, fantasy_team=team_name, fantasy_manager=display_name),
+            by="roster_id") %>%
+  group_by(player_id) %>%
+  slice_max(week, n=1, with_ties=FALSE) %>%
+  ungroup() %>%
+  select(player_id, fantasy_team, fantasy_manager)
+
+make_pos_bar <- function(pos, n, title_label) {
+  df <- player_pts_df %>% filter(position==pos) %>% arrange(desc(season_pts)) %>%
+    slice_head(n=n) %>% left_join(last_week_ownership, by="player_id") %>%
+    mutate(c1=sapply(team,gc1), c2=sapply(team,gc2),
+           owner_label=ifelse(!is.na(fantasy_manager),
+                              paste0(round(season_pts,1)," | ",fantasy_manager),
+                              round(season_pts,1)))
+  ggplot(df, aes(x=season_pts, y=fct_reorder(full_name,season_pts))) +
+    geom_col(aes(fill=c1), alpha=0.92, width=0.8) +
+    geom_col(aes(fill=c2), alpha=0, color=df$c2, linewidth=0.9, width=0.8) +
+    geom_text(aes(label=owner_label), hjust=-0.05, color=col_white, size=2.9) +
+    scale_fill_identity() + scale_x_continuous(expand=expansion(mult=c(0,0.3))) +
+    labs(title=title_label,
+         subtitle=paste("Top",n,"| label: pts | Room 40 owner (end of season)"),
+         x="Fantasy Points", y=NULL) +
+    tw() + theme(axis.text.y=element_text(color=col_white, size=9))
+}
+```
+
+```{r pos-row1, fig.height=4, fig.width=10}
+library(gridExtra)
+grid.arrange(
+  make_pos_bar("QB",5,"Quarterback Leaders"),
+  make_pos_bar("RB",5,"Running Back Leaders"),
+  ncol=2
+)
+```
+```{r pos-row2, fig.height=4, fig.width=10}
+grid.arrange(
+  make_pos_bar("WR",5,"Wide Receiver Leaders"),
+  make_pos_bar("TE",5,"Tight End Leaders"),
+  ncol=2
+)
+```
+```{r pos-row3, fig.height=4, fig.width=10}
+grid.arrange(
+  make_pos_bar("DEF",5,"Defense/ST Leaders"),
+  make_pos_bar("K",5,"Kicker Leaders"),
+  ncol=2
+)
+```
+
+---
+
+<div class="section-header"><h2>Section 3: High & Low Scores</h2></div>
+
+```{r high-low-teams, fig.height=5}
+team_weekly <- matchup_df %>%
+  left_join(roster_df %>% select(roster_id,team_name,display_name), by="roster_id") %>%
+  filter(!is.na(points), points>0)
+
+bind_rows(
+  team_weekly %>% arrange(desc(points)) %>% slice_head(n=5) %>%
+    mutate(lbl=paste0(team_name,"\nWk",week,": ",round(points,1)), type="Top 5"),
+  team_weekly %>% arrange(points) %>% slice_head(n=5) %>%
+    mutate(lbl=paste0(team_name,"\nWk",week,": ",round(points,1)), type="Bottom 5")
+) %>%
+  ggplot(aes(x=fct_reorder(lbl,points), y=points,
+             fill=ifelse(type=="Top 5",col_green,col_red))) +
+  geom_col(alpha=0.9) +
+  geom_text(aes(label=round(points,1),hjust=ifelse(type=="Top 5",-0.1,1.1)),
+            color=col_white, size=3.2) +
+  scale_fill_identity() + scale_y_continuous(expand=expansion(mult=c(0.05,0.15))) +
+  coord_flip() + facet_wrap(~type, scales="free") +
+  labs(title="Single-Week Team Score Records", x=NULL, y="Points") +
+  tw() + theme(axis.text.y=element_text(color=col_white, size=8))
+```
+
+```{r high-low-players, fig.height=5}
+# Build player weekly rows with fantasy team owner that week
+# (who had them on their active roster - starters or bench)
+roster_ownership <- bind_rows(lapply(names(raw$matchups), function(wk) {
+  bind_rows(lapply(raw$matchups[[wk]], function(m) {
+    pids <- as.character(unlist(m$players %||% list()))
+    if(length(pids)==0) return(NULL)
+    tibble(week=as.integer(wk), roster_id=as.character(m$roster_id), player_id=pids)
+  }))
+})) %>% left_join(roster_df %>% select(roster_id, team_name), by="roster_id")
+
+player_wk_rows <- bind_rows(lapply(names(raw$matchups), function(wk) {
+  bind_rows(lapply(raw$matchups[[wk]], function(m) {
+    pp <- m$players_points
+    if(length(pp)==0) return(NULL)
+    tibble(week=as.integer(wk), player_id=names(pp), pts=as.numeric(unlist(pp)))
+  }))
+})) %>% filter(player_id!="BYE", pts>0) %>%
+  left_join(players_df %>% select(player_id,full_name,position,team), by="player_id") %>%
+  left_join(roster_ownership %>% distinct(week,player_id,.keep_all=TRUE) %>%
+              select(week,player_id,fantasy_team=team_name), by=c("week","player_id"))
+
+bind_rows(
+  player_wk_rows %>% arrange(desc(pts)) %>% filter(!is.na(full_name)) %>% slice_head(n=5) %>%
+    mutate(lbl=paste0(full_name," (",position,")\n",
+                      ifelse(is.na(fantasy_team),"",paste0(fantasy_team," | ")),
+                      "Wk",week,": ",round(pts,1)), type="Top 5"),
+  player_wk_rows %>% arrange(pts) %>% filter(!is.na(full_name)) %>% slice_head(n=5) %>%
+    mutate(lbl=paste0(full_name," (",position,")\n",
+                      ifelse(is.na(fantasy_team),"",paste0(fantasy_team," | ")),
+                      "Wk",week,": ",round(pts,1)), type="Bottom 5")
+) %>%
+  ggplot(aes(x=fct_reorder(lbl,pts), y=pts,
+             fill=ifelse(type=="Top 5",col_green,col_red))) +
+  geom_col(alpha=0.9) +
+  geom_text(aes(label=round(pts,1),hjust=ifelse(type=="Top 5",-0.1,1.1)),
+            color=col_white, size=3.2) +
+  scale_fill_identity() + scale_y_continuous(expand=expansion(mult=c(0.05,0.15))) +
+  coord_flip() + facet_wrap(~type, scales="free") +
+  labs(title="Single-Week Player Score Records",
+       subtitle="Fantasy team shown on label",
+       x=NULL, y="Points") +
+  tw() + theme(axis.text.y=element_text(color=col_white, size=8))
+```
+
+---
+
+<div class="section-header"><h2>Section 4: Sit / Start Accuracy</h2></div>
+
+```{r sit-start-plot, fig.height=5}
+ss_mgr_rs <- sit_start_df %>%
+  filter(week<=14) %>%
+  group_by(display_name, team_name) %>%
+  summarise(avg_eff=mean(efficiency,na.rm=TRUE),
+            avg_left=mean(optimal-actual,na.rm=TRUE), .groups="drop") %>%
+  arrange(desc(avg_eff))
+
+ggplot(ss_mgr_rs, aes(x=fct_reorder(team_name,avg_eff), y=avg_eff*100,
+                       fill=avg_eff)) +
+  geom_col(alpha=0.9) +
+  geom_hline(yintercept=mean(ss_mgr_rs$avg_eff)*100, color=col_white,
+             linetype="dashed", linewidth=0.5) +
+  geom_text(aes(label=paste0(round(avg_eff*100,1),"%"),hjust=-0.1),
+            color=col_white, size=3.5) +
+  scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                       midpoint=mean(ss_mgr_rs$avg_eff), guide="none") +
+  scale_y_continuous(expand=expansion(mult=c(0,0.15)),
+                     labels=function(x) paste0(x,"%")) +
+  coord_flip() +
+  labs(title="Lineup Efficiency (Sit/Start Accuracy)",
+       subtitle="Actual starter pts / optimal possible pts each week (regular season). Higher = better decisions.",
+       x=NULL, y="Avg Lineup Efficiency (%)") +
+  tw() + theme(axis.text.y=element_text(color=col_white, size=9))
+```
+
+```{r pts-left-on-bench, fig.height=5}
+ggplot(ss_mgr_rs, aes(x=fct_reorder(team_name,-avg_left), y=avg_left,
+                       fill=avg_left)) +
+  geom_col(alpha=0.9) +
+  geom_text(aes(label=round(avg_left,1),hjust=-0.1), color=col_white, size=3.5) +
+  scale_fill_gradient2(low=col_green, mid=col_gold, high=col_red,
+                       midpoint=mean(ss_mgr_rs$avg_left), guide="none") +
+  scale_y_continuous(expand=expansion(mult=c(0,0.15))) +
+  coord_flip() +
+  labs(title="Average Points Left on Bench Per Week",
+       subtitle="Optimal lineup pts - actual pts. Lower = smarter decisions.",
+       x=NULL, y="Avg Pts Left on Bench") +
+  tw() + theme(axis.text.y=element_text(color=col_white, size=9))
+```
+
+---
+
+<div class="section-header"><h2>Section 5: Trades</h2></div>
+
+```{r trade-balance, fig.height=6}
+if(nrow(trade_sum)>0) {
+  ts <- trade_sum %>% group_by(display_name,team_name) %>%
+    summarise(total_net=sum(net_pts),.groups="drop") %>% arrange(desc(total_net))
+  ggplot(ts, aes(x=fct_reorder(team_name,total_net),y=total_net,fill=total_net)) +
+    geom_col(alpha=0.9) + geom_hline(yintercept=0,color=col_white,linewidth=0.5) +
+    geom_text(aes(label=paste0(ifelse(total_net>=0,"+",""),round(total_net,1)),
+                  hjust=ifelse(total_net>=0,-0.1,1.1)), color=col_white, size=3.5) +
+    scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                         midpoint=0, guide="none") +
+    scale_y_continuous(expand=expansion(mult=c(0.15,0.15))) +
+    coord_flip() +
+    labs(title="Trade Balance by Manager",
+         subtitle="Net post-trade fantasy points gained vs given away",
+         x=NULL, y="Net Points (post-trade)") + tw()
+}
+```
+
+```{r fleece-jobs}
+if(nrow(trade_verdicts)>0) {
+  unique_tv <- trade_verdicts %>%
+    distinct(transaction_id, week, winner_dn, loser_dn, imbalance, initiator)
+
+  # Fleece = initiator won (they proposed and got the better end)
+  fleeces <- unique_tv %>%
+    filter(winner_dn == initiator) %>%
+    arrange(desc(imbalance)) %>% slice_head(n=5) %>%
+    mutate(.sort_order = row_number())
+  self_owns <- unique_tv %>%
+    filter(loser_dn == initiator) %>%
+    arrange(desc(imbalance)) %>% slice_head(n=5) %>%
+    mutate(.sort_order = row_number())
+}
+```
+
+#### 5 Most Egregious Fleece Jobs
+
+```{r fleece-table}
+if(nrow(trade_verdicts)>0 && nrow(fleeces)>0) {
+  ft <- fleeces %>%
+    left_join(trade_sum %>% select(transaction_id, roster_id, received, gave,
+                                   display_name),
+              by=c("transaction_id", "winner_dn"="display_name")) %>%
+    group_by(transaction_id) %>% slice_head(n=1) %>% ungroup() %>%
+    arrange(.sort_order) %>%
+    transmute(
+      `#`=.sort_order, Week=week,
+      Villain=winner_dn, Victim=loser_dn,
+      `Got`=ifelse(is.na(received)|received=="", "-", received),
+      `Gave`=ifelse(is.na(gave)|gave=="", "-", gave),
+      `Pt Swing`=paste0("+",round(imbalance,1))
+    )
+  knitr::kable(ft, align=c("c","c","l","l","l","l","r"))
+} else cat("No trades where the proposer won by a large margin.\n")
+```
+
+#### 5 Biggest Clowns
+
+```{r self-owns-table}
+if(nrow(trade_verdicts)>0 && nrow(self_owns)>0) {
+  st <- self_owns %>%
+    left_join(trade_sum %>% select(transaction_id, display_name, received, gave),
+              by=c("transaction_id", "loser_dn"="display_name")) %>%
+    group_by(transaction_id) %>% slice_head(n=1) %>% ungroup() %>%
+    arrange(.sort_order) %>%
+    transmute(
+      `#`=.sort_order, Week=week,
+      Clown=loser_dn, `Who Benefited`=winner_dn,
+      `Got`=ifelse(is.na(received)|received=="", "-", received),
+      `Gave`=ifelse(is.na(gave)|gave=="", "-", gave),
+      `Pt Swing`=paste0("+",round(imbalance,1))
+    )
+  knitr::kable(st, align=c("c","c","l","l","l","l","r"))
+} else cat("No trades where the proposer lost.\n")
+```
+
+---
+
+<div class="section-header"><h2>Section 6: Waiver Wire</h2></div>
+
+```{r waiver-balance, fig.height=6}
+if(nrow(waiver_sum)>0) {
+  wm <- waiver_sum %>% group_by(display_name,team_name) %>%
+    summarise(avg_net=mean(net_pts_adj), n_moves=n(), .groups="drop") %>%
+    arrange(desc(avg_net))
+  ggplot(wm, aes(x=fct_reorder(team_name,avg_net),y=avg_net,fill=avg_net)) +
+    geom_col(alpha=0.9) + geom_hline(yintercept=0,color=col_white,linewidth=0.5) +
+    geom_text(aes(label=paste0(ifelse(avg_net>=0,"+",""),round(avg_net,1),
+                               " (", n_moves, " moves)"),
+                  hjust=ifelse(avg_net>=0,-0.1,1.1)), color=col_white, size=3.5) +
+    scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                         midpoint=0, guide="none") +
+    scale_y_continuous(expand=expansion(mult=c(0.15,0.25))) +
+    coord_flip() +
+    labs(title="Waiver Wire Efficiency by Manager (Position-Adjusted)",
+         subtitle="Avg pts above position median per waiver add. Removes QB/RB position scoring bias. Move count shown on bar.",
+         x=NULL, y="Avg Net Pts per Move") + tw()
+}
+```
+
+#### Top 10 Waiver Pickups by Post-Pickup Value
+
+```{r best-pickups}
+if(nrow(waiver_sum)>0) {
+  best <- waiver_sum %>% filter(nchar(received)>0, received_pts>0) %>%
+    arrange(desc(received_pts)) %>% slice_head(n=10) %>%
+    transmute(Week=week, Manager=paste0(team_name," (",display_name,")"),
+              `Player Added`=received, `Pts (rest of season)`=round(received_pts,1))
+  knitr::kable(best, align=c("c","l","l","r"))
+}
+```
+
+---
+
+<div class="section-header"><h2>Section 8: Season Progression & Luck</h2></div>
+
+```{r luck-scatter, fig.height=7}
+weekly_scores <- matchup_df %>%
+  filter(week<=14) %>%
+  group_by(week) %>%
+  mutate(n_teams=n(), score_rank=rank(points),
+         expected_wins=(score_rank-1)/(n_teams-1)) %>%
+  ungroup() %>%
+  left_join(matchup_results %>% select(week,roster_id,matchup_id,result), by=c("week","roster_id")) %>%
+  mutate(actual_win=ifelse(result=="W",1,0)) %>%
+  left_join(roster_df %>% select(roster_id,team_name,display_name), by="roster_id")
+
+luck_df <- weekly_scores %>%
+  group_by(roster_id,team_name,display_name) %>%
+  summarise(actual_wins=sum(actual_win,na.rm=TRUE),
+            expected_wins_total=sum(expected_wins,na.rm=TRUE),
+            luck=actual_wins-expected_wins_total,
+            avg_pts=mean(points), .groups="drop") %>%
+  arrange(desc(luck))
+
+ggplot(luck_df, aes(x=avg_pts, y=luck)) +
+  geom_hline(yintercept=0,color=col_dim,linetype="dashed") +
+  geom_vline(xintercept=mean(luck_df$avg_pts),color=col_dim,linetype="dashed") +
+  geom_point(aes(color=luck), size=5) +
+  scale_color_gradient2(low=col_red,mid=col_dim,high=col_green,midpoint=0,name="Luck") +
+  geom_text_repel(aes(label=team_name),color=col_white,size=3.2,
+                  segment.color=col_dim,box.padding=0.4) +
+  labs(title="Luck vs Scoring",
+       subtitle="Luck = actual wins - expected wins from weekly score rank.",
+       x="Avg Weekly Points", y="Luck Score") + tw()
+```
+
+```{r cumulative-wins, fig.height=8}
+cumulative <- matchup_results %>%
+  filter(week<=14) %>%
+  left_join(roster_df %>% select(roster_id,team_name), by="roster_id") %>%
+  arrange(team_name,week) %>%
+  group_by(team_name) %>%
+  mutate(cum_wins=cumsum(result=="W")) %>% ungroup()
+
+team_pal <- colorRampPalette(c(col_blue,col_gold,col_green,col_red,col_dim,
+  "#B87BDB","#DB875C","#5CDBCB","#DB5C8F","#8FDB5C","#5C8FDB","#DBC85C"))(12)
+
+ggplot(cumulative, aes(x=week,y=cum_wins,color=team_name,group=team_name)) +
+  geom_line(linewidth=1.2,alpha=0.9) + geom_point(size=2,alpha=0.7) +
+  scale_color_manual(values=team_pal) + scale_x_continuous(breaks=1:14) +
+  labs(title="Cumulative Wins by Week",subtitle="Regular season wks 1-14",
+       x="Week",y="Wins",color="Team") + tw() + theme(legend.position="right")
+```
+
+```{r score-heatmap, fig.height=7}
+score_heat <- matchup_df %>%
+  filter(week<=14) %>%
+  left_join(roster_df %>% select(roster_id,team_name), by="roster_id") %>%
+  left_join(matchup_results %>% select(week,roster_id,result), by=c("week","roster_id"))
+
+ggplot(score_heat, aes(x=week,y=fct_reorder(team_name,points,mean),fill=points)) +
+  geom_tile(color=bg_dark,linewidth=0.5) +
+  geom_text(aes(label=round(points,0),color=ifelse(result=="W","#FFFFFF","#7A90A8")),size=2.5) +
+  scale_color_identity() +
+  scale_fill_gradient2(low=col_red,mid=bg_card,high=col_green,
+                       midpoint=median(score_heat$points,na.rm=TRUE),name="Points") +
+  scale_x_continuous(breaks=1:14) +
+  labs(title="Weekly Score Heatmap",subtitle="Green=high, red=low. White text=win.",
+       x="Week",y=NULL) + tw() + theme(axis.text.y=element_text(size=9,color=col_white))
+```
+
+```{r luck-bar, fig.height=5}
+ggplot(luck_df, aes(x=fct_reorder(team_name,luck),y=luck,fill=luck)) +
+  geom_col(alpha=0.9) + geom_hline(yintercept=0,color=col_white,linewidth=0.5) +
+  geom_text(aes(label=paste0(ifelse(luck>=0,"+",""),round(luck,1)),
+                hjust=ifelse(luck>=0,-0.1,1.1)), color=col_white,size=3.5) +
+  scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                       midpoint=0, guide="none") +
+  scale_y_continuous(expand=expansion(mult=c(0.15,0.15))) +
+  coord_flip() +
+  labs(title="Luck Factor by Team",subtitle="Wins above/below expected",
+       x=NULL,y="Luck") + tw()
+```
+
+---
+
+<div class="section-header"><h2>Section 9: GM Score</h2></div>
+
+```{r gm-score-plot, fig.height=6}
+gm_long <- gm_df %>%
+  select(team_name, display_name, z_trade, z_waiver, z_draft, eff_z) %>%
+  pivot_longer(cols=c(z_trade,z_waiver,z_draft,eff_z),
+               names_to="component", values_to="z") %>%
+  mutate(component=recode(component,
+    z_trade="Trade",z_waiver="Waivers",z_draft="Draft VOE",eff_z="Lineup Eff"))
+
+comp_colors <- c(Trade=col_blue, Waivers=col_green, `Draft VOE`=col_gold, `Lineup Eff`="#B87BDB")
+
+# Order: highest GM score at top (descending), so fct_reorder by ascending score
+# then coord_flip puts highest at the top
+gm_order <- gm_df %>% arrange(gm_score) %>% pull(team_name)
+
+# Score label data for the total-score line/label
+gm_score_ref <- gm_df %>% select(team_name, gm_score)
+
+ggplot(gm_long, aes(x=factor(team_name, levels=gm_order), y=z, fill=component)) +
+  geom_col(position="stack", alpha=0.85) +
+  geom_hline(yintercept=0, color=col_white, linewidth=0.5) +
+  # Total GM score marker: segment spanning the bar width at the final score value
+  geom_segment(data=gm_score_ref,
+               aes(x=as.numeric(factor(team_name, levels=gm_order)) - 0.42,
+                   xend=as.numeric(factor(team_name, levels=gm_order)) + 0.42,
+                   y=gm_score, yend=gm_score),
+               inherit.aes=FALSE, color="#00FFFF", linewidth=1.2) +
+  # Score label to the right of the marker
+  geom_text(data=gm_score_ref,
+            aes(x=factor(team_name, levels=gm_order),
+                y=gm_score, label=round(gm_score, 2)),
+            inherit.aes=FALSE, color="#00FFFF", size=3.2, fontface="bold",
+            hjust=ifelse(gm_score_ref$gm_score >= 0, -0.25, 1.25)) +
+  scale_fill_manual(values=comp_colors, name="Component") +
+  coord_flip() +
+  labs(title="GM Score: Composite Roster Management",
+       subtitle="Stacked z-scores by component. Cyan line = composite GM Score.",
+       x=NULL, y="GM Score (z-score composite)") +
+  tw() + theme(legend.position="top")
+```
+
+```{r gm-table}
+fmt_z <- function(z) paste0("(z=", ifelse(z>=0,"+",""), round(z,2), ")")
+gm_df %>%
+  mutate(Rank=row_number()) %>%
+  transmute(Rank, Team=team_name, Manager=display_name,
+            `Trade Net`=paste0(ifelse(trade_net>=0,"+",""),round(trade_net,1),
+                               " ", fmt_z(z_trade)),
+            `Waiver Net`=paste0(ifelse(waiver_net>=0,"+",""),round(waiver_net,2),
+                                " ", fmt_z(z_waiver)),
+            `Draft VOE`=paste0(ifelse(draft_voe>=0,"+",""),round(draft_voe,1),
+                               " ", fmt_z(z_draft)),
+            `Lineup Eff`=paste0(round(avg_eff*100,1),"%",
+                                " ", fmt_z(eff_z)),
+            `GM Score`=round(gm_score,2)) %>%
+  knitr::kable(align=c("c","l","l","r","r","r","r","r"))
+```
+
+---
+
+*Room 40 | 2025 Season | Generated via Sleeper API*

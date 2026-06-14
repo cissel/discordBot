@@ -29,7 +29,7 @@
 #             jaxradar | flradar | usradar | jaxsat
 #             buoywaves | tideplot | windplot | hurricane
 #
-#   /history  server | channel | user | daily
+#   /history  server | channel | user | daily | userreport
 #
 #   /cats     next | today | win | lost | hockeytoday | hockeytomorrow
 #             kodak | barkov | bobby | thuggybobby | chucky | reino
@@ -673,6 +673,53 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/userMessages.png")))
 
+    @history_group.command(name="userreport", description="channel activity breakdown for a specific user")
+    @app_commands.describe(user="username to look up (discord username, not display name)")
+    async def hist_userreport(interaction: discord.Interaction, user: str):
+        await _defer(interaction)
+        csv_path = os.path.expanduser("~/discordBot/outputs/metrics/server_messages.csv")
+        # Validate user exists in the CSV
+        try:
+            import csv as _csv
+            with open(csv_path, newline="", encoding="utf-8") as f:
+                reader = _csv.DictReader(f)
+                known_users = {row["user_name"] for row in reader}
+        except Exception as e:
+            await _send(interaction, f"❌ could not read message log: {e}", ephemeral=True)
+            return
+        if user not in known_users:
+            await _send(interaction, f"❌ no messages found for `{user}` - check the username (not display name)", ephemeral=True)
+            return
+        import shlex as _shlex
+        result = await asyncio.to_thread(
+            lambda: subprocess.run(
+                ["Rscript", os.path.join(rp, "userReport.R"), user],
+                capture_output=True, text=True, timeout=60
+            )
+        )
+        out_path = os.path.expanduser("~/discordBot/outputs/metrics/userReport.png")
+        if result.returncode != 0 or not os.path.exists(out_path):
+            err = result.stderr[-400:] if result.stderr else "no output"
+            await _send(interaction, f"❌ plot failed\n```{err}```", ephemeral=True)
+            return
+        await _send(interaction, f":bar_chart: channel breakdown for **{user}**",
+                    file=discord.File(out_path, filename="userReport.png"))
+
+    @hist_userreport.autocomplete("user")
+    async def userreport_autocomplete(interaction: discord.Interaction, current: str):
+        csv_path = os.path.expanduser("~/discordBot/outputs/metrics/server_messages.csv")
+        try:
+            import csv as _csv
+            with open(csv_path, newline="", encoding="utf-8") as f:
+                reader = _csv.DictReader(f)
+                users = sorted({row["user_name"] for row in reader
+                                if row["user_name"] and "bot" not in row["user_name"].lower()
+                                and row["user_name"].lower() not in ("dyno",)})
+        except Exception:
+            users = []
+        filtered = [u for u in users if current.lower() in u.lower()][:25]
+        return [app_commands.Choice(name=u, value=u) for u in filtered]
+
     @history_group.command(name="daily", description="daily messages plot")
     async def hist_daily(interaction: discord.Interaction):
         await _defer(interaction)
@@ -1020,6 +1067,118 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         await _send(interaction, "I RUN THIS SHIT")
         await _send(interaction, file=discord.File(os.path.join(op, "sports/nfl/amonRa.mov")))
+
+    @nfl_group.command(name="fantasywrapped", description="Room 40 2025 fantasy season full statistical breakdown")
+    async def nfl_fantasywrapped(interaction: discord.Interaction):
+        await _defer(interaction)
+        try:
+            data_path = "/tmp/sleeper_data.json"
+            html_path = os.path.join(op, "sports/nfl/fantasyWrapped.html")
+            pdf_path  = os.path.join(op, "sports/nfl/fantasyWrapped.pdf")
+            rmd_path  = os.path.join(rp, "fantasyWrapped.Rmd")
+
+            # Step 1: refresh Sleeper data
+            fetch_script = os.path.join(pp, "fetchSleeperData.py")
+            proc = await asyncio.create_subprocess_exec(
+                "python3", fetch_script,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=180)
+            except asyncio.TimeoutError:
+                await _send(interaction, "Sleeper data fetch timed out.", ephemeral=True); return
+            if proc.returncode != 0:
+                await _send(interaction, f"Data fetch failed: {stderr.decode()[:500]}", ephemeral=True); return
+
+            # Step 2: render Rmd to self-contained HTML
+            r_cmd = (
+                f"rmarkdown::render('{rmd_path}', "
+                f"output_file='{html_path}', "
+                f"params=list(data_path='{data_path}'), quiet=TRUE)"
+            )
+            proc2 = await asyncio.create_subprocess_exec(
+                "Rscript", "-e", r_cmd,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            try:
+                stdout2, stderr2 = await asyncio.wait_for(proc2.communicate(), timeout=300)
+            except asyncio.TimeoutError:
+                await _send(interaction, "R render timed out.", ephemeral=True); return
+            if proc2.returncode != 0:
+                await _send(interaction, f"Render failed: {stderr2.decode()[-500:]}", ephemeral=True); return
+
+            if not os.path.exists(html_path):
+                await _send(interaction, "HTML output not found.", ephemeral=True); return
+
+            # Step 3: convert HTML to PDF via headless Chromium
+            proc3 = await asyncio.create_subprocess_exec(
+                "chromium", "--headless=new", "--no-sandbox", "--disable-gpu",
+                f"--print-to-pdf={pdf_path}",
+                "--print-to-pdf-no-header",
+                f"file://{html_path}",
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            try:
+                stdout3, stderr3 = await asyncio.wait_for(proc3.communicate(), timeout=120)
+            except asyncio.TimeoutError:
+                await _send(interaction, "PDF conversion timed out.", ephemeral=True); return
+
+            if os.path.exists(pdf_path) and os.path.getsize(pdf_path) > 1000:
+                await _send(interaction, "**Room 40 - 2025 Fantasy Football Season Wrapped**",
+                            file=discord.File(pdf_path, filename="Room40_FantasyWrapped_2025.pdf"))
+            else:
+                # Fall back to HTML if PDF failed
+                await _send(interaction, "**Room 40 - 2025 Fantasy Football Season Wrapped** *(PDF conversion failed, sending HTML)*",
+                            file=discord.File(html_path, filename="Room40_FantasyWrapped_2025.html"))
+        except Exception as e:
+            await _send(interaction, f"Error: {e}", ephemeral=True)
+
+    @nfl_group.command(name="alltimewrapped", description="Room 40 all-time fantasy record book (2022-2025)")
+    async def nfl_alltimewrapped(interaction: discord.Interaction):
+        await _defer(interaction)
+        try:
+            data_path = "/tmp/room40_all_years.json"
+            html_path = os.path.join(op, "sports/nfl/allTimeWrapped.html")
+            rmd_path  = os.path.join(rp, "allTimeWrapped.Rmd")
+
+            # Step 1: fetch all-years data (ESPN + Sleeper)
+            fetch_script = os.path.join(pp, "fetchAllYearsData.py")
+            proc = await asyncio.create_subprocess_exec(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "../venv/bin/python3"),
+                fetch_script,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
+            except asyncio.TimeoutError:
+                await _send(interaction, "Data fetch timed out.", ephemeral=True); return
+            if proc.returncode != 0:
+                await _send(interaction, f"Data fetch failed: {stderr.decode()[:500]}", ephemeral=True); return
+
+            # Step 2: render Rmd to self-contained HTML
+            r_cmd = (
+                f"rmarkdown::render('{rmd_path}', "
+                f"output_file='{html_path}', "
+                f"params=list(data_path='{data_path}'), quiet=TRUE)"
+            )
+            proc2 = await asyncio.create_subprocess_exec(
+                "Rscript", "-e", r_cmd,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            try:
+                stdout2, stderr2 = await asyncio.wait_for(proc2.communicate(), timeout=240)
+            except asyncio.TimeoutError:
+                await _send(interaction, "R render timed out.", ephemeral=True); return
+            if proc2.returncode != 0:
+                await _send(interaction, f"Render failed: {stderr2.decode()[-500:]}", ephemeral=True); return
+
+            if not os.path.exists(html_path):
+                await _send(interaction, "HTML output not found.", ephemeral=True); return
+
+            await _send(interaction, "**Room 40 - All-Time Fantasy Record Book (2022-2025)**",
+                        file=discord.File(html_path, filename="Room40_AllTime.html"))
+        except Exception as e:
+            await _send(interaction, f"Error: {e}", ephemeral=True)
 
     tree.add_command(nfl_group)
 
@@ -4093,7 +4252,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         mode=[
             app_commands.Choice(name="Both (Top 5 each)",       value="both"),
             app_commands.Choice(name="Top 10 Batter Favored",   value="batters"),
-            app_commands.Choice(name="Top 10 Pitcher Favored",  value="pitchers"),
+            app_commands.Choice(name="Top 10 Pitcher Favored (Composite Lineup)", value="pitchers"),
         ],
         day=[
             app_commands.Choice(name="Tomorrow", value="tomorrow"),
@@ -4104,21 +4263,71 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         print(f"[DEBUG] /mlb mismatch called with mode='{mode}' day='{day}'")
 
-        csv_path = os.path.join(op, "sports/mlb/mismatchToday.csv" if day == "today" else "sports/mlb/mismatch.csv")
+        csv_path         = os.path.join(op, "sports/mlb/mismatchToday.csv"        if day == "today" else "sports/mlb/mismatch.csv")
+        pitcher_csv_path = os.path.join(op, "sports/mlb/mismatchPitcherToday.csv" if day == "today" else "sports/mlb/mismatchPitcher.csv")
 
-        # Only regenerate if CSV is missing or more than 3 hours old
-        needs_refresh = True
-        if os.path.exists(csv_path):
-            age_hours = (datetime.now() - datetime.fromtimestamp(os.path.getmtime(csv_path))).total_seconds() / 3600
-            if age_hours < 3:
-                needs_refresh = False
-                print(f"[DEBUG] Using cached CSV ({age_hours:.1f}h old)")
+        # Only regenerate if either needed CSV is missing or more than 3 hours old
+        def csv_stale(path):
+            if not os.path.exists(path):
+                return True
+            age_hours = (datetime.now() - datetime.fromtimestamp(os.path.getmtime(path))).total_seconds() / 3600
+            return age_hours >= 3
+
+        needs_refresh = csv_stale(csv_path) or csv_stale(pitcher_csv_path)
+        if not needs_refresh:
+            print(f"[DEBUG] Using cached CSVs")
 
         if needs_refresh:
             print("[DEBUG] Regenerating mismatch data...")
             await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbProbPitchers.py"), day)
             await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "mlbMismatch.py"), day)
 
+        date_str = datetime.today().strftime("%B %d, %Y") if day == "today" else (datetime.today() + timedelta(days=1)).strftime("%B %d, %Y")
+
+        def fmt(val):
+            try:    return f"{float(val):.3f}"
+            except: return "---"
+
+        # ── Pitcher-favored: composite lineup score ───────────────────────────
+        if mode == "pitchers":
+            try:
+                df = pd.read_csv(pitcher_csv_path)
+            except FileNotFoundError:
+                await _send(interaction, "❌ Could not generate pitcher data. Check the logs.")
+                return
+            if df.empty:
+                await _send(interaction, "No pitcher composite scores found (need ≥3 batters with 5+ PA history).")
+                return
+
+            embed = discord.Embed(
+                title=f"⚾ Best Pitchers by Lineup History - {date_str}",
+                description="PA-weighted composite OPS-against across opposing batting order · Min. 5 PA · Min. 3 qualifying batters · Last 5 seasons",
+                color=0x002D72
+            )
+
+            rows_text = ""
+            for _, row in df.head(10).iterrows():
+                rows_text += (
+                    f"**{row['pitcher']}** vs {row['opposing_team']} *({row['matchup']})*\n"
+                    f"Composite OPS-against: `{fmt(row['composite_ops'])}` - "
+                    f"Coverage: `{row['coverage']}` batters · `{int(row['total_pa'])}` total PA\n"
+                    f"Best matchup: {row['best_batter']} `{fmt(row['best_ops'])}` OPS · "
+                    f"Toughest: {row['worst_batter']} `{fmt(row['worst_ops'])}` OPS\n\n"
+                )
+                # Split into two fields if getting long
+                if len(rows_text) > 900:
+                    embed.add_field(name="🧊 Pitcher Favored (Composite Lineup)", value=rows_text.strip(), inline=False)
+                    rows_text = ""
+
+            if rows_text.strip():
+                field_name = "🧊 Pitcher Favored (Composite Lineup)" if not embed.fields else "\u200b"
+                embed.add_field(name=field_name, value=rows_text.strip(), inline=False)
+
+            embed.set_footer(text="Composite OPS-against: lower = tougher outing for batters - Data via Baseball Savant / Statcast")
+            await _send(interaction, embed=embed)
+            return
+
+        # ── Batter-favored or both: per-pair CSV ──────────────────────────────
         try:
             df = pd.read_csv(csv_path)
         except FileNotFoundError:
@@ -4129,17 +4338,11 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, "No matchup data found with sufficient PA history (min. 5 PA).")
             return
 
-        date_str = datetime.today().strftime("%B %d, %Y") if day == "today" else (datetime.today() + timedelta(days=1)).strftime("%B %d, %Y")
-
         embed = discord.Embed(
             title=f"⚾ Pitcher/Batter Mismatches - {date_str}",
             description="Based on last 5 seasons of Statcast data · Min. 5 PA",
             color=0x002D72
         )
-
-        def fmt(val):
-            try:    return f"{float(val):.3f}"
-            except: return "---"
 
         def format_batter_row(row):
             return (
@@ -5476,3 +5679,189 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, f"🏠 JAX real estate - {label}:", file=discord.File(img_path))
 
     tree.add_command(jax_group)
+
+    # ── /worldcup ─────────────────────────────────────────────────────────────
+    worldcup_group = app_commands.Group(name="worldcup", description="2026 FIFA World Cup", guild_ids=[guild.id])
+
+    async def _wc_schedule_embed(date_str: str, label: str) -> discord.Embed:
+        """Fetch ESPN scoreboard for a given YYYYMMDD date and return an embed."""
+        import aiohttp, datetime as _dt, pytz
+
+        url = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard"
+        params = {"dates": date_str} if date_str else {}
+        eastern = pytz.timezone("America/New_York")
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                if resp.status != 200:
+                    raise RuntimeError(f"ESPN returned {resp.status}")
+                data = await resp.json()
+
+        events = data.get("events", [])
+        if not events:
+            embed = discord.Embed(
+                title=f"🏆 World Cup - {label}",
+                description="No matches scheduled.",
+                color=0x1a6b3a,
+            )
+            return embed
+
+        embed = discord.Embed(
+            title=f"🏆 2026 FIFA World Cup - {label}",
+            color=0x1a6b3a,
+        )
+        embed.set_footer(text="Source: ESPN | Times in ET")
+
+        for event in events:
+            comp = event["competitions"][0]
+            competitors = comp["competitors"]
+            home = next((c for c in competitors if c["homeAway"] == "home"), competitors[0])
+            away = next((c for c in competitors if c["homeAway"] == "away"), competitors[1])
+
+            home_name = home["team"]["displayName"]
+            away_name = away["team"]["displayName"]
+            home_score = home.get("score", "")
+            away_score = away.get("score", "")
+
+            status_state = comp["status"]["type"]["state"]
+            status_detail = comp["status"]["type"].get("detail", "")
+            display_clock = comp["status"].get("displayClock", "")
+
+            # Format kickoff time
+            raw_time = event.get("date", "")
+            if raw_time:
+                try:
+                    utc_dt = _dt.datetime.strptime(raw_time, "%Y-%m-%dT%H:%MZ").replace(tzinfo=pytz.utc)
+                    et_dt = utc_dt.astimezone(eastern)
+                    time_str = et_dt.strftime("%-I:%M %p ET")
+                except Exception:
+                    time_str = raw_time
+            else:
+                time_str = "TBD"
+
+            group_note = comp.get("altGameNote", "")
+            venue_obj = comp.get("venue", {})
+            venue = venue_obj.get("fullName", "")
+            city = venue_obj.get("address", {}).get("city", "")
+            venue_str = f"{venue}, {city}" if city else venue
+
+            # Build field name (status indicator)
+            if status_state == "post":
+                status_icon = "✅"
+                score_str = f"**{home_score} - {away_score}**  (FT)"
+            elif status_state == "in":
+                status_icon = "🔴"
+                clock = display_clock or status_detail
+                score_str = f"**{home_score} - {away_score}**  ({clock})"
+            else:
+                status_icon = "🕐"
+                score_str = time_str
+
+            field_name = f"{status_icon} {away_name} vs {home_name}"
+            if group_note:
+                field_name += f"  |  {group_note}"
+
+            field_value = score_str
+            if venue_str:
+                field_value += f"\n{venue_str}"
+
+            embed.add_field(name=field_name, value=field_value, inline=False)
+
+        return embed
+
+    @worldcup_group.command(name="today", description="World Cup matches today")
+    async def wc_today(interaction: discord.Interaction):
+        await _defer(interaction)
+        import datetime as _dt
+        today_str = _dt.datetime.utcnow().strftime("%Y%m%d")
+        label = "Today"
+        try:
+            embed = await _wc_schedule_embed(today_str, label)
+            await _send(interaction, embed=embed)
+        except Exception as e:
+            await _send(interaction, f"❌ failed to fetch schedule: {e}", ephemeral=True)
+
+    @worldcup_group.command(name="tomorrow", description="World Cup matches tomorrow")
+    async def wc_tomorrow(interaction: discord.Interaction):
+        await _defer(interaction)
+        import datetime as _dt
+        tomorrow_str = (_dt.datetime.utcnow() + _dt.timedelta(days=1)).strftime("%Y%m%d")
+        label = "Tomorrow"
+        try:
+            embed = await _wc_schedule_embed(tomorrow_str, label)
+            await _send(interaction, embed=embed)
+        except Exception as e:
+            await _send(interaction, f"❌ failed to fetch schedule: {e}", ephemeral=True)
+
+    @worldcup_group.command(name="standings", description="World Cup group standings")
+    @app_commands.describe(group="Filter to a specific group (A-L), or leave blank for all")
+    async def wc_standings(interaction: discord.Interaction, group: str = None):
+        await _defer(interaction)
+        import aiohttp
+
+        url = "https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings"
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                    if resp.status != 200:
+                        raise RuntimeError(f"ESPN returned {resp.status}")
+                    data = await resp.json()
+        except Exception as e:
+            await _send(interaction, f"❌ failed to fetch standings: {e}", ephemeral=True)
+            return
+
+        groups_data = data.get("children", [])
+        if not groups_data:
+            await _send(interaction, "❌ no standings data available", ephemeral=True)
+            return
+
+        # Filter if group specified
+        if group:
+            group_upper = group.strip().upper()
+            groups_data = [g for g in groups_data if g.get("name", "").upper().endswith(group_upper)]
+            if not groups_data:
+                await _send(interaction, f"❌ group '{group}' not found - use A through L", ephemeral=True)
+                return
+
+        STAT_KEYS = {
+            "gamesPlayed": "P",
+            "wins": "W",
+            "ties": "D",
+            "losses": "L",
+            "pointsFor": "GF",
+            "pointsAgainst": "GA",
+            "points": "Pts",
+        }
+
+        embed = discord.Embed(
+            title="🏆 2026 FIFA World Cup - Group Standings",
+            color=0x1a6b3a,
+        )
+        embed.set_footer(text="Source: ESPN  |  P W D L GF GA Pts")
+
+        for group_obj in groups_data:
+            group_name = group_obj.get("name", "Unknown Group")
+            entries = group_obj.get("standings", {}).get("entries", [])
+
+            lines = []
+            for i, entry in enumerate(entries, 1):
+                team_name = entry.get("team", {}).get("displayName", "Unknown")
+                stats_list = entry.get("stats", [])
+                stat_map = {s["name"]: s.get("displayValue", s.get("value", 0)) for s in stats_list}
+
+                p   = stat_map.get("gamesPlayed", "0")
+                w   = stat_map.get("wins", "0")
+                d   = stat_map.get("ties", "0")
+                l   = stat_map.get("losses", "0")
+                gf  = stat_map.get("pointsFor", "0")
+                ga  = stat_map.get("pointsAgainst", "0")
+                pts = stat_map.get("points", "0")
+
+                medal = ["🥇", "🥈", "🥉", "4."][i - 1] if i <= 4 else f"{i}."
+                lines.append(f"{medal} **{team_name}** - {p} {w}/{d}/{l}  GF:{gf} GA:{ga}  **{pts}pts**")
+
+            embed.add_field(name=group_name, value="\n".join(lines) if lines else "No data", inline=True)
+
+        await _send(interaction, embed=embed)
+
+    tree.add_command(worldcup_group)

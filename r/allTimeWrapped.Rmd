@@ -1,0 +1,588 @@
+---
+title: ""
+output:
+  html_document:
+    theme: null
+    highlight: null
+    self_contained: true
+    css: !expr NULL
+params:
+  data_path: "/tmp/room40_all_years.json"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE,
+                      fig.width=10, fig.height=5, out.width="85%", dpi=150)
+
+library(jsonlite); library(dplyr); library(tidyr); library(ggplot2)
+library(ggrepel);  library(scales); library(stringr); library(tibble)
+library(purrr);    library(forcats); library(knitr)
+
+`%||%` <- function(a, b) if (is.null(a)) b else a
+
+# ---- Palette ----
+bg_dark  <- "#0A1628"; bg_mid <- "#0D1F3C"; bg_card <- "#112244"
+col_blue <- "#4A9EDB"; col_white <- "#FFFFFF"; col_dim <- "#8AAAC8"
+col_green <- "#5CBF8A"; col_red <- "#E05C5C"; col_gold <- "#F0C040"
+
+tw <- function(base_size=11) {
+  theme_minimal(base_size=base_size) %+replace% theme(
+    plot.background  = element_rect(fill=bg_dark,  color=NA),
+    panel.background = element_rect(fill=bg_mid,   color=NA),
+    panel.grid.major = element_line(color="#1A2E50", linewidth=0.4),
+    panel.grid.minor = element_blank(),
+    axis.text        = element_text(color=col_dim),
+    axis.title       = element_text(color=col_white),
+    plot.title       = element_text(color=col_white, face="bold", size=base_size+2),
+    plot.subtitle    = element_text(color=col_dim,  size=base_size-1),
+    plot.caption     = element_text(color=col_dim,  size=base_size-3),
+    legend.background= element_rect(fill=bg_mid, color=NA),
+    legend.text      = element_text(color=col_dim),
+    legend.title     = element_text(color=col_white),
+    strip.background = element_rect(fill=bg_card, color=NA),
+    strip.text       = element_text(color=col_white, face="bold")
+  )
+}
+
+# ---- Load data ----
+raw       <- fromJSON(params$data_path, simplifyVector=FALSE)
+owner_map <- raw$owner_map  # owner_id -> real name
+seasons   <- raw$seasons
+
+# ---- Known playoff finishes (corrected) ----
+# ESPN: final_standing from API is accurate
+# Sleeper 2025: hardcode from known results
+finish_2025 <- c(
+  LeChuckski   = 1L,
+  comfyboxers  = 2L,
+  jhcv         = 3L,
+  MullyMammoth = 4L
+)
+
+# ---- Build unified season-team frame ----
+teams_df <- bind_rows(lapply(seasons, function(s) {
+  yr  <- s$year
+  src <- s$source
+  bind_rows(lapply(s$teams, function(t) {
+    oid <- t$owner_id
+    fs  <- if (yr == 2025) finish_2025[oid] %||% NA_integer_
+            else           as.integer(t$final_standing %||% NA_integer_)
+    tibble(
+      year          = yr,
+      source        = src,
+      owner_id      = oid,
+      real_name     = owner_map[[oid]] %||% oid,
+      team_name     = t$team_name,
+      wins          = as.integer(t$wins),
+      losses        = as.integer(t$losses),
+      points_for    = as.numeric(t$points_for),
+      points_against= as.numeric(t$points_against),
+      final_standing= fs
+    )
+  }))
+}))
+
+# ---- Build unified matchup frame ----
+matchups_df <- bind_rows(lapply(seasons, function(s) {
+  yr  <- s$year
+  reg <- as.integer(s$reg_season_weeks)
+  bind_rows(lapply(names(s$matchups), function(wk) {
+    bind_rows(lapply(s$matchups[[wk]], function(m) {
+      bind_rows(
+        tibble(year=yr, week=as.integer(wk),
+               is_playoff=as.logical(m$is_playoff),
+               owner_id=m$home_owner, opponent_id=m$away_owner,
+               score=as.numeric(m$home_score), opp_score=as.numeric(m$away_score),
+               win=m$home_score > m$away_score),
+        tibble(year=yr, week=as.integer(wk),
+               is_playoff=as.logical(m$is_playoff),
+               owner_id=m$away_owner, opponent_id=m$home_owner,
+               score=as.numeric(m$away_score), opp_score=as.numeric(m$home_score),
+               win=m$away_score > m$home_score)
+      )
+    }))
+  }))
+})) %>% filter(nchar(owner_id) > 0)
+
+# Regular season only
+rs_df <- matchups_df %>% filter(!is_playoff)
+
+# ---- Exclude ESPN-only dropouts (only appeared 2022-2023, not current members) ----
+EXCLUDE_OWNERS <- c("MHimebauch", "NBeers", "BGleichenhaus")
+teams_df   <- teams_df   %>% filter(!owner_id %in% EXCLUDE_OWNERS)
+matchups_df<- matchups_df %>% filter(!owner_id %in% EXCLUDE_OWNERS,
+                                     !opponent_id %in% EXCLUDE_OWNERS)
+rs_df      <- matchups_df %>% filter(!is_playoff)
+
+# ---- Owners who appeared in 2+ seasons (for cross-year analysis) ----
+owner_years  <- teams_df %>% group_by(owner_id) %>%
+  summarise(n_seasons=n_distinct(year), .groups="drop")
+multi_owners <- owner_years %>% filter(n_seasons >= 2) %>% pull(owner_id)
+
+# ---- Career summary ----
+career_df <- teams_df %>%
+  group_by(owner_id) %>%
+  summarise(
+    real_name     = first(real_name),
+    seasons       = n_distinct(year),
+    total_wins    = sum(wins, na.rm=TRUE),
+    total_losses  = sum(losses, na.rm=TRUE),
+    win_pct       = total_wins / (total_wins + total_losses),
+    avg_pf        = mean(points_for, na.rm=TRUE),
+    total_pf      = sum(points_for, na.rm=TRUE),
+    championships = sum(final_standing == 1, na.rm=TRUE),
+    finals_apps   = sum(final_standing %in% 1:2, na.rm=TRUE),
+    playoff_apps  = sum(final_standing %in% 1:4, na.rm=TRUE),
+    best_finish   = min(final_standing, na.rm=TRUE),
+    .groups="drop"
+  ) %>%
+  mutate(best_finish = ifelse(is.infinite(best_finish), NA_integer_, best_finish)) %>%
+  arrange(desc(championships), desc(win_pct))
+```
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@page { size: 11in 14in; margin: 0.5in; }
+* { box-sizing: border-box; }
+body { background-color: #0A1628; color: #FFFFFF; font-family: 'Segoe UI', Tahoma, sans-serif; max-width: 100%; overflow-x: hidden; padding: 0 8px; }
+h1 { color: #FFFFFF; border-bottom: 2px solid #F0C040; padding-bottom: 8px; font-size: clamp(1.2rem,4vw,2rem); }
+h2, h3, h4 { color: #4A9EDB; font-size: clamp(1rem,3vw,1.5rem); }
+.section-header { background: #112244; border-left: 4px solid #F0C040; padding: 8px 16px; margin: 24px 0 12px 0; border-radius: 0 4px 4px 0; }
+.section-header h2 { color: #FFFFFF; margin: 0; }
+hr { border-color: #1A2E50; }
+table { background: #0D1F3C; color: #FFFFFF; border-collapse: collapse; width: 100%; margin-bottom: 16px; table-layout: auto; word-wrap: break-word; font-size: clamp(0.65rem,2vw,0.9rem); }
+th { background: #112244; color: #F0C040; padding: 8px 6px; border-bottom: 2px solid #F0C040; text-align: left; }
+td { padding: 6px 6px; border-bottom: 1px solid #1A2E50; }
+tr:hover td { background: #152A4A; }
+img { max-width: 85% !important; width: 85% !important; height: auto !important; display: block; margin: 0 auto; }
+figure, .figure { width: 85% !important; max-width: 85% !important; margin: 0 auto 16px auto; }
+@media (max-width: 600px) {
+  img { max-width: 100% !important; width: 100% !important; }
+  figure, .figure { width: 100% !important; max-width: 100% !important; }
+}
+</style>
+
+# Room 40 - All-Time Fantasy Football Record Book
+
+---
+
+<div class="section-header"><h2>Career Standings</h2></div>
+
+```{r career-table}
+career_df %>%
+  mutate(
+    Record   = paste0(total_wins, "-", total_losses),
+    `Win %`  = paste0(round(win_pct * 100, 1), "%"),
+    `Avg PF/Yr` = round(avg_pf, 1),
+    `Champs` = ifelse(championships > 0, paste0(championships, " 🏆"), "-"),
+    `Finals` = finals_apps,
+    `Playoffs` = playoff_apps,
+    `Best Finish` = ifelse(is.na(best_finish), "-",
+                    c("1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th")[best_finish])
+  ) %>%
+  arrange(desc(championships), desc(win_pct)) %>%
+  transmute(Manager=real_name, Seasons=seasons, Record, `Win %`,
+            `Avg PF/Yr`, Champs=`Champs`, Finals=`Finals`,
+            Playoffs=`Playoffs`, `Best Finish`) %>%
+  knitr::kable(align=c("l","c","c","c","r","c","c","c","c"))
+```
+
+---
+
+<div class="section-header"><h2>Section 1: All-Time Win %</h2></div>
+
+```{r all-time-winpct, fig.height=5}
+career_plot <- career_df %>% filter(seasons >= 1) %>%
+  mutate(label = paste0(real_name, "\n(", total_wins, "-", total_losses, ")"))
+
+ggplot(career_plot, aes(x=fct_reorder(real_name, win_pct), y=win_pct, fill=win_pct)) +
+  geom_col(alpha=0.9) +
+  geom_hline(yintercept=0.5, color=col_white, linetype="dashed", linewidth=0.5) +
+  geom_text(aes(label=paste0(round(win_pct*100,1), "% (", total_wins, "-", total_losses, ")")),
+            hjust=-0.05, color=col_white, size=3.2) +
+  scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                       midpoint=0.5, guide="none") +
+  scale_y_continuous(labels=percent_format(), expand=expansion(mult=c(0,0.3))) +
+  coord_flip() +
+  labs(title="All-Time Win Percentage",
+       subtitle="All regular seasons combined (2022-2025). Dashed = .500.",
+       x=NULL, y="Win %") + tw()
+```
+
+---
+
+<div class="section-header"><h2>Section 2: Points For by Season</h2></div>
+
+```{r pf-by-season, fig.height=6}
+n_owners <- n_distinct(teams_df$real_name)
+owner_pal <- colorRampPalette(c(col_blue,col_gold,col_green,col_red,
+  col_dim,"#B87BDB","#DB875C","#5CDBCB","#DB5C8F","#8FDB5C","#5C8FDB","#DBC85C"))(n_owners)
+
+ggplot(teams_df, aes(x=factor(year), y=points_for,
+                     color=real_name, group=real_name)) +
+  geom_line(linewidth=1.1, alpha=0.85) +
+  geom_point(size=3, alpha=0.9) +
+  geom_text_repel(
+    data=teams_df %>% group_by(real_name) %>% slice_max(year, n=1),
+    aes(label=real_name), size=2.8, hjust=-0.1, direction="y",
+    segment.color=col_dim, segment.size=0.3, max.overlaps=15
+  ) +
+  scale_color_manual(values=owner_pal, guide="none") +
+  scale_x_discrete(expand=expansion(add=c(0.3,1.5))) +
+  labs(title="Points For by Season",
+       subtitle="Each line = one manager. Tracks scoring trajectory across years.",
+       x="Season", y="Total Points For") + tw()
+```
+
+```{r pf-bar-facet, fig.height=6}
+# Order managers by avg PF descending (highest scorers first / top-left)
+mgr_avg_pf_order <- teams_df %>% group_by(real_name) %>%
+  summarise(avg_pf=mean(points_for,na.rm=TRUE),.groups="drop") %>%
+  arrange(desc(avg_pf)) %>% pull(real_name)
+
+teams_df %>%
+  mutate(real_name=factor(real_name, levels=mgr_avg_pf_order)) %>%
+  ggplot(aes(x=factor(year), y=points_for, fill=points_for)) +
+  geom_col(alpha=0.9) +
+  scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                       midpoint=median(teams_df$points_for, na.rm=TRUE), guide="none") +
+  facet_wrap(~real_name, scales="free_x") +
+  labs(title="Points For by Manager & Season",
+       x=NULL, y="Points For") +
+  tw() + theme(axis.text.x=element_text(size=7, angle=45, hjust=1))
+```
+
+---
+
+<div class="section-header"><h2>Section 3: Scoring Distribution</h2></div>
+
+```{r scoring-dist, fig.height=5}
+rs_df %>%
+  left_join(teams_df %>% select(year, owner_id, real_name), by=c("year","owner_id")) %>%
+  filter(!is.na(real_name)) %>%
+  ggplot(aes(x=score, fill=real_name, color=real_name)) +
+  geom_density(alpha=0.25, linewidth=0.8) +
+  scale_fill_manual(values=owner_pal, guide="none") +
+  scale_color_manual(values=owner_pal, name="Manager") +
+  labs(title="Weekly Score Distribution by Manager (All Years)",
+       subtitle="Regular season weekly scores. Wider/rightward = higher consistent scorer.",
+       x="Weekly Score", y="Density") +
+  tw() + theme(legend.position="right")
+```
+
+```{r avg-score-career, fig.height=5}
+rs_df %>%
+  left_join(teams_df %>% select(year, owner_id, real_name), by=c("year","owner_id")) %>%
+  filter(!is.na(real_name)) %>%
+  group_by(real_name) %>%
+  summarise(avg=mean(score,na.rm=TRUE), sd=sd(score,na.rm=TRUE),
+            med=median(score,na.rm=TRUE), n=n(), .groups="drop") %>%
+  ggplot(aes(x=fct_reorder(real_name,avg), y=avg, fill=avg)) +
+  geom_col(alpha=0.9) +
+  geom_errorbar(aes(ymin=avg-sd, ymax=avg+sd), width=0.3, color=col_dim, linewidth=0.6) +
+  geom_text(aes(label=round(avg,1)), hjust=-0.1, color=col_white, size=3.2) +
+  scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                       midpoint=median(rs_df$score,na.rm=TRUE), guide="none") +
+  scale_y_continuous(expand=expansion(mult=c(0,0.2))) +
+  coord_flip() +
+  labs(title="Career Avg Weekly Score",
+       subtitle="All regular season weeks. Error bars = +/- 1 SD.",
+       x=NULL, y="Avg Weekly Score") + tw()
+```
+
+---
+
+<div class="section-header"><h2>Section 5: Head-to-Head All-Time Matrix</h2></div>
+
+```{r h2h-alltime, fig.height=8}
+# All regular season H2H records
+h2h_rs <- rs_df %>%
+  left_join(teams_df %>% select(year,owner_id,real_name), by=c("year","owner_id")) %>%
+  left_join(teams_df %>% select(year,owner_id,real_name) %>%
+              rename(opp_real=real_name), by=c("year","opponent_id"="owner_id")) %>%
+  filter(!is.na(real_name), !is.na(opp_real), real_name != opp_real) %>%
+  group_by(real_name, opp_real) %>%
+  summarise(w=sum(win,na.rm=TRUE), l=sum(!win,na.rm=TRUE), .groups="drop") %>%
+  mutate(label=paste0(w,"-",l), win_pct=ifelse(w+l>0, w/(w+l), NA_real_))
+
+all_names <- sort(unique(c(h2h_rs$real_name, h2h_rs$opp_real)))
+
+ggplot(h2h_rs, aes(x=factor(opp_real, all_names),
+                   y=factor(real_name, rev(all_names)),
+                   fill=win_pct)) +
+  geom_tile(color=bg_dark, linewidth=0.6) +
+  geom_text(aes(label=label), color=col_white, size=2.8, fontface="bold") +
+  scale_fill_gradient2(low=col_red, mid=bg_card, high=col_green, midpoint=0.5,
+                       na.value=bg_mid, name="Win %", labels=percent_format()) +
+  scale_x_discrete(position="top") +
+  labs(title="All-Time Head-to-Head Matrix (Regular Season, 2022-2025)",
+       subtitle="W-L record. Green = winning record, red = losing.",
+       x="Opponent", y="Manager") +
+  tw() + theme(axis.text.x=element_text(angle=35, hjust=0, color=col_white, size=7),
+               axis.text.y=element_text(color=col_white, size=7),
+               legend.position="right")
+```
+
+---
+
+<div class="section-header"><h2>Section 6: Luck & Scheduling</h2></div>
+
+```{r luck-alltime, fig.height=5}
+luck_all <- rs_df %>%
+  left_join(teams_df %>% select(year,owner_id,real_name), by=c("year","owner_id")) %>%
+  filter(!is.na(real_name)) %>%
+  group_by(year, week) %>%
+  mutate(n_teams=n(), rank=rank(score),
+         expected_win=(rank-1)/(n_teams-1)) %>%
+  ungroup() %>%
+  group_by(real_name) %>%
+  summarise(actual_wins=sum(win,na.rm=TRUE),
+            expected_wins=sum(expected_win,na.rm=TRUE),
+            luck=actual_wins-expected_wins,
+            avg_score=mean(score,na.rm=TRUE),
+            games=n(), .groups="drop")
+
+ggplot(luck_all, aes(x=fct_reorder(real_name,luck), y=luck, fill=luck)) +
+  geom_col(alpha=0.9) +
+  geom_hline(yintercept=0, color=col_white, linewidth=0.5) +
+  geom_text(aes(label=paste0(ifelse(luck>=0,"+",""),round(luck,1)),
+                hjust=ifelse(luck>=0,-0.1,1.1)), color=col_white, size=3.3) +
+  scale_fill_gradient2(low=col_red, mid=col_gold, high=col_green,
+                       midpoint=0, guide="none") +
+  scale_y_continuous(expand=expansion(mult=c(0.15,0.15))) +
+  coord_flip() +
+  labs(title="All-Time Luck Factor (2022-2025)",
+       subtitle="Actual wins minus expected wins from weekly score rank. Positive = schedule helped you.",
+       x=NULL, y="Luck (wins above expected)") + tw()
+```
+
+```{r luck-scatter-alltime, fig.height=5}
+ggplot(luck_all, aes(x=avg_score, y=luck)) +
+  geom_hline(yintercept=0, color=col_dim, linetype="dashed") +
+  geom_vline(xintercept=mean(luck_all$avg_score), color=col_dim, linetype="dashed") +
+  geom_point(aes(color=luck), size=5) +
+  scale_color_gradient2(low=col_red, mid=col_dim, high=col_green, midpoint=0, name="Luck") +
+  geom_text_repel(aes(label=real_name), color=col_white, size=3,
+                  segment.color=col_dim, box.padding=0.4) +
+  labs(title="Skill vs Luck (All Years)",
+       subtitle="Top-right = high scorer AND lucky. Top-left = lucky but low scorer. Bottom-right = unlucky but skilled.",
+       x="Career Avg Weekly Score", y="Luck Score") + tw()
+```
+
+---
+
+<div class="section-header"><h2>Section 7: Consistency & Volatility</h2></div>
+
+```{r volatility, fig.height=5}
+vol_df <- rs_df %>%
+  left_join(teams_df %>% select(year,owner_id,real_name), by=c("year","owner_id")) %>%
+  filter(!is.na(real_name)) %>%
+  group_by(real_name) %>%
+  summarise(avg=mean(score,na.rm=TRUE), sd=sd(score,na.rm=TRUE),
+            sharpe=avg/sd, .groups="drop")
+
+ggplot(vol_df, aes(x=sd, y=avg)) +
+  geom_vline(xintercept=mean(vol_df$sd), color=col_dim, linetype="dashed") +
+  geom_hline(yintercept=mean(vol_df$avg), color=col_dim, linetype="dashed") +
+  geom_point(aes(color=sharpe), size=5) +
+  scale_color_gradient2(low=col_red, mid=col_gold, high=col_green,
+                        midpoint=mean(vol_df$sharpe), name="Sharpe\n(avg/sd)") +
+  geom_text_repel(aes(label=real_name), color=col_white, size=3,
+                  segment.color=col_dim, box.padding=0.4) +
+  labs(title="Consistency vs. Scoring - All Time",
+       subtitle="Top-left = high avg + low volatility (ideal). Color = Sharpe ratio (avg/sd).",
+       x="Std Dev of Weekly Score", y="Avg Weekly Score") + tw()
+```
+
+---
+
+<div class="section-header"><h2>Section 8: Win % Trend by Season</h2></div>
+
+```{r winpct-trend, fig.height=6}
+win_trend <- teams_df %>%
+  mutate(win_pct = wins / (wins + losses)) %>%
+  filter(owner_id %in% multi_owners) %>%
+  left_join(teams_df %>% group_by(owner_id) %>%
+              summarise(career_wp=sum(wins)/(sum(wins)+sum(losses))), by="owner_id")
+
+ggplot(win_trend, aes(x=factor(year), y=win_pct,
+                      color=real_name, group=real_name)) +
+  geom_hline(yintercept=0.5, color=col_dim, linetype="dashed") +
+  geom_line(linewidth=1.1, alpha=0.85) +
+  geom_point(size=3) +
+  geom_text_repel(
+    data=win_trend %>% group_by(real_name) %>% slice_max(year,n=1),
+    aes(label=real_name), size=2.8, hjust=-0.1,
+    segment.color=col_dim, segment.size=0.3, max.overlaps=12
+  ) +
+  scale_color_manual(values=owner_pal, guide="none") +
+  scale_y_continuous(labels=percent_format(), expand=expansion(mult=c(0.05,0.05))) +
+  scale_x_discrete(expand=expansion(add=c(0.3,1.2))) +
+  labs(title="Win % Trajectory by Season",
+       subtitle="Managers with 2+ seasons. Dashed = .500.",
+       x="Season", y="Win %") + tw()
+```
+
+---
+
+<div class="section-header"><h2>Section 9: Best & Worst Single-Season Records</h2></div>
+
+```{r best-worst-seasons, results='asis'}
+seasons_ranked <- teams_df %>%
+  mutate(win_pct=wins/(wins+losses), Record=paste0(wins,"-",losses),
+         Finish=case_when(
+           final_standing==1 ~ "Champion",
+           final_standing==2 ~ "Runner-up",
+           final_standing==3 ~ "3rd Place",
+           final_standing==4 ~ "4th Place",
+           !is.na(final_standing) ~ paste0(final_standing,"th"),
+           TRUE ~ "-"
+         )) %>%
+  arrange(desc(win_pct), desc(points_for)) %>%
+  transmute(Year=year, Manager=real_name, Record,
+            `Pts For`=round(points_for,1), Finish)
+
+best10  <- head(seasons_ranked, 10)
+worst10 <- tail(seasons_ranked, 10) %>% arrange(`Pts For`)
+
+cat("<div style='display:flex;gap:24px;align-items:flex-start;'>\n")
+cat("<div style='flex:1'><h4>Top 10 Best Seasons</h4>\n")
+knitr::kable(best10,  align=c("c","l","c","r","l"), format="html") %>% cat()
+cat("</div>\n<div style='flex:1'><h4>Top 10 Worst Seasons</h4>\n")
+knitr::kable(worst10, align=c("c","l","c","r","l"), format="html") %>% cat()
+cat("</div></div>\n")
+```
+
+---
+
+<div class="section-header"><h2>Section 10: Championships & Hardware</h2></div>
+
+```{r hardware, fig.height=5}
+hw_df <- teams_df %>%
+  filter(!is.na(final_standing), final_standing <= 4) %>%
+  mutate(finish_label=case_when(
+    final_standing==1 ~ "Champion",
+    final_standing==2 ~ "Runner-up",
+    final_standing==3 ~ "3rd Place",
+    final_standing==4 ~ "4th Place"
+  ), finish_label=factor(finish_label,
+    levels=c("Champion","Runner-up","3rd Place","4th Place")))
+
+hw_colors <- c(Champion=col_gold, `Runner-up`="#C0C0C0",
+               `3rd Place`="#CD7F32", `4th Place`=col_dim)
+
+ggplot(hw_df, aes(x=factor(year), y=real_name, fill=finish_label)) +
+  geom_tile(color=bg_dark, linewidth=0.8, width=0.85, height=0.85) +
+  geom_text(aes(label=finish_label), color=bg_dark, size=2.8, fontface="bold") +
+  scale_fill_manual(values=hw_colors, name="Finish") +
+  labs(title="Playoff Hardware by Season",
+       x="Season", y=NULL) +
+  tw() + theme(legend.position="right",
+               axis.text.y=element_text(color=col_white))
+```
+
+```{r championship-count, fig.height=4}
+career_df %>%
+  filter(championships > 0 | finals_apps > 0) %>%
+  select(real_name, championships, finals_apps, playoff_apps) %>%
+  pivot_longer(c(championships, finals_apps, playoff_apps),
+               names_to="type", values_to="count") %>%
+  mutate(type=recode(type, championships="Championships",
+                     finals_apps="Finals Apps", playoff_apps="Playoff Apps"),
+         type=factor(type, levels=c("Championships","Finals Apps","Playoff Apps"))) %>%
+  ggplot(aes(x=fct_reorder(real_name, count, max), y=count, fill=type)) +
+  geom_col(position="dodge", alpha=0.9) +
+  scale_fill_manual(values=c(Championships=col_gold, `Finals Apps`="#C0C0C0",
+                             `Playoff Apps`=col_blue), name=NULL) +
+  coord_flip() +
+  labs(title="Championship Pedigree",
+       x=NULL, y="Count") +
+  tw() + theme(legend.position="top")
+```
+
+---
+
+<div class="section-header"><h2>Section 11: GM Score (2025)</h2></div>
+
+```{r gm-score-alltime, fig.height=5}
+# Pull GM scores computed in fetchAllYearsData.py from the 2025 Sleeper season.
+# Same 4 components as single-season: Draft VOE + Waiver net (pos-adj) +
+# Trade net + Lineup efficiency. All z-scored within the 2025 league.
+# ESPN-year-only members (not in 2025) will not appear here.
+s2025 <- Filter(function(s) s$year == 2025, seasons)[[1]]
+gm_raw <- s2025$gm_scores %||% list()
+
+if (length(gm_raw) > 0) {
+  gm_alltime <- bind_rows(lapply(names(gm_raw), function(oid) {
+    g <- gm_raw[[oid]]
+    tibble(
+      owner_id   = oid,
+      real_name  = owner_map[[oid]] %||% oid,
+      draft_voe  = g$draft_voe,
+      waiver_net = g$waiver_net,
+      trade_net  = g$trade_net,
+      lineup_eff = g$lineup_eff,
+      z_draft    = g$z_draft,
+      z_waiver   = g$z_waiver,
+      z_trade    = g$z_trade,
+      z_lineup   = g$z_lineup,
+      gm_score   = g$gm_score
+    )
+  })) %>% filter(!owner_id %in% EXCLUDE_OWNERS) %>%
+    arrange(desc(gm_score))
+
+  gm_at_order <- gm_alltime %>% arrange(gm_score) %>% pull(real_name)
+  gm_score_ref_at <- gm_alltime %>% select(real_name, gm_score)
+
+  comp_colors_at <- c(Trade=col_blue, Waivers=col_green,
+                      `Draft VOE`=col_gold, `Lineup Eff`="#B87BDB")
+
+  gm_long_at <- gm_alltime %>%
+    select(real_name, z_trade, z_waiver, z_draft, z_lineup) %>%
+    pivot_longer(-real_name, names_to="component", values_to="z") %>%
+    mutate(component=recode(component,
+      z_trade="Trade", z_waiver="Waivers",
+      z_draft="Draft VOE", z_lineup="Lineup Eff"))
+
+  ggplot(gm_long_at, aes(x=factor(real_name, levels=gm_at_order), y=z, fill=component)) +
+    geom_col(position="stack", alpha=0.85) +
+    geom_hline(yintercept=0, color=col_white, linewidth=0.5) +
+    geom_segment(data=gm_score_ref_at,
+                 aes(x=as.numeric(factor(real_name, levels=gm_at_order)) - 0.42,
+                     xend=as.numeric(factor(real_name, levels=gm_at_order)) + 0.42,
+                     y=gm_score, yend=gm_score),
+                 inherit.aes=FALSE, color="#00FFFF", linewidth=1.2) +
+    geom_text(data=gm_score_ref_at,
+              aes(x=factor(real_name, levels=gm_at_order),
+                  y=gm_score, label=round(gm_score, 2)),
+              inherit.aes=FALSE, color="#00FFFF", size=3.2, fontface="bold",
+              hjust=ifelse(gm_score_ref_at$gm_score >= 0, -0.25, 1.25)) +
+    scale_fill_manual(values=comp_colors_at, name="Component") +
+    coord_flip() +
+    labs(title="GM Score - 2025 Season",
+         subtitle="Draft VOE + Waiver (pos-adj) + Trade net + Lineup Eff. Transaction data available for 2025 only. Cyan = composite.",
+         x=NULL, y="GM Score (z-score composite)") +
+    tw() + theme(legend.position="top")
+} else {
+  cat("GM scores not available — run /nfl fantasywrapped first to generate sleeper_data.json.\n")
+}
+```
+
+```{r gm-table-alltime}
+if (exists("gm_alltime") && nrow(gm_alltime) > 0) {
+  fmt_z <- function(z) paste0("(z=", ifelse(z>=0,"+",""), round(z,2), ")")
+  gm_alltime %>%
+    mutate(Rank=row_number()) %>%
+    transmute(Rank, Manager=real_name,
+              `Trade Net`   = paste0(ifelse(trade_net>=0,"+",""), round(trade_net,1), " ", fmt_z(z_trade)),
+              `Waiver Net`  = paste0(ifelse(waiver_net>=0,"+",""), round(waiver_net,2), " ", fmt_z(z_waiver)),
+              `Draft VOE`   = paste0(ifelse(draft_voe>=0,"+",""), round(draft_voe,1), " ", fmt_z(z_draft)),
+              `Lineup Eff`  = paste0(round(lineup_eff*100,1), "% ", fmt_z(z_lineup)),
+              `GM Score`    = round(gm_score, 2)) %>%
+    knitr::kable(align=c("c","l","r","r","r","r","r"))
+}
+```
+
+---
+
+*Room 40 | 2022-2025 | ESPN + Sleeper*
