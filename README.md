@@ -48,6 +48,7 @@ One command. All sports. Returns today's (or tomorrow's) schedule and scores acr
 |---|---|
 | `today` | today's NHL games |
 | `tomorrow` | tomorrow's NHL games |
+| `standings` | NHL standings by conference - seed, record, points, GB |
 
 ### `/cats`
 Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat celebrations, and more.
@@ -56,6 +57,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | command | description |
 |---|---|
 | `nextgame` | next NFL game on the schedule |
+| `standings` | NFL standings by conference - seed, record, PF/PA, streak |
 | `wr` | top WR target share chart for the current season |
 | `fantasyscoreboard` | Room 40 fantasy football scoreboard |
 | `epamap` | mean EPA choropleth map by NFL team |
@@ -80,6 +82,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 |---|---|
 | `today` | today's NBA games |
 | `tomorrow` | tomorrow's NBA games |
+| `standings` | NBA standings by conference - seed, record, win%, GB, streak |
 
 ### `/pga`
 | command | description |
@@ -92,6 +95,8 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 |---|---|
 | `today` | today's MLB schedule with live/final scores |
 | `tomorrow` | tomorrow's schedule |
+| `standings` | MLB standings by league - seed, record, win%, GB, streak |
+| `fantasymap` | World Sillies PF vs PA scatter map - luck vs skill quadrant chart |
 | `compare` | sabermetric head-to-head for 2-4 players - stream + roster score, season stats, drop candidate |
 | `lineup` | start/sit card for your fantasy roster with scoring signals |
 | `pickup` | scans the full FA pool, surfaces top 3 batter + pitcher adds |
@@ -118,6 +123,18 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `today` | 2026 FIFA World Cup matches today - live scores, kickoff times, venues |
 | `tomorrow` | World Cup matches scheduled for tomorrow |
 | `standings` | Current group stage standings (all 12 groups A-L, or filter by one) |
+
+### `/ufc`
+| command | description |
+|---|---|
+| `nextevent` | Next upcoming UFC event - date, location, broadcast, main card fights |
+| `standings [division]` | UFC rankings by weight class (default: P4P). Division options: `p4p`, `lw`, `lhw`, `hw`, `mw`, `ww`, `fw`, `bw`, `flw`, `strawweight`, `wfly`, `wbw` |
+
+### `/nascar`
+| command | description |
+|---|---|
+| `nextevent` | Next upcoming NASCAR Cup Series race - date, track, location, broadcast |
+| `standings` | NASCAR Cup Series driver standings - top 15 with points, wins, top-5 finishes |
 
 ### `/f1`
 | command | description |

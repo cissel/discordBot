@@ -36,16 +36,22 @@
 #             ekblad | swaggy | marchand | drunkMarchand | benny | eetu
 #             gaddy | sethjones | lundy | forsling | jesper | schmidty
 #             pantr | ilikethepanthers | pleasecats | floridapanthers
-#             fuckedm | curseedm | djkhaled | stanleycup2024
+#   /nhl      today | tomorrow | standings
 #
-#   /nfl      nextgame | jags | jagsgame | jagswin | howboutthemjags
+#   /nfl      nextgame | standings | jags | jagsgame | jagswin | howboutthemjags
 #             wr | fantasyscoreboard | epamap | room40points | amonra
 #
-#   /nba      scoreboard | today | tomorrow
+#   /nba      scoreboard | today | tomorrow | standings
+#
+#   /mlb      (many commands) | standings
 #
 #   /markets  fedrate | yieldcurve | yieldspread | yieldspreadshort
 #
 #   /space    nextlaunch
+#
+#   /ufc      nextevent | standings [division]
+#
+#   /nascar   nextevent | standings
 #
 #   /jaxplanes
 #   /serversdown
@@ -999,6 +1005,54 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         logo_path = os.path.expanduser("~/discordBot/stickers/nhl.png")
         await interaction.followup.send(embed=emb, file=discord.File(logo_path, filename="nhl.png"))
 
+    @nhl_group.command(name="standings", description="NHL standings by conference")
+    async def nhl_standings(interaction: discord.Interaction):
+        await _defer(interaction)
+        import aiohttp
+        try:
+            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                async with s.get("https://site.api.espn.com/apis/v2/sports/hockey/nhl/standings",
+                                  timeout=aiohttp.ClientTimeout(total=10)) as r:
+                    if r.status != 200:
+                        raise RuntimeError(f"ESPN returned {r.status}")
+                    data = await r.json()
+        except Exception as ex:
+            await _send(interaction, f"Could not fetch NHL standings: {ex}")
+            return
+        conferences = data.get("children", [])
+        embeds = []
+        for conf in conferences:
+            conf_name = conf.get("name", "Conference")
+            entries   = conf.get("standings", {}).get("entries", [])
+            # Sort by points desc, then wins desc
+            entries.sort(key=lambda e: (
+                -float(next((s["value"] for s in e.get("stats", []) if s["name"] == "points"), 0)),
+                -float(next((s["value"] for s in e.get("stats", []) if s["name"] == "wins"), 0)),
+            ))
+            emb = discord.Embed(title=f"🏒 NHL - {conf_name}", color=0x000000)
+            emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png")
+            lines = []
+            for i, e in enumerate(entries, 1):
+                team   = e.get("team", {})
+                abbr   = team.get("abbreviation", "?")
+                stats  = {s["name"]: s.get("value", s.get("displayValue", "?")) for s in e.get("stats", [])}
+                w      = int(stats.get("wins", 0))
+                l      = int(stats.get("losses", 0))
+                otl    = int(stats.get("otLosses", 0))
+                pts    = int(stats.get("points", 0))
+                gb     = stats.get("gamesBehind", "-")
+                streak = next((s["displayValue"] for s in e.get("stats", []) if s["name"] == "streak"), "")
+                rec    = f"{w}-{l}-{otl}"
+                gb_str = f"  GB:{gb}" if str(gb) not in ("-", "", "0", "0.0") else ""
+                streak_str = f"  {streak}" if streak else ""
+                lines.append(f"`{i:>2}.` **{abbr}**  {rec}  **{pts}pts**{gb_str}{streak_str}")
+            emb.add_field(name="\u200b", value="\n".join(lines), inline=False)
+            embeds.append(emb)
+        if embeds:
+            await _send(interaction, embeds=embeds)
+        else:
+            await _send(interaction, "No NHL standings data available.")
+
     tree.add_command(nhl_group)
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -1180,6 +1234,54 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         except Exception as e:
             await _send(interaction, f"Error: {e}", ephemeral=True)
 
+    @nfl_group.command(name="standings", description="NFL standings by conference")
+    async def nfl_standings(interaction: discord.Interaction):
+        await _defer(interaction)
+        import aiohttp
+        try:
+            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                async with s.get("https://site.api.espn.com/apis/v2/sports/football/nfl/standings",
+                                  timeout=aiohttp.ClientTimeout(total=10)) as r:
+                    if r.status != 200:
+                        raise RuntimeError(f"ESPN returned {r.status}")
+                    data = await r.json()
+        except Exception as ex:
+            await _send(interaction, f"Could not fetch NFL standings: {ex}")
+            return
+        conferences = data.get("children", [])
+        embeds = []
+        for conf in conferences:
+            conf_name = conf.get("name", "Conference")
+            entries   = conf.get("standings", {}).get("entries", [])
+            entries.sort(key=lambda e: (
+                -float(next((s["value"] for s in e.get("stats", []) if s["name"] == "wins"), 0)),
+                float(next((s["value"] for s in e.get("stats", []) if s["name"] == "losses"), 0)),
+            ))
+            emb = discord.Embed(title=f"🏈 NFL - {conf_name}", color=0x013369)
+            emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png")
+            lines = []
+            for i, e in enumerate(entries, 1):
+                team   = e.get("team", {})
+                abbr   = team.get("abbreviation", "?")
+                stats  = {s["name"]: s.get("value", s.get("displayValue", "?")) for s in e.get("stats", [])}
+                w      = int(stats.get("wins", 0))
+                l      = int(stats.get("losses", 0))
+                t      = int(stats.get("ties", 0))
+                pf     = int(stats.get("pointsFor", 0))
+                pa     = int(stats.get("pointsAgainst", 0))
+                streak = next((s["displayValue"] for s in e.get("stats", []) if s["name"] == "streak"), "")
+                div_rec = next((s["displayValue"] for s in e.get("stats", []) if s["name"] == "divisionRecord"), "")
+                rec    = f"{w}-{l}" + (f"-{t}" if t else "")
+                streak_str = f"  {streak}" if streak else ""
+                div_str = f"  div:{div_rec}" if div_rec else ""
+                lines.append(f"`{i:>2}.` **{abbr}**  {rec}  {pf}/{pa}{streak_str}{div_str}")
+            emb.add_field(name="\u200b", value="\n".join(lines), inline=False)
+            embeds.append(emb)
+        if embeds:
+            await _send(interaction, embeds=embeds)
+        else:
+            await _send(interaction, "No NFL standings data available.")
+
     tree.add_command(nfl_group)
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -1267,6 +1369,51 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         for _, row in df.iterrows():
             emb.add_field(name=row["matchup"], value=str(row["time"]), inline=False)
         await _send(interaction, embed=emb)
+
+    @nba_group.command(name="standings", description="NBA standings by conference")
+    async def nba_standings(interaction: discord.Interaction):
+        await _defer(interaction)
+        import aiohttp
+        try:
+            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                async with s.get("https://site.api.espn.com/apis/v2/sports/basketball/nba/standings",
+                                  timeout=aiohttp.ClientTimeout(total=10)) as r:
+                    if r.status != 200:
+                        raise RuntimeError(f"ESPN returned {r.status}")
+                    data = await r.json()
+        except Exception as ex:
+            await _send(interaction, f"Could not fetch NBA standings: {ex}")
+            return
+        conferences = data.get("children", [])
+        embeds = []
+        for conf in conferences:
+            conf_name = conf.get("name", "Conference")
+            entries   = conf.get("standings", {}).get("entries", [])
+            entries.sort(key=lambda e: (
+                -float(next((s["value"] for s in e.get("stats", []) if s["name"] == "wins"), 0)),
+                float(next((s["value"] for s in e.get("stats", []) if s["name"] == "losses"), 0)),
+            ))
+            emb = discord.Embed(title=f"🏀 NBA - {conf_name}", color=0x1D428A)
+            emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/nba.png")
+            lines = []
+            for i, e in enumerate(entries, 1):
+                team   = e.get("team", {})
+                abbr   = team.get("abbreviation", "?")
+                stats  = {s["name"]: s.get("value", s.get("displayValue", "?")) for s in e.get("stats", [])}
+                w      = int(stats.get("wins", 0))
+                l      = int(stats.get("losses", 0))
+                pct    = f"{stats.get('winPercent', 0):.3f}".lstrip("0") or ".000"
+                gb     = stats.get("gamesBehind", "-")
+                streak = next((s["displayValue"] for s in e.get("stats", []) if s["name"] == "streak"), "")
+                gb_str = f"  GB:{gb}" if str(gb) not in ("-", "", "0", "0.0") else ""
+                streak_str = f"  {streak}" if streak else ""
+                lines.append(f"`{i:>2}.` **{abbr}**  {w}-{l}  {pct}{gb_str}{streak_str}")
+            emb.add_field(name="\u200b", value="\n".join(lines), inline=False)
+            embeds.append(emb)
+        if embeds:
+            await _send(interaction, embeds=embeds)
+        else:
+            await _send(interaction, "No NBA standings data available.")
 
     tree.add_command(nba_group)
 
@@ -1428,27 +1575,132 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     ])
     async def ball(interaction: discord.Interaction, day: str = "today"):
         await _defer(interaction)
+        import aiohttp, datetime as _dt, pytz
+        from bs4 import BeautifulSoup
 
         is_tomorrow = day == "tomorrow"
         day_label   = "Tomorrow" if is_tomorrow else "Today"
+        eastern     = pytz.timezone("America/New_York")
 
-        # Run all schedule scripts concurrently
+        # ── helpers for inline async fetches ────────────────────────────────
+        async def _fetch_ufc_event():
+            """Return the next upcoming UFC event dict from ESPN, or None."""
+            today  = _dt.date.today()
+            future = today + _dt.timedelta(days=120)
+            url = (
+                f"https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard"
+                f"?dates={today.strftime('%Y%m%d')}-{future.strftime('%Y%m%d')}"
+            )
+            try:
+                async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                    async with s.get(url, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                        if r.status != 200:
+                            return None
+                        data = await r.json()
+                for ev in data.get("events", []):
+                    stype = ev.get("status", {}).get("type", {}).get("name", "")
+                    if stype not in ("STATUS_FINAL", "STATUS_POSTPONED"):
+                        return ev
+            except Exception:
+                pass
+            return None
+
+        async def _fetch_wc_today(date_str: str):
+            """Return list of WC match dicts for the given YYYYMMDD date, or []."""
+            url = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard"
+            try:
+                async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                    async with s.get(url, params={"dates": date_str}, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                        if r.status != 200:
+                            return []
+                        data = await r.json()
+                return data.get("events", [])
+            except Exception:
+                return []
+
+        async def _fetch_f1_event():
+            """Return next upcoming F1 race dict from jolpica, or None."""
+            try:
+                async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                    async with s.get("https://api.jolpi.ca/ergast/f1/current/next.json",
+                                     timeout=aiohttp.ClientTimeout(total=10)) as r:
+                        if r.status != 200:
+                            return None
+                        data = await r.json()
+                races = data.get("MRData", {}).get("RaceTable", {}).get("Races", [])
+                return races[0] if races else None
+            except Exception:
+                return None
+
+        async def _fetch_nascar_next():
+            """Return next upcoming NASCAR Cup race dict from Fox Sports, or None."""
+            import calendar as _cal
+            _FOX_KEY = "jE7yBJVRNAwdDesMgTzTXUUSx1It41Fq"
+            today = _dt.date.today()
+            # Check this month and next two months
+            months_to_check = []
+            for offset in range(3):
+                d = (today.replace(day=1) + _dt.timedelta(days=32 * offset))
+                months_to_check.append(d.strftime("%Y%m"))
+            try:
+                async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                    for ym in months_to_check:
+                        url = (f"https://api.foxsports.com/bifrost/v1/nascar/league"
+                               f"/scores-segment/{ym}?groupId=2&apikey={_FOX_KEY}")
+                        async with s.get(url, timeout=aiohttp.ClientTimeout(total=8)) as r:
+                            if r.status != 200:
+                                continue
+                            data = await r.json()
+                        for sec in data.get("sectionList", []):
+                            for ev in sec.get("events", []):
+                                # eventStatus: 1=live, 2=upcoming, 3=final
+                                if ev.get("eventStatus") in (1, 2):
+                                    ev_date_str = ev.get("eventTime", "")[:10]
+                                    try:
+                                        ev_date = _dt.date.fromisoformat(ev_date_str)
+                                        if ev_date >= today:
+                                            return ev
+                                    except Exception:
+                                        return ev
+            except Exception:
+                pass
+            return None
+
+        # ── run all fetches concurrently ─────────────────────────────────────
+        target_date = _dt.date.today() + _dt.timedelta(days=1 if is_tomorrow else 0)
+        date_str    = target_date.strftime("%Y%m%d")
+
         if is_tomorrow:
-            await asyncio.gather(
+            results = await asyncio.gather(
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "nhlTomorrow.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "mlbTomorrow.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "pgaLeaderboard.py")),
                 asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nbaTomorrow.R")),
                 asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nextNFL.R")),
+                _fetch_ufc_event(),
+                _fetch_wc_today(date_str),
+                _fetch_f1_event(),
+                _fetch_nascar_next(),
+                return_exceptions=True,
             )
         else:
-            await asyncio.gather(
+            results = await asyncio.gather(
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "nhlToday.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "mlbToday.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "pgaLeaderboard.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "nbaToday.py")),
                 asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nextNFL.R")),
+                _fetch_ufc_event(),
+                _fetch_wc_today(date_str),
+                _fetch_f1_event(),
+                _fetch_nascar_next(),
+                return_exceptions=True,
             )
+
+        ufc_event    = results[5] if not isinstance(results[5], Exception) else None
+        wc_events    = results[6] if not isinstance(results[6], Exception) else []
+        f1_race      = results[7] if not isinstance(results[7], Exception) else None
+        nascar_event = results[8] if not isinstance(results[8], Exception) else None
 
         embeds = []
 
@@ -1553,6 +1805,158 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                         inline=False,
                     )
                     embeds.append(emb)
+
+        # ── World Cup ─────────────────────────────────────────────────────────
+        if wc_events:
+            emb = discord.Embed(title=f"🏆 2026 FIFA World Cup - {day_label}", color=0x1a6b3a)
+            emb.set_thumbnail(url="https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png")
+            for ev in wc_events:
+                comps = ev.get("competitions", [])
+                if not comps:
+                    continue
+                c = comps[0]
+                competitors = c.get("competitors", [])
+                teams, scores, status_name = [], [], ""
+                status_type = ev.get("status", {}).get("type", {})
+                status_name = status_type.get("shortDetail", status_type.get("name", ""))
+                for comp in competitors:
+                    teams.append(comp.get("team", {}).get("shortDisplayName", "?"))
+                    scores.append(comp.get("score", ""))
+                matchup = " vs ".join(teams)
+                if all(scores) and not is_tomorrow:
+                    val = f"{scores[0]} - {scores[1]}  ({status_name})"
+                else:
+                    raw = ev.get("date", "")
+                    try:
+                        dt_utc = _dt.datetime.fromisoformat(raw.replace("Z", "+00:00"))
+                        val = dt_utc.astimezone(eastern).strftime("%-I:%M %p ET")
+                    except Exception:
+                        val = status_name or "TBD"
+                venue = c.get("venue", {})
+                venue_str = venue.get("fullName", "")
+                if venue_str:
+                    val += f"  -  {venue_str}"
+                emb.add_field(name=matchup, value=val, inline=False)
+            embeds.append(emb)
+
+        # ── UFC ───────────────────────────────────────────────────────────────
+        if ufc_event:
+            event_name = ufc_event.get("name", "UFC Event")
+            raw_date   = ufc_event.get("date", "")
+            try:
+                dt_utc  = _dt.datetime.fromisoformat(raw_date.replace("Z", "+00:00"))
+                dt_et   = dt_utc.astimezone(eastern)
+                date_str_fmt = dt_et.strftime("%a, %b %-d - %-I:%M %p ET")
+            except Exception:
+                date_str_fmt = raw_date[:10]
+
+            ev_status = ufc_event.get("status", {}).get("type", {}).get("name", "")
+            # Only show UFC if it's today/tomorrow or upcoming within ~7 days
+            ev_date = _dt.date.fromisoformat(raw_date[:10]) if raw_date else None
+            days_away = (ev_date - target_date).days if ev_date else 999
+
+            if days_away <= (1 if is_tomorrow else 0) or ev_status == "STATUS_IN_PROGRESS":
+                comps = ufc_event.get("competitions", [])
+                emb = discord.Embed(title=f"🥊 {event_name}", color=0xd4281c)
+                emb.set_thumbnail(url="attachment://ufc.png")
+                if comps:
+                    v = comps[0].get("venue", {})
+                    loc = ", ".join(p for p in [v.get("fullName", ""), v.get("address", {}).get("city", "")] if p)
+                    geo = comps[0].get("geoBroadcasts", [])
+                    broadcast = geo[0].get("media", {}).get("shortName", "TBD") if geo else comps[0].get("broadcast", "TBD")
+                    emb.add_field(name="📅 Date", value=date_str_fmt, inline=True)
+                    emb.add_field(name="🏟️ Location", value=loc or "TBD", inline=True)
+                    emb.add_field(name="📺 Broadcast", value=broadcast, inline=True)
+                    # Main event = last competition
+                    show = min(len(comps), 3)
+                    card_lines = []
+                    for i, c in enumerate(reversed(comps[-show:])):
+                        fighters = [comp.get("athlete", {}).get("displayName", "?") for comp in c.get("competitors", [])]
+                        wt = c.get("type", {}).get("abbreviation", "")
+                        prefix = "🔴 MAIN" if i == 0 else ("⚡ CO-MAIN" if i == 1 else "•")
+                        card_lines.append(f"{prefix}  {' vs '.join(fighters[:2])}" + (f" ({wt})" if wt else ""))
+                    if card_lines:
+                        emb.add_field(name="🥋 Main Card", value="\n".join(card_lines), inline=False)
+                ufc_logo = os.path.expanduser("~/discordBot/stickers/ufc.png")
+                await _send(interaction, embed=emb, file=discord.File(ufc_logo, filename="ufc.png"))
+
+        # ── F1 ────────────────────────────────────────────────────────────────
+        if f1_race:
+            import pytz as _pytz2
+            from datetime import timezone as _tz, timedelta as _td2
+            race_name    = f1_race.get("raceName", "F1 Race")
+            circuit      = f1_race.get("Circuit", {}).get("circuitName", "?")
+            locality     = f1_race.get("Circuit", {}).get("Location", {}).get("locality", "")
+            country      = f1_race.get("Circuit", {}).get("Location", {}).get("country", "")
+            race_date    = f1_race.get("date", "")
+            time_utc_str = f1_race.get("time", "")
+            try:
+                if time_utc_str:
+                    dt_utc = _dt.datetime.strptime(f"{race_date}T{time_utc_str}", "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=_tz.utc)
+                    dt_et  = dt_utc.astimezone(_tz(offset=_td2(hours=-4)))
+                    race_time_str = dt_et.strftime("%a, %b %-d - %-I:%M %p ET")
+                    days_away = (dt_utc.date() - _dt.date.today()).days
+                else:
+                    dt_date = _dt.datetime.strptime(race_date, "%Y-%m-%d")
+                    race_time_str = dt_date.strftime("%a, %b %-d")
+                    days_away = (dt_date.date() - _dt.date.today()).days
+            except Exception:
+                race_time_str = race_date
+                days_away = None
+
+            # Only show if race is today, tomorrow, or within the race weekend (7 days)
+            if days_away is not None and days_away <= (1 if is_tomorrow else 0):
+                flag_map = {
+                    "Australia": "🇦🇺", "Bahrain": "🇧🇭", "Saudi Arabia": "🇸🇦",
+                    "Japan": "🇯🇵", "China": "🇨🇳", "United States": "🇺🇸",
+                    "Italy": "🇮🇹", "Monaco": "🇲🇨", "Canada": "🇨🇦",
+                    "Spain": "🇪🇸", "Austria": "🇦🇹", "United Kingdom": "🇬🇧",
+                    "Hungary": "🇭🇺", "Belgium": "🇧🇪", "Netherlands": "🇳🇱",
+                    "Azerbaijan": "🇦🇿", "Singapore": "🇸🇬", "Mexico": "🇲🇽",
+                    "Brazil": "🇧🇷", "Qatar": "🇶🇦", "UAE": "🇦🇪", "Abu Dhabi": "🇦🇪",
+                }
+                flag = flag_map.get(country, "🏁")
+                emb = discord.Embed(
+                    title=f"{flag} {race_name}",
+                    description=f"**{circuit}** - {locality}, {country}",
+                    color=0xe10600,
+                )
+                emb.add_field(name="🏎️ Race", value=race_time_str, inline=True)
+                if days_away is not None:
+                    emb.add_field(name="📅 Days away", value=str(days_away), inline=True)
+                emb.set_thumbnail(url="attachment://f1.png")
+                f1_logo = os.path.expanduser("~/discordBot/stickers/f1.png")
+                await _send(interaction, embed=emb, file=discord.File(f1_logo, filename="f1.png"))
+
+        # ── NASCAR ────────────────────────────────────────────────────────────
+        if nascar_event:
+            ev_time_str  = nascar_event.get("eventTime", "")
+            ev_title     = nascar_event.get("title", "NASCAR Race")
+            ev_track     = nascar_event.get("subtitle", "")
+            ev_location  = nascar_event.get("subtitle2", "")
+            ev_tv        = nascar_event.get("tvStation", "")
+            ev_status    = nascar_event.get("eventStatus", 2)
+            try:
+                dt_utc   = _dt.datetime.fromisoformat(ev_time_str.replace("Z", "+00:00"))
+                dt_et    = dt_utc.astimezone(eastern)
+                ev_date  = dt_et.date()
+                time_fmt = dt_et.strftime("%a, %b %-d - %-I:%M %p ET")
+                days_away = (ev_date - target_date).days
+            except Exception:
+                time_fmt  = ev_time_str[:10]
+                days_away = 999
+
+            # Show if race is today/tomorrow (or live)
+            if days_away <= (1 if is_tomorrow else 0) or ev_status == 1:
+                emb = discord.Embed(title=f"🏁 {ev_title}", color=0xe8b42e)
+                emb.add_field(name="📅 Date", value=time_fmt, inline=True)
+                if ev_track:
+                    emb.add_field(name="🏟️ Track", value=f"{ev_track}{', ' + ev_location if ev_location else ''}", inline=True)
+                if ev_tv:
+                    emb.add_field(name="📺 Broadcast", value=ev_tv, inline=True)
+                emb.set_thumbnail(url="attachment://nascar.png")
+                nascar_logo = os.path.expanduser("~/discordBot/stickers/nascar.png")
+                await _send(interaction, embed=emb, file=discord.File(nascar_logo, filename="nascar.png"))
 
         if not embeds:
             await _send(interaction, f"nothing going on in the sports world {day_label.lower()} 😔")
@@ -3985,6 +4389,17 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         await _send(interaction, embed=embed)
 
+    @mlb_group.command(name="fantasymap", description="World Sillies PF vs PA scatter map - luck vs skill")
+    async def mlb_fantasymap(interaction: discord.Interaction):
+        await _defer(interaction)
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesMap.py"))
+        await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "worldSilliesMap.R"))
+        img = os.path.join(op, "sports/mlb/fantasy/fantasyMap.png")
+        if not os.path.exists(img):
+            await _send(interaction, "couldn't generate the map :(", ephemeral=True)
+            return
+        await _send(interaction, file=discord.File(img))
+
     @mlb_group.command(name="fantasyscoreboard", description="World Sillies live fantasy baseball scoreboard")
     async def mlb_fantasyscoreboard(interaction: discord.Interaction):
         await _defer(interaction)
@@ -5214,6 +5629,54 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         emb.set_footer(text=f"World Sillies league  ·  {CURRENT_YEAR} season stats  ·  stream = start value {day_label.lower()}")
         await _send(interaction, embed=emb)
 
+    @mlb_group.command(name="standings", description="MLB standings by league")
+    async def mlb_standings(interaction: discord.Interaction):
+        await _defer(interaction)
+        import aiohttp
+        try:
+            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                async with s.get("https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings",
+                                  timeout=aiohttp.ClientTimeout(total=10)) as r:
+                    if r.status != 200:
+                        raise RuntimeError(f"ESPN returned {r.status}")
+                    data = await r.json()
+        except Exception as ex:
+            await _send(interaction, f"Could not fetch MLB standings: {ex}")
+            return
+        leagues = data.get("children", [])
+        embeds = []
+        for lg in leagues:
+            lg_name = lg.get("name", "League")
+            entries = lg.get("standings", {}).get("entries", [])
+            # Sort by wins desc, then losses asc (best record first - natural standings order)
+            entries.sort(key=lambda e: (
+                -float(next((s["value"] for s in e.get("stats", []) if s["name"] == "wins"), 0)),
+                float(next((s["value"] for s in e.get("stats", []) if s["name"] == "losses"), 0)),
+            ))
+            emb = discord.Embed(title=f"⚾ MLB - {lg_name}", color=0x002D72)
+            emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png")
+            lines = []
+            for i, e in enumerate(entries, 1):
+                team   = e.get("team", {})
+                abbr   = team.get("abbreviation", "?")
+                stats  = {s["name"]: s.get("value", s.get("displayValue", "?")) for s in e.get("stats", [])}
+                w      = int(stats.get("wins", 0))
+                l      = int(stats.get("losses", 0))
+                pct    = f"{stats.get('winPercent', 0):.3f}".lstrip("0") or ".000"
+                gb     = stats.get("gamesBehind", "-")
+                streak = next((s["displayValue"] for s in e.get("stats", []) if s["name"] == "streak"), "")
+                dgb    = float(stats.get("divisionGamesBehind", 99))
+                div_leader = "★" if dgb == 0.0 else " "
+                gb_str = f"  GB:{gb}" if str(gb) not in ("-", "", "0", "0.0") else ""
+                streak_str = f"  {streak}" if streak else ""
+                lines.append(f"`{i:>2}.` {div_leader}**{abbr}**  {w}-{l}  {pct}{gb_str}{streak_str}")
+            emb.add_field(name="★ = div leader", value="\n".join(lines), inline=False)
+            embeds.append(emb)
+        if embeds:
+            await _send(interaction, embeds=embeds)
+        else:
+            await _send(interaction, "No MLB standings data available.")
+
     tree.add_command(mlb_group)
 
     # ── /dj ───────────────────────────────────────────────────────────────────
@@ -5684,7 +6147,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     worldcup_group = app_commands.Group(name="worldcup", description="2026 FIFA World Cup", guild_ids=[guild.id])
 
     async def _wc_schedule_embed(date_str: str, label: str) -> discord.Embed:
-        """Fetch ESPN scoreboard for a given YYYYMMDD date and return an embed."""
+        """Fetch ESPN scoreboard + DraftKings odds for a given YYYYMMDD date and return an embed."""
         import aiohttp, datetime as _dt, pytz
 
         url = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard"
@@ -5697,22 +6160,52 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     raise RuntimeError(f"ESPN returned {resp.status}")
                 data = await resp.json()
 
-        events = data.get("events", [])
-        if not events:
-            embed = discord.Embed(
-                title=f"🏆 World Cup - {label}",
-                description="No matches scheduled.",
-                color=0x1a6b3a,
-            )
-            return embed
+            events = data.get("events", [])
+            if not events:
+                embed = discord.Embed(
+                    title=f"🏆 World Cup - {label}",
+                    description="No matches scheduled.",
+                    color=0x1a6b3a,
+                )
+                embed.set_thumbnail(url="https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png")
+                return embed
 
+            # Fetch odds concurrently for all events
+            async def _fetch_odds(session, event_id: str) -> dict:
+                odds_url = (
+                    f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/fifa.world"
+                    f"/events/{event_id}/competitions/{event_id}/odds/100"
+                )
+                try:
+                    async with session.get(odds_url, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                        if r.status == 200:
+                            return await r.json()
+                except Exception:
+                    pass
+                return {}
+
+            odds_results = await asyncio.gather(
+                *[_fetch_odds(session, e["id"]) for e in events],
+                return_exceptions=True
+            )
+
+        # Build embed
         embed = discord.Embed(
             title=f"🏆 2026 FIFA World Cup - {label}",
             color=0x1a6b3a,
         )
-        embed.set_footer(text="Source: ESPN | Times in ET")
+        embed.set_thumbnail(url="https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png")
+        embed.set_footer(text="Lines: DraftKings via ESPN | Times in ET")
 
-        for event in events:
+        def _fmt_ml(val) -> str:
+            """Format American moneyline: +350, -110, EVEN."""
+            try:
+                v = int(float(val))
+                return f"+{v}" if v > 0 else str(v)
+            except Exception:
+                return str(val)
+
+        for event, odds_data in zip(events, odds_results):
             comp = event["competitions"][0]
             competitors = comp["competitors"]
             home = next((c for c in competitors if c["homeAway"] == "home"), competitors[0])
@@ -5745,14 +6238,14 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             city = venue_obj.get("address", {}).get("city", "")
             venue_str = f"{venue}, {city}" if city else venue
 
-            # Build field name (status indicator)
+            # Status line
             if status_state == "post":
                 status_icon = "✅"
-                score_str = f"**{home_score} - {away_score}**  (FT)"
+                score_str = f"**{away_score} - {home_score}**  (FT)"
             elif status_state == "in":
                 status_icon = "🔴"
                 clock = display_clock or status_detail
-                score_str = f"**{home_score} - {away_score}**  ({clock})"
+                score_str = f"**{away_score} - {home_score}**  ({clock})"
             else:
                 status_icon = "🕐"
                 score_str = time_str
@@ -5761,19 +6254,59 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             if group_note:
                 field_name += f"  |  {group_note}"
 
-            field_value = score_str
+            lines = [score_str]
             if venue_str:
-                field_value += f"\n{venue_str}"
+                lines.append(venue_str)
 
-            embed.add_field(name=field_name, value=field_value, inline=False)
+            # Odds block (only for pre/live matches where odds are meaningful)
+            if isinstance(odds_data, dict) and odds_data and status_state in ("pre", "in"):
+                try:
+                    home_odds_obj = odds_data.get("homeTeamOdds", {})
+                    away_odds_obj = odds_data.get("awayTeamOdds", {})
+                    draw_obj = odds_data.get("drawOdds", {})
+
+                    home_ml = home_odds_obj.get("moneyLine")
+                    away_ml = away_odds_obj.get("moneyLine")
+                    draw_ml = draw_obj.get("moneyLine")
+
+                    spread = odds_data.get("spread")
+                    spread_details = odds_data.get("details", "")
+                    over_under = odds_data.get("overUnder")
+                    over_odds = odds_data.get("overOdds")
+                    under_odds = odds_data.get("underOdds")
+
+                    odds_parts = []
+                    if away_ml is not None and home_ml is not None:
+                        away_ml_str = _fmt_ml(away_ml)
+                        draw_str = _fmt_ml(draw_ml) if draw_ml is not None else "N/A"
+                        home_ml_str = _fmt_ml(home_ml)
+                        odds_parts.append(
+                            f"ML: `{away_name.split()[-1]} {away_ml_str}`  Draw `{draw_str}`  `{home_name.split()[-1]} {home_ml_str}`"
+                        )
+                    if spread is not None and spread_details:
+                        odds_parts.append(f"Spread: `{spread_details}`")
+                    if over_under is not None:
+                        o_str = _fmt_ml(over_odds) if over_odds is not None else ""
+                        u_str = _fmt_ml(under_odds) if under_odds is not None else ""
+                        ou_line = f"O/U: `{over_under}`"
+                        if o_str and u_str:
+                            ou_line += f"  (O {o_str} / U {u_str})"
+                        odds_parts.append(ou_line)
+
+                    if odds_parts:
+                        lines.append("\n".join(odds_parts))
+                except Exception:
+                    pass
+
+            embed.add_field(name=field_name, value="\n".join(lines), inline=False)
 
         return embed
 
     @worldcup_group.command(name="today", description="World Cup matches today")
     async def wc_today(interaction: discord.Interaction):
         await _defer(interaction)
-        import datetime as _dt
-        today_str = _dt.datetime.utcnow().strftime("%Y%m%d")
+        import datetime as _dt, pytz
+        today_str = _dt.datetime.now(_dt.timezone.utc).astimezone(pytz.timezone("America/New_York")).strftime("%Y%m%d")
         label = "Today"
         try:
             embed = await _wc_schedule_embed(today_str, label)
@@ -5784,8 +6317,10 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @worldcup_group.command(name="tomorrow", description="World Cup matches tomorrow")
     async def wc_tomorrow(interaction: discord.Interaction):
         await _defer(interaction)
-        import datetime as _dt
-        tomorrow_str = (_dt.datetime.utcnow() + _dt.timedelta(days=1)).strftime("%Y%m%d")
+        import datetime as _dt, pytz
+        eastern = pytz.timezone("America/New_York")
+        now_et = _dt.datetime.now(_dt.timezone.utc).astimezone(eastern)
+        tomorrow_str = (now_et + _dt.timedelta(days=1)).strftime("%Y%m%d")
         label = "Tomorrow"
         try:
             embed = await _wc_schedule_embed(tomorrow_str, label)
@@ -5837,6 +6372,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             title="🏆 2026 FIFA World Cup - Group Standings",
             color=0x1a6b3a,
         )
+        embed.set_thumbnail(url="https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png")
         embed.set_footer(text="Source: ESPN  |  P W D L GF GA Pts")
 
         for group_obj in groups_data:
@@ -5865,3 +6401,358 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, embed=embed)
 
     tree.add_command(worldcup_group)
+
+    # ── /nascar ───────────────────────────────────────────────────────────────
+    _FOX_KEY = "jE7yBJVRNAwdDesMgTzTXUUSx1It41Fq"
+    nascar_group = app_commands.Group(name="nascar", description="NASCAR Cup Series events & standings", guild_ids=[guild.id])
+
+    @nascar_group.command(name="nextevent", description="Next upcoming NASCAR Cup Series race")
+    async def nascar_nextevent(interaction: discord.Interaction):
+        await _defer(interaction)
+        import aiohttp, datetime as _dt2, pytz as _pytz3
+
+        eastern3 = _pytz3.timezone("America/New_York")
+        today    = _dt2.date.today()
+        months_to_check = []
+        for offset in range(3):
+            d = (today.replace(day=1) + _dt2.timedelta(days=32 * offset))
+            months_to_check.append(d.strftime("%Y%m"))
+
+        ev = None
+        try:
+            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as session:
+                for ym in months_to_check:
+                    url = (f"https://api.foxsports.com/bifrost/v1/nascar/league"
+                           f"/scores-segment/{ym}?groupId=2&apikey={_FOX_KEY}")
+                    async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                        if r.status != 200:
+                            continue
+                        data = await r.json()
+                    for sec in data.get("sectionList", []):
+                        for event in sec.get("events", []):
+                            if event.get("eventStatus") in (1, 2):
+                                ev_date_str = event.get("eventTime", "")[:10]
+                                try:
+                                    ev_date = _dt2.date.fromisoformat(ev_date_str)
+                                    if ev_date >= today:
+                                        ev = event
+                                        break
+                                except Exception:
+                                    ev = event
+                                    break
+                        if ev:
+                            break
+        except Exception as ex:
+            await _send(interaction, f"Could not fetch NASCAR schedule: {ex}")
+            return
+
+        if not ev:
+            await _send(interaction, "No upcoming NASCAR Cup Series races found.")
+            return
+
+        ev_time_str = ev.get("eventTime", "")
+        ev_title    = ev.get("title", "NASCAR Race")
+        ev_track    = ev.get("subtitle", "")
+        ev_location = ev.get("subtitle2", "")
+        ev_tv       = ev.get("tvStation", "")
+        ev_status   = ev.get("eventStatus", 2)
+
+        try:
+            dt_utc   = _dt2.datetime.fromisoformat(ev_time_str.replace("Z", "+00:00"))
+            dt_et    = dt_utc.astimezone(eastern3)
+            time_fmt = dt_et.strftime("%A, %B %-d, %Y - %-I:%M %p ET")
+            days_away = (dt_et.date() - today).days
+        except Exception:
+            time_fmt  = ev_time_str[:10]
+            days_away = None
+
+        embed = discord.Embed(title=f"🏁 {ev_title}", color=0xe8b42e)
+        embed.add_field(name="📅 Date", value=time_fmt, inline=False)
+        if ev_track:
+            loc = f"{ev_track}{', ' + ev_location if ev_location else ''}"
+            embed.add_field(name="🏟️ Track", value=loc, inline=True)
+        if ev_tv:
+            embed.add_field(name="📺 Broadcast", value=ev_tv, inline=True)
+        if days_away is not None:
+            label = "🔴 LIVE NOW" if ev_status == 1 else f"In {days_away} day{'s' if days_away != 1 else ''}"
+            embed.add_field(name="", value=label, inline=True)
+        embed.set_thumbnail(url="attachment://nascar.png")
+        embed.set_footer(text="Source: Fox Sports")
+        nascar_logo = os.path.expanduser("~/discordBot/stickers/nascar.png")
+        await interaction.followup.send(embed=embed, file=discord.File(nascar_logo, filename="nascar.png"))
+
+    @nascar_group.command(name="standings", description="NASCAR Cup Series driver standings")
+    async def nascar_standings(interaction: discord.Interaction):
+        await _defer(interaction)
+        import aiohttp
+
+        try:
+            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as session:
+                url = f"https://api.foxsports.com/bifrost/v1/nascar/league/standings?apikey={_FOX_KEY}"
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=12)) as r:
+                    if r.status != 200:
+                        raise RuntimeError(f"Fox Sports returned {r.status}")
+                    data = await r.json()
+        except Exception as ex:
+            await _send(interaction, f"Could not fetch NASCAR standings: {ex}")
+            return
+
+        try:
+            table    = data["standingsSections"][0]["standings"][0]
+            col_hdrs = table.get("headers", [{}])[0].get("columns", [])
+            col_names = [c.get("text", f"c{i}") for i, c in enumerate(col_hdrs)]
+            rows     = table.get("rows", [])
+        except (KeyError, IndexError) as ex:
+            await _send(interaction, f"Could not parse standings: {ex}")
+            return
+
+        if not rows:
+            await _send(interaction, "No standings data available.")
+            return
+
+        embed = discord.Embed(title="🏁 NASCAR Cup Series - Driver Standings", color=0xe8b42e)
+
+        lines = []
+        for row in rows[:15]:
+            cols = {col_names[i]: c.get("text", "") for i, c in enumerate(row.get("columns", [])) if i < len(col_names)}
+            rank   = cols.get("DRIVER", "?")
+            driver = cols.get("c1", cols.get("", "?"))
+            pts    = cols.get("POINTS", "?")
+            wins   = cols.get("WINS", "")
+            t5     = cols.get("TOP 5", "")
+            medal  = {1: "🥇", 2: "🥈", 3: "🥉"}.get(int(rank) if str(rank).isdigit() else 0, "")
+            win_str = f" | W:{wins}" if wins and wins != "0" else ""
+            t5_str  = f" T5:{t5}" if t5 else ""
+            lines.append(f"{medal}**{rank}.** {driver} - **{pts} pts**{win_str}{t5_str}")
+
+        embed.add_field(name="Top 15 Drivers", value="\n".join(lines), inline=False)
+        embed.set_thumbnail(url="attachment://nascar.png")
+        embed.set_footer(text="Source: Fox Sports")
+        nascar_logo = os.path.expanduser("~/discordBot/stickers/nascar.png")
+        await interaction.followup.send(embed=embed, file=discord.File(nascar_logo, filename="nascar.png"))
+
+    tree.add_command(nascar_group)
+
+    # ── /ufc ──────────────────────────────────────────────────────────────────
+    ufc_group = app_commands.Group(name="ufc", description="UFC events & rankings", guild_ids=[guild.id])
+
+    @ufc_group.command(name="nextevent", description="Next upcoming UFC event and main card")
+    async def ufc_nextevent(interaction: discord.Interaction):
+        await _defer(interaction)
+        import aiohttp, datetime as _dt, pytz
+
+        eastern = pytz.timezone("America/New_York")
+        today = _dt.date.today()
+        future = today + _dt.timedelta(days=120)
+        url = (
+            f"https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard"
+            f"?dates={today.strftime('%Y%m%d')}-{future.strftime('%Y%m%d')}"
+        )
+        headers = {"User-Agent": "Mozilla/5.0"}
+
+        try:
+            async with aiohttp.ClientSession(headers=headers) as session:
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=12)) as resp:
+                    if resp.status != 200:
+                        raise RuntimeError(f"ESPN returned {resp.status}")
+                    data = await resp.json()
+        except Exception as ex:
+            await _send(interaction, f"Could not fetch UFC schedule: {ex}")
+            return
+
+        events = data.get("events", [])
+        # Find first upcoming (not finished) event
+        next_event = None
+        for ev in events:
+            stype = ev.get("status", {}).get("type", {}).get("name", "")
+            if stype not in ("STATUS_FINAL", "STATUS_POSTPONED"):
+                next_event = ev
+                break
+
+        if not next_event:
+            await _send(interaction, "No upcoming UFC events found.")
+            return
+
+        # Parse event details
+        event_name = next_event.get("name", "UFC Event")
+        raw_date = next_event.get("date", "")
+        try:
+            dt_utc = _dt.datetime.fromisoformat(raw_date.replace("Z", "+00:00"))
+            dt_et = dt_utc.astimezone(eastern)
+            date_str = dt_et.strftime("%A, %B %-d, %Y - %-I:%M %p ET")
+        except Exception:
+            date_str = raw_date[:10]
+
+        comps = next_event.get("competitions", [])
+        venue_name, city, country, broadcast = "TBD", "", "", "TBD"
+        main_card_fights = []
+
+        if comps:
+            # Venue from first comp
+            v = comps[0].get("venue", {})
+            venue_name = v.get("fullName", "TBD")
+            addr = v.get("address", {})
+            city = addr.get("city", "")
+            country = addr.get("country", "")
+            # Broadcast
+            geo = comps[0].get("geoBroadcasts", [])
+            if geo:
+                broadcast = geo[0].get("media", {}).get("shortName", "TBD")
+            elif comps[0].get("broadcast"):
+                broadcast = comps[0]["broadcast"]
+
+            # Build fight list - main event is last comp, show main card fights
+            # ESPN orders fights: first bouts first, main event last
+            total = len(comps)
+            # Show up to 5 fights (main card approx), reversed so main event is first
+            show = min(total, 5)
+            for c in reversed(comps[-show:]):
+                fighters = []
+                for comp in c.get("competitors", []):
+                    ath = comp.get("athlete", {})
+                    fighters.append(ath.get("displayName", ath.get("shortName", "?")))
+                wt = c.get("type", {}).get("abbreviation", "")
+                label = " vs ".join(fighters[:2]) if fighters else "TBD"
+                main_card_fights.append((label, wt))
+
+        # Build embed
+        loc_parts = [p for p in [venue_name, city, country] if p]
+        location = ", ".join(loc_parts) if loc_parts else "TBD"
+
+        embed = discord.Embed(
+            title=f"🥊 {event_name}",
+            color=0xd4281c,
+        )
+        embed.add_field(name="📅 Date", value=date_str, inline=False)
+        embed.add_field(name="🏟️ Location", value=location, inline=True)
+        embed.add_field(name="📺 Broadcast", value=broadcast, inline=True)
+
+        if main_card_fights:
+            card_lines = []
+            for i, (matchup, wt) in enumerate(main_card_fights):
+                prefix = "🔴 MAIN" if i == 0 else ("⚡ CO-MAIN" if i == 1 else "•")
+                wt_str = f" ({wt})" if wt else ""
+                card_lines.append(f"{prefix}  {matchup}{wt_str}")
+            embed.add_field(name="🥋 Main Card", value="\n".join(card_lines), inline=False)
+
+        embed.set_thumbnail(url="attachment://ufc.png")
+        embed.set_footer(text="Source: ESPN | Times in ET")
+        ufc_logo = os.path.expanduser("~/discordBot/stickers/ufc.png")
+        await interaction.followup.send(embed=embed, file=discord.File(ufc_logo, filename="ufc.png"))
+
+    @ufc_group.command(name="standings", description="UFC rankings by weight class")
+    @app_commands.describe(
+        division="Weight class to show rankings for",
+        gender="Men's or Women's divisions (default: Men's)",
+    )
+    @app_commands.choices(division=[
+        app_commands.Choice(name="P4P",             value="pound-for-pound"),
+        app_commands.Choice(name="Heavyweight",     value="heavyweight"),
+        app_commands.Choice(name="Light Heavyweight", value="light heavyweight"),
+        app_commands.Choice(name="Middleweight",    value="middleweight"),
+        app_commands.Choice(name="Welterweight",    value="welterweight"),
+        app_commands.Choice(name="Lightweight",     value="lightweight"),
+        app_commands.Choice(name="Featherweight",   value="featherweight"),
+        app_commands.Choice(name="Bantamweight",    value="bantamweight"),
+        app_commands.Choice(name="Flyweight",       value="flyweight"),
+        app_commands.Choice(name="Strawweight",     value="strawweight"),
+    ])
+    @app_commands.choices(gender=[
+        app_commands.Choice(name="Men's",   value="mens"),
+        app_commands.Choice(name="Women's", value="womens"),
+    ])
+    async def ufc_standings(interaction: discord.Interaction,
+                            division: app_commands.Choice[str] = None,
+                            gender: app_commands.Choice[str] = None):
+        await _defer(interaction)
+        import aiohttp
+        from bs4 import BeautifulSoup
+
+        div_val    = division.value if division else "pound-for-pound"
+        is_womens  = (gender and gender.value == "womens")
+
+        # Strawweight is women's only
+        if div_val == "strawweight":
+            is_womens = True
+
+        # Build search string to match UFC.com grouping headers
+        if div_val == "pound-for-pound":
+            target_div = "women's pound-for-pound" if is_womens else "men's pound-for-pound"
+        elif is_womens:
+            target_div = f"women's {div_val}"
+        else:
+            target_div = div_val
+
+        headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"}
+
+        try:
+            async with aiohttp.ClientSession(headers=headers) as session:
+                async with session.get("https://www.ufc.com/rankings", timeout=aiohttp.ClientTimeout(total=12)) as resp:
+                    if resp.status != 200:
+                        raise RuntimeError(f"UFC.com returned {resp.status}")
+                    html = await resp.text()
+        except Exception as ex:
+            await _send(interaction, f"Could not fetch UFC rankings: {ex}")
+            return
+
+        soup = BeautifulSoup(html, "html.parser")
+        groups = soup.find_all("div", class_="view-grouping")
+
+        if not groups:
+            await _send(interaction, "Could not parse UFC rankings page.")
+            return
+
+        # Find matching group by substring of target_div in header text
+        matched_group = None
+        for grp in groups:
+            header = grp.find("div", class_="view-grouping-header")
+            hdr_text = header.get_text(strip=True) if header else ""
+            if target_div in hdr_text.lower():
+                matched_group = (hdr_text, grp)
+                break
+
+        if not matched_group:
+            await _send(interaction, "Could not find that division in the rankings.")
+            return
+
+        hdr_text, grp = matched_group
+
+        # Extract champion
+        champ_name = None
+        champ_el = grp.find(class_="views-field-title")
+        if champ_el:
+            champ_name = champ_el.get_text(strip=True)
+
+        # Extract ranked fighters
+        rows = grp.find_all("tr")
+        ranked = []
+        for row in rows:
+            rank_td = row.find("td", class_=lambda x: x and "rank" in str(x))
+            name_a = row.find("a")
+            if rank_td and name_a:
+                rank_num = rank_td.get_text(strip=True).replace("#", "").strip()
+                name = name_a.get_text(strip=True)
+                ranked.append((rank_num, name))
+
+        # Clean up header text (remove "Top Rank" suffix added by Drupal)
+        clean_hdr = hdr_text.replace("Top Rank", "").strip()
+        embed = discord.Embed(
+            title=f"🥊 UFC Rankings - {clean_hdr}",
+            color=0xd4281c,
+        )
+
+        if "pound" not in hdr_text.lower() and champ_name:
+            embed.add_field(name="🏆 Champion", value=champ_name, inline=False)
+
+        if ranked:
+            lines = [f"**{r}.** {n}" for r, n in ranked[:10]]
+            embed.add_field(name="Top Ranked", value="\n".join(lines), inline=False)
+        else:
+            embed.add_field(name="Rankings", value="No ranked fighters found.", inline=False)
+
+        embed.set_thumbnail(url="attachment://ufc.png")
+        embed.set_footer(text="Source: UFC.com")
+        ufc_logo = os.path.expanduser("~/discordBot/stickers/ufc.png")
+        await interaction.followup.send(embed=embed, file=discord.File(ufc_logo, filename="ufc.png"))
+
+    tree.add_command(ufc_group)
