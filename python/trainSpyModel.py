@@ -115,6 +115,12 @@ SPY_FEATURES = [
     "first_hour_ret", "last_hour_ret", "am_range", "pm_range",
     "gap_fill_flag", "vwap_dev_am", "open_drive_flag", "vol_am_pct",
     "late_reversal_flag", "premarket_ret", "premarket_vol_ratio", "overnight_gap",
+    # Order flow / CVD features (dense after trade backfill 2021+)
+    "cvd_total", "cvd_normalized", "cvd_first_hour", "cvd_last_hour",
+    "cvd_direction_flip", "large_cvd_total", "large_cvd_ratio",
+    "cvd_z21", "large_cvd_z21",
+    "cvd_momentum_ratio", "cvd_peak_hour",
+    "buy_intensity", "sell_intensity", "intensity_ratio",
 ]
 
 # Sparse features — imputed with median when unavailable
@@ -140,6 +146,12 @@ SPARSE_FEATURES = [
     "first_hour_ret", "last_hour_ret", "am_range", "pm_range",
     "gap_fill_flag", "vwap_dev_am", "open_drive_flag", "vol_am_pct",
     "late_reversal_flag", "premarket_ret", "premarket_vol_ratio", "overnight_gap",
+    # Order flow / CVD features (sparse until backfill, dense after 2021+)
+    "cvd_total", "cvd_normalized", "cvd_first_hour", "cvd_last_hour",
+    "cvd_direction_flip", "large_cvd_total", "large_cvd_ratio",
+    "cvd_z21", "large_cvd_z21",
+    "cvd_momentum_ratio", "cvd_peak_hour",
+    "buy_intensity", "sell_intensity", "intensity_ratio",
 ]
 
 # GBM-specific feature list — drops individual sector ETF returns to reduce overfitting

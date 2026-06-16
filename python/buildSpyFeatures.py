@@ -449,6 +449,30 @@ def build_features():
         print("    [warn] spy_intraday_features.csv not found "
               "-- run buildIntradayFeatures.py after fetchIntradayBars.py backfill")
 
+    # ── 13. Order flow / CVD features (from buildOrderFlowFeatures.py) ──────────
+    print("  building order flow CVD features...")
+    of_path = os.path.expanduser(
+        "~/discordBot/outputs/features/markets/spy_orderflow_features.csv"
+    )
+    if os.path.exists(of_path):
+        of_df = pd.read_csv(of_path, parse_dates=["date"]).set_index("date").sort_index()
+        of_df.index = pd.to_datetime(of_df.index)
+        CVD_COLS = [
+            "cvd_total", "cvd_normalized", "cvd_first_hour", "cvd_last_hour",
+            "cvd_direction_flip", "large_cvd_total", "large_cvd_ratio",
+            "cvd_z21", "large_cvd_z21",
+            "cvd_momentum_ratio", "cvd_peak_hour",
+            "buy_intensity", "sell_intensity", "intensity_ratio",
+        ]
+        for col in CVD_COLS:
+            if col in of_df.columns:
+                df[col] = of_df[col].reindex(df.index)
+        print(f"    CVD features rows: {len(of_df)}, "
+              f"date range: {of_df.index[0].date()} to {of_df.index[-1].date()}")
+    else:
+        print("    [warn] spy_orderflow_features.csv not found "
+              "-- run buildOrderFlowFeatures.py after fetchOrderFlowDaily.py backfill")
+
     # ── targets (no leakage — shift(-1) and shift(-5)) ───────────────────────
     print("  computing targets...")
     df["next_ret_1d"]  = df["SPY_ret"].shift(-1)

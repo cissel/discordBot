@@ -190,7 +190,8 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 **Discord commands:**
 - `/spysignal` - next-day direction + 5-day outlook (standalone, markets group at limit)
 - `/spydiagnostics [regenerate]` - 5-panel diagnostic plot: calibration, residuals, rolling accuracy, run history
-
+- `/btcsignal` - BTC ML model signal: next-day direction + 5-day outlook + on-chain context (MVRV, NUPL, hashrate, halving cycle, dominance)
+- `/btcdiagnostics [regenerate]` - BTC 5-panel diagnostic plot: predicted vs actual, residuals, rolling 30d accuracy, run history, MVRV zone accuracy
 
 ![stock chart](outputs/markets/stockchart.png)
 ![crypto chart](outputs/markets/cryptochart.png)

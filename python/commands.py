@@ -5974,6 +5974,135 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, f"diagnostics error: `{e}`")
 
 
+    # ── /btcsignal ────────────────────────────────────────────────────────────
+    @tree.command(name="btcsignal", description="BTC ML model signal - next-day direction + 5-day outlook + on-chain context", guild=guild)
+    async def btc_signal(interaction: discord.Interaction):
+        await interaction.response.defer(thinking=True)
+        try:
+            result = await asyncio.to_thread(
+                _run, PYTHON, os.path.join(pp, "predictBtc.py")
+            )
+            if result.returncode != 0:
+                await _send(interaction, f"predict error:\n```{result.stderr[-800:]}```")
+                return
+            import json as _json
+            data = _json.loads(result.stdout)
+            if "error" in data:
+                await _send(interaction, f"model error: {data['error']}")
+                return
+
+            nd  = data.get("next_day", {})
+            fd  = data.get("next_5d", {})
+            oc  = data.get("onchain_context", {})
+            mac = data.get("macro_context", {})
+
+            dir_emoji = {"UP": "🟢", "DOWN": "🔴"}.get(nd.get("direction", ""), "⚪")
+            fdir_emoji = {"UP": "🟢", "DOWN": "🔴"}.get(fd.get("direction", ""), "⚪")
+
+            emb = discord.Embed(
+                title=f"BTC ML Signal - {data.get('date', '')}",
+                color=0xf7931a,
+            )
+
+            nd_prob = nd.get("probability", 0.5)
+            nd_conf = nd.get("confidence", "")
+            fd_ret  = fd.get("expected_ret_pct", 0)
+            emb.add_field(
+                name="Next Day",
+                value=(f"{dir_emoji} **{nd.get('direction', 'N/A')}** "
+                       f"({nd_prob*100:.1f}% up) - {nd_conf}"),
+                inline=True
+            )
+            emb.add_field(
+                name="Next 5 Days",
+                value=(f"{fdir_emoji} **{fd.get('direction', 'N/A')}** "
+                       f"({fd_ret:+.2f}%)"),
+                inline=True
+            )
+
+            # On-chain context
+            mvrv      = oc.get("mvrv")
+            nupl      = oc.get("nupl")
+            mvrv_zone = oc.get("mvrv_zone", "")
+            cycle_pct = oc.get("halving_cycle_pct")
+            cycle_ph  = oc.get("cycle_phase", "")
+            dom       = oc.get("btc_dominance")
+            hr_grow   = oc.get("hashrate_growth_21d")
+
+            onchain_lines = []
+            if mvrv is not None:
+                onchain_lines.append(f"MVRV: **{mvrv:.2f}** ({mvrv_zone})")
+            if nupl is not None:
+                onchain_lines.append(f"NUPL: **{nupl:.3f}**")
+            if cycle_pct is not None:
+                onchain_lines.append(f"Halving cycle: **{cycle_pct*100:.1f}%** ({cycle_ph})")
+            if dom is not None:
+                onchain_lines.append(f"BTC dominance: **{dom*100:.1f}%**")
+            if hr_grow is not None:
+                sign = "+" if hr_grow >= 0 else ""
+                onchain_lines.append(f"Hashrate growth 21d: **{sign}{hr_grow:.3f}** (log)")
+
+            if onchain_lines:
+                emb.add_field(name="On-Chain", value="\n".join(onchain_lines), inline=False)
+
+            # Macro context
+            macro_lines = []
+            fed = mac.get("fedfunds")
+            yc  = mac.get("yield_curve")
+            dxy = mac.get("dxy_level")
+            rv  = mac.get("realized_vol_21d")
+            if fed is not None:
+                macro_lines.append(f"Fed funds: **{fed:.2f}%**")
+            if yc is not None:
+                inv = " (inverted)" if yc < 0 else ""
+                macro_lines.append(f"Yield curve: **{yc:.3f}**{inv}")
+            if dxy is not None:
+                macro_lines.append(f"DXY: **{dxy:.1f}**")
+            if rv is not None:
+                macro_lines.append(f"Realized vol 21d: **{rv*100:.1f}%** ann")
+
+            if macro_lines:
+                emb.add_field(name="Macro", value="\n".join(macro_lines), inline=False)
+
+            # Top signals
+            signals = data.get("top_signals", [])
+            if signals:
+                emb.add_field(name="Key Signals", value="\n".join(f"- {s}" for s in signals), inline=False)
+
+            emb.set_footer(text="BTC ML model - Run 1 baseline | on-chain: CoinMetrics + blockchain.info")
+            await _send(interaction, embed=emb)
+        except Exception as e:
+            await _send(interaction, f"btcsignal error: `{e}`")
+
+
+    # ── /btcdiagnostics ───────────────────────────────────────────────────────
+    @tree.command(name="btcdiagnostics", description="BTC ML model diagnostics - residuals, MVRV accuracy, rolling accuracy, run history", guild=guild)
+    @app_commands.describe(regenerate="Re-run the eval pipeline before plotting (slow ~15s, default: no)")
+    async def btc_diagnostics(interaction: discord.Interaction, regenerate: str = "no"):
+        await interaction.response.defer(thinking=True)
+        out_img = os.path.join(op, "markets/btc_diagnostics.png")
+        try:
+            if regenerate.lower() in ("yes", "y", "true", "1"):
+                eval_result = await asyncio.to_thread(
+                    _run, PYTHON, os.path.join(pp, "evalBtcModel.py")
+                )
+                if eval_result.returncode != 0:
+                    await _send(interaction, f"eval error:\n```{eval_result.stderr[-800:]}```")
+                    return
+            r_result = await asyncio.to_thread(
+                _run, "Rscript", os.path.join(rp, "btcModelDiagnostics.R"), out_img
+            )
+            if r_result.returncode != 0:
+                await _send(interaction, f"plot error:\n```{r_result.stderr[-800:]}```")
+                return
+            if not os.path.exists(out_img):
+                await _send(interaction, "diagnostics plot not found after render")
+                return
+            await _send(interaction, file=discord.File(out_img))
+        except Exception as e:
+            await _send(interaction, f"btcdiagnostics error: `{e}`")
+
+
     # ── /dj ───────────────────────────────────────────────────────────────────
     dj_group = app_commands.Group(name="dj", description="let DJ several bots spin a few tunes", guild_ids=[guild.id])
 
