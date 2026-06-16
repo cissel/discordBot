@@ -110,6 +110,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `gmscore` | grades every manager's decisions from last week (A+ to F) |
 | `hotcold` | hottest and coldest batters + pitchers in the last 7 days |
 | `playertrends` | recent scoring trend chart for a player |
+| `modeldiagnostics` | ML model diagnostics - residuals, loss curves, Spearman history |
 | `whohits` | best historical hitters vs today's probable pitchers |
 | `mismatch` | batter vs pitcher matchup OPS from 5 years of Statcast data |
 | `fantasyrisk` | risk flags across your roster (injury, cold streak, bad matchup) |
@@ -172,7 +173,23 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `options` | options flow snapshot for a ticker |
 | `short` | most shorted stocks |
 | `trades` | recent trade chart |
-| `model` | SPY returns model - OLS + NW-HAC robust SEs + AR lags + options flow (1Y/2Y/3Y/5Y/max lookback) |
+|| `model` | SPY returns model - OLS + NW-HAC robust SEs + AR lags + options flow (1Y/2Y/3Y/5Y/max lookback) |
+|| `signal` | SPY ML model signal - next-day direction probability and 5-day outlook. Optional `show_context` param shows VIX, yield curve, and event calendar. Flags upcoming FOMC/CPI/NFP events. Use `/spysignal` (standalone - markets group at 25-cmd limit). |
+
+#### SPY ML feature pipeline (daily cron at 4:15 PM ET)
+| Script | Output | Description |
+|---|---|---|
+| `optionsSnapshot.py` | `outputs/research/SPY_options_daily.csv` | ATM IV, IV skew, PCR, term slope |
+| `fetchVwapDaily.py` | `outputs/markets/cache/spy_vwap_daily.csv` | Session VWAP deviation, cross count, vol concentration (9 features). Backfill: `--backfill YYYY-MM-DD YYYY-MM-DD` |
+| `fetchBlockSignals.py` | `outputs/research/block_events.csv`, `block_outcomes.csv` | Large SPY block trades (>$300M, >0.5% deviation, tiered 0.8% high-dev flag). Maintains forward outcomes at 1d/3d/1w/2w/1mo horizons. Backfill: `--backfill YYYY-MM-DD YYYY-MM-DD` |
+| `fetchIntradayBars.py` | `outputs/markets/intraday/SPY_{YEAR}_1min.csv` | Full extended-hours 1-min bars (4am-8pm ET), year-partitioned. Backfill: `--backfill YYYY-MM-DD YYYY-MM-DD` |
+| `buildIntradayFeatures.py` | `outputs/features/markets/spy_intraday_features.csv` | Aggregates 1-min bars to 12 daily features: first/last-hour return, AM/PM range, gap fill, open drive, vol front-loading, premarket ret/vol, overnight gap |
+| `buildOvernightModel.py` | `models/markets/overnight/overnight_dir_{DATE}.pkl` | Logistic model predicting next-day overnight gap direction. Logs to `models/meta/overnight_experiment_log.csv` |
+| `evalSpyModel.py` | `outputs/features/markets/eval_spy_*.csv` | Re-runs val-set inference on all 5 SPY models, writes prediction CSVs for diagnostics |
+
+**Discord commands:**
+- `/spysignal` - next-day direction + 5-day outlook (standalone, markets group at limit)
+- `/spydiagnostics [regenerate]` - 5-panel diagnostic plot: calibration, residuals, rolling accuracy, run history
 
 
 ![stock chart](outputs/markets/stockchart.png)
@@ -247,6 +264,15 @@ Plays music from a Pioneer rekordbox USB library in a voice channel. Supports qu
 ![daily messages](outputs/metrics/dailyMessages.png)
 ![invite graph](outputs/server/invite_graph.png)
 ![repo graph](outputs/server/repo_graph.png)
+
+### `/billboard`
+Top music charts sourced from Apple Music / iTunes. Updated daily.
+
+| mode | description |
+|---|---|
+| `songs` | Top 10 songs right now (default) |
+| `artists` | Top 10 artists right now, ranked by number of songs in the top charts |
+| `genre` | Top 10 songs in a chosen genre (Pop, Hip-Hop/Rap, Rock, Country, R&B/Soul, Electronic, Dance, Latin, K-Pop, J-Pop, Reggae, Christian/Gospel, Classical, Jazz, Soundtrack) |
 
 ### misc
 `/ping`, `/duval`, `/westside`, `/ts`, `/goodmorning`, `/dontavius`, `/r2`, `/chucktronic`, `/serversdown`, and a handful of others best discovered in the wild.

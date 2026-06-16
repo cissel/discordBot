@@ -1,0 +1,6 @@
+model_id,target,model_type,train_date,train_rows,val_rows,val_rmse,val_mae,val_r2,val_spearman,val_dir_acc,val_auc,top5_features
+spy_ridge_next_ret_1d_2026-06-16,next_ret_1d,ridge,2026-06-16,1713,252,0.01233,0.008292,-0.0911,0.0445,0.5397,,vix_level=0.006; macro_event_day=0.005; sector_dispersion_r5=0.005; vix_chg_5d=0.003; macro_event_window=0.003
+spy_gbm_next_ret_1d_2026-06-16,next_ret_1d,gbm,2026-06-16,1713,252,0.012041,0.007596,-0.0405,0.015,0.5238,,vix_z252=0.086; vix_level=0.068; spy_ret_r63=0.050; spy_drawdown_252=0.047; qqq_ret_1d=0.045
+spy_logistic_next_dir_1d_2026-06-16,next_dir_1d,logistic,2026-06-16,1714,252,0.510546,0.478671,-0.0597,0.0417,0.5357,0.5243,fedfunds=0.348; macro_event_window=0.293; XLF_ret=0.279; macro_event_day=0.245; vix_level=0.222
+spy_gbm_next_dir_1d_2026-06-16,next_dir_1d,gbm,2026-06-16,1714,252,0.498128,0.485775,-0.0088,0.0631,0.5278,0.5367,gld_spy_corr_21=0.074; gld_ret_1d=0.043; sector_risk_off_r5=0.042; fedfunds_chg_21d=0.034; uso_z21=0.033
+spy_gbm_next_ret_5d_2026-06-16,next_ret_5d,gbm,2026-06-16,1709,252,0.024901,0.017081,-0.2068,0.0262,0.5357,,spy_ret_r63=0.081; vix_z252=0.058; vix_level=0.058; spy_vol_r5=0.058; spy_drawdown_252=0.044

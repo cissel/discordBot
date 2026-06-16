@@ -75,7 +75,9 @@ CURRENT_YEAR = datetime.now().year
 
 def _run(*args, **kwargs):
     """Blocking subprocess.run wrapper (call via asyncio.to_thread)."""
-    subprocess.run(list(args), check=False, timeout=120, **kwargs)
+    kwargs.setdefault("capture_output", True)
+    kwargs.setdefault("text", True)
+    return subprocess.run(list(args), check=False, timeout=120, **kwargs)
 
 async def _defer(interaction: discord.Interaction, ephemeral=False):
     await interaction.response.defer(thinking=True, ephemeral=ephemeral)
@@ -4911,6 +4913,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             app_commands.Choice(name="3B - Third Base",       value="3B"),
             app_commands.Choice(name="SS - Shortstop",        value="SS"),
             app_commands.Choice(name="OF - Outfield",         value="OF"),
+            app_commands.Choice(name="UTIL - All Batters (top 25)", value="UTIL"),
         ],
         scope=[
             app_commands.Choice(name="All Players",            value="all"),
@@ -4929,17 +4932,34 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         # if FA only, refresh the free agents CSV first then extract names
         fa_names_arg = "ALL"
         if scope == "fa":
-            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), position)
-            if not os.path.exists(fa_csv):
-                await _send(interaction, "❌ couldn't fetch free agent data.", ephemeral=True)
-                return
             import csv as _csv
-            with open(fa_csv, newline="") as f:
-                fa_names = [r["player_name"] for r in _csv.DictReader(f) if r.get("player_name")]
-            if not fa_names:
-                await _send(interaction, f"no free agents found at **{position}**.", ephemeral=True)
-                return
-            fa_names_arg = "|".join(fa_names)
+            if position == "UTIL":
+                # Run each batter position sequentially, collect top 10 per position
+                BATTER_POSITIONS_LIST = ["C", "1B", "2B", "3B", "SS", "OF"]
+                all_fa_names = []
+                for pos in BATTER_POSITIONS_LIST:
+                    await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), pos)
+                    if os.path.exists(fa_csv):
+                        with open(fa_csv, newline="") as f:
+                            pos_names = [r["player_name"] for r in _csv.DictReader(f) if r.get("player_name")]
+                        all_fa_names.extend(pos_names[:10])  # top 10 per position
+                seen = set()
+                all_fa_names = [n for n in all_fa_names if not (n in seen or seen.add(n))]
+                if not all_fa_names:
+                    await _send(interaction, "no free agents found for **UTIL**.", ephemeral=True)
+                    return
+                fa_names_arg = "|".join(all_fa_names)
+            else:
+                await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), position)
+                if not os.path.exists(fa_csv):
+                    await _send(interaction, "❌ couldn't fetch free agent data.", ephemeral=True)
+                    return
+                with open(fa_csv, newline="") as f:
+                    fa_names = [r["player_name"] for r in _csv.DictReader(f) if r.get("player_name")]
+                if not fa_names:
+                    await _send(interaction, f"no free agents found at **{position}**.", ephemeral=True)
+                    return
+                fa_names_arg = "|".join(fa_names)
 
         elif scope in ("today_sp", "tomorrow_sp"):
             which = "today" if scope == "today_sp" else "tomorrow"
@@ -4988,6 +5008,60 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             f"📊 fantasy risk - **{position}** · {scope_label}",
             file=discord.File(out_img),
         )
+
+    # ── /mlb modeldiagnostics ──────────────────────────────────────────────────
+    @mlb_group.command(name="modeldiagnostics", description="Fantasy model diagnostics - residuals, loss curves, and validation errors")
+    @app_commands.describe(regenerate="Re-run eval + replot from scratch (slower, default: use cached)")
+    @app_commands.choices(regenerate=[
+        app_commands.Choice(name="Use cached (fast)", value="no"),
+        app_commands.Choice(name="Regenerate (slow)", value="yes"),
+    ])
+    async def mlb_modeldiagnostics(interaction: discord.Interaction, regenerate: str = "no"):
+        await _defer(interaction)
+
+        out_img  = os.path.join(op, "sports/mlb/fantasy/model_diagnostics.png")
+        eval_sum = os.path.join(op, "..", "features/sports/eval_experiment_summary.csv")
+        eval_sum = os.path.normpath(eval_sum)
+
+        # Regenerate eval CSVs if requested or if they don't exist yet
+        if regenerate == "yes" or not os.path.exists(eval_sum):
+            await _send(interaction, "⏳ regenerating eval data - this takes ~30s...")
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "evalFantasyModel.py"))
+
+        # Run the R diagnostics plot
+        await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "modelDiagnostics.R"), out_img)
+
+        if not os.path.exists(out_img):
+            await _send(interaction, "❌ couldn't generate diagnostics plot - check R logs.", ephemeral=True)
+            return
+
+        # Pull latest summary stats for the embed caption
+        caption = "📉 **Fantasy Model Diagnostics**"
+        try:
+            import csv as _csv
+            with open(eval_sum, newline="") as f:
+                rows = list(_csv.DictReader(f))
+            # Best model per combo
+            best = {
+                ("batters",  "weekly"): max((r for r in rows if r["player_type"]=="batters"  and r["horizon"]=="weekly"),  key=lambda r: float(r["val_spearman"])),
+                ("batters",  "daily"):  max((r for r in rows if r["player_type"]=="batters"  and r["horizon"]=="daily"),   key=lambda r: float(r["val_spearman"])),
+                ("pitchers", "daily"):  max((r for r in rows if r["player_type"]=="pitchers" and r["horizon"]=="daily"),   key=lambda r: float(r["val_spearman"])),
+                ("pitchers", "weekly"): max((r for r in rows if r["player_type"]=="pitchers" and r["horizon"]=="weekly"),  key=lambda r: float(r["val_spearman"])),
+            }
+            lines = ["📉 **Fantasy Model Diagnostics**\n"]
+            for (pt, hz), r in best.items():
+                lines.append(
+                    f"**{pt.title()} {hz.title()}** ({r['model_type'].upper()})  "
+                    f"Spearman `{float(r['val_spearman']):.3f}`  "
+                    f"RMSE `{float(r['val_rmse']):.2f}`  "
+                    f"MAE `{float(r['val_mae']):.2f}`"
+                )
+            caption = "\n".join(lines)
+        except Exception:
+            pass
+
+        await _send(interaction, caption, file=discord.File(out_img))
+
 
     @mlb_group.command(name="playertrends", description="Last 7 games vs season average for a player")
     @app_commands.describe(player="Player name (e.g. 'Paul Skenes', 'Ronald Acuna')")
@@ -5766,6 +5840,139 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, "No MLB standings data available.")
 
     tree.add_command(mlb_group)
+
+    # ── /markets signal (standalone — markets_group at 25-cmd limit) ─────────
+    @tree.command(name="spysignal", description="SPY ML model signal - next-day direction + 5-day outlook", guild=guild)
+    @app_commands.describe(show_context="Show full macro context (VIX, yield curve, event calendar)")
+    async def spy_signal(interaction: discord.Interaction, show_context: bool = False):
+        await interaction.response.defer(thinking=True)
+        import json as _json
+        try:
+            result = await asyncio.to_thread(
+                lambda: __import__('subprocess').run(
+                    [PYTHON, os.path.join(pp, "predictSpy.py")],
+                    capture_output=True, text=True, timeout=30
+                )
+            )
+            if result.returncode != 0:
+                await _send(interaction, f"signal error: `{result.stderr[:300]}`")
+                return
+            data = _json.loads(result.stdout)
+        except Exception as e:
+            await _send(interaction, f"signal error: `{e}`")
+            return
+
+        nd  = data.get("next_day") or {}
+        n5d = data.get("next_5d")  or {}
+        ctx = data.get("macro_context") or {}
+        sigs = data.get("top_signals", [])
+        warns = data.get("warnings", [])
+        sig_date = data.get("date", "unknown")
+
+        # direction emoji
+        def dir_emoji(d): return "🟢" if d == "UP" else "🔴"
+        def conf_emoji(c): return {"HIGH": "🔥", "MED": "⚡", "LOW": "💤"}.get(c, "")
+        def vix_emoji(r): return {"LOW": "😴", "NORMAL": "😐", "ELEVATED": "😬", "FEAR": "😱"}.get(r, "")
+
+        emb = discord.Embed(
+            title=f"SPY Model Signal — {sig_date}",
+            color=0x00ff99 if nd.get("direction") == "UP" else 0xff4444
+        )
+
+        # Next day
+        nd_dir  = nd.get("direction", "N/A")
+        nd_prob = nd.get("probability", 0.5)
+        nd_conf = nd.get("confidence", "LOW")
+        emb.add_field(
+            name=f"{dir_emoji(nd_dir)} Next Day: {nd_dir}",
+            value=f"Probability: **{nd_prob*100:.1f}%** {conf_emoji(nd_conf)} ({nd_conf})\n_Logistic model, 1yr val dir acc: 54.8%_",
+            inline=True
+        )
+
+        # Next 5 days
+        n5_dir  = n5d.get("direction", "N/A")
+        n5_ret  = n5d.get("expected_ret_pct", 0)
+        n5_prob = n5d.get("probability", 0.5)
+        n5_conf = n5d.get("confidence", "LOW")
+        sign    = "+" if n5_ret >= 0 else ""
+        emb.add_field(
+            name=f"{dir_emoji(n5_dir)} Next 5 Days: {n5_dir}",
+            value=f"Expected: **{sign}{n5_ret:.2f}%** | Prob: **{n5_prob*100:.1f}%** {conf_emoji(n5_conf)}\n_GBM model, 1yr val dir acc: 56.4%_",
+            inline=True
+        )
+
+        # Key signals
+        if sigs:
+            emb.add_field(
+                name="Key Signals",
+                value="\n".join(f"- {s}" for s in sigs[:4]),
+                inline=False
+            )
+
+        # Event warning
+        if ctx.get("is_event_window"):
+            upcoming = []
+            if ctx.get("fomc_in_days", 99) <= 1: upcoming.append("FOMC")
+            if ctx.get("cpi_in_days", 99)  <= 1: upcoming.append("CPI")
+            if ctx.get("nfp_in_days", 99)  <= 1: upcoming.append("NFP")
+            if upcoming:
+                emb.add_field(
+                    name="⚠️ Macro Event Window",
+                    value=f"{'/'.join(upcoming)} release today/tomorrow - elevated uncertainty, reduce confidence",
+                    inline=False
+                )
+
+        # Macro context
+        if show_context and ctx:
+            vix_val = ctx.get("vix")
+            vix_reg = ctx.get("vix_regime", "")
+            yc      = ctx.get("yield_curve")
+            ff      = ctx.get("fedfunds")
+            ctx_lines = []
+            if vix_val: ctx_lines.append(f"VIX: **{vix_val}** {vix_emoji(vix_reg)} ({vix_reg})")
+            if yc is not None: ctx_lines.append(f"Yield Curve (10Y-2Y): **{yc:+.2f}pp**")
+            if ff: ctx_lines.append(f"Fed Funds: **{ff:.2f}%**")
+            for k, label in [("fomc_in_days","FOMC"), ("cpi_in_days","CPI"), ("nfp_in_days","NFP")]:
+                d = ctx.get(k)
+                if d is not None and d <= 14: ctx_lines.append(f"{label} in: **{d}d**")
+            if ctx_lines:
+                emb.add_field(name="Macro Context", value="\n".join(ctx_lines), inline=False)
+
+        if warns:
+            emb.set_footer(text=" | ".join(warns[:2]))
+        else:
+            emb.set_footer(text="Models retrain Monday 6am - options IV signal activates as data accumulates")
+
+        await _send(interaction, embeds=[emb])
+
+
+    # ── /spydiagnostics ───────────────────────────────────────────────────────
+    @tree.command(name="spydiagnostics", description="SPY ML model diagnostics - residuals, calibration, rolling accuracy, run history", guild=guild)
+    @app_commands.describe(regenerate="Re-run the eval pipeline before plotting (slow ~20s, default: no)")
+    async def spy_diagnostics(interaction: discord.Interaction, regenerate: str = "no"):
+        await interaction.response.defer(thinking=True)
+        out_img = os.path.join(op, "markets/spy_diagnostics.png")
+        try:
+            if regenerate.lower() in ("yes", "y", "true", "1"):
+                eval_result = await asyncio.to_thread(
+                    _run, PYTHON, os.path.join(pp, "evalSpyModel.py")
+                )
+                if eval_result.returncode != 0:
+                    await _send(interaction, f"eval error:\n```{eval_result.stderr[-800:]}```")
+                    return
+            r_result = await asyncio.to_thread(
+                _run, "Rscript", os.path.join(rp, "spyModelDiagnostics.R"), out_img
+            )
+            if r_result.returncode != 0:
+                await _send(interaction, f"plot error:\n```{r_result.stderr[-800:]}```")
+                return
+            if not os.path.exists(out_img):
+                await _send(interaction, "diagnostics plot not found after render")
+                return
+            await _send(interaction, file=discord.File(out_img))
+        except Exception as e:
+            await _send(interaction, f"diagnostics error: `{e}`")
+
 
     # ── /dj ───────────────────────────────────────────────────────────────────
     dj_group = app_commands.Group(name="dj", description="let DJ several bots spin a few tunes", guild_ids=[guild.id])
@@ -6844,3 +7051,132 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await interaction.followup.send(embed=embed, file=discord.File(ufc_logo, filename="ufc.png"))
 
     tree.add_command(ufc_group)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # /billboard  - Apple Music / iTunes Top Charts
+    # ─────────────────────────────────────────────────────────────────────────
+    @tree.command(
+        name="billboard",
+        description="Top music charts right now - add a genre to filter, artists mode to rank by artist",
+        guild=guild,
+    )
+    @app_commands.describe(
+        mode="Songs (default) or Artists",
+        genre="Optional: filter to a specific genre",
+    )
+    @app_commands.choices(mode=[
+        app_commands.Choice(name="Songs   - top 10 songs right now",   value="songs"),
+        app_commands.Choice(name="Artists - top 10 artists right now", value="artists"),
+    ])
+    @app_commands.choices(genre=[
+        app_commands.Choice(name="Pop",               value="14"),
+        app_commands.Choice(name="Hip-Hop / Rap",     value="18"),
+        app_commands.Choice(name="Rock",              value="21"),
+        app_commands.Choice(name="Alternative",       value="20"),
+        app_commands.Choice(name="Country",           value="6"),
+        app_commands.Choice(name="R&B / Soul",        value="15"),
+        app_commands.Choice(name="Electronic",        value="7"),
+        app_commands.Choice(name="Dance",             value="17"),
+        app_commands.Choice(name="Latin",             value="12"),
+        app_commands.Choice(name="K-Pop",             value="51"),
+        app_commands.Choice(name="J-Pop",             value="27"),
+        app_commands.Choice(name="Reggae",            value="24"),
+        app_commands.Choice(name="Christian / Gospel", value="22"),
+        app_commands.Choice(name="Classical",         value="5"),
+        app_commands.Choice(name="Jazz",              value="11"),
+        app_commands.Choice(name="Soundtrack",        value="16"),
+    ])
+    async def billboard(
+        interaction: discord.Interaction,
+        mode: app_commands.Choice[str] = None,
+        genre: app_commands.Choice[str] = None,
+    ):
+        await _defer(interaction)
+        import aiohttp
+
+        mode_val   = mode.value if mode else "songs"
+        genre_id   = genre.value if genre else None
+        genre_name = genre.name  if genre else None
+
+        # Build iTunes URL - genre scoped if provided, otherwise overall
+        if genre_id:
+            base_url = f"https://itunes.apple.com/us/rss/topsongs/limit=200/genre={genre_id}/json"
+        else:
+            base_url = "https://itunes.apple.com/us/rss/topsongs/limit=200/json"
+
+        async def _fetch_itunes(url: str):
+            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+            async with aiohttp.ClientSession(headers=headers) as session:
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                    if resp.status != 200:
+                        raise RuntimeError(f"iTunes RSS returned HTTP {resp.status}")
+                    # iTunes returns text/javascript MIME - bypass aiohttp strict type check
+                    return await resp.json(content_type=None)
+
+        try:
+            data    = await _fetch_itunes(base_url)
+            feed    = data.get("feed", {})
+            raw     = feed.get("entry", [])
+            # API returns a dict (not list) when only 1 result comes back
+            entries = [raw] if isinstance(raw, dict) else raw
+            updated = feed.get("updated", {}).get("label", "")[:10]
+
+            genre_label = f" in {genre_name}" if genre_name else ""
+            footer_src  = f"Source: Apple Music / iTunes"
+            if updated:
+                footer_src += f"  |  Updated {updated}"
+
+            if mode_val == "songs":
+                lines = []
+                for i, e in enumerate(entries[:10], 1):
+                    title  = e.get("im:name",   {}).get("label", "?")
+                    artist = e.get("im:artist", {}).get("label", "?")
+                    lines.append(f"**{i}.** {title} - {artist}")
+
+                thumbnail = None
+                if entries:
+                    imgs = entries[0].get("im:image", [])
+                    if isinstance(imgs, list) and imgs:
+                        thumbnail = imgs[-1].get("label")
+
+                embed = discord.Embed(
+                    title=f"🎵 Top 10 Songs{genre_label}",
+                    description="\n".join(lines) if lines else "No chart data available.",
+                    color=0x1DB954,
+                )
+                embed.set_footer(text=footer_src)
+                if thumbnail:
+                    embed.set_thumbnail(url=thumbnail)
+                await _send(interaction, embed=embed)
+
+            elif mode_val == "artists":
+                artist_songs: dict = {}
+                for e in entries:
+                    artist = e.get("im:artist", {}).get("label", "Unknown")
+                    # Normalise "feat." collaborations - take the lead artist
+                    base_artist = artist.split(" feat.")[0].split(" & ")[0].strip()
+                    if base_artist not in artist_songs:
+                        artist_songs[base_artist] = {"count": 0, "songs": []}
+                    artist_songs[base_artist]["count"] += 1
+                    title = e.get("im:name", {}).get("label", "?")
+                    if len(artist_songs[base_artist]["songs"]) < 2:
+                        artist_songs[base_artist]["songs"].append(title)
+
+                sorted_artists = sorted(artist_songs.items(), key=lambda x: -x[1]["count"])
+                lines = []
+                for i, (name, info) in enumerate(sorted_artists[:10], 1):
+                    song_list = ", ".join(f'"{s}"' for s in info["songs"])
+                    suffix = f" ({info['count']} songs: {song_list})" if info["count"] > 1 else f" - {song_list}"
+                    lines.append(f"**{i}.** {name}{suffix}")
+
+                note = f"Ranked by songs in the iTunes top {len(entries)}{genre_label}"
+                embed = discord.Embed(
+                    title=f"🎤 Top 10 Artists{genre_label}",
+                    description="\n".join(lines) if lines else "No data available.",
+                    color=0x7B2FBE,
+                )
+                embed.set_footer(text=f"{footer_src}  |  {note}")
+                await _send(interaction, embed=embed)
+
+        except Exception as ex:
+            await _send(interaction, f"Could not fetch chart data: {ex}")

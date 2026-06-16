@@ -62,6 +62,8 @@ BATTER_POSITIONS  <- c("C", "1B", "2B", "3B", "SS", "OF")
 # ── position filter (creates logs) ────────────────────────────────────────────
 if (position == "ALL") {
   logs <- bind_rows(batter_logs, pitcher_logs)
+} else if (position == "UTIL") {
+  logs <- batter_logs  # all non-pitcher positions
 } else if (position %in% PITCHER_POSITIONS) {
   logs <- pitcher_logs %>% filter(fantasy_position == position)
 } else if (position %in% BATTER_POSITIONS) {
@@ -95,7 +97,7 @@ cat("Output path:", out_path, "\n")
 # FA/SP-starter scopes pass a name filter so these filters are skipped.
 if (fa_filter == "ALL") {
   min_games <- if (position %in% PITCHER_POSITIONS) 8L else 15L
-  top_n_cap <- if (position == "OF") 60L else if (position %in% PITCHER_POSITIONS) 60L else 30L
+  top_n_cap <- if (position == "UTIL") 25L else if (position == "OF") 60L else if (position %in% PITCHER_POSITIONS) 60L else 30L
 } else {
   min_games <- 1L
   top_n_cap <- Inf
