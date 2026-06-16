@@ -1,33 +1,44 @@
 #!/usr/bin/env python3
-# nbaToday.py - fetch today's NBA games from ESPN API
+# nbaTomorrow.py - fetch tomorrow's NBA games from ESPN API
 
 import requests
 import pandas as pd
 import os
+import sys
+from datetime import date, timedelta
 
-OUT = os.path.expanduser("~/discordBot/outputs/sports/nba/gamesToday.csv")
+OUT = os.path.expanduser("~/discordBot/outputs/sports/nba/gamesTomorrow.csv")
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 
-resp = requests.get(
-    "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
-    timeout=15
-)
-resp.raise_for_status()
-events = resp.json().get("events", [])
+tomorrow = date.today() + timedelta(days=1)
+date_str = tomorrow.strftime("%Y%m%d")
+
+try:
+    resp = requests.get(
+        "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+        params={"dates": date_str},
+        timeout=15,
+    )
+    resp.raise_for_status()
+    events = resp.json().get("events", [])
+except Exception as e:
+    print(f"nbaTomorrow: API error: {e}")
+    pd.DataFrame(columns=["matchup", "time"]).to_csv(OUT, index=False)
+    sys.exit(0)
 
 if not events:
-    print("No NBA games today.")
+    print("No NBA games tomorrow.")
     pd.DataFrame(columns=["matchup", "time"]).to_csv(OUT, index=False)
-    raise SystemExit(0)
+    sys.exit(0)
 
 rows = []
 for event in events:
     status_desc = event["status"]["type"]["description"]
-    # Skip completed games - nothing actionable to display
+    # Skip already-final games
     if status_desc in ("Final", "Final/OT", "Postponed", "Canceled"):
         continue
-    competition  = event["competitions"][0]
-    competitors  = competition["competitors"]
+    competition = event["competitions"][0]
+    competitors = competition["competitors"]
 
     away = next(c for c in competitors if c["homeAway"] == "away")
     home = next(c for c in competitors if c["homeAway"] == "home")
@@ -42,17 +53,8 @@ for event in events:
     home_str = f"{home_name} ({home_record})" if home_record else home_name
     matchup  = f"{away_str} @ {home_str}"
 
-    if status_desc not in ("Scheduled", ""):
-        try:
-            away_score = int(away["score"])
-            home_score = int(home["score"])
-            matchup += f" - {away_score}-{home_score}"
-        except (KeyError, ValueError):
-            pass
-
     rows.append({"matchup": matchup, "time": f"{status_desc} @ {venue}"})
 
 df = pd.DataFrame(rows, columns=["matchup", "time"])
 df.to_csv(OUT, index=False)
 print(f"Saved {len(df)} games to {OUT}")
-print(df.to_string(index=False))

@@ -62,6 +62,7 @@ import asyncio
 import os
 import random
 import subprocess
+import time
 from pathlib import Path
 from datetime import datetime, timedelta
 import discord
@@ -1360,11 +1361,13 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @nba_group.command(name="tomorrow", description="NBA games tomorrow")
     async def nba_tomorrow(interaction: discord.Interaction):
         await _defer(interaction)
-        await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nbaTomorrow.R"))
+        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "nbaTomorrow.py"))
         csv = os.path.join(op, "sports/nba/gamesTomorrow.csv")
         if not os.path.exists(csv):
             await _send(interaction, "no hoops tomorrow :("); return
         df  = pd.read_csv(csv)
+        if df.empty:
+            await _send(interaction, "no hoops tomorrow :("); return
         emb = discord.Embed(title="🏀 Tomorrow's NBA Matchups", color=0x3498db)
         for _, row in df.iterrows():
             emb.add_field(name=row["matchup"], value=str(row["time"]), inline=False)
@@ -1675,7 +1678,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "nhlTomorrow.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "mlbTomorrow.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "pgaLeaderboard.py")),
-                asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nbaTomorrow.R")),
+                asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "nbaTomorrow.py")),
                 asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nextNFL.R")),
                 _fetch_ufc_event(),
                 _fetch_wc_today(date_str),
@@ -1706,8 +1709,11 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # ── NBA ──────────────────────────────────────────────────────────────
         nba_csv = os.path.join(op, "sports/nba/gamesTomorrow.csv" if is_tomorrow else "sports/nba/gamesToday.csv")
-        if os.path.exists(nba_csv):
-            nba_df = pd.read_csv(nba_csv)
+        if os.path.exists(nba_csv) and (time.time() - os.path.getmtime(nba_csv)) < 43200:
+            try:
+                nba_df = pd.read_csv(nba_csv)
+            except Exception:
+                nba_df = pd.DataFrame()
             if not nba_df.empty:
                 emb = discord.Embed(title=f"🏀 NBA - {day_label}", color=0xC9082A)
                 emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/nba.png")
@@ -1723,8 +1729,11 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # ── NHL ──────────────────────────────────────────────────────────────
         nhl_csv = os.path.join(op, "sports/nhl/gamesTomorrow.csv" if is_tomorrow else "sports/nhl/gamesToday.csv")
-        if os.path.exists(nhl_csv):
-            nhl_df = pd.read_csv(nhl_csv)
+        if os.path.exists(nhl_csv) and (time.time() - os.path.getmtime(nhl_csv)) < 43200:
+            try:
+                nhl_df = pd.read_csv(nhl_csv)
+            except Exception:
+                nhl_df = pd.DataFrame()
             if not nhl_df.empty:
                 emb = discord.Embed(title=f"🏒 NHL - {day_label}", color=0x000000)
                 emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png")
@@ -1734,8 +1743,11 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # ── MLB ──────────────────────────────────────────────────────────────
         mlb_csv = os.path.join(op, "sports/mlb/gamesTomorrow.csv" if is_tomorrow else "sports/mlb/gamesToday.csv")
-        if os.path.exists(mlb_csv):
-            mlb_df = pd.read_csv(mlb_csv)
+        if os.path.exists(mlb_csv) and (time.time() - os.path.getmtime(mlb_csv)) < 43200:
+            try:
+                mlb_df = pd.read_csv(mlb_csv)
+            except Exception:
+                mlb_df = pd.DataFrame()
             if not mlb_df.empty:
                 emb = discord.Embed(title=f"⚾ MLB - {day_label}", color=0x002D72)
                 emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png")
@@ -1754,9 +1766,12 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         tourn_csv = os.path.join(op, "sports/pga/tournament.csv")
         lb_csv    = os.path.join(op, "sports/pga/leaderboard.csv")
         if os.path.exists(tourn_csv) and os.path.exists(lb_csv):
-            t  = pd.read_csv(tourn_csv).iloc[0]
-            lb = pd.read_csv(lb_csv)
-            if t.get("name") and str(t.get("name","")).strip().lower() not in ("", "nan"):
+            try:
+                t  = pd.read_csv(tourn_csv).iloc[0]
+                lb = pd.read_csv(lb_csv)
+            except Exception:
+                t, lb = None, pd.DataFrame()
+            if t is not None and t.get("name") and str(t.get("name","")).strip().lower() not in ("", "nan"):
                 status_line = str(t.get("detail") or t.get("status") or "").strip()
                 emb = discord.Embed(
                     title=f"⛳ {t['name']}",
@@ -1816,26 +1831,80 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     continue
                 c = comps[0]
                 competitors = c.get("competitors", [])
-                teams, scores, status_name = [], [], ""
+                teams, scores = [], []
                 status_type = ev.get("status", {}).get("type", {})
-                status_name = status_type.get("shortDetail", status_type.get("name", ""))
+                status_name = status_type.get("name", "")
+                status_detail = status_type.get("detail", status_type.get("shortDetail", ""))
+                clock = ev.get("status", {}).get("displayClock", "")
+
+                away_comp, home_comp = None, None
                 for comp in competitors:
-                    teams.append(comp.get("team", {}).get("shortDisplayName", "?"))
-                    scores.append(comp.get("score", ""))
-                matchup = " vs ".join(teams)
-                if all(scores) and not is_tomorrow:
-                    val = f"{scores[0]} - {scores[1]}  ({status_name})"
+                    if comp.get("homeAway") == "away":
+                        away_comp = comp
+                    else:
+                        home_comp = comp
+                if not away_comp or not home_comp:
+                    for comp in competitors:
+                        teams.append(comp.get("team", {}).get("shortDisplayName", "?"))
+                        scores.append(comp.get("score", ""))
+                    away_name_s = teams[0] if teams else "?"
+                    home_name_s = teams[1] if len(teams) > 1 else "?"
                 else:
-                    raw = ev.get("date", "")
-                    try:
-                        dt_utc = _dt.datetime.fromisoformat(raw.replace("Z", "+00:00"))
-                        val = dt_utc.astimezone(eastern).strftime("%-I:%M %p ET")
-                    except Exception:
-                        val = status_name or "TBD"
-                venue = c.get("venue", {})
-                venue_str = venue.get("fullName", "")
+                    away_name_s = away_comp.get("team", {}).get("shortDisplayName", "?")
+                    home_name_s = home_comp.get("team", {}).get("shortDisplayName", "?")
+                    scores = [away_comp.get("score", ""), home_comp.get("score", "")]
+
+                matchup = f"{away_name_s} vs {home_name_s}"
+
+                # Build value line based on game state
+                is_live  = status_name in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME")
+                is_final = status_name in ("STATUS_FINAL", "STATUS_FULL_TIME", "STATUS_POSTPONED")
+
+                if is_live or is_final:
+                    score_str = f"{scores[0]} - {scores[1]}" if all(scores) else "? - ?"
+                    suffix = f"  ({clock})" if is_live and clock and clock != "0'" else (f"  (FT)" if is_final else "")
+                    val = f"🔴 {score_str}{suffix}" if is_live else f"✅ {score_str}  (FT)"
+                else:
+                    # Scheduled - show time then betting lines
+                    val = status_detail or "TBD"
+
+                    # Betting lines from odds[0]
+                    odds_list = c.get("odds", [])
+                    if odds_list:
+                        o = odds_list[0]
+                        ml  = o.get("moneyline", {})
+                        ps  = o.get("pointSpread", {})
+                        tot = o.get("total", {})
+
+                        away_ml  = ml.get("away",  {}).get("close", {}).get("odds", "")
+                        home_ml  = ml.get("home",  {}).get("close", {}).get("odds", "")
+                        draw_ml  = ml.get("draw",  {}).get("close", {}).get("odds", "") or str(o.get("drawOdds", {}).get("moneyLine", ""))
+
+                        away_spread = ps.get("away", {}).get("close", {}).get("line", "")
+                        away_sp_odds = ps.get("away", {}).get("close", {}).get("odds", "")
+                        home_spread = ps.get("home", {}).get("close", {}).get("line", "")
+                        home_sp_odds = ps.get("home", {}).get("close", {}).get("odds", "")
+
+                        ou_line  = tot.get("over", {}).get("close", {}).get("line", "")
+                        ou_over  = tot.get("over", {}).get("close", {}).get("odds", "")
+                        ou_under = tot.get("under", {}).get("close", {}).get("odds", "")
+
+                        lines = []
+                        if away_ml and home_ml:
+                            draw_str = f"  Draw {draw_ml}" if draw_ml else ""
+                            lines.append(f"ML: {away_name_s} {away_ml} / {home_name_s} {home_ml}{draw_str}")
+                        if away_spread and home_spread:
+                            lines.append(f"Spread: {away_name_s} {away_spread} ({away_sp_odds}) / {home_name_s} {home_spread} ({home_sp_odds})")
+                        if ou_line and ou_over:
+                            lines.append(f"O/U: {ou_line} (o {ou_over} / u {ou_under})")
+
+                        if lines:
+                            val += "\n" + "\n".join(lines)
+
+                venue_str = c.get("venue", {}).get("fullName", "")
                 if venue_str:
-                    val += f"  -  {venue_str}"
+                    val += f"\n📍 {venue_str}"
+
                 emb.add_field(name=matchup, value=val, inline=False)
             embeds.append(emb)
 
@@ -4247,35 +4316,46 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         embed.set_footer(text="Data via MLB Stats API")
         await _send(interaction, embed=embed)
 
-    @mlb_group.command(name="gmscore", description="World Sillies GM report - grades every manager's decisions last week")
+    @mlb_group.command(name="gmscore", description="World Sillies GM Score - full-season z-score composite: draft VOE, lineup eff, transactions, record")
     async def mlb_gmscore(interaction: discord.Interaction):
         await _defer(interaction)
+        import json as _json
 
+        await interaction.followup.send("⚾ crunching full-season GM scores - hang tight ~60s...", ephemeral=True)
+
+        csv_path = os.path.join(op, "sports/mlb/fantasy/gm_scores.csv")
+        plot_path = os.path.join(op, "sports/mlb/fantasy/gm_score_plot.png")
+        gm_path   = os.path.join(op, "sports/mlb/fantasy/gm_scores.json")
+
+        # Run the Python data script
         proc = await asyncio.create_subprocess_exec(
             PYTHON, os.path.join(pp, "worldSilliesGMScore.py"),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
         try:
-            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=90)
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=180)
         except asyncio.TimeoutError:
             proc.kill()
             await proc.communicate()
-            await _send(interaction, "⏱️ GM score timed out - try again in a moment", ephemeral=True)
+            await _send(interaction, "⏱️ GM score timed out", ephemeral=True)
             return
 
-        import json as _json
-        gm_path = os.path.join(op, "sports/mlb/fantasy/gm_scores.json")
         if not os.path.exists(gm_path):
-            err = stderr.decode()[-400:] if stderr else "no output"
-            await _send(interaction, f"❌ GM score failed\n```{err}```", ephemeral=True)
+            err = stderr.decode()[-500:] if stderr else "no output"
+            await _send(interaction, f"❌ GM score data failed\n```{err}```", ephemeral=True)
             return
+
+        # Run R plot
+        await asyncio.to_thread(
+            _run, "Rscript", os.path.join(rp, "mlbGMScore.R"), csv_path, plot_path
+        )
 
         with open(gm_path) as f:
             data = _json.load(f)
 
-        teams  = data.get("teams", [])
-        period = data.get("matchup_period", "?")
+        teams   = data.get("teams", [])
+        n_weeks = data.get("n_weeks", "?")
 
         if not teams:
             await _send(interaction, "❌ no GM score data found", ephemeral=True)
@@ -4287,16 +4367,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             "C+": 0xFFD600, "C": 0xFFAB00, "C-": 0xFF6D00,
             "D+": 0xFF3D00, "D": 0xDD2C00, "F": 0xB71C1C,
         }
-        # use dock ellis color for embed
-        dock = next((t for t in teams if "dock" in t["team_name"].lower()), None)
-        emb_color = grade_colors.get(dock["grade"], 0x002D72) if dock else 0x002D72
-
-        emb = discord.Embed(
-            title=f"⚾ World Sillies GM Report - Week {period}",
-            description="Grades based on start/sit decisions, roster quality, weekly performance, and waiver smarts",
-            color=emb_color,
-        )
-
         grade_emoji = {
             "A+": "🏆", "A": "🌟", "A-": "✅",
             "B+": "👍", "B": "👍", "B-": "👍",
@@ -4304,46 +4374,64 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             "D+": "⚠️", "D": "⚠️", "F": "💀",
         }
 
+        def fmt_z(z):
+            return f"(z={'+' if z >= 0 else ''}{z:.2f})"
+
+        dock = next((t for t in teams if "dock" in t["team_name"].lower()), None)
+        emb_color = grade_colors.get(dock["grade"], 0x002D72) if dock else 0x002D72
+
+        emb = discord.Embed(
+            title=f"⚾ World Sillies GM Score - {n_weeks} Weeks",
+            description="Full-season composite: Draft VOE + Lineup Efficiency + Transaction Net + Record\nAll components z-scored and summed equally.",
+            color=emb_color,
+        )
+
         for i, t in enumerate(teams):
-            rank    = i + 1
-            name    = t["team_name"]
-            grade   = t["grade"]
-            score   = t["total_score"]
-            win     = t["win"]
-            pts     = t["weekly_pts"]
-            opp     = t["opp_name"]
-            opp_pts = t["opp_score"]
-            margin  = t["margin"]
-            top_p   = t.get("top_starter")
-            top_pts = t.get("top_starter_pts", 0)
-            bench_p = t.get("best_bench")
-            bench_pts_val = t.get("best_bench_pts", 0)
-            mistakes = t.get("mistakes", [])
-            ss      = t["ss_score"]
-            rs      = t["roster_score"]
-            wl      = t["wl_score"]
+            rank       = i + 1
+            name       = t["team_name"]
+            grade      = t["grade"]
+            gm         = t["gm_score"]
+            wins       = t["wins"]
+            losses     = t["losses"]
+            pts        = t["pts"]
+            draft_voe  = t["draft_voe"]
+            avg_eff    = t["avg_eff"] * 100
+            txn_net    = t["txn_net"]
+            z_d        = t["z_draft"]
+            z_e        = t["z_eff"]
+            z_t        = t["z_txn"]
+            z_r        = t["z_record"]
+            top_pick   = t.get("top_pick")
+            worst_pick = t.get("worst_pick")
 
-            emoji   = grade_emoji.get(grade, "➡️")
-            wl_str  = f"W +{margin:.0f}" if win else f"L {margin:.0f}"
-            rank_medal = ["🥇","🥈","🥉"][i] if i < 3 else f"{rank}."
+            emoji      = grade_emoji.get(grade, "➡️")
+            rank_medal = ["🥇", "🥈", "🥉"][i] if i < 3 else f"{rank}."
+            gm_str     = f"{'+' if gm >= 0 else ''}{gm:.2f}"
 
-            lines = [f"**{pts:.0f} pts** vs {opp} ({opp_pts:.0f}) - {wl_str}"]
-            lines.append(f"`S/S {ss:.0f}` `Roster {rs:.0f}` `W/L {wl:.0f}`")
-
-            if top_p:
-                lines.append(f"⭐ best start: {top_p} ({top_pts:.0f} pts)")
-            if mistakes:
-                m = mistakes[0]
-                lines.append(f"❌ left {m['name']} on bench ({m['pts']:.0f} pts)")
+            lines = [
+                f"**{wins}-{losses}**  {pts:.0f} PF",
+                f"`Draft VOE {draft_voe:+.0f}` {fmt_z(z_d)}  `Lineup {avg_eff:.1f}%` {fmt_z(z_e)}",
+                f"`Txn Net {txn_net:+.0f}` {fmt_z(z_t)}  `Record` {fmt_z(z_r)}",
+            ]
+            if top_pick:
+                lines.append(f"⭐ best pick: {top_pick['name']} R{top_pick['round']} ({top_pick['pts']:.0f} pts, VOE {top_pick['voe']:+.0f})")
+            if worst_pick and worst_pick.get("voe", 0) < -20:
+                lines.append(f"💀 biggest bust: {worst_pick['name']} R{worst_pick['round']} (VOE {worst_pick['voe']:+.0f})")
 
             emb.add_field(
-                name=f"{rank_medal} {emoji} **{grade}** ({score})  {name}",
+                name=f"{rank_medal} {emoji} **{grade}** {gm_str}  {name}",
                 value="\n".join(lines),
                 inline=False,
             )
 
-        emb.set_footer(text="S/S = start-sit accuracy  Roster = roster quality  W/L = weekly performance")
-        await _send(interaction, embed=emb)
+        emb.set_footer(text="Draft VOE = pts above round median - Lineup Eff = starter/optimal - Txn = recent adds/trades net pts")
+
+        if os.path.exists(plot_path):
+            mlb_plot_file = discord.File(plot_path, filename="gm_score_plot.png")
+            emb.set_image(url="attachment://gm_score_plot.png")
+            await _send(interaction, embed=emb, file=mlb_plot_file)
+        else:
+            await _send(interaction, embed=emb)
 
     @mlb_group.command(name="fantasystandings", description="World Sillies fantasy baseball standings")
     async def mlb_fantasystandings(interaction: discord.Interaction):

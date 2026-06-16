@@ -1,309 +1,434 @@
 #!/usr/bin/env python3
 """
 worldSilliesGMScore.py
-Grades each manager in the World Sillies league on their decisions
-for the most recently completed matchup period.
+Grades each manager in the World Sillies ESPN baseball league on their
+decisions across the full season (all completed matchup periods).
 
-Scoring (0-100):
-  Start/Sit accuracy  40pts  - did you bench anyone who outscored your starters?
-  Roster quality      30pts  - season OPS/ERA of active roster vs league average
-  Weekly efficiency   20pts  - score vs projected, and win/loss vs expected
-  Waiver smarts       10pts  - recent adds who contributed points
+Components (equal-weight z-score composite):
+  1. Draft VOE      — sum(player_season_pts - round_median) across all picks
+  2. Lineup Eff     — avg(actual_starter_pts / optimal_pts) per scoring period
+  3. Waiver/Trade   — net pts from recent transactions (kona_league_communication)
+  4. Record Score   — win% + PF z-score blend
 
-Writes: ~/discordBot/outputs/sports/mlb/fantasy/gm_scores.json
+Writes:
+  ~/discordBot/outputs/sports/mlb/fantasy/gm_scores.json   — embed data
+  ~/discordBot/outputs/sports/mlb/fantasy/gm_scores.csv    — for R plot
 """
 
-import os, sys, json, datetime, requests, unicodedata
+import os, sys, json, datetime, requests, unicodedata, time
 from pathlib import Path
 from collections import defaultdict
 
 BASE        = Path(os.path.expanduser("~/discordBot"))
 FANTASY_DIR = BASE / "outputs/sports/mlb/fantasy"
 OUT_JSON    = FANTASY_DIR / "gm_scores.json"
+OUT_CSV     = FANTASY_DIR / "gm_scores.csv"
+EFF_CACHE   = FANTASY_DIR / "gm_eff_cache.json"
 FANTASY_DIR.mkdir(parents=True, exist_ok=True)
 
 CURRENT_YEAR = datetime.date.today().year
 MLB_API      = "https://statsapi.mlb.com/api/v1"
-HEADERS_MLB  = {"User-Agent": "Mozilla/5.0 (compatible; discordbot/1.0)"}
+ESPN_BASE    = "https://lm-api-reads.fantasy.espn.com/apis/v3/games/flb/seasons/2026/segments/0/leagues/1858112591"
+HEADERS      = {"User-Agent": "Mozilla/5.0 (compatible; discordbot/1.0)"}
+LEAGUE_ID    = 1858112591
 
-# Lineup slot IDs - anything not in BENCH/IL is a starter
-BENCH_SLOT = 16
-IL_SLOT    = 17
-INACTIVE_SLOTS = {BENCH_SLOT, IL_SLOT}
+# Lineup slot IDs
+BENCH_SLOT  = 16
+IL_SLOT     = 17
+BENCH_SLOTS = {BENCH_SLOT, IL_SLOT}
 
-# League averages
-LG_OPS  = 0.718
-LG_ERA  = 4.20
-LG_WHIP = 1.28
-
-# ESPN stat ID mappings (from raw API)
-# stat 8  = strikeouts (batters)
-# stat 20 = runs
-# stat 21 = RBI
-# We use appliedStatTotal (fantasy points) directly - no need to decode stat IDs
 
 def norm(s):
-    return unicodedata.normalize("NFD", str(s)).encode("ascii","ignore").decode("ascii").strip().lower()
+    return unicodedata.normalize("NFD", str(s)).encode("ascii", "ignore").decode("ascii").strip().lower()
 
-def mlb_get(url, params=None, timeout=8):
-    r = requests.get(url, params=params, headers=HEADERS_MLB, timeout=timeout)
+
+def espn_get(params=None, extend=""):
+    url = ESPN_BASE + extend
+    r = requests.get(url, params=params or {}, headers=HEADERS, timeout=15)
     r.raise_for_status()
     return r.json()
 
-def get_player_season_stats(mlbam_id: int, is_pitcher: bool) -> dict:
-    """Pull season stats from MLB Stats API."""
-    try:
-        group = "pitching" if is_pitcher else "hitting"
-        data  = mlb_get(f"{MLB_API}/people/{mlbam_id}/stats",
-                        {"stats": "season", "group": group, "season": CURRENT_YEAR})
-        splits = data.get("stats", [{}])[0].get("splits", [])
-        if not splits:
-            return {}
-        s = splits[0].get("stat", {})
-        if is_pitcher:
-            ip   = float(s.get("inningsPitched", 0) or 0)
-            era  = float(s.get("era", 99) or 99)
-            whip = float(s.get("whip", 99) or 99)
-            return {"ip": ip, "era": era, "whip": whip}
-        else:
-            ops = float(s.get("ops", 0) or 0)
-            avg = float(s.get("avg", 0) or 0)
-            return {"ops": ops, "avg": avg}
-    except:
-        return {}
 
-def resolve_mlbam(espn_name: str) -> tuple[int | None, bool]:
-    """Resolve ESPN player name to MLBAM ID via MLB Stats API search."""
-    try:
-        data    = mlb_get(f"{MLB_API}/people/search", {"names": espn_name, "hydrate": "currentTeam"})
-        people  = data.get("people", [])
-        if not people:
-            return None, False
-        p = people[0]
-        pos = p.get("primaryPosition", {}).get("abbreviation", "")
-        is_pitcher = pos in ("SP", "RP", "P")
-        return p["id"], is_pitcher
-    except:
-        return None, False
-
-def grade_letter(score: int) -> str:
-    if score >= 90: return "A+"
-    if score >= 85: return "A"
-    if score >= 80: return "A-"
-    if score >= 77: return "B+"
-    if score >= 73: return "B"
-    if score >= 70: return "B-"
-    if score >= 67: return "C+"
-    if score >= 63: return "C"
-    if score >= 60: return "C-"
-    if score >= 55: return "D+"
-    if score >= 50: return "D"
+def grade_letter(score: float) -> str:
+    if score >= 1.5:  return "A+"
+    if score >= 1.0:  return "A"
+    if score >= 0.5:  return "A-"
+    if score >= 0.2:  return "B+"
+    if score >= -0.2: return "B"
+    if score >= -0.5: return "B-"
+    if score >= -0.8: return "C+"
+    if score >= -1.2: return "C"
+    if score >= -1.5: return "C-"
+    if score >= -2.0: return "D"
     return "F"
+
+
+def z_score(values: list[float]) -> list[float]:
+    """Return z-scores. Returns zeros if no variance."""
+    import statistics
+    if len(values) < 2:
+        return [0.0] * len(values)
+    mu = statistics.mean(values)
+    sd = statistics.stdev(values)
+    if sd == 0:
+        return [0.0] * len(values)
+    return [(v - mu) / sd for v in values]
+
 
 def main():
     from espn_api.baseball import League
 
-    league = League(league_id=1858112591, year=2026)
-    req    = league.espn_request
+    league   = League(league_id=LEAGUE_ID, year=CURRENT_YEAR)
+    req      = league.espn_request
+    team_map = {t.team_id: t.team_name for t in league.teams}
 
-    # Find the most recently COMPLETED matchup period
-    # currentMatchupPeriod is the live one, so we want currentMatchupPeriod - 1
-    current_mp = league.currentMatchupPeriod
-    grading_mp = current_mp - 1
-    if grading_mp < 1:
+    # ── 1. Schedule: build MP->SPs map and team records ───────────────────────
+    print("[gmscore] fetching schedule...", flush=True)
+    sched_data = req.league_get(params={"view": ["mMatchup", "mMatchupScore"]})
+    schedule   = sched_data.get("schedule", [])
+
+    mp_to_sps    = defaultdict(set)   # mp -> {scoring_period_ids}
+    team_records = defaultdict(lambda: {"wins": 0, "losses": 0, "pts": 0.0, "opp_pts": 0.0})
+    completed_mps = set()
+
+    for e in schedule:
+        mp     = e.get("matchupPeriodId")
+        winner = e.get("winner", "UNDECIDED")
+        home   = e.get("home", {})
+        away   = e.get("away", {})
+        h_id   = home.get("teamId")
+        a_id   = away.get("teamId")
+        h_pts  = float(home.get("totalPoints", 0) or 0)
+        a_pts  = float(away.get("totalPoints", 0) or 0)
+
+        for side in ("home", "away"):
+            psp = e.get(side, {}).get("pointsByScoringPeriod", {})
+            mp_to_sps[mp].update(int(k) for k in psp.keys())
+
+        if winner in ("HOME", "AWAY") and h_id and a_id:
+            completed_mps.add(mp)
+            team_records[h_id]["pts"]     += h_pts
+            team_records[h_id]["opp_pts"] += a_pts
+            team_records[a_id]["pts"]     += a_pts
+            team_records[a_id]["opp_pts"] += h_pts
+            if winner == "HOME":
+                team_records[h_id]["wins"]   += 1
+                team_records[a_id]["losses"] += 1
+            else:
+                team_records[a_id]["wins"]   += 1
+                team_records[h_id]["losses"] += 1
+
+    n_weeks = len(completed_mps)
+    print(f"[gmscore] {n_weeks} completed matchup periods", flush=True)
+    if n_weeks == 0:
         print("[gmscore] season hasn't started yet", file=sys.stderr)
         sys.exit(1)
 
-    # Get matchupPeriod -> scoringPeriod mapping from settings
-    params = {"view": ["mSettings"]}
-    data   = req.league_get(params=params)
-    mp_map = data.get("settings", {}).get("scheduleSettings", {}).get("matchupPeriods", {})
-    scoring_periods = mp_map.get(str(grading_mp), [grading_mp])
-    print(f"[gmscore] grading matchup period {grading_mp} (scoring periods: {scoring_periods})")
+    all_sps = sorted(sp for mp in completed_mps for sp in mp_to_sps[mp])
+    print(f"[gmscore] scoring periods to process: {min(all_sps)}-{max(all_sps)} ({len(all_sps)} days)", flush=True)
 
-    # Load the schedule to find matchups for the grading period
-    schedule_params = {"view": ["mMatchup", "mMatchupScore"], "scoringPeriodId": grading_mp}
-    sched_data = req.league_get(params=schedule_params)
-    schedule   = sched_data.get("schedule", [])
-    matchups   = {e["id"]: e for e in schedule if e.get("matchupPeriodId") == grading_mp}
-    print(f"[gmscore] found {len(matchups)} matchups for period {grading_mp}")
+    # ── 2. Draft VOE ──────────────────────────────────────────────────────────
+    print("[gmscore] fetching draft picks...", flush=True)
+    draft_data = req.league_get(params={"view": ["mDraftDetail"]})
+    picks      = draft_data["draftDetail"]["picks"]
 
-    # Get all teams roster for each scoring period in this matchup
-    # We'll aggregate by player across all scoring periods
-    team_player_pts: dict[int, dict[str, dict]] = defaultdict(dict)
-    # team_id -> player_name -> {pts, slot, name}
+    # Resolve player names and season fantasy pts from existing playerData CSVs
+    import csv as _csv
+    pitcher_pts = {}
+    batter_pts  = {}
+    for fname, store in [("pitcher_season_summary.csv", pitcher_pts),
+                         ("batter_season_summary.csv",  batter_pts)]:
+        path = FANTASY_DIR / "playerData" / fname
+        if path.exists():
+            with open(path, newline="") as f:
+                for row in _csv.DictReader(f):
+                    store[norm(row["player_name"])] = float(row.get("fantasy_pts", 0) or 0)
 
-    for sp in scoring_periods:
-        for team in league.teams:
-            params = {"view": ["mTeam", "mRoster"], "scoringPeriodId": sp, "forTeamId": team.team_id}
-            try:
-                tdata   = req.league_get(params=params)
-                entries = tdata["teams"][0]["roster"]["entries"]
-            except:
-                continue
-
-            for e in entries:
-                pf   = e.get("playerPoolEntry", {})
-                name = pf.get("player", {}).get("fullName", "?")
-                pts  = float(pf.get("appliedStatTotal", 0) or 0)
-                slot = e.get("lineupSlotId", BENCH_SLOT)
-                pid  = pf.get("player", {}).get("id")
-
-                key = name
-                if key not in team_player_pts[team.team_id]:
-                    team_player_pts[team.team_id][key] = {
-                        "name":   name,
-                        "pts":    0.0,
-                        "slot":   slot,
-                        "pid":    pid,
-                        "days":   0,
-                    }
-                team_player_pts[team.team_id][key]["pts"]  += pts
-                team_player_pts[team.team_id][key]["days"] += 1
-                # Use the most common (or last) slot
-                if slot not in INACTIVE_SLOTS:
-                    team_player_pts[team.team_id][key]["slot"] = slot
-
-    print(f"[gmscore] roster data loaded for {len(team_player_pts)} teams")
-
-    # Build team scores
-    results = []
-
+    # Resolve espn player IDs -> names using the league's player_map
+    player_id_to_name = {}
+    if hasattr(league, 'player_map'):
+        for pid, player in league.player_map.items():
+            player_id_to_name[pid] = getattr(player, 'name', str(pid))
+    # Fallback: fetch names from the roster entries we'll pull anyway
     for team in league.teams:
-        team_id = team.team_id
-        players = list(team_player_pts.get(team_id, {}).values())
-        if not players:
-            continue
+        for p in team.roster:
+            player_id_to_name[p.playerId] = p.name
 
-        starters = [p for p in players if p["slot"] not in INACTIVE_SLOTS]
-        bench    = [p for p in players if p["slot"] == BENCH_SLOT]
+    # Also bulk-fetch via ESPN player endpoint for drafted players not on rosters
+    draft_player_ids = set(p["playerId"] for p in picks)
+    missing_ids = draft_player_ids - set(player_id_to_name.keys())
+    if missing_ids:
+        try:
+            chunk = list(missing_ids)[:50]
+            ids_str = ",".join(str(i) for i in chunk)
+            r = requests.get(f"{MLB_API}/people", params={"personIds": ids_str}, headers=HEADERS, timeout=8)
+            for person in r.json().get("people", []):
+                # This is MLB API, won't have ESPN IDs - skip
+                pass
+        except Exception:
+            pass
 
-        starter_pts = sum(p["pts"] for p in starters)
-        bench_pts   = sum(p["pts"] for p in bench)
-        total_pts   = starter_pts + bench_pts
+    # Build round medians for VOE
+    round_pts = defaultdict(list)
+    for pick in picks:
+        pid  = pick["playerId"]
+        rnd  = pick["roundId"]
+        name = player_id_to_name.get(pid, "")
+        nkey = norm(name)
+        pts  = pitcher_pts.get(nkey) or batter_pts.get(nkey) or 0.0
+        round_pts[rnd].append(pts)
 
-        # ── Start/Sit score (40 pts) ──────────────────────────────────────────
-        # Find bench players who outscored any starter
-        if starters and bench:
-            min_starter_pts = min(p["pts"] for p in starters)
-            mistakes = [p for p in bench if p["pts"] > min_starter_pts and p["pts"] > 2]
-            mistakes.sort(key=lambda p: -p["pts"])
+    import statistics
+    round_median = {rnd: statistics.median(pts) for rnd, pts in round_pts.items() if pts}
 
-            # Penalty per mistake, scaled by magnitude
-            penalty = 0
-            for m in mistakes:
-                gap = m["pts"] - min_starter_pts
-                penalty += min(gap * 1.2, 15)
+    # Compute per-team draft VOE
+    draft_voe = defaultdict(float)
+    draft_details = defaultdict(list)  # team_id -> [(name, rnd, pts, voe)]
+    for pick in picks:
+        pid    = pick["playerId"]
+        rnd    = pick["roundId"]
+        tid    = pick["teamId"]
+        name   = player_id_to_name.get(pid, f"ID#{pid}")
+        nkey   = norm(name)
+        pts    = pitcher_pts.get(nkey) or batter_pts.get(nkey) or 0.0
+        med    = round_median.get(rnd, 0.0)
+        voe    = pts - med
+        draft_voe[tid]    += voe
+        draft_details[tid].append({"name": name, "round": rnd, "pts": round(pts, 1), "voe": round(voe, 1)})
 
-            ss_score = max(0, 40 - penalty)
+    print(f"[gmscore] draft VOE computed for {len(draft_voe)} teams", flush=True)
+
+    # ── 3. Lineup Efficiency (cached per scoring period) ─────────────────────
+    print("[gmscore] computing lineup efficiency...", flush=True)
+
+    # Load cache
+    eff_cache = {}  # "teamId_sp" -> {"starter_pts": float, "optimal_pts": float}
+    if EFF_CACHE.exists():
+        try:
+            with open(EFF_CACHE) as f:
+                eff_cache = json.load(f)
+        except Exception:
+            eff_cache = {}
+
+    # Fetch missing SPs — all teams in ONE request per SP (8x faster than per-team)
+    missing_sps = sorted({sp for tid in team_map for sp in all_sps if f"{tid}_{sp}" not in eff_cache})
+    n_missing = len(missing_sps) * len(team_map)
+    print(f"[gmscore] fetching {len(missing_sps)} missing scoring periods ({n_missing} team-days)...", flush=True)
+
+    for sp in missing_sps:
+        try:
+            params  = {"view": ["mTeam", "mRoster"], "scoringPeriodId": sp}
+            sp_data = req.league_get(params=params)
+            for team_entry in sp_data.get("teams", []):
+                tid     = team_entry.get("id")
+                if tid not in team_map:
+                    continue
+                entries  = team_entry.get("roster", {}).get("entries", [])
+                starters = [e for e in entries if e["lineupSlotId"] not in BENCH_SLOTS]
+                bench    = [e for e in entries if e["lineupSlotId"] == BENCH_SLOT]
+
+                def pts_of(e):
+                    return float(e["playerPoolEntry"].get("appliedStatTotal", 0) or 0)
+
+                starter_pts = sum(pts_of(e) for e in starters)
+                all_avail   = sorted([pts_of(e) for e in starters + bench], reverse=True)
+                optimal_pts = sum(all_avail[:len(starters)])
+
+                eff_cache[f"{tid}_{sp}"] = {
+                    "starter_pts": round(starter_pts, 2),
+                    "optimal_pts": round(optimal_pts, 2),
+                }
+        except Exception as ex:
+            print(f"  [warn] SP {sp}: {ex}", file=sys.stderr)
+        time.sleep(0.05)
+
+    # Save updated cache
+    with open(EFF_CACHE, "w") as f:
+        json.dump(eff_cache, f)
+
+    # Aggregate efficiency per team
+    team_eff = {}
+    for tid in team_map:
+        days_data = [eff_cache[f"{tid}_{sp}"] for sp in all_sps if f"{tid}_{sp}" in eff_cache]
+        valid     = [d for d in days_data if d["optimal_pts"] > 0]
+        if valid:
+            avg_eff = sum(d["starter_pts"] / d["optimal_pts"] for d in valid) / len(valid)
+            avg_pts_left = sum(d["optimal_pts"] - d["starter_pts"] for d in valid) / len(valid)
         else:
-            ss_score = 30  # neutral if no bench
-            mistakes = []
+            avg_eff = 1.0
+            avg_pts_left = 0.0
+        team_eff[tid] = {"avg_eff": round(avg_eff, 4), "avg_pts_left": round(avg_pts_left, 2), "n_days": len(valid)}
 
-        # ── Win/Loss vs expected (20 pts) ─────────────────────────────────────
-        # Find this team's matchup
-        wl_score  = 10  # neutral baseline
-        win       = False
-        opp_name  = "?"
-        opp_score = 0.0
-        margin    = 0.0
+    print(f"[gmscore] lineup efficiency computed", flush=True)
 
-        for mid, m in matchups.items():
-            home_id = m.get("home", {}).get("teamId")
-            away_id = m.get("away", {}).get("teamId")
-            if home_id == team_id or away_id == team_id:
-                opp_id    = away_id if home_id == team_id else home_id
-                my_pts    = float(m.get("home" if home_id == team_id else "away", {}).get("totalPoints", total_pts) or total_pts)
-                opp_pts   = float(m.get("away" if home_id == team_id else "home", {}).get("totalPoints", 0) or 0)
-                win       = my_pts > opp_pts
-                margin    = my_pts - opp_pts
-                opp_team  = next((t for t in league.teams if t.team_id == opp_id), None)
-                opp_name  = opp_team.team_name if opp_team else "?"
-                opp_score = opp_pts
+    # ── 4. Waiver / Trade net pts (recent activity via kona_league_communication) ──
+    print("[gmscore] fetching recent transactions...", flush=True)
 
-                if win:
-                    wl_score = 20 if margin > 30 else 17 if margin > 10 else 14
-                else:
-                    wl_score = 5 if margin < -30 else 8 if margin < -10 else 10
-                break
+    # Get player IDs -> season pts lookup
+    all_player_pts = {**pitcher_pts, **batter_pts}
 
-        # ── Roster quality score (30 pts) ─────────────────────────────────────
-        # Sample up to 5 active players for sabermetric quality check
-        # (skip full stat pull for speed - use projected_total_points as proxy)
-        # Better: use ESPN's own season projections
-        roster_score = 20  # default neutral
+    txn_net    = defaultdict(float)  # team_id -> net pts from adds/trades
+    txn_count  = defaultdict(int)    # team_id -> number of add transactions
+    trade_net  = defaultdict(float)  # team_id -> net pts from trades specifically
 
-        # Use starter average pts per day as quality signal
-        if starters:
-            days = max(len(scoring_periods), 1)
-            avg_pts_per_day = starter_pts / days / len(starters)
-            # league average ~5-8 pts/player/day in World Sillies scoring
-            LG_AVG_PPD = 6.5
-            diff = (avg_pts_per_day - LG_AVG_PPD) / LG_AVG_PPD
-            roster_score = max(0, min(30, round(20 + diff * 25)))
+    try:
+        r = requests.get(ESPN_BASE, headers=HEADERS,
+                         params={"view": "kona_league_communication"}, timeout=15)
+        if r.status_code == 200:
+            topics = [t for t in r.json().get("communication", {}).get("topics", [])
+                      if t.get("type") == "ACTIVITY_TRANSACTIONS"]
 
-        # ── Waiver smarts (10 pts) ────────────────────────────────────────────
-        # Check if recently added players (acquisitionType == 'WAIVER' or 'FREE_AGENT') contributed
-        recent_adds = [p for p in starters
-                       if p.get("acquisitionType") in ("WAIVER", "FREE_AGENT")
-                       and p["pts"] > 5]
-        waiver_score = min(10, 5 + len(recent_adds) * 2)
+            # Build a reverse player ID -> season pts lookup using draft data
+            pid_to_pts = {}
+            for pid, name in player_id_to_name.items():
+                nkey = norm(name)
+                pts  = pitcher_pts.get(nkey) or batter_pts.get(nkey) or 0.0
+                pid_to_pts[pid] = pts
 
-        # ── Total ─────────────────────────────────────────────────────────────
-        total_score = round(ss_score + wl_score + roster_score + waiver_score)
-        total_score = max(0, min(100, total_score))
+            for topic in topics:
+                msgs     = topic.get("messages", [])
+                msg_type_ids = set(m.get("messageTypeId") for m in msgs)
 
-        # Top scorer and biggest mistake
-        top_starter  = max(starters, key=lambda p: p["pts"]) if starters else None
-        best_bench   = max(bench,    key=lambda p: p["pts"]) if bench    else None
+                if 188 in msg_type_ids:
+                    # TRADE - compute net for each team
+                    by_from_to = defaultdict(list)
+                    for m in msgs:
+                        if m.get("messageTypeId") == 188:
+                            pair = (m.get("from"), m.get("to"))
+                            by_from_to[pair].append(m.get("targetId", 0))
+                    # pairs: (giver_team, receiver_team) -> [player_ids_given]
+                    # Net for receiver = pts_received - pts_given
+                    team_received = defaultdict(float)
+                    team_gave     = defaultdict(float)
+                    for (from_t, to_t), pids in by_from_to.items():
+                        for pid in pids:
+                            pts = pid_to_pts.get(pid, 0.0)
+                            team_gave[from_t]     += pts
+                            team_received[to_t]   += pts
+                    for tid in set(list(team_gave.keys()) + list(team_received.keys())):
+                        if tid and tid > 0:
+                            trade_net[tid] += team_received.get(tid, 0) - team_gave.get(tid, 0)
+                            txn_net[tid]   += team_received.get(tid, 0) - team_gave.get(tid, 0)
+
+                elif 178 in msg_type_ids or 239 in msg_type_ids:
+                    # WAIVER/FA add
+                    for m in msgs:
+                        mid = m.get("messageTypeId")
+                        if mid in (178, 239):
+                            tid = m.get("to")
+                            pid = m.get("targetId", 0)
+                            if tid and tid > 0:
+                                pts = pid_to_pts.get(pid, 0.0)
+                                txn_net[tid]   += pts
+                                txn_count[tid] += 1
+                        elif mid == 179:  # drop
+                            tid = m.get("from")
+                            pid = m.get("targetId", 0)
+                            if tid and tid > 0:
+                                pts = pid_to_pts.get(pid, 0.0)
+                                txn_net[tid] -= pts
+
+            print(f"[gmscore] parsed {len(topics)} transaction topics", flush=True)
+        else:
+            print(f"[gmscore] kona_league_communication status={r.status_code}", file=sys.stderr)
+    except Exception as ex:
+        print(f"[gmscore] transaction fetch failed: {ex}", file=sys.stderr)
+
+    # ── 5. Assemble and z-score ───────────────────────────────────────────────
+    team_ids = [t.team_id for t in league.teams]
+
+    raw_draft   = [draft_voe.get(tid, 0.0)           for tid in team_ids]
+    raw_eff     = [team_eff.get(tid, {}).get("avg_eff", 0.9) for tid in team_ids]
+    raw_txn     = [txn_net.get(tid, 0.0)             for tid in team_ids]
+    raw_trade   = [trade_net.get(tid, 0.0)           for tid in team_ids]
+    raw_wins    = [team_records[tid]["wins"]          for tid in team_ids]
+    raw_pf      = [team_records[tid]["pts"]           for tid in team_ids]
+
+    # Record score = 0.7*win_pct + 0.3*pf_pct
+    total_games = max(max(r["wins"] + r["losses"] for r in team_records.values()), 1)
+    raw_record  = [
+        0.7 * (team_records[tid]["wins"] / max(team_records[tid]["wins"] + team_records[tid]["losses"], 1))
+        + 0.3 * (team_records[tid]["pts"] / max(raw_pf))
+        for tid in team_ids
+    ]
+
+    z_draft  = z_score(raw_draft)
+    z_eff    = z_score(raw_eff)
+    z_txn    = z_score(raw_txn)
+    z_record = z_score(raw_record)
+
+    results = []
+    for i, tid in enumerate(team_ids):
+        rec  = team_records[tid]
+        eff  = team_eff.get(tid, {})
+        gm   = z_draft[i] + z_eff[i] + z_txn[i] + z_record[i]
+
+        # Top and worst VOE picks
+        picks_sorted = sorted(draft_details[tid], key=lambda p: -p["voe"])
+        top_pick  = picks_sorted[0]  if picks_sorted else None
+        worst_pick = picks_sorted[-1] if picks_sorted else None
 
         results.append({
-            "team_name":      team.team_name,
-            "team_id":        team_id,
-            "matchup_period": grading_mp,
-            "total_score":    total_score,
-            "grade":          grade_letter(total_score),
-            "win":            win,
-            "weekly_pts":     round(starter_pts, 1),
-            "bench_pts":      round(bench_pts, 1),
-            "opp_name":       opp_name,
-            "opp_score":      round(opp_score, 1),
-            "margin":         round(margin, 1),
-            "ss_score":       round(ss_score, 1),
-            "roster_score":   round(roster_score, 1),
-            "wl_score":       round(wl_score, 1),
-            "waiver_score":   round(waiver_score, 1),
-            "top_starter":    top_starter["name"] if top_starter else None,
-            "top_starter_pts": round(top_starter["pts"], 1) if top_starter else 0,
-            "best_bench":     best_bench["name"] if best_bench else None,
-            "best_bench_pts": round(best_bench["pts"], 1) if best_bench else 0,
-            "mistakes":       [{"name": m["name"], "pts": round(m["pts"], 1)} for m in mistakes[:3]],
+            "team_name":   team_map[tid],
+            "team_id":     tid,
+            "gm_score":    round(gm, 3),
+            "grade":       grade_letter(gm),
+            "wins":        rec["wins"],
+            "losses":      rec["losses"],
+            "pts":         round(rec["pts"], 1),
+            "opp_pts":     round(rec["opp_pts"], 1),
+            "draft_voe":   round(raw_draft[i], 1),
+            "avg_eff":     round(raw_eff[i], 4),
+            "avg_pts_left": round(eff.get("avg_pts_left", 0.0), 2),
+            "txn_net":     round(raw_txn[i], 1),
+            "trade_net":   round(raw_trade[i], 1),
+            "record_score": round(raw_record[i], 4),
+            "z_draft":     round(z_draft[i], 3),
+            "z_eff":       round(z_eff[i], 3),
+            "z_txn":       round(z_txn[i], 3),
+            "z_record":    round(z_record[i], 3),
+            "n_days":      eff.get("n_days", 0),
+            "txn_count":   txn_count.get(tid, 0),
+            "top_pick":    top_pick,
+            "worst_pick":  worst_pick,
         })
 
-    # Sort by total score descending
-    results.sort(key=lambda x: -x["total_score"])
+    results.sort(key=lambda x: -x["gm_score"])
 
+    # ── 6. Write JSON (for embed) ─────────────────────────────────────────────
     out = {
-        "generated":      datetime.datetime.now().isoformat(),
-        "matchup_period": grading_mp,
-        "scoring_periods": scoring_periods,
-        "teams":          results,
+        "generated":       datetime.datetime.now().isoformat(),
+        "n_weeks":         n_weeks,
+        "txn_note":        "recent transactions only (no ESPN auth)",
+        "teams":           results,
     }
-
     with open(OUT_JSON, "w") as f:
         json.dump(out, f, indent=2)
 
-    print(f"\n[gmscore] GM Report - Matchup Period {grading_mp}")
-    print(f"{'RANK':4} {'GRADE':5} {'SCORE':5}  {'TEAM':30} {'W/L':4} {'PTS':6}")
-    print("-" * 65)
+    # ── 7. Write CSV (for R plot) ─────────────────────────────────────────────
+    import csv
+    with open(OUT_CSV, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            "team_name", "gm_score", "grade",
+            "z_draft", "z_eff", "z_txn", "z_record",
+            "draft_voe", "avg_eff", "txn_net", "wins", "losses", "pts"
+        ])
+        writer.writeheader()
+        for r in results:
+            writer.writerow({k: r[k] for k in writer.fieldnames})
+
+    # ── 8. Print summary ──────────────────────────────────────────────────────
+    print(f"\n[gmscore] GM Report - World Sillies {CURRENT_YEAR} ({n_weeks} weeks)")
+    print(f"{'RANK':4} {'GRADE':5} {'GM':6}  {'TEAM':30} {'W-L':6} {'PTS':7}  {'VOE':7}  {'EFF%':6}  {'TXN':6}")
+    print("-" * 90)
     for i, t in enumerate(results, 1):
-        wl = "W" if t["win"] else "L"
-        print(f"{i:4} {t['grade']:5} {t['total_score']:5}  {t['team_name']:30} {wl:4} {t['weekly_pts']:6.1f}")
-        if t["mistakes"]:
-            for m in t["mistakes"][:2]:
-                print(f"           !! benched {m['name']} ({m['pts']:.1f} pts)")
+        wl  = f"{t['wins']}-{t['losses']}"
+        eff = f"{t['avg_eff']*100:.1f}%"
+        print(f"{i:4} {t['grade']:5} {t['gm_score']:+6.2f}  {t['team_name']:30} {wl:6} {t['pts']:7.0f}  {t['draft_voe']:+7.1f}  {eff:6}  {t['txn_net']:+6.1f}")
 
     print(f"\nok - {OUT_JSON}")
+    print(f"ok - {OUT_CSV}")
+
 
 if __name__ == "__main__":
     main()

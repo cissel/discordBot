@@ -32,8 +32,9 @@ Built so I could send a message from my phone and have it run scripts, pull data
 | `surf` | 1-week surf forecast plot for Jax Beach, FL |
 | `wavemap` | wave height forecast map GIF |
 | `windmap` | wind speed & direction forecast map GIF |
-| `buoy waves` | wave height plot from NOAA NDBC buoy #41117 off St. Augustine |
-| `tide plot` | tide forecast for Mayport Bar Pilots Dock |
+| `buoywaves` | wave height plot from NOAA NDBC buoy #41117 off St. Augustine |
+| `tideplot` | tide forecast for Mayport Bar Pilots Dock |
+| `windplot` | wind speed & direction plot for Mayport |
 
 ![surf forecast](outputs/weather/surf_fcst.png)
 ![buoy waves](outputs/weather/buoyWaves.png)
@@ -41,7 +42,7 @@ Built so I could send a message from my phone and have it run scripts, pull data
 ![wind plot](outputs/weather/mayportWinds.png)
 
 ### `/ball`
-One command. All sports. Returns today's (or tomorrow's) schedule and scores across NHL, MLB, NBA, PGA, and NFL in a single multi-embed response.
+One command. All sports. Returns today's (or tomorrow's) schedule and scores across NHL, MLB, NBA, PGA, NFL, UFC, F1, NASCAR, and World Cup in a single multi-embed response.
 
 ### `/nhl`
 | command | description |
@@ -63,6 +64,8 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `epamap` | mean EPA choropleth map by NFL team |
 | `room40points` | Room 40 fantasy points map |
 | `amonra` | I RUN THIS SHIT |
+| `fantasywrapped` | Room 40 season full statistical breakdown - standings, draft, positions, trades, luck, GM score |
+| `alltimewrapped` | Room 40 all-time record book (2022-present) - cross-season stats, rankings, and GM score |
 
 ### `/jags`
 | command | description |
@@ -169,6 +172,8 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `options` | options flow snapshot for a ticker |
 | `short` | most shorted stocks |
 | `trades` | recent trade chart |
+| `model` | SPY returns model - OLS + NW-HAC robust SEs + AR lags + options flow (1Y/2Y/3Y/5Y/max lookback) |
+
 
 ![stock chart](outputs/markets/stockchart.png)
 ![crypto chart](outputs/markets/cryptochart.png)
@@ -215,7 +220,10 @@ Duval County residential real estate - median price per sqft by zip code, and pr
 ![realestate time](outputs/jax/realestate_time.png)
 
 ### `/osrs`
-Old School RuneScape hiscores lookup.
+| command | description |
+|---|---|
+| `hiscores` | crew hiscores leaderboard - total level or any skill |
+| `lvl` | full skill sheet for a player |
 
 ![osrs](outputs/osrs/osrs.png)
 

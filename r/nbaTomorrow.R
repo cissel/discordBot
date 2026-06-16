@@ -7,14 +7,29 @@ library(hoopR)
 
 #####
 
-# Pull today's NBA games
-gt <- nba_schedule() |>  
-  filter(game_date == Sys.Date()+1) |>  # Filter only today's games
-  select(game_id,
-         game_status_text,
-         arena_name,
-         home_team_city, home_team_name, home_team_tricode, home_team_wins, home_team_losses, home_team_score,
-         away_team_city, away_team_name, away_team_tricode, away_team_wins, away_team_losses, away_team_score)
+OUT <- "~/discordBot/outputs/sports/nba/gamesTomorrow.csv"
+dir.create(dirname(path.expand(OUT)), recursive = TRUE, showWarnings = FALSE)
+
+# Try to pull schedule - hoopR errors out during off-season
+gt <- tryCatch({
+  nba_schedule() |>
+    filter(game_date == Sys.Date() + 1) |>
+    select(game_id,
+           game_status_text,
+           arena_name,
+           home_team_city, home_team_name, home_team_tricode, home_team_wins, home_team_losses, home_team_score,
+           away_team_city, away_team_name, away_team_tricode, away_team_wins, away_team_losses, away_team_score)
+}, error = function(e) {
+  message("nbaTomorrow: no schedule data available (off-season or API error): ", e$message)
+  NULL
+})
+
+# Write empty CSV and exit if no data
+if (is.null(gt) || nrow(gt) == 0) {
+  write_csv(data.frame(time = character(), matchup = character()), path.expand(OUT))
+  message("nbaTomorrow: no games tomorrow, wrote empty CSV")
+  quit(status = 0)
+}
 
 # Initialize dataframe for matchups
 gtc <- data.frame(time = character(),
@@ -27,24 +42,23 @@ for (i in 1:nrow(gt)) {
                      "@",
                      gt$arena_name[i],
                      sep = " ")  # Extract game time
-  
+
   # Format team names with records
-  home_team <- paste0(gt$home_team_city[i], " ", gt$home_team_name[i], 
+  home_team <- paste0(gt$home_team_city[i], " ", gt$home_team_name[i],
                       " (", gt$home_team_wins[i], "-", gt$home_team_losses[i], ")")
-  away_team <- paste0(gt$away_team_city[i], " ", gt$away_team_name[i], 
+  away_team <- paste0(gt$away_team_city[i], " ", gt$away_team_name[i],
                       " (", gt$away_team_wins[i], "-", gt$away_team_losses[i], ")")
-  
+
   # Build base matchup string
   matchup <- paste0(away_team, " @ ", home_team)
-  
+
   # Append to the dataframe
   gtc <- rbind(gtc, data.frame(time = game_time, matchup = matchup))
-  
+
 }
 
 # Output
 print(gtc)
 
-#write_csv(gtc, "C:/Users/james/projects/discordBot/outputs/sports/nba/gamesTomorrow.csv")
-write_csv(gtc, "~/discordBot/outputs/sports/nba/gamesTomorrow.csv")
+write_csv(gtc, path.expand(OUT))
 print(".csv saved")
