@@ -200,7 +200,7 @@ class BotClient(discord.Client):
         if payload.user_id == self.user.id:
             return  # ignore bot's own reactions
 
-        state_file = _Path(os.path.expanduser("~/discordBot/outputs/space/launch_alerts.json"))
+        state_file = _Path(os.path.expanduser("~/discordBot/outputs/aerospace/launch_alerts.json"))
         if not state_file.exists():
             return
 
@@ -248,7 +248,7 @@ class BotClient(discord.Client):
 
         PYTHON_PATH = os.path.expanduser("~/discordBot/venv/bin/python3")
         SCRIPT      = os.path.expanduser("~/discordBot/python/launchAlert.py")
-        state_file  = _Path(os.path.expanduser("~/discordBot/outputs/space/launch_alerts.json"))
+        state_file  = _Path(os.path.expanduser("~/discordBot/outputs/aerospace/launch_alerts.json"))
 
         try:
             result = await asyncio.to_thread(

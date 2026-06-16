@@ -3868,7 +3868,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     async def nextlaunch(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "spaceLaunches.py"))
-        csv = os.path.join(op, "space/next_launch.csv")
+        csv = os.path.join(op, "aerospace/next_launch.csv")
         if not os.path.exists(csv):
             await _send(interaction, "🚫 Couldn't find launch data.", ephemeral=True); return
         row = pd.read_csv(csv).iloc[0]
@@ -3894,7 +3894,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     async def isspass(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "issPass.py"))
-        csv_path = os.path.join(op, "space/issPasses.csv")
+        csv_path = os.path.join(op, "aerospace/issPasses.csv")
         if not os.path.exists(csv_path):
             await _send(interaction, "couldn't compute ISS passes :(", ephemeral=True)
             return

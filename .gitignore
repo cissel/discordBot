@@ -36,8 +36,11 @@ outputs/sports/nfl/*.csv
 outputs/weather/waves/
 outputs/weather/winds/
 outputs/aerospace/adsb250nm.csv
+outputs/aerospace/issPasses.csv
+outputs/aerospace/launch_alerts.json
 outputs/space/*.csv
 outputs/space/*.json
+outputs/sports/nfl/*.html
 outputs/server/members.csv
 outputs/server/invite_log.csv
 outputs/server/invite_seed.csv

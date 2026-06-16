@@ -25,7 +25,7 @@ JAX_ELEV   = 5          # meters above sea level (Jacksonville is basically sea 
 N_PASSES   = 5          # how many passes to find
 MIN_ELEV   = 10         # degrees - ignore grazing passes below this
 DAYS_AHEAD = 7
-OUTPUT     = Path("~/discordBot/outputs/space/issPasses.csv").expanduser()
+OUTPUT     = Path("~/discordBot/outputs/aerospace/issPasses.csv").expanduser()
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
 TLE_URL = "https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=TLE"

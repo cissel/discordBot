@@ -8,7 +8,7 @@ Checks the next Cape Canaveral/Kennedy launch and:
   - Posts a 1h alert to everyone who reacted with rocket to the 24h message
   - Posts a 5m alert to everyone who reacted with fire to the 1h message
 
-State is stored in: ~/discordBot/outputs/space/launch_alerts.json
+State is stored in: ~/discordBot/outputs/aerospace/launch_alerts.json
 {
   "tracked": {
     "<launch_id>": {
@@ -37,7 +37,7 @@ from pathlib import Path
 from dateutil import parser as dtparser
 
 BASE       = Path(os.path.expanduser("~/discordBot"))
-STATE_FILE = BASE / "outputs/space/launch_alerts.json"
+STATE_FILE = BASE / "outputs/aerospace/launch_alerts.json"
 STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 SPACE_CENTER_CHANNEL = 1476278139167571968
