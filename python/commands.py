@@ -40,12 +40,15 @@
 #
 #   /nfl      nextgame | standings | jags | jagsgame | jagswin | howboutthemjags
 #             wr | fantasyscoreboard | epamap | room40points | amonra
+#             wrstats | rbstats | qbstats | testats | olstats
 #
 #   /nba      scoreboard | today | tomorrow | standings
 #
 #   /mlb      (many commands) | standings
 #
 #   /markets  fedrate | yieldcurve | yieldspread | yieldspreadshort
+#   /snapshot [timeframe]  (standalone - markets_group is at 25-cmd Discord limit)
+#             intraday | 1w | 1mo | 3mo | 6mo | 1y
 #
 #   /space    nextlaunch
 #
@@ -1284,6 +1287,200 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, embeds=embeds)
         else:
             await _send(interaction, "No NFL standings data available.")
+
+    @nfl_group.command(name="wrstats", description="Advanced WR receiving stats - separation, YAC over expected (WR only)")
+    @app_commands.describe(season="Season year (default: latest)", player="Optional: filter to a specific player")
+    async def nfl_wrstats(interaction: discord.Interaction, season: int = None, player: str = None):
+        await _defer(interaction)
+        try:
+            yr = str(season) if season else ""
+            plr = player.strip() if player else ""
+            cmd_args = [os.path.join(rp, "nflWrStats.R")]
+            if yr:
+                cmd_args.append(yr)
+            if plr:
+                if not yr:
+                    # R script reads args positionally; must pass season before player
+                    import subprocess as _sp
+                    latest = _sp.run(["Rscript", "-e", "suppressPackageStartupMessages({library(nflreadr)}); cat(get_latest_season())"],
+                                     capture_output=True, text=True, timeout=15).stdout.strip()
+                    cmd_args.append(latest if latest else "2025")
+                cmd_args.append(plr)
+            result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript"] + cmd_args,
+                    capture_output=True, text=True, timeout=90
+                )
+            )
+            out_png = os.path.join(op, "sports/nfl/nflWrStats.png")
+            if result.returncode == 2:
+                err_line = next((l for l in result.stderr.splitlines() if "not found" in l.lower()), "Player not found.")
+                await _send(interaction, f"\u274c {err_line}", ephemeral=True); return
+            if result.returncode != 0 or not os.path.exists(out_png):
+                err = result.stderr[-400:] if result.stderr else "no output"
+                await _send(interaction, f"\u274c WR stats failed\n```{err}```", ephemeral=True); return
+            label = season or "latest"
+            subtitle = f" - {player}" if player else ""
+            await _send(interaction,
+                        f"**{label} NFL Advanced Receiving - WR{subtitle}**\nSeparation vs YAC Over Expected | bubble size = targets | color = Rec EPA | min 30 targets",
+                        file=discord.File(out_png))
+        except Exception as e:
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
+
+    @nfl_group.command(name="testats", description="Advanced TE receiving stats - separation, YAC over expected (TE only)")
+    @app_commands.describe(season="Season year (default: latest)", player="Optional: filter to a specific player")
+    async def nfl_testats(interaction: discord.Interaction, season: int = None, player: str = None):
+        await _defer(interaction)
+        try:
+            yr = str(season) if season else ""
+            plr = player.strip() if player else ""
+            cmd_args = [os.path.join(rp, "nflTeStats.R")]
+            if yr:
+                cmd_args.append(yr)
+            if plr:
+                if not yr:
+                    # R script reads args positionally; must pass season before player
+                    import subprocess as _sp
+                    latest = _sp.run(["Rscript", "-e", "suppressPackageStartupMessages({library(nflreadr)}); cat(get_latest_season())"],
+                                     capture_output=True, text=True, timeout=15).stdout.strip()
+                    cmd_args.append(latest if latest else "2025")
+                cmd_args.append(plr)
+            result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript"] + cmd_args,
+                    capture_output=True, text=True, timeout=90
+                )
+            )
+            out_png = os.path.join(op, "sports/nfl/nflTeStats.png")
+            if result.returncode == 2:
+                err_line = next((l for l in result.stderr.splitlines() if "not found" in l.lower()), "Player not found.")
+                await _send(interaction, f"\u274c {err_line}", ephemeral=True); return
+            if result.returncode != 0 or not os.path.exists(out_png):
+                err = result.stderr[-400:] if result.stderr else "no output"
+                await _send(interaction, f"\u274c TE stats failed\n```{err}```", ephemeral=True); return
+            label = season or "latest"
+            subtitle = f" - {player}" if player else ""
+            await _send(interaction,
+                        f"**{label} NFL Advanced Receiving - TE{subtitle}**\nSeparation vs YAC Over Expected | bubble size = targets | color = Rec EPA | min 20 targets",
+                        file=discord.File(out_png))
+        except Exception as e:
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
+
+    @nfl_group.command(name="rbstats", description="Advanced RB rushing stats - rush yards over expected, efficiency")
+    @app_commands.describe(season="Season year (default: latest)", player="Optional: filter to a specific player")
+    async def nfl_rbstats(interaction: discord.Interaction, season: int = None, player: str = None):
+        await _defer(interaction)
+        try:
+            yr = str(season) if season else ""
+            plr = player.strip() if player else ""
+            cmd_args = [os.path.join(rp, "nflRbStats.R")]
+            if yr:
+                cmd_args.append(yr)
+            if plr:
+                if not yr:
+                    # R script reads args positionally; must pass season before player
+                    import subprocess as _sp
+                    latest = _sp.run(["Rscript", "-e", "suppressPackageStartupMessages({library(nflreadr)}); cat(get_latest_season())"],
+                                     capture_output=True, text=True, timeout=15).stdout.strip()
+                    cmd_args.append(latest if latest else "2025")
+                cmd_args.append(plr)
+            result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript"] + cmd_args,
+                    capture_output=True, text=True, timeout=90
+                )
+            )
+            out_png = os.path.join(op, "sports/nfl/nflRbStats.png")
+            if result.returncode == 2:
+                err_line = next((l for l in result.stderr.splitlines() if "not found" in l.lower()), "Player not found.")
+                await _send(interaction, f"\u274c {err_line}", ephemeral=True); return
+            if result.returncode != 0 or not os.path.exists(out_png):
+                err = result.stderr[-400:] if result.stderr else "no output"
+                await _send(interaction, f"\u274c RB stats failed\n```{err}```", ephemeral=True); return
+            label = season or "latest"
+            subtitle = f" - {player}" if player else ""
+            await _send(interaction,
+                        f"**{label} NFL Advanced Rushing - RB{subtitle}**\nNGS Efficiency vs Rush Yards Over Expected per Carry | bubble = carries | min 50 att",
+                        file=discord.File(out_png))
+        except Exception as e:
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
+
+    @nfl_group.command(name="qbstats", description="Advanced QB passing stats - CPOE, aggressiveness, EPA")
+    @app_commands.describe(season="Season year (default: latest)", player="Optional: filter to a specific player")
+    async def nfl_qbstats(interaction: discord.Interaction, season: int = None, player: str = None):
+        await _defer(interaction)
+        try:
+            yr = str(season) if season else ""
+            plr = player.strip() if player else ""
+            cmd_args = [os.path.join(rp, "nflQbStats.R")]
+            if yr:
+                cmd_args.append(yr)
+            if plr:
+                if not yr:
+                    # R script reads args positionally; must pass season before player
+                    import subprocess as _sp
+                    latest = _sp.run(["Rscript", "-e", "suppressPackageStartupMessages({library(nflreadr)}); cat(get_latest_season())"],
+                                     capture_output=True, text=True, timeout=15).stdout.strip()
+                    cmd_args.append(latest if latest else "2025")
+                cmd_args.append(plr)
+            result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript"] + cmd_args,
+                    capture_output=True, text=True, timeout=90
+                )
+            )
+            out_png = os.path.join(op, "sports/nfl/nflQbStats.png")
+            if result.returncode == 2:
+                err_line = next((l for l in result.stderr.splitlines() if "not found" in l.lower()), "Player not found.")
+                await _send(interaction, f"\u274c {err_line}", ephemeral=True); return
+            if result.returncode != 0 or not os.path.exists(out_png):
+                err = result.stderr[-400:] if result.stderr else "no output"
+                await _send(interaction, f"\u274c QB stats failed\n```{err}```", ephemeral=True); return
+            label = season or "latest"
+            subtitle = f" - {player}" if player else ""
+            await _send(interaction,
+                        f"**{label} NFL Advanced Passing - QB{subtitle}**\nAggressiveness % vs Completion % Above Expected | bubble = attempts | min 100 att",
+                        file=discord.File(out_png))
+        except Exception as e:
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
+
+    @nfl_group.command(name="olstats", description="Advanced OL blocking stats - pressure rate vs sack rate")
+    @app_commands.describe(season="Season year (default: latest)", player="Optional: filter to a specific player")
+    async def nfl_olstats(interaction: discord.Interaction, season: int = None, player: str = None):
+        await _defer(interaction)
+        try:
+            yr = str(season) if season else ""
+            plr = player.strip() if player else ""
+            cmd_args = [os.path.join(rp, "nflOlStats.R")]
+            if yr:
+                cmd_args.append(yr)
+            if plr:
+                if not yr:
+                    import subprocess as _sp
+                    latest = _sp.run(["Rscript", "-e", "suppressPackageStartupMessages({library(nflreadr)}); cat(get_latest_season())"],
+                                     capture_output=True, text=True, timeout=15).stdout.strip()
+                    cmd_args.append(latest if latest else "2025")
+                cmd_args.append(plr)
+            result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript"] + cmd_args,
+                    capture_output=True, text=True, timeout=120
+                )
+            )
+            out_png = os.path.join(op, "sports/nfl/nflOlStats.png")
+            if result.returncode == 2:
+                err_line = next((l for l in result.stderr.splitlines() if "not found" in l.lower()), "Player not found.")
+                await _send(interaction, f"\u274c {err_line}", ephemeral=True); return
+            if result.returncode != 0 or not os.path.exists(out_png):
+                err = result.stderr[-400:] if result.stderr else "no output"
+                await _send(interaction, f"\u274c OL stats failed\n```{err}```", ephemeral=True); return
+            label = season or "latest"
+            subtitle = f" - {player}" if player else ""
+            await _send(interaction,
+                        f"**{label} NFL Advanced Blocking - OL{subtitle}**\nPressure Rate vs Sack Rate | axes inverted (top-right = elite) | bubble = pass snaps | min 150 pass snaps",
+                        file=discord.File(out_png))
+        except Exception as e:
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
 
     tree.add_command(nfl_group)
 
@@ -2939,331 +3136,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         # distribution PNG generated but not sent - available locally if needed
 
     # ─────────────────────────────────────────────────────────────────────────
-    # /markets regress  - multivariate OLS on returns
-    # ─────────────────────────────────────────────────────────────────────────
-
-    # shared regressor choices across all var slots
-    _VAR_CHOICES = [
-        # equities
-        app_commands.Choice(name="S&P 500 (SPY)",        value="SPY"),
-        app_commands.Choice(name="Nasdaq 100 (QQQ)",     value="QQQ"),
-        app_commands.Choice(name="Dow Jones (DIA)",      value="DIA"),
-        app_commands.Choice(name="Russell 2000 (IWM)",   value="IWM"),
-        app_commands.Choice(name="Gold ETF (GLD)",       value="GLD"),
-        app_commands.Choice(name="Oil ETF (USO)",        value="USO"),
-        # crypto
-        app_commands.Choice(name="Ethereum returns (ETH)",  value="ETH"),
-        app_commands.Choice(name="Solana returns (SOL)",    value="SOL"),
-        app_commands.Choice(name="BTC Hashrate (log)",      value="HASHRATE"),
-        # FRED macro
-        app_commands.Choice(name="VIX - Volatility Index",  value="VIX"),
-        app_commands.Choice(name="M2 Money Supply",         value="M2"),
-        app_commands.Choice(name="Unemployment Rate",       value="UNRATE"),
-        app_commands.Choice(name="CPI - Inflation",         value="CPI"),
-        app_commands.Choice(name="Yield Spread (10Y-2Y)",   value="T10Y2Y"),
-        app_commands.Choice(name="Fed Funds Rate",          value="FEDFUNDS"),
-        app_commands.Choice(name="WTI Crude Oil (FRED)",    value="WTI"),
-        app_commands.Choice(name="US Dollar Index (DXY)",   value="DXY"),
-        # FX
-        app_commands.Choice(name="EUR/USD",  value="EUR_USD"),
-        app_commands.Choice(name="GBP/USD",  value="GBP_USD"),
-        app_commands.Choice(name="JPY/USD",  value="JPY_USD"),
-        app_commands.Choice(name="CNY/USD",  value="CNY_USD"),
-        app_commands.Choice(name="CAD/USD",  value="CAD_USD"),
-        app_commands.Choice(name="BRL/USD",  value="BRL_USD"),
-        app_commands.Choice(name="MXN/USD",  value="MXN_USD"),
-        app_commands.Choice(name="AUD/USD",  value="AUD_USD"),
-    ]
-
-    _TARGET_CHOICES = [
-        app_commands.Choice(name="Bitcoin  (BTC)",        value="BTC"),
-        app_commands.Choice(name="Ethereum (ETH)",        value="ETH"),
-        app_commands.Choice(name="Solana   (SOL)",        value="SOL"),
-        app_commands.Choice(name="Dogecoin (DOGE)",       value="DOGE"),
-        app_commands.Choice(name="S&P 500  (SPY)",        value="SPY"),
-        app_commands.Choice(name="Nasdaq   (QQQ)",        value="QQQ"),
-        app_commands.Choice(name="Apple    (AAPL)",       value="AAPL"),
-        app_commands.Choice(name="Nvidia   (NVDA)",       value="NVDA"),
-        app_commands.Choice(name="Tesla    (TSLA)",       value="TSLA"),
-        app_commands.Choice(name="Gold ETF (GLD)",        value="GLD"),
-        app_commands.Choice(name="Custom   (type below)", value="CUSTOM"),
-    ]
-
-    @markets_group.command(
-        name="regress",
-        description="Multivariate OLS regression - pick what drives a stock or crypto from dropdowns"
-    )
-    @app_commands.describe(
-        target_type   = "type of the variable you want to explain",
-        target_symbol = "asset to explain (or pick Custom and fill in custom_symbol)",
-        custom_symbol = "custom ticker/coin if you picked Custom above (e.g. MSFT, AMZN)",
-        lookback      = "how much history to train on",
-        var1          = "regressor 1 (required)",
-        var2          = "regressor 2 (optional)",
-        var3          = "regressor 3 (optional)",
-        var4          = "regressor 4 (optional)",
-        var5          = "regressor 5 (optional)",
-        lags          = "autoregressive/distributed lag depth (default: none)",
-    )
-    @app_commands.choices(
-        target_type=[
-            app_commands.Choice(name="Crypto",  value="crypto"),
-            app_commands.Choice(name="Stocks",  value="stocks"),
-        ],
-        target_symbol=_TARGET_CHOICES,
-        lookback=[
-            app_commands.Choice(name="1 Year",  value="1yr"),
-            app_commands.Choice(name="2 Years", value="2yr"),
-            app_commands.Choice(name="3 Years", value="3yr"),
-            app_commands.Choice(name="5 Years", value="5yr"),
-            app_commands.Choice(name="Max",     value="max"),
-        ],
-        var1=_VAR_CHOICES,
-        var2=_VAR_CHOICES,
-        var3=_VAR_CHOICES,
-        var4=_VAR_CHOICES,
-        var5=_VAR_CHOICES,
-        lags=[
-            app_commands.Choice(name="None (no lags)",                                   value="none"),
-            app_commands.Choice(name="AR - lag target only: 1,2,5,10,15,30,90,126,252d", value="ar"),
-            app_commands.Choice(name="Short - lag all: 1,2,3,5d",                        value="short"),
-            app_commands.Choice(name="Medium - lag all: 1,2,3,5,10,15,30,90d",           value="medium"),
-            app_commands.Choice(name="Full - lag all: 1-5,10,15,30,90,126,252d",         value="full"),
-        ],
-    )
-    async def markets_regress(
-        interaction  : discord.Interaction,
-        target_type  : str,
-        target_symbol: str,
-        var1         : str,
-        custom_symbol: str = "",
-        lookback     : str = "2yr",
-        lags         : str = "none",
-        var2         : str = "",
-        var3         : str = "",
-        var4         : str = "",
-        var5         : str = "",
-    ):
-        # resolve custom symbol
-        if target_symbol == "CUSTOM":
-            if not custom_symbol.strip():
-                await interaction.response.send_message(
-                    "you picked Custom but didn't fill in `custom_symbol` - try again", ephemeral=True)
-                return
-            target_symbol = custom_symbol.upper().strip()
-
-        await _defer(interaction)
-
-        # build ordered unique regressor list
-        var_keys = [v for v in [var1, var2, var3, var4, var5] if v]
-        # deduplicate preserving order
-        seen, var_keys_dedup = set(), []
-        for v in var_keys:
-            if v not in seen:
-                seen.add(v)
-                var_keys_dedup.append(v)
-        var_keys_str = ",".join(var_keys_dedup)
-
-        await interaction.followup.send(
-            f"📐 fetching data for **{target_symbol}** ~ **{var_keys_str}** ({lookback}, lags={lags})...",
-            ephemeral=True
-        )
-
-        # ── step 1: fetch + align ─────────────────────────────────────────────
-        try:
-            fetch_proc = await asyncio.create_subprocess_exec(
-                PYTHON, os.path.join(pp, "fetchRegressData.py"),
-                target_type, target_symbol, var_keys_str, lookback, "1d", lags,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            fetch_out, fetch_err = await asyncio.wait_for(fetch_proc.communicate(), timeout=120)
-        except asyncio.TimeoutError:
-            try: fetch_proc.kill()
-            except Exception: pass
-            await interaction.followup.send("data fetch timed out (>120s) - try a shorter lookback")
-            return
-        except Exception as e:
-            await interaction.followup.send(f"data fetch error: {e}")
-            return
-
-        fetch_stdout = fetch_out.decode("utf-8", errors="replace")
-        fetch_stderr = fetch_err.decode("utf-8", errors="replace")
-
-        if fetch_proc.returncode != 0:
-            err = fetch_stderr[-1500:] if fetch_stderr else "unknown error"
-            await interaction.followup.send(f"error fetching data:\n```{err}```")
-            return
-
-        import json as _json
-        meta_line = fetch_stdout.strip().splitlines()[-1] if fetch_stdout.strip() else ""
-        try:
-            meta = _json.loads(meta_line)
-        except Exception:
-            await interaction.followup.send(f"error parsing metadata\n```{fetch_stdout[-600:]}```")
-            return
-
-        csv_path   = meta.get("out_path", "")
-        target_col = meta.get("target_col", "")
-        reg_cols   = meta.get("regressor_cols", [])
-        n_obs      = meta.get("n_obs", 0)
-        n_params   = meta.get("n_params", len(reg_cols) + 1)
-        obs_ratio  = meta.get("obs_ratio", 999)
-        lag_preset = meta.get("lag_preset", "none")
-        lag_depths = meta.get("lag_depths", [])
-        date_start = meta.get("date_start", "")
-        date_end   = meta.get("date_end", "")
-
-        if not csv_path or not os.path.exists(csv_path):
-            await interaction.followup.send("data file not found :(")
-            return
-
-        # ── step 2: run R ─────────────────────────────────────────────────────
-        reg_str   = ",".join(reg_cols)
-        title_str = f"{target_symbol} ~ {' + '.join(reg_cols)}"
-        safe_sym  = target_symbol.replace("/", "")
-        safe_keys = "_".join(var_keys_dedup)[:40]
-        png_out   = os.path.join(op, f"markets/regress_{safe_sym}_{safe_keys}_{lookback}.png")
-        os.makedirs(os.path.dirname(png_out), exist_ok=True)
-
-        await interaction.followup.send(
-            f"🔢 fitting OLS with **{len(reg_cols)} regressors** on **{n_obs:,} obs** ({date_start} to {date_end})...",
-            ephemeral=True
-        )
-
-        try:
-            r_proc = await asyncio.create_subprocess_exec(
-                "Rscript", os.path.join(rp, "marketRegress.R"),
-                csv_path, target_col, reg_str, png_out, title_str,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            r_out, r_err = await asyncio.wait_for(r_proc.communicate(), timeout=180)
-        except asyncio.TimeoutError:
-            try: r_proc.kill()
-            except Exception: pass
-            await interaction.followup.send("R timed out (>180s) - try fewer regressors")
-            return
-        except Exception as e:
-            await interaction.followup.send(f"R launch error: {e}")
-            return
-
-        r_stdout = r_out.decode("utf-8", errors="replace")
-        r_stderr = r_err.decode("utf-8", errors="replace")
-
-        if r_proc.returncode != 0:
-            err = r_stderr[-2000:] if r_stderr else r_stdout[-2000:]
-            await interaction.followup.send(f"R error:\n```{err}```")
-            return
-
-        r_json = {}
-        for line in r_stdout.splitlines():
-            if line.startswith("OUTPUT_JSON:"):
-                try: r_json = _json.loads(line[len("OUTPUT_JSON:"):])
-                except Exception: pass
-                break
-
-        # ── step 3: build embed ────────────────────────────────────────────────
-        try:
-            r2      = r_json.get("r2", 0)
-            adj_r2  = r_json.get("adj_r2", 0)
-            f_stat  = r_json.get("f_stat", 0)
-            f_p     = r_json.get("f_p", 1)
-            bp_p    = r_json.get("bp_p", 1)
-            dw_stat = r_json.get("dw_stat", 2)
-            dw_p    = r_json.get("dw_p", 1)
-            aic_val = r_json.get("aic", 0)
-            bic_val = r_json.get("bic", 0)
-            coefs   = r_json.get("coef", [])
-            vif_d   = r_json.get("vif", {})
-            if isinstance(vif_d, list):
-                vif_d = dict(zip(reg_cols, vif_d))
-
-            lag_str = f"lags={lag_preset} {lag_depths}" if lag_preset != "none" else "no lags"
-            ratio_flag = " - overfit risk" if obs_ratio < 10 else ""
-
-            # title: show target ~ contemp regressors only, not all lag col names
-            contemp_cols = [c for c in reg_cols if "_lag" not in c]
-            title_short  = f"{target_symbol} ~ {' + '.join(contemp_cols)}"
-            if len(title_short) > 250:
-                title_short = title_short[:247] + "..."
-
-            emb = discord.Embed(
-                title=f"📐 OLS: {title_short}",
-                description=(
-                    f"**n = {n_obs:,}** obs  |  {date_start} to {date_end}  |  {lag_str}\n"
-                    f"**R2 = {r2:.4f}**  |  **adj-R2 = {adj_r2:.4f}**  |  "
-                    f"F = {f_stat:.2f} (p={f_p:.4f})\n"
-                    f"obs/params = {n_obs}/{n_params} = {obs_ratio:.1f}{ratio_flag}"
-                ),
-                color=0xFF8C00 if obs_ratio < 10 else 0x00BFFF,
-            )
-
-            # coefficients - split into multiple fields if > 1024 chars
-            coef_lines = []
-            for c in coefs:
-                term = c.get("term", "")
-                est  = c.get("estimate", 0)
-                p_nw = c.get("p_nw", 1)
-                sig  = "***" if p_nw < 0.001 else ("**" if p_nw < 0.01 else ("*" if p_nw < 0.05 else ""))
-                coef_lines.append(f"`{term:<22}` {est:>+.6f}  p={p_nw:.4f} {sig}")
-
-            # chunk into <=1024-char fields
-            if coef_lines:
-                chunk, chunks = [], []
-                running = 0
-                for line in coef_lines:
-                    if running + len(line) + 1 > 1020:
-                        chunks.append("\n".join(chunk))
-                        chunk, running = [], 0
-                    chunk.append(line)
-                    running += len(line) + 1
-                if chunk:
-                    chunks.append("\n".join(chunk))
-                for i, ch in enumerate(chunks):
-                    fname = "Coefficients (NW-HAC)" if i == 0 else f"Coefficients (cont. {i+1})"
-                    emb.add_field(name=fname, value=ch, inline=False)
-
-            het_flag = "FAIL" if bp_p < 0.05 else "pass"
-            ac_flag  = "FAIL" if dw_p  < 0.05 else "pass"
-            emb.add_field(
-                name="Diagnostics",
-                value=(
-                    f"Breusch-Pagan het: p={bp_p:.4f} {het_flag} | "
-                    f"DW auto: {dw_stat:.3f} p={dw_p:.4f} {ac_flag}\n"
-                    f"AIC={aic_val:.1f}  BIC={bic_val:.1f}"
-                ),
-                inline=False
-            )
-
-            # VIF - only for contemp regressors, chunk if needed
-            if vif_d:
-                vif_lines = []
-                for var, val in vif_d.items():
-                    if "_lag" in var:
-                        continue   # skip lag VIFs - not meaningful
-                    flag = " HIGH" if val > 10 else (" mod" if val > 5 else "")
-                    vif_lines.append(f"`{var:<22}` VIF={val:.2f}{flag}")
-                if vif_lines:
-                    vif_text = "\n".join(vif_lines)
-                    if len(vif_text) > 1020:
-                        vif_text = vif_text[:1017] + "..."
-                    emb.add_field(name="VIF (contemp regressors)", value=vif_text, inline=False)
-
-            emb.set_footer(text="NW-HAC robust SEs - not financial advice")
-
-            if os.path.exists(png_out):
-                await interaction.followup.send(
-                    embed=emb,
-                    files=[discord.File(png_out, filename=os.path.basename(png_out))]
-                )
-            else:
-                await interaction.followup.send(embed=emb)
-
-        except Exception as e:
-            import traceback
-            await interaction.followup.send(f"error building embed:\n```{traceback.format_exc()[-1500:]}```")
-
     tree.add_command(markets_group)
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -5466,10 +5338,26 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     continue
                 if r.get("player_name", "").lower() == cmp_name:
                     continue
-                try:
-                    pts = float(r.get("points", 0) or 0)
-                except ValueError:
-                    pts = 0.0
+                # prefer season fantasy_pts over the daily/weekly roster snapshot (which can be 0 or negative)
+                rname_key = r.get("player_name", "").lower()
+                season_fpts = None
+                if is_pitcher:
+                    raw = _ptch_stats.get(rname_key, {}).get("fantasy_pts", "")
+                    if raw:
+                        try: season_fpts = float(raw)
+                        except ValueError: pass
+                else:
+                    raw = _bat_stats.get(rname_key, {}).get("fantasy_pts", "")
+                    if raw:
+                        try: season_fpts = float(raw)
+                        except ValueError: pass
+                if season_fpts is not None:
+                    pts = season_fpts
+                else:
+                    try:
+                        pts = float(r.get("points", 0) or 0)
+                    except ValueError:
+                        pts = 0.0
                 candidates.append((pts, r.get("slot_position", ""), r.get("player_name", ""), r.get("injury_status", "")))
 
             if not candidates:
@@ -5839,6 +5727,80 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         else:
             await _send(interaction, "No MLB standings data available.")
 
+    # ── /mlb fantasycumulative ─────────────────────────────────────────────────
+    @mlb_group.command(
+        name="fantasycumulative",
+        description="World Sillies cumulative fantasy points per player over the season (default: your team)"
+    )
+    @app_commands.describe(
+        team="Which team to show (default: dock ellis fan club)",
+        force_refresh="Re-fetch all data even if cache is fresh (default: no)",
+    )
+    @app_commands.choices(team=[
+        app_commands.Choice(name="dock ellis fan club",        value="4"),
+        app_commands.Choice(name="Chandler Simpson Worshipper", value="1"),
+        app_commands.Choice(name="Zach's Baseball Classic",    value="2"),
+        app_commands.Choice(name="2 balls 1 bat",              value="3"),
+        app_commands.Choice(name="Jose Caballero",             value="5"),
+        app_commands.Choice(name="JungHooLee is My Father",    value="6"),
+        app_commands.Choice(name="Nolan Ryan's Right Hook",    value="7"),
+        app_commands.Choice(name="UNCLE CUCKUS",               value="8"),
+    ])
+    async def mlb_fantasycumulative(
+        interaction: discord.Interaction,
+        team: str = "4",
+        force_refresh: bool = False,
+    ):
+        await _defer(interaction)
+
+        _TEAM_NAMES = {
+            "1": "Chandler Simpson Worshipper",
+            "2": "Zach's Baseball Classic",
+            "3": "2 balls 1 bat",
+            "4": "dock ellis fan club",
+            "5": "Jose Caballero",
+            "6": "JungHooLee is My Father",
+            "7": "Nolan Ryan's Right Hook",
+            "8": "UNCLE CUCKUS",
+        }
+        team_name = _TEAM_NAMES.get(team, "dock ellis fan club")
+
+        csv_path  = os.path.join(op, f"sports/mlb/fantasy/cumfp_t{team}.csv")
+        plot_path = os.path.join(op, f"sports/mlb/fantasy/cumfp_t{team}.png")
+        meta_path = os.path.join(op, f"sports/mlb/fantasy/cumfp_t{team}_meta.csv")
+        py_script = os.path.join(pp, "worldSilliesCumFP.py")
+        r_script  = os.path.join(rp, "mlbCumFantasyPts.R")
+
+        # fetch data
+        fetch_args = [PYTHON, py_script, "--team", team]
+        if force_refresh:
+            fetch_args.append("--force")
+        fetch_result = await asyncio.to_thread(_run, *fetch_args)
+        if fetch_result.returncode != 0:
+            await _send(interaction, f"data fetch error: ```{fetch_result.stderr[:400]}```")
+            return
+
+        if not os.path.exists(csv_path) or os.path.getsize(csv_path) < 100:
+            await _send(interaction, "no fantasy points data available yet - try again later.")
+            return
+
+        # generate R plot
+        plot_result = await asyncio.to_thread(
+            _run, "Rscript", r_script, csv_path, plot_path, meta_path, team_name
+        )
+        if plot_result.returncode != 0:
+            await _send(interaction, f"plot error: ```{plot_result.stderr[:400]}```")
+            return
+        if not os.path.exists(plot_path):
+            await _send(interaction, "plot file not generated - check R script.")
+            return
+
+        await _send(
+            interaction,
+            f"⚾ **{team_name}** - cumulative fantasy points 2026",
+            file=discord.File(plot_path, filename=f"cumfp_t{team}.png"),
+        )
+
     tree.add_command(mlb_group)
 
     # ── /markets signal (standalone — markets_group at 25-cmd limit) ─────────
@@ -5868,6 +5830,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         sigs = data.get("top_signals", [])
         warns = data.get("warnings", [])
         sig_date = data.get("date", "unknown")
+        pos_size = data.get("position_size", None)
+        sizing_reason = data.get("sizing_reason", "")
 
         # direction emoji
         def dir_emoji(d): return "🟢" if d == "UP" else "🔴"
@@ -5880,12 +5844,26 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         )
 
         # Next day
-        nd_dir  = nd.get("direction", "N/A")
-        nd_prob = nd.get("probability", 0.5)
-        nd_conf = nd.get("confidence", "LOW")
+        nd_dir    = nd.get("direction", "N/A")
+        nd_prob   = nd.get("probability", 0.5)
+        nd_conf   = nd.get("confidence", "LOW")
+        nd_regime = nd.get("regime")
+        nd_model  = nd.get("model", "logistic")
+        nd_regime_pred = nd.get("regime_pred", nd_regime)
+        # Regime label + emoji for embed
+        regime_emojis = {"bull": "🟢", "bear": "🔴", "chop": "🟡"}
+        # Show predicted regime (used for routing) and current regime if different
+        if nd_regime_pred and nd_regime_pred != nd_regime:
+            regime_str = (f" | {regime_emojis.get(nd_regime_pred, '')} pred={nd_regime_pred.upper()}"
+                          f" (now={nd_regime})")
+        else:
+            regime_str = (f" | {regime_emojis.get(nd_regime, '')} {nd_regime.upper()} regime"
+                          if nd_regime else "")
+        model_note = (f"regime-{nd_regime_pred} model" if nd_regime_pred and "regime" in nd_model
+                      else "universal model")
         emb.add_field(
             name=f"{dir_emoji(nd_dir)} Next Day: {nd_dir}",
-            value=f"Probability: **{nd_prob*100:.1f}%** {conf_emoji(nd_conf)} ({nd_conf})\n_Logistic model, 1yr val dir acc: 54.8%_",
+            value=f"Probability: **{nd_prob*100:.1f}%** {conf_emoji(nd_conf)} ({nd_conf}){regime_str}\n_{model_note}, WFCV dir acc: 53.5%_",
             inline=True
         )
 
@@ -5906,6 +5884,21 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             emb.add_field(
                 name="Key Signals",
                 value="\n".join(f"- {s}" for s in sigs[:4]),
+                inline=False
+            )
+
+        # Position sizing
+        if pos_size is not None:
+            size_pct = int(pos_size * 100)
+            if pos_size == 0.0:
+                size_emoji = "⛔"
+            elif pos_size == 0.5:
+                size_emoji = "🟡"
+            else:
+                size_emoji = "✅"
+            emb.add_field(
+                name=f"{size_emoji} Position Size: {size_pct}%",
+                value=f"_{sizing_reason}_",
                 inline=False
             )
 
@@ -5974,6 +5967,43 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, f"diagnostics error: `{e}`")
 
 
+    # ── /markets gex ─────────────────────────────────────────────────────────
+    @markets_group.command(name="gex", description="Dealer GEX + DIX chart - gamma exposure regime and dark pool buying pressure")
+    @app_commands.describe(timeframe="Chart lookback window (default: 1Y)")
+    @app_commands.choices(timeframe=[
+        app_commands.Choice(name="3 Months",  value="3M"),
+        app_commands.Choice(name="6 Months",  value="6M"),
+        app_commands.Choice(name="1 Year",    value="1Y"),
+        app_commands.Choice(name="3 Years",   value="3Y"),
+        app_commands.Choice(name="Full History (2011)", value="ALL"),
+    ])
+    async def gex_chart(interaction: discord.Interaction, timeframe: str = "1Y"):
+        await interaction.response.defer(thinking=True)
+        days_map = {"3M": 90, "6M": 180, "1Y": 365, "3Y": 1095, "ALL": 9999}
+        days = days_map.get(timeframe, 365)
+        out_img = os.path.join(op, "markets", f"gexChart_{timeframe}.png")
+        try:
+            # Refresh data first (incremental, fast if already fresh)
+            fetch_result = await asyncio.to_thread(
+                _run, PYTHON, os.path.join(pp, "fetchGexDaily.py")
+            )
+            if fetch_result.returncode != 0:
+                await _send(interaction, f"GEX fetch error: `{fetch_result.stderr[:300]}`")
+                return
+            r_result = await asyncio.to_thread(
+                _run, "Rscript", os.path.join(rp, "gexChart.R"), out_img, str(days)
+            )
+            if r_result.returncode != 0:
+                await _send(interaction, f"GEX plot error:\n```{r_result.stderr[-800:]}```")
+                return
+            if not os.path.exists(out_img):
+                await _send(interaction, "GEX chart not found after render")
+                return
+            await _send(interaction, file=discord.File(out_img))
+        except Exception as e:
+            await _send(interaction, f"gex error: `{e}`")
+
+
     # ── /btcsignal ────────────────────────────────────────────────────────────
     @tree.command(name="btcsignal", description="BTC ML model signal - next-day direction + 5-day outlook + on-chain context", guild=guild)
     async def btc_signal(interaction: discord.Interaction):
@@ -6037,7 +6067,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             if cycle_pct is not None:
                 onchain_lines.append(f"Halving cycle: **{cycle_pct*100:.1f}%** ({cycle_ph})")
             if dom is not None:
-                onchain_lines.append(f"BTC dominance: **{dom*100:.1f}%**")
+                onchain_lines.append(f"BTC dominance: **{dom:.1f}%**")
             if hr_grow is not None:
                 sign = "+" if hr_grow >= 0 else ""
                 onchain_lines.append(f"Hashrate growth 21d: **{sign}{hr_grow:.3f}** (log)")
@@ -7309,3 +7339,78 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         except Exception as ex:
             await _send(interaction, f"Could not fetch chart data: {ex}")
+
+    # ── /snapshot ─────────────────────────────────────────────────────────────
+    # Markets overview: equities / bonds / forex - 3-row patchwork dashboard.
+    # Standalone top-level command (markets_group is at the 25-cmd Discord limit).
+    # ──────────────────────────────────────────────────────────────────────────
+    SNAPSHOT_TF_CHOICES = [
+        app_commands.Choice(name="Intraday  - today 1min bars",   value="intraday"),
+        app_commands.Choice(name="1 Week    - 5min bars",         value="1w"),
+        app_commands.Choice(name="1 Month",                       value="1mo"),
+        app_commands.Choice(name="3 Months",                      value="3mo"),
+        app_commands.Choice(name="6 Months",                      value="6mo"),
+        app_commands.Choice(name="1 Year",                        value="1y"),
+    ]
+
+    @tree.command(
+        name="snapshot",
+        description="Markets overview - equities, bonds, forex/DXY in one 3-row chart",
+        guild=guild,
+    )
+    @app_commands.describe(timeframe="Time window (default: 1 Month)")
+    @app_commands.choices(timeframe=SNAPSHOT_TF_CHOICES)
+    async def snapshot(
+        interaction: discord.Interaction,
+        timeframe: app_commands.Choice[str] = None,
+    ):
+        tf = timeframe.value if timeframe else "1mo"
+        tf_label = {
+            "intraday": "Intraday",
+            "1w":  "1 Week",
+            "1mo": "1 Month",
+            "3mo": "3 Months",
+            "6mo": "6 Months",
+            "1y":  "1 Year",
+        }.get(tf, tf)
+
+        await interaction.response.defer()
+
+        # Step 1 - fetch bar data (Alpaca multi-symbol + Frankfurter FX)
+        fetch_result = await asyncio.to_thread(
+            _run,
+            PYTHON,
+            os.path.join(pp, "fetchSnapshotBars.py"),
+            tf,
+        )
+        if fetch_result.returncode != 0:
+            await interaction.followup.send(
+                f"Error fetching snapshot data.\n```{fetch_result.stderr[-1500:]}```"
+            )
+            print("[snapshot] FETCH ERROR:", fetch_result.stderr[-2000:])
+            return
+
+        # Step 2 - render chart
+        png_out = os.path.join(op, f"markets/snapshot/marketsSnapshot_{tf}.png")
+        render_result = await asyncio.to_thread(
+            _run,
+            "Rscript",
+            os.path.join(rp, "marketsSnapshot.R"),
+            tf,
+            png_out,
+        )
+        if render_result.returncode != 0:
+            await interaction.followup.send(
+                f"Error rendering snapshot chart.\n```{render_result.stderr[-1500:]}```"
+            )
+            print("[snapshot] RENDER ERROR:", render_result.stderr[-2000:])
+            return
+
+        if not os.path.exists(png_out):
+            await interaction.followup.send("Chart file not found after render.")
+            return
+
+        await interaction.followup.send(
+            content=f"**Markets Snapshot - {tf_label}**",
+            file=discord.File(png_out),
+        )

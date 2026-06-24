@@ -153,9 +153,15 @@ def build_features():
     df["vix_ma20_ratio"]  = df["VIX"] / df["VIX"].rolling(20).mean()     # VIX vs its own MA
     df["rv_21"]           = realised_vol(df["SPY_ret"], 21)
     df["vix_rv_ratio"]    = df["VIX"] / (df["rv_21"] * 100).replace(0, np.nan)  # vol risk premium
+    df["vix_rv_spread"]   = df["VIX"] - (df["rv_21"] * 100)                     # IV premium in pts
     df["vol_regime"]      = pd.cut(df["VIX"],
                                    bins=[0, 15, 20, 30, 40, 999],
                                    labels=[0, 1, 2, 3, 4]).astype(float)
+    # VIX spike flag: same-day VIX jump > 2pts AND VIX now above its 20d MA
+    # Captures regime-transition days (when the bear model most often gets whipsawed)
+    df["vix_spike_flag"]  = (
+        (df["vix_chg_1d"] > 2.0) & (df["vix_ma20_ratio"] > 1.0)
+    ).astype(float)
 
     # ── 3. Options market (from daily snapshot — sparse pre-2026) ─────────────
     print("  loading options snapshot...")
@@ -186,6 +192,22 @@ def build_features():
     df["gld_spy_corr_21"] = (
         df["GLD_ret"].rolling(21).corr(df["SPY_ret"])
     )  # negative = risk-off when positive
+    # 63-day version — less noisy, more stable across regimes
+    df["gld_spy_corr_63"] = (
+        df["GLD_ret"].rolling(63).corr(df["SPY_ret"])
+    )
+    # Regime-conditioned GLD/SPY correlation — fixes non-stationarity of gld_spy_corr_21.
+    # Pre-2020 gold had different correlation structure (QE era). Conditioning on vol_regime
+    # lets GBM learn separate weights per vol environment without era contamination.
+    df["gld_corr_x_vol"] = df["gld_spy_corr_21"] * df["vol_regime"]
+    # Era-conditional GLD correlation — addresses structural break in gold/SPY relationship.
+    # QE era (pre-2022): gold and SPY both lifted by liquidity — correlation ~flat/positive.
+    # Post-2022 QT/rate-hike era: gold = genuine flight-to-safety, correlation reliably negative.
+    # qt_era=1 from 2022-01-01 onward (first Fed rate hike cycle since 2018, structural break).
+    qt_era = (df.index >= "2022-01-01").astype(float)
+    df["gld_corr_x_era"]   = df["gld_spy_corr_21"] * qt_era          # corr signal only in QT era
+    df["gld_corr_era_flag"] = df["gld_spy_corr_21"] * (1 - qt_era)    # corr signal only in QE era
+    df["gld_corr63_x_era"]  = df["gld_spy_corr_63"] * qt_era          # 63d version QT era
 
     # ── 5. Macro features ─────────────────────────────────────────────────────
     print("  building macro features...")
@@ -303,6 +325,21 @@ def build_features():
         df["macro_event_day"]    = ((df["fomc_day"] | df["cpi_day"] | df["nfp_day"]) > 0).astype(int)
         df["macro_event_window"] = ((df["fomc_window"] | df["cpi_window"] | df["nfp_window"]) > 0).astype(int)
         df["days_to_any_macro"]  = df[["days_to_fomc","days_to_cpi","days_to_nfp"]].min(axis=1)
+
+        # ── macro_event_x_regime: interaction of event window with rate direction ──
+        # macro_event_window fires the same binary flag regardless of whether we're
+        # hiking (events = negative) or cutting (events = positive). This sign flip
+        # across regimes is why a raw macro_event_window flag hurts GBM.
+        # Solution: multiply by the direction of the rate cycle so the model sees
+        # a signed signal: positive = event in easing cycle, negative = event in hiking cycle.
+        ff_direction = df["FEDFUNDS"].diff().fillna(0)           # >0 = hike, <0 = cut, 0 = hold
+        # Map to regime: hiking=+1, cutting=-1, hold=0
+        rate_regime = np.where(ff_direction > 0, 1,
+                      np.where(ff_direction < 0, -1, 0)).astype(float)
+        # Where hold, carry the last known direction forward (rate regime is persistent)
+        rate_regime_filled = pd.Series(rate_regime, index=df.index)
+        rate_regime_filled = rate_regime_filled.replace(0, np.nan).ffill().fillna(0)
+        df["macro_event_x_regime"] = df["macro_event_window"] * rate_regime_filled
 
         n_fomc = df["fomc_day"].sum()
         n_cpi  = df["cpi_day"].sum()
@@ -449,35 +486,144 @@ def build_features():
         print("    [warn] spy_intraday_features.csv not found "
               "-- run buildIntradayFeatures.py after fetchIntradayBars.py backfill")
 
-    # ── 13. Order flow / CVD features (from buildOrderFlowFeatures.py) ──────────
-    print("  building order flow CVD features...")
-    of_path = os.path.expanduser(
-        "~/discordBot/outputs/features/markets/spy_orderflow_features.csv"
+    # ── 13. Order flow / CVD features — REMOVED ──────────────────────────────
+    # Lee-Ready tick classification on SPY ETF is structurally contaminated by
+    # MOC/closing auction flow (index rebalancers, APs). Correlation with returns
+    # is -0.655 same-day (inverted) and ~49% directional accuracy next-day (below
+    # coin flip). Stripping the close window does not fix it. Dropped June 2026.
+
+    # ── 14. Dealer GEX features (SqueezeMetrics DIX/GEX, 2011-present) ───────
+    print("  building GEX features...")
+    gex_path = os.path.expanduser(
+        "~/discordBot/outputs/markets/cache/spy_gex_daily.csv"
     )
-    if os.path.exists(of_path):
-        of_df = pd.read_csv(of_path, parse_dates=["date"]).set_index("date").sort_index()
-        of_df.index = pd.to_datetime(of_df.index)
-        CVD_COLS = [
-            "cvd_total", "cvd_normalized", "cvd_first_hour", "cvd_last_hour",
-            "cvd_direction_flip", "large_cvd_total", "large_cvd_ratio",
-            "cvd_z21", "large_cvd_z21",
-            "cvd_momentum_ratio", "cvd_peak_hour",
-            "buy_intensity", "sell_intensity", "intensity_ratio",
+    if os.path.exists(gex_path):
+        gex = pd.read_csv(gex_path, parse_dates=["date"]).set_index("date").sort_index()
+        gex.index = pd.to_datetime(gex.index)
+
+        # Normalise GEX to billions for interpretability; keeps z-scores unit-free
+        gex["gex_b"] = gex["gex"] / 1e9
+
+        # Rolling stats (needs sorted daily series — gex already is)
+        gex["gex_z21"]    = ((gex["gex_b"] - gex["gex_b"].rolling(21).mean())
+                             / gex["gex_b"].rolling(21).std())
+        gex["gex_z63"]    = ((gex["gex_b"] - gex["gex_b"].rolling(63).mean())
+                             / gex["gex_b"].rolling(63).std())
+        gex["gex_chg_5d"] = gex["gex_b"].diff(5)
+        gex["gex_chg_1d"] = gex["gex_b"].diff(1)
+        # Sign: +1 = long gamma (stabilising), -1 = short gamma (destabilising)
+        gex["gex_sign"]   = np.sign(gex["gex_b"])
+        # DIX: dark pool sentiment (0.33-0.55 range; higher = more bullish dark pool)
+        gex["dix_z21"]    = ((gex["dix"] - gex["dix"].rolling(21).mean())
+                             / gex["dix"].rolling(21).std())
+        gex["dix_chg_5d"] = gex["dix"].diff(5)
+
+        GEX_COLS = [
+            "gex_b", "gex_sign", "gex_z21", "gex_z63",
+            "gex_chg_1d", "gex_chg_5d",
+            "dix", "dix_z21", "dix_chg_5d",
         ]
-        for col in CVD_COLS:
-            if col in of_df.columns:
-                df[col] = of_df[col].reindex(df.index)
-        print(f"    CVD features rows: {len(of_df)}, "
-              f"date range: {of_df.index[0].date()} to {of_df.index[-1].date()}")
+        for col in GEX_COLS:
+            if col in gex.columns:
+                # Dense series (2011+) — plain reindex, no ffill needed
+                df[col] = gex[col].reindex(df.index)
+
+        print(f"    GEX cache rows: {len(gex)}, "
+              f"date range: {gex.index[0].date()} to {gex.index[-1].date()}")
+        gex_cov = df["gex_b"].notna().mean()
+        print(f"    gex_b coverage in spy_features: {gex_cov*100:.1f}%")
     else:
-        print("    [warn] spy_orderflow_features.csv not found "
-              "-- run buildOrderFlowFeatures.py after fetchOrderFlowDaily.py backfill")
+        print("    [warn] spy_gex_daily.csv not found "
+              "-- run python/fetchGexDaily.py to populate")
+
+    # ── 15. VIX term structure + VVIX (vol-of-vol) ────────────────────────────
+    print("  building VIX term structure / VVIX features...")
+    vix_term_path = os.path.expanduser(
+        "~/discordBot/outputs/markets/cache/vix_term_history.csv"
+    )
+    if os.path.exists(vix_term_path):
+        vt = pd.read_csv(vix_term_path, parse_dates=["date"]).set_index("date").sort_index()
+        vt.index = pd.to_datetime(vt.index)
+
+        # ── VVIX (vol-of-vol) ──────────────────────────────────────────
+        vt["vvix_z21"]    = ((vt["vvix"] - vt["vvix"].rolling(21).mean())
+                             / vt["vvix"].rolling(21).std())
+        vt["vvix_chg_5d"] = vt["vvix"].diff(5)
+
+        # ── VIX term structure slope ───────────────────────────────────
+        # Front-end backwardation (slope < 0) precedes drawdowns;
+        # normalise by VIX level so a 2pt spread means the same across regimes.
+        vt["vix_term_slope"] = (vt["vix3m"] - vt["vix9d"]) / vt["vix9d"].replace(0, np.nan)
+        vt["vix_term_z21"]   = ((vt["vix_term_slope"] - vt["vix_term_slope"].rolling(21).mean())
+                                / vt["vix_term_slope"].rolling(21).std())
+
+        # ── VIX - RV spread (implied minus realized fear premium) ──────
+        # rv_21 already built in section 2 (annualised fraction); *100 to match VIX scale.
+        if "rv_21" in df.columns:
+            vt_rv = df["rv_21"].reindex(vt.index) * 100
+            vt["vix_rv_spread"] = vt["vix9d"] - vt_rv   # >0 = options expensive vs realised
+        else:
+            vt["vix_rv_spread"] = np.nan
+
+        VT_COLS = [
+            "vvix", "vvix_z21", "vvix_chg_5d",
+            "vix_term_slope", "vix_term_z21",
+            "vix_rv_spread",
+        ]
+        for col in VT_COLS:
+            if col in vt.columns:
+                # Dense series (2016+) — plain reindex, no ffill
+                df[col] = vt[col].reindex(df.index)
+
+        print(f"    vix_term cache rows: {len(vt)}, "
+              f"range: {vt.index[0].date()} to {vt.index[-1].date()}")
+        cov = df["vvix"].notna().mean()
+        print(f"    vvix coverage in spy_features: {cov*100:.1f}%")
+        slope_cov = df["vix_term_slope"].notna().mean()
+        print(f"    vix_term_slope coverage: {slope_cov*100:.1f}%")
+    else:
+        print("    [warn] vix_term_history.csv not found "
+              "-- run python/fetchVixTermHistory.py to populate")
+
+    # ── 16. Market regime label (rule-based, for regime-split models) ──────────
+    # Three regimes derived purely from lagged data — no leakage:
+    #   bull  = low VIX AND price above both 50d and 200d MA
+    #   bear  = elevated VIX AND price below 200d MA  (both conditions required)
+    #   chop  = everything else (includes elevated VIX but price above MAs,
+    #            and low VIX with price below MAs — transitional states)
+    #
+    # The AND requirement prevents mislabeling elevated-VIX-in-uptrend days as "bear".
+    # Those days belong in chop — the bear model should only train on genuine downtrends.
+    print("  building regime labels...")
+    spy_cum   = (1 + df["SPY_ret"].fillna(0)).cumprod()
+    spy_ma50  = spy_cum.rolling(50,  min_periods=50).mean()
+    spy_ma200 = spy_cum.rolling(200, min_periods=200).mean()
+    vix_p33   = df["vix_level"].quantile(0.33)
+    vix_p67   = df["vix_level"].quantile(0.67)
+    # Bull: VIX calm AND price trending up on both timeframes
+    bull_mask = (df["vix_level"] < vix_p33) & (spy_cum > spy_ma50) & (spy_cum > spy_ma200)
+    # Bear: VIX elevated AND price broken below 200d MA (genuine downtrend)
+    bear_mask = (df["vix_level"] > vix_p67) & (spy_cum < spy_ma200)
+    # Chop: everything else
+    df["regime"] = np.where(bull_mask, "bull", np.where(bear_mask, "bear", "chop"))
+    regime_counts = df["regime"].value_counts()
+    print(f"    bull={regime_counts.get('bull',0)}  bear={regime_counts.get('bear',0)}  chop={regime_counts.get('chop',0)}")
+    print(f"    VIX p33={vix_p33:.1f}  p67={vix_p67:.1f}")
 
     # ── targets (no leakage — shift(-1) and shift(-5)) ───────────────────────
     print("  computing targets...")
     df["next_ret_1d"]  = df["SPY_ret"].shift(-1)
     df["next_ret_5d"]  = df["SPY_ret"].shift(-1).rolling(5).sum().shift(-4)  # sum of next 5
     df["next_dir_1d"]  = (df["next_ret_1d"] > 0).astype(float)
+    # Vol-adjusted 5d target: next_ret_5d / expected vol over 5 days.
+    # Use rv_21 LAGGED by 5 days — the vol prevailing at the START of the window,
+    # not during it. This removes the denominator correlation that killed the
+    # original implementation (rv_21 is high exactly when big moves happen).
+    rv_lagged = df["rv_21"].shift(5)
+    df["next_ret_5d_vadj"] = (
+        df["next_ret_5d"] / (rv_lagged * np.sqrt(5 / 252))
+    ).clip(-3, 3)
+    df["next_dir_5d_vadj"] = (df["next_ret_5d_vadj"] > 0).astype(float)
 
     # ── final cleanup ─────────────────────────────────────────────────────────
     # Drop raw price/return cols used only as intermediates

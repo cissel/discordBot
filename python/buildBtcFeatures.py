@@ -62,8 +62,12 @@ def rsi(series, window=14):
     delta = series.diff()
     gain  = delta.clip(lower=0).rolling(window, min_periods=window).mean()
     loss  = (-delta.clip(upper=0)).rolling(window, min_periods=window).mean()
-    rs    = gain / loss.replace(0, np.nan)
-    return 100 - 100 / (1 + rs)
+    # When loss == 0: all gains → RSI = 100. Guard against divide-by-zero with small epsilon.
+    rs    = gain / loss.where(loss != 0, other=1e-10)
+    result = 100 - 100 / (1 + rs)
+    # Where gain AND loss are both 0 (flat price, no movement): RSI = 50 (neutral)
+    result = result.where(~((gain == 0) & (loss == 0)), other=50.0)
+    return result
 
 
 def bollinger_pct(prices, window=20):

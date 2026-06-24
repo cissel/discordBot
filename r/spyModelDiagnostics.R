@@ -73,6 +73,7 @@ gbm_dir_df  <- safe_read("eval_spy_next_dir_1d_gbm.csv")
 gbm_ret_df  <- safe_read("eval_spy_next_ret_5d_gbm.csv")
 summary_df  <- safe_read("eval_spy_experiment_summary.csv")
 log_df      <- safe_read("spy_experiment_log_copy.csv")
+pnl_df      <- safe_read("spy_wfcv_pnl.csv")
 
 # Coerce date columns
 coerce_dates <- function(df) {
@@ -348,15 +349,102 @@ make_p5 <- function(df) {
           strip.text = element_text(color = "white", size = 8, face = "bold"))
 }
 
+# ── PANEL 6: WFCV Cumulative PnL vs Buy & Hold ─────────────────────────────
+make_p6 <- function(df) {
+  if (is.null(df) || nrow(df) == 0) {
+    return(
+      ggplot() +
+        annotate("text", x = 0.5, y = 0.5,
+                 label = "Run training to generate\nWFCV PnL data",
+                 color = TXT, size = 4, hjust = 0.5) +
+        labs(title = "WFCV Cumulative PnL vs Buy & Hold") +
+        navy
+    )
+  }
+
+  df <- df %>%
+    mutate(
+      date  = as.Date(date),
+      fold  = factor(fold)
+    ) %>%
+    filter(!is.na(cum_strat) & !is.na(cum_bh))
+
+  # Fold boundary dates (first date of each fold)
+  fold_starts <- df %>%
+    group_by(fold) %>%
+    summarise(start = min(date), .groups = "drop")
+
+  # Final stats for subtitle
+  last_row   <- df %>% slice_tail(n = 1)
+  strat_tot  <- round((last_row$cum_strat - 1) * 100, 1)
+  bh_tot     <- round((last_row$cum_bh    - 1) * 100, 1)
+  min_dd     <- round(min(df$drawdown, na.rm = TRUE) * 100, 1)
+  strat_ann  <- mean(df$strat_ret, na.rm = TRUE) * 252
+  strat_vol  <- sd(df$strat_ret,   na.rm = TRUE) * sqrt(252)
+  sharpe     <- if (strat_vol > 0) round(strat_ann / strat_vol, 2) else NA
+
+  long_df <- df %>%
+    select(date, fold, cum_strat, cum_bh) %>%
+    tidyr::pivot_longer(cols = c(cum_strat, cum_bh),
+                        names_to = "series", values_to = "value") %>%
+    mutate(series = recode(series,
+                           "cum_strat" = paste0("Model t=0.54 (", strat_tot, "%)"),
+                           "cum_bh"    = paste0("Buy & Hold (", bh_tot, "%)")))
+
+  model_lbl <- paste0("Model t=0.54 (", strat_tot, "%)")
+  bh_lbl    <- paste0("Buy & Hold (", bh_tot, "%)")
+
+  p_top <- ggplot(long_df, aes(x = date, y = value, color = series, linewidth = series)) +
+    geom_vline(data = fold_starts, aes(xintercept = start),
+               color = ORANGE, linewidth = 0.5, linetype = "dashed", alpha = 0.7) +
+    geom_line() +
+    geom_text(data = fold_starts,
+              aes(x = start, y = max(long_df$value, na.rm = TRUE) * 0.97,
+                  label = paste0("F", fold)),
+              inherit.aes = FALSE,
+              color = ORANGE, size = 2.8, hjust = -0.2) +
+    scale_color_manual(
+      values = setNames(c(ACCENT, "#9E9E9E"), c(model_lbl, bh_lbl)),
+      name   = NULL
+    ) +
+    scale_linewidth_manual(
+      values = setNames(c(1.2, 0.9), c(model_lbl, bh_lbl)),
+      guide  = "none"
+    ) +
+    scale_y_continuous(labels = function(x) paste0(round((x - 1) * 100, 0), "%")) +
+    scale_x_date(date_labels = "%Y") +
+    labs(
+      title    = "WFCV Cumulative PnL vs Buy & Hold",
+      subtitle = paste0("5 folds | Sharpe=", sharpe, " | MaxDD=", min_dd, "% | t=0.54, tx=0.02%"),
+      x = NULL, y = "Cumulative Return"
+    ) +
+    navy +
+    theme(legend.position = "bottom",
+          legend.margin   = margin(t = -4))
+
+  # Drawdown sub-panel
+  p_dd <- ggplot(df, aes(x = date)) +
+    geom_ribbon(aes(ymin = drawdown * 100, ymax = 0), fill = RED, alpha = 0.55) +
+    geom_line(aes(y = drawdown * 100), color = RED, linewidth = 0.6) +
+    geom_hline(yintercept = 0, color = TXT, linewidth = 0.4) +
+    scale_x_date(date_labels = "%Y") +
+    scale_y_continuous(labels = function(x) paste0(x, "%")) +
+    labs(x = "Date", y = "Drawdown") +
+    navy
+
+  p_top / p_dd + plot_layout(heights = c(3, 1))
+}
+
 # ── build panels ───────────────────────────────────────────────────────────────
 p1 <- make_p1(logistic_df)
 p2 <- make_p2(logistic_df)
 p3 <- make_p3(gbm_ret_df)
 p4 <- make_p4(logistic_df)
 p5 <- make_p5(log_df)
+p6 <- make_p6(pnl_df)
 
 # ── assemble with patchwork ────────────────────────────────────────────────────
-final <- (p1 | p2) / (p3 | p4) / p5 +
+final <- (p1 | p2) / (p3 | p4) / p5 / p6 +
   plot_annotation(
     title    = "SPY ML Model Diagnostics",
     subtitle = paste0("Val set: last 252 trading days | Generated: ", Sys.Date()),
@@ -372,5 +460,5 @@ final <- (p1 | p2) / (p3 | p4) / p5 +
   )
 
 # ── save ───────────────────────────────────────────────────────────────────────
-ggsave(OUT_PATH, plot = final, width = 14, height = 18, dpi = 150, bg = BG)
+ggsave(OUT_PATH, plot = final, width = 14, height = 24, dpi = 150, bg = BG)
 message("Saved: ", OUT_PATH)

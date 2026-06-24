@@ -41,11 +41,13 @@ args      <- commandArgs(trailingOnly = TRUE)
 ticker    <- toupper(args[1])
 timeframe <- if (length(args) >= 2) args[2] else "6mo"
 
+INTRADAY_TFS <- c("intraday", "1w", "1mo", "3mo")
+
 tf_label <- switch(timeframe,
-                   intraday = "Today (Intraday)",
-                   `1w`     = "1 Week",
-                   `1mo`    = "1 Month",
-                   `3mo`    = "3 Months",
+                   intraday = "Today (Intraday - 1min)",
+                   `1w`     = "1 Week (5min bars)",
+                   `1mo`    = "1 Month (5min bars)",
+                   `3mo`    = "3 Months (1hr bars)",
                    `6mo`    = "6 Months",
                    `1y`     = "1 Year",
                    `2y`     = "2 Years",
@@ -59,7 +61,7 @@ bars_csv <- path.expand(paste0("~/discordBot/outputs/markets/", ticker, "_", tim
 if (!file.exists(bars_csv)) stop("Bars CSV not found: ", bars_csv)
 
 df <- read_csv(bars_csv, show_col_types = FALSE) %>%
-  mutate(time = if (timeframe %in% c("intraday", "1w")) as.POSIXct(date, tz = "America/New_York") else as.Date(date)) %>%
+  mutate(time = if (timeframe %in% INTRADAY_TFS) as.POSIXct(date, tz = "America/New_York") else as.Date(date)) %>%
   arrange(time)
 
 df$pct <- 0
@@ -98,7 +100,7 @@ vol_scale <- if (max(df$volume, na.rm = TRUE) >= 1e6) 1e6 else 1e3
 vol_unit  <- if (vol_scale == 1e6) "M" else "K"
 
 p_vol <- ggplot(df, aes(x = time, y = volume / vol_scale, fill = vol_color)) +
-  geom_bar(stat = "identity", width = if (timeframe == "intraday") 60 else if (timeframe == "1w") 300 else 0.8) +
+  geom_bar(stat = "identity", width = if (timeframe == "intraday") 60 else if (timeframe %in% c("1w", "1mo")) 300 else if (timeframe == "3mo") 3600 else 0.8) +
   scale_fill_manual(values = c("up" = "#26a69a", "down" = "#ef5350")) +
   scale_y_continuous(labels = function(x) paste0(x, vol_unit)) +
   labs(x = "Time", y = "Volume",

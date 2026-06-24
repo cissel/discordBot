@@ -86,7 +86,7 @@ uap <- ggplot(ua,
                         sep = " "),
        caption = "Source: Discord message log | JHCV") +
   
-  #scale_y_log10() +
+  scale_y_log10() +
   
   myTheme #+
   #myLegend

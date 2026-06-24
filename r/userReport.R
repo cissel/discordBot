@@ -82,7 +82,7 @@ uarp <- ggplot(ua,
                    y = tot,
                    fill = channel)) +
 
-  geom_area(position = "stack") +
+  geom_area(position = "stack", color = "white") +
 
   geom_text(
     data = ua |> filter(date == max(date)) |> arrange(desc(channel)) |>

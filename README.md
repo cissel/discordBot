@@ -60,6 +60,11 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `nextgame` | next NFL game on the schedule |
 | `standings` | NFL standings by conference - seed, record, PF/PA, streak |
 | `wr` | top WR target share chart for the current season |
+| `wrstats [season] [player]` | advanced WR stats - separation, YAC over expected, targets gradient (WR only, NGS) |
+| `testats [season] [player]` | advanced TE stats - separation, YAC over expected, targets gradient (TE only, NGS) |
+| `rbstats [season] [player]` | advanced RB stats - rush yards over expected per carry, NGS efficiency |
+| `qbstats [season] [player]` | advanced QB stats - CPOE, aggressiveness %, Pass EPA (NGS) |
+| `olstats [season] [player]` | advanced OL blocking stats - pressure rate vs sack rate (participation data) |
 | `fantasyscoreboard` | Room 40 fantasy football scoreboard |
 | `epamap` | mean EPA choropleth map by NFL team |
 | `room40points` | Room 40 fantasy points map |
@@ -116,6 +121,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `fantasyrisk` | risk flags across your roster (injury, cold streak, bad matchup) |
 | `zonemap` | pitch location subplots by pitch type for any pitcher |
 | `fantasyownership` | fantasy points vs ownership % scatter (log scale) - filter by position and FA/all |
+| `fantasycumulative` | cumulative fantasy points per player over the season - faceted ggplot, day-by-day |
 
 ![fantasy risk](outputs/sports/mlb/fantasy/fantasyRisk.png)
 ![pitch zone map](outputs/sports/mlb/pitchzone_example.png)
@@ -152,7 +158,6 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `chart` | price + volume chart for any stock or ETF ticker (3M/6M/1Y/5Y/10Y) |
 | `crypto` | price chart for BTC, ETH, SOL, DOGE - or BTC on-chain metrics (see below) |
 | `forecast` | GJR-GARCH / EGARCH / SARIMA animated forecast GIF with Monte Carlo paths - stocks and crypto |
-| `regress` | multivariate OLS regression with NW-HAC robust SEs, ADL lags, VIF - 25-variable dropdowns for target and regressors |
 | `macro` | 6-panel macro dashboard - Fed funds rate, 10Y yield, TIPS, CPI, M2, DXY (FRED data, timeframe dropdown) |
 | `series` | individual FRED series chart with recession shading - DXY, M2, TIPS, CPI, Fed Funds, 10Y (timeframe dropdown) |
 | `sector` | S&P 500 sector treemap - 503 stocks sized by live market cap, colored by daily % change |
@@ -184,6 +189,12 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `fetchBlockSignals.py` | `outputs/research/block_events.csv`, `block_outcomes.csv` | Large SPY block trades (>$300M, >0.5% deviation, tiered 0.8% high-dev flag). Maintains forward outcomes at 1d/3d/1w/2w/1mo horizons. Backfill: `--backfill YYYY-MM-DD YYYY-MM-DD` |
 | `fetchIntradayBars.py` | `outputs/markets/intraday/SPY_{YEAR}_1min.csv` | Full extended-hours 1-min bars (4am-8pm ET), year-partitioned. Backfill: `--backfill YYYY-MM-DD YYYY-MM-DD` |
 | `buildIntradayFeatures.py` | `outputs/features/markets/spy_intraday_features.csv` | Aggregates 1-min bars to 12 daily features: first/last-hour return, AM/PM range, gap fill, open drive, vol front-loading, premarket ret/vol, overnight gap |
+| `fetchOrderFlowDaily.py` | `outputs/markets/orderflow/SPY_{YEAR}_cvd.csv` | SPY tick-level CVD via Lee-Ready (SIP feed), year-partitioned. Backfill: `--backfill YYYY-MM-DD YYYY-MM-DD` |
+| `buildOrderFlowFeatures.py` | `outputs/features/markets/spy_orderflow_features.csv` | Aggregates minute CVD to 14 daily order-flow features: CVD normalized by traded vol, intensity ratio (sell/buy), large trade ratio, momentum, peak hour |
+| `fetchGexDaily.py` | `outputs/markets/cache/spy_gex_daily.csv` | SqueezeMetrics DIX/GEX daily CSV (free). GEX 2011-present, 100% training coverage. 9 features: gex_b, gex_sign, gex_z21, gex_z63, gex_chg_1d/5d, dix, dix_z21, dix_chg_5d |
+| `fetchVixTermHistory.py` | `outputs/markets/cache/vix_term_history.csv` | VVIX + VIX9D/3M/6M daily history via Yahoo Finance (free). 2,512 rows 2016-present, ~95% coverage. 6 features: vvix, vvix_z21, vvix_chg_5d, vix_term_slope (VIX3M-VIX9D normalized), vix_term_z21, vix_rv_spread |
+| `buildRegimeFeatures.py` | `outputs/features/markets/regime_feature_importance.csv` | Per-regime Spearman rho table: each feature vs next_dir_1d and next_ret_5d, split by bull/bear/chop. Includes regime_divergence column (how much rho varies across regimes). Run after buildSpyFeatures.py to identify regime-specific feature sets. |
+| `buildRegimePredModel.py` | `models/markets/spy/spy_regime_pred_{date}.pkl` | 3-class GBM/Logistic predicting TOMORROW's market regime (bull/bear/chop). 81.4% val accuracy vs 32.9% naive baseline. Used by predictSpy.py to route direction prediction to the appropriate regime-specific model. |
 | `buildOvernightModel.py` | `models/markets/overnight/overnight_dir_{DATE}.pkl` | Logistic model predicting next-day overnight gap direction. Logs to `models/meta/overnight_experiment_log.csv` |
 | `evalSpyModel.py` | `outputs/features/markets/eval_spy_*.csv` | Re-runs val-set inference on all 5 SPY models, writes prediction CSVs for diagnostics |
 
@@ -192,6 +203,8 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 - `/spydiagnostics [regenerate]` - 5-panel diagnostic plot: calibration, residuals, rolling accuracy, run history
 - `/btcsignal` - BTC ML model signal: next-day direction + 5-day outlook + on-chain context (MVRV, NUPL, hashrate, halving cycle, dominance)
 - `/btcdiagnostics [regenerate]` - BTC 5-panel diagnostic plot: predicted vs actual, residuals, rolling 30d accuracy, run history, MVRV zone accuracy
+- `/gex [timeframe]` - Dealer GEX + DIX chart: gamma exposure regime (suppression vs destabilizing) + dark pool buying pressure, 5 timeframes (3M/6M/1Y/3Y/ALL). Data: SqueezeMetrics 2011-present. Refreshes data on each call. Lives under `/markets gex`.
+- `/snapshot [timeframe]` - markets overview: Row 1 equities (SPY/QQQ/DIA/IWM), Row 2 bonds (SHY/IEF/TLT/HYG), Row 3 forex+DXY (EUR/USD, GBP/USD, USD/JPY, UUP). Timeframes: intraday | 1w | 1mo | 3mo | 6mo | 1y. Standalone command (markets group at 25-cmd Discord limit).
 
 ![stock chart](outputs/markets/stockchart.png)
 ![crypto chart](outputs/markets/cryptochart.png)

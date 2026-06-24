@@ -424,10 +424,20 @@ if (category %in% c("stocks", "crypto")) {
   origin_idx <- seq(max(100, bar_step), nrow(df), by = bar_step)
   if (tail(origin_idx, 1) != nrow(df)) origin_idx <- c(origin_idx, nrow(df))
 
-  rolling_bands <- data.frame()
-  rolling_hist  <- data.frame()
+  rolling_bands <- data.frame()   # forecast cones - accumulate across origins
+  rolling_actuals <- data.frame() # actual prices over forecast windows - accumulate
+  rolling_hist  <- data.frame()   # historical price up to each origin
 
-  cat(sprintf("[marketForecast] Rolling origins: %d frames...\n", length(origin_idx)))
+  # 2 sub-frames per origin:
+  #   phase 1: full forecast cone shown, no actual yet for this origin
+  #   phase 2: same cone + actual price drawn over it for this origin
+  # Both phases include ALL prior origins' cones + actuals (accumulating)
+  global_frame <- 0L
+  accum_bands   <- data.frame()   # running accumulator between loop iterations
+  accum_actuals <- data.frame()   # running accumulator between loop iterations
+
+  cat(sprintf("[marketForecast] Rolling origins: %d origins (2 phases each = %d frames)...\n",
+              length(origin_idx), length(origin_idx) * 2))
 
   for (fi in seq_along(origin_idx)) {
     oi <- origin_idx[fi]
@@ -480,7 +490,8 @@ if (category %in% c("stocks", "crypto")) {
     sub_pct <- apply(sub_prices_m[-1, ], 1, function(x)
       quantile(x, probs = c(0.10, 0.25, 0.50, 0.75, 0.90), na.rm = TRUE))
 
-    tmp_bands <- data.frame(
+    # forecast cone for this origin
+    this_bands <- data.frame(
       date   = sub_future_dates,
       p10    = sub_pct[1, ],
       p25    = sub_pct[2, ],
@@ -488,82 +499,130 @@ if (category %in% c("stocks", "crypto")) {
       p75    = sub_pct[4, ],
       p90    = sub_pct[5, ],
       origin = as.character(as.Date(sub_ldate)),
-      frame  = fi
+      fi     = fi
     )
 
-    tmp_hist <- data.frame(
-      date  = sub_dates,
-      price = sub_price,
-      frame = fi
-    )
+    # actual prices that fell in the forecast window (may be empty for recent origins)
+    actual_mask <- df$date > sub_ldate & df$date <= max(sub_future_dates)
+    if (sum(actual_mask) > 0) {
+      this_actual <- data.frame(
+        date   = df$date[actual_mask],
+        price  = df$close[actual_mask],
+        origin = as.character(as.Date(sub_ldate)),
+        fi     = fi
+      )
+    } else {
+      this_actual <- data.frame(date = as.POSIXct(character(0)),
+                                price = numeric(0),
+                                origin = character(0),
+                                fi = integer(0))
+    }
 
-    rolling_bands <- rbind(rolling_bands, tmp_bands)
-    rolling_hist  <- rbind(rolling_hist, tmp_hist)
+    # ── phase 1: new cone + all prior cones/actuals; no actual for this origin yet ─
+    global_frame   <- global_frame + 1L
+    # accum_bands holds all prior origins' bands (no frame col yet); tag them
+    all_prior_bands <- if (nrow(accum_bands) > 0)
+                         accum_bands |> mutate(frame = global_frame)
+                       else data.frame()
+    frame1_bands   <- rbind(all_prior_bands, this_bands |> mutate(frame = global_frame))
+    frame1_hist    <- data.frame(date = sub_dates, price = sub_price,
+                                 origin = as.character(as.Date(sub_ldate)),
+                                 fi = fi, frame = global_frame)
+    frame1_actuals <- if (nrow(accum_actuals) > 0)
+                        accum_actuals |> mutate(frame = global_frame)
+                      else data.frame()
+
+    rolling_bands   <- rbind(rolling_bands,   frame1_bands)
+    rolling_hist    <- rbind(rolling_hist,    frame1_hist)
+    rolling_actuals <- rbind(rolling_actuals, frame1_actuals)
+
+    # ── phase 2: same cone set + actual for THIS origin revealed ─────────────────
+    global_frame    <- global_frame + 1L
+    frame2_bands    <- frame1_bands  |> mutate(frame = global_frame)
+    frame2_hist     <- frame1_hist   |> mutate(frame = global_frame)
+    new_accum_acts  <- rbind(if (nrow(accum_actuals) > 0) accum_actuals else data.frame(),
+                             this_actual)
+    frame2_actuals  <- new_accum_acts |> mutate(frame = global_frame)
+
+    rolling_bands   <- rbind(rolling_bands,   frame2_bands)
+    rolling_hist    <- rbind(rolling_hist,    frame2_hist)
+    rolling_actuals <- rbind(rolling_actuals, frame2_actuals)
+
+    # grow accumulators: add this origin's bands/actuals (no frame col to strip)
+    accum_bands   <- rbind(accum_bands, this_bands)
+    accum_actuals <- if (nrow(new_accum_acts) > 0)
+                       new_accum_acts |> select(-any_of("frame"))
+                     else data.frame()
   }
 
   if (nrow(rolling_bands) > 0) {
 
-    # lock axis limits globally so scale never shifts between frames
-  all_y <- c(price_vec, rolling_bands$p10, rolling_bands$p90)
+    all_y <- c(price_vec, rolling_bands$p10, rolling_bands$p90)
   y_lo  <- min(all_y, na.rm = TRUE) * 0.97
   y_hi  <- max(all_y, na.rm = TRUE) * 1.03
   x_lo  <- min(dates_vec)
   x_hi  <- max(rolling_bands$date, na.rm = TRUE)
 
-  # use origin (already a date string per frame) as the transition variable
-  # so {closest_state} shows the actual date in the subtitle
-  rolling_hist <- rolling_hist |>
-    left_join(
-      rolling_bands |> distinct(frame, origin),
-      by = "frame"
-    )
+  # frame -> origin label map (take one row per frame - origin is same within a phase pair)
+  frame_labels <- rolling_hist |>
+    group_by(frame) |>
+    slice(1) |>
+    ungroup() |>
+    select(frame, origin) |>
+    deframe()  # named vector: frame -> origin string
 
-  # use origin_date as the transition variable so {closest_state} shows the date
   p_anim2 <- ggplot() +
 
-      # actual historical prices
+      # historical price line (grows as origin advances)
       geom_line(data = rolling_hist,
-                aes(x = date, y = price, group = origin),
+                aes(x = date, y = price, group = frame),
                 color = CYAN, linewidth = 0.7) +
 
-      # 80% band
+      # 80% forecast band (all prior origins stay visible)
       geom_ribbon(data = rolling_bands,
-                  aes(x = date, ymin = p10, ymax = p90, group = origin),
-                  fill = WHITE, alpha = 0.08) +
+                  aes(x = date, ymin = p10, ymax = p90, group = interaction(frame, origin)),
+                  fill = WHITE, alpha = 0.06) +
 
-      # IQR band
+      # IQR forecast band
       geom_ribbon(data = rolling_bands,
-                  aes(x = date, ymin = p25, ymax = p75, group = origin),
-                  fill = CYAN, alpha = 0.15) +
+                  aes(x = date, ymin = p25, ymax = p75, group = interaction(frame, origin)),
+                  fill = CYAN, alpha = 0.12) +
 
-      # median forecast
+      # median forecast line
       geom_line(data = rolling_bands,
-                aes(x = date, y = p50, group = origin),
-                color = ORANGE, linewidth = 0.9, linetype = "dashed") +
+                aes(x = date, y = p50, group = interaction(frame, origin)),
+                color = ORANGE, linewidth = 0.7, linetype = "dashed", alpha = 0.7) +
+
+      # actual price over forecast window - GREEN line, appears in phase 2
+      { if (nrow(rolling_actuals) > 0)
+          geom_line(data = rolling_actuals,
+                    aes(x = date, y = price, group = interaction(frame, origin)),
+                    color = GREEN, linewidth = 1.0, alpha = 0.9)
+      } +
 
       labs(
-        title    = sprintf("%s - Rolling Forecast Origin", display_sym),
-        subtitle = "Forecast as of: {closest_state}",
+        title    = sprintf("%s - Rolling Forecast vs Actual", display_sym),
+        subtitle = "Origin: {frame_labels[as.character(current_frame)]} | Orange=forecast median | Green=actual | Bands=50/80%% CI",
         x        = NULL,
         y        = "Price",
-        caption  = "Each frame = model refit on all data up to that date | Not financial advice | JHCV"
+        caption  = "GJR-GARCH(1,1)-t rolling refit | All prior forecasts remain visible | Not financial advice | JHCV"
       ) +
 
       scale_y_continuous(labels = comma) +
 
-      # fixed axes - prevents the wiggle from axis rescaling between frames
       coord_cartesian(xlim = c(x_lo, x_hi), ylim = c(y_lo, y_hi)) +
 
       myTheme +
 
-      transition_states(origin, transition_length = 0, state_length = 1) +
+      transition_manual(frame) +
       ease_aes("linear")
 
     cat("[marketForecast] Rendering animation 2...\n")
     gif2_path <- sub("\\.gif$", "_rolling.gif", out_gif_path)
+    n_total_frames <- max(rolling_bands$frame, na.rm = TRUE)
     animate(p_anim2,
-            nframes  = length(origin_idx) * 2,
-            fps      = 8,
+            nframes  = n_total_frames,
+            fps      = 4,
             width    = 800,
             height   = 450,
             renderer = gifski_renderer(gif2_path),

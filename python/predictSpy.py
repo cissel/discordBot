@@ -77,6 +77,84 @@ def load_best_model(model_type, target):
     return bundle["model"], bundle.get("features", [])
 
 
+def load_regime_model(regime_name):
+    """Load a regime-specific logistic model. Returns (model, feats) or (None, None).
+    For 'bear': prefers the calibrated version if available."""
+    if regime_name == "bear":
+        cal_pattern = "spy_logistic_regime_bear_calibrated_"
+        cal_candidates = sorted(
+            [f for f in os.listdir(MODEL_DIR) if f.startswith(cal_pattern) and f.endswith(".pkl")],
+            reverse=True
+        )
+        if cal_candidates:
+            path = os.path.join(MODEL_DIR, cal_candidates[0])
+            with open(path, "rb") as f:
+                bundle = pickle.load(f)
+            return bundle["model"], bundle.get("features", [])
+    pattern = f"spy_logistic_regime_{regime_name}_"
+    candidates = sorted(
+        [f for f in os.listdir(MODEL_DIR) if f.startswith(pattern) and f.endswith(".pkl")
+         and "calibrated" not in f],
+        reverse=True
+    )
+    if not candidates:
+        return None, None
+    path = os.path.join(MODEL_DIR, candidates[0])
+    with open(path, "rb") as f:
+        bundle = pickle.load(f)
+    return bundle["model"], bundle.get("features", [])
+
+
+def predict_tomorrow_regime(df, row_df):
+    """
+    Use the regime prediction model to forecast tomorrow's regime.
+    Returns (predicted_regime, probabilities_dict) or (None, None) if model unavailable.
+    """
+    pattern = "spy_regime_pred_"
+    candidates = sorted(
+        [f for f in os.listdir(MODEL_DIR) if f.startswith(pattern) and f.endswith(".pkl")],
+        reverse=True
+    )
+    if not candidates:
+        return None, None
+    path = os.path.join(MODEL_DIR, candidates[0])
+    with open(path, "rb") as f:
+        bundle = pickle.load(f)
+
+    model     = bundle["model"]
+    features  = bundle.get("features", [])
+    class_map = bundle.get("class_map")   # None for logistic, dict for GBM
+
+    # Build X row
+    X_row = pd.DataFrame(index=row_df.index)
+    for f in features:
+        if f in df.columns:
+            X_row[f] = row_df[f].values
+        else:
+            X_row[f] = 0.0
+    for col in X_row.columns:
+        if X_row[col].isna().any():
+            med = df[col].median() if col in df.columns else 0.0
+            X_row[col] = X_row[col].fillna(med if pd.notna(med) else 0.0)
+
+    try:
+        pred_raw  = model.predict(X_row.values)[0]
+        # Convert int back to string if GBM (class_map provided)
+        if class_map is not None:
+            inv_map  = {v: k for k, v in class_map.items()}
+            pred_str = inv_map.get(int(pred_raw), str(pred_raw))
+        else:
+            pred_str = str(pred_raw)
+
+        # Probabilities
+        probs_raw = model.predict_proba(X_row.values)[0]
+        classes   = bundle.get("classes", ["bear", "bull", "chop"])
+        probs     = {cls: round(float(p), 3) for cls, p in zip(classes, probs_raw)}
+        return pred_str, probs
+    except Exception:
+        return None, None
+
+
 def confidence_label(prob):
     dist = abs(prob - 0.5)
     if dist >= CONF_HIGH:
@@ -148,8 +226,33 @@ def predict(target_date=None):
     if target_date and row_date != target_date:
         warnings_list.append(f"No data for {target_date}, using most recent: {row_date}")
 
-    # ── 1-day direction model (Logistic) ─────────────────────────────────────
-    logistic_model, logistic_feats = load_best_model("logistic", "next_dir_1d")
+    # ── detect current regime ─────────────────────────────────────────────────
+    # Regime is pre-computed in spy_features.csv (bull/bear/chop).
+    # Used to (a) route to a regime-specific model, (b) add context to output.
+    current_regime = str(row["regime"]) if "regime" in row.index and pd.notna(row.get("regime")) else None
+
+    # ── predict tomorrow's regime (informational only) ────────────────────────
+    # NOTE: The regime pred model scores 81.4% but the persistence baseline
+    # (tomorrow == today) scores 89.5% — meaning the model actively degrades
+    # routing accuracy. We keep it for the probability output in the embed
+    # (useful to know P(bear) is rising) but route on TODAY's regime, not predicted.
+    pred_regime, regime_probs = predict_tomorrow_regime(df, row_df)
+    routing_regime = current_regime   # route on current, not predicted
+
+    # ── 1-day direction model ─────────────────────────────────────────────────
+    # Use regime-specific Logistic for TODAY's regime.
+    # Fallback: universal Logistic if regime model unavailable.
+    regime_model, regime_feats = (load_regime_model(routing_regime)
+                                  if routing_regime else (None, None))
+    if regime_model and regime_feats:
+        logistic_model  = regime_model
+        logistic_feats  = regime_feats
+        model_label_1d  = f"logistic_regime_{routing_regime}"
+    else:
+        logistic_model, logistic_feats = load_best_model("logistic", "next_dir_1d")
+        model_label_1d = "logistic"
+        if routing_regime and not regime_model:
+            warnings_list.append(f"Regime model '{routing_regime}' not found, using universal logistic")
     next_day_result = None
     if logistic_model and logistic_feats:
         avail = [f for f in logistic_feats if f in df.columns]
@@ -175,7 +278,9 @@ def predict(target_date=None):
                 "direction":   direction,
                 "probability": round(prob_up, 4),
                 "confidence":  confidence_label(prob_up),
-                "model":       "logistic",
+                "model":       model_label_1d,
+                "regime":      current_regime,
+                "regime_pred": routing_regime,
             }
         except Exception as e:
             warnings_list.append(f"Logistic inference error: {e}")
@@ -254,12 +359,41 @@ def predict(target_date=None):
 
     top_signals = get_top_signals(row, logistic_feats or [])
 
+    # ── position sizing (live rule, mirrors backtest best combo) ──────────────
+    # Rule: half-bear t=0.53 + kill switch (flat when bear+GEX-+VIX spike)
+    #   - Kill switch: regime=bear AND gex_sign<=0 AND vix_z21>1.5 -> 0.0
+    #   - Bear regime otherwise: 0.5 (half size)
+    #   - prob_up < 0.53: 0.0 (no signal)
+    #   - Otherwise: 1.0 (full size)
+    position_size   = 0.0
+    sizing_reason   = "no signal (prob < 0.53)"
+    if next_day_result:
+        prob_up_live = next_day_result["probability"]
+        gex_sign_live = float(row["gex_sign"]) if "gex_sign" in row.index and pd.notna(row.get("gex_sign")) else 1.0
+        vix_z21_live  = float(row["vix_z21"])  if "vix_z21"  in row.index and pd.notna(row.get("vix_z21"))  else 0.0
+        kill = (current_regime == "bear") and (gex_sign_live <= 0) and (vix_z21_live > 1.5)
+        if kill:
+            position_size = 0.0
+            sizing_reason = f"kill switch (bear + GEX negative + VIX z21={vix_z21_live:.2f})"
+        elif prob_up_live < 0.53:
+            position_size = 0.0
+            sizing_reason = f"no signal (prob={prob_up_live:.3f} < 0.53)"
+        elif current_regime == "bear":
+            position_size = 0.5
+            sizing_reason = f"half size (bear regime, prob={prob_up_live:.3f})"
+        else:
+            position_size = 1.0
+            sizing_reason = f"full size ({current_regime} regime, prob={prob_up_live:.3f})"
+
     result = {
         "date":          str(row_date),
         "next_day":      next_day_result,
         "next_5d":       next_5d_result,
         "macro_context": macro_context,
         "top_signals":   top_signals,
+        "regime_probs":  regime_probs,   # P(bear/bull/chop) for tomorrow
+        "position_size": position_size,
+        "sizing_reason": sizing_reason,
         "warnings":      warnings_list,
     }
     return result

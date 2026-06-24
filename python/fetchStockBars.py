@@ -33,8 +33,8 @@ headers = {
 TIMEFRAME_MAP = {
     "intraday": (today,             today,              "1Min"),  # placeholder, fixed below
     "1w":       (today - timedelta(weeks=1),   today,  "5Min"),
-    "1mo":      (today - timedelta(days=30),   today,  "1Day"),
-    "3mo":      (today - timedelta(days=90),   today,  "1Day"),
+    "1mo":      (today - timedelta(days=30),   today,  "5Min"),
+    "3mo":      (today - timedelta(days=90),   today,  "1Hour"),
     "6mo":      (today - timedelta(days=180),  today,  "1Day"),
     "1y":       (today - timedelta(days=365),  today,  "1Day"),
     "2y":       (today - timedelta(days=730),  today,  "1Day"),
@@ -107,8 +107,8 @@ df = pd.DataFrame(all_bars)
 df = df.rename(columns={"t": "date", "o": "open", "h": "high", "l": "low", "c": "close", "v": "volume"})
 df["date"] = pd.to_datetime(df["date"])
 
-# for daily/weekly/monthly keep just the date, for intraday/1w keep full timestamp
-if bar_tf in ("1Min", "5Min"):
+# keep full timestamp for sub-daily bars; strip to date for daily+
+if bar_tf in ("1Min", "5Min", "1Hour"):
     df["date"] = df["date"].dt.tz_convert("America/New_York")
 else:
     df["date"] = df["date"].dt.date

@@ -135,11 +135,14 @@ def main():
         ("btc_nupl",              "nupl"),
         ("btc_hashrate_growth_21","hashrate_growth_21d"),
         ("btc_halving_cycle_pct", "halving_cycle_pct"),
-        ("btc_dominance",         "btc_dominance"),
         ("btc_vol_regime",        "vol_regime"),
     ]:
         val = last.get(col, np.nan)
         onchain[label] = round(float(val), 4) if pd.notna(val) else None
+
+    # Dominance stored as fraction (0.559) — convert to percent
+    dom_raw = last.get("btc_dominance", np.nan)
+    onchain["btc_dominance"] = round(float(dom_raw) * 100, 2) if pd.notna(dom_raw) else None
 
     # Halving cycle label
     cycle_pct = last.get("btc_halving_cycle_pct", np.nan)

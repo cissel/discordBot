@@ -36,11 +36,13 @@ args      <- commandArgs(trailingOnly = TRUE)
 symbol    <- toupper(args[1])
 timeframe <- if (length(args) >= 2) args[2] else "6mo"
 
+INTRADAY_TFS <- c("intraday", "1w", "1mo", "3mo")
+
 tf_label <- switch(timeframe,
                    intraday = "Last 24 Hours (1-min)",
-                   `1w`     = "1 Week",
-                   `1mo`    = "1 Month",
-                   `3mo`    = "3 Months",
+                   `1w`     = "1 Week (5min bars)",
+                   `1mo`    = "1 Month (5min bars)",
+                   `3mo`    = "3 Months (1hr bars)",
                    `6mo`    = "6 Months",
                    `1y`     = "1 Year",
                    `2y`     = "2 Years",
@@ -54,7 +56,7 @@ bars_csv <- path.expand(paste0("~/discordBot/outputs/markets/", symbol, "_", tim
 if (!file.exists(bars_csv)) stop("Bars CSV not found: ", bars_csv)
 
 df <- read_csv(bars_csv, show_col_types = FALSE) %>%
-  mutate(time = if (timeframe == "intraday") as.POSIXct(date, tz = "America/New_York") else as.Date(date)) %>%
+  mutate(time = if (timeframe %in% INTRADAY_TFS) as.POSIXct(date, tz = "America/New_York") else as.Date(date)) %>%
   arrange(time)
 
 df$pct <- 0
@@ -90,8 +92,10 @@ if (timeframe != "intraday") {
     vol_scale <- 1;   vol_unit <- ""
   }
 
+  vol_width <- if (timeframe %in% c("1w", "1mo")) 300 else if (timeframe == "3mo") 3600 else 0.8
+
   p_vol <- ggplot(df, aes(x = time, y = volume / vol_scale, fill = vol_color)) +
-    geom_bar(stat = "identity", width = 0.8) +
+    geom_bar(stat = "identity", width = vol_width) +
     scale_fill_manual(values = c("up" = "#26a69a", "down" = "#ef5350")) +
     scale_y_continuous(labels = function(x) paste0(x, vol_unit)) +
     labs(x = "Time", y = "Volume",

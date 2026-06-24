@@ -105,9 +105,9 @@ start_24h = now_utc - timedelta(hours=24)
 TIMEFRAME_MAP = {
     "intraday": (start_24h.strftime("%Y-%m-%dT%H:%M:%SZ"),
                  now_utc.strftime("%Y-%m-%dT%H:%M:%SZ"),  "1Min"),
-    "1w":       (today - timedelta(weeks=1),    today,  "1Hour"),
-    "1mo":      (today - timedelta(days=30),    today,  "1Day"),
-    "3mo":      (today - timedelta(days=90),    today,  "1Day"),
+    "1w":       (today - timedelta(weeks=1),    today,  "5Min"),
+    "1mo":      (today - timedelta(days=30),    today,  "5Min"),
+    "3mo":      (today - timedelta(days=90),    today,  "1Hour"),
     "6mo":      (today - timedelta(days=180),   today,  "1Day"),
     "1y":       (today - timedelta(days=365),   today,  "1Day"),
 }
@@ -153,7 +153,7 @@ df = pd.DataFrame(all_bars)
 df = df.rename(columns={"t": "date", "o": "open", "h": "high", "l": "low", "c": "close", "v": "volume"})
 df["date"] = pd.to_datetime(df["date"])
 
-if bar_tf == "1Min":
+if bar_tf in ("1Min", "5Min", "1Hour"):
     df["date"] = df["date"].dt.tz_convert("America/New_York")
 else:
     df["date"] = df["date"].dt.date
