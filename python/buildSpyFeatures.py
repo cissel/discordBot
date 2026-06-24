@@ -610,6 +610,105 @@ def build_features():
     print(f"    bull={regime_counts.get('bull',0)}  bear={regime_counts.get('bear',0)}  chop={regime_counts.get('chop',0)}")
     print(f"    VIX p33={vix_p33:.1f}  p67={vix_p67:.1f}")
 
+    # ── 17. Regime-change recency + interaction features ─────────────────────
+    # days_since_regime_change: how many days since the regime last flipped.
+    # Stale momentum features carry the old trend for weeks after a flip —
+    # this gives the model a way to discount them during transitions.
+    # Capped at 63 to stay bounded; ~2-3 weeks is the critical window.
+    print("  building regime-change + interaction features...")
+    regime_enc = {"bull": 0, "chop": 1, "bear": 2}
+    regime_int = df["regime"].map(regime_enc).fillna(1)
+    regime_changed = (regime_int != regime_int.shift(1)).astype(int)
+    days_since_chg = []
+    count = 63
+    for changed in regime_changed:
+        count = 0 if changed else count + 1
+        days_since_chg.append(min(count, 63))
+    df["days_since_regime_change"] = days_since_chg
+    df["regime_transition_flag"] = (df["days_since_regime_change"] <= 5).astype(float)
+
+    # Momentum features × days_since_regime_change: fast-fade stale momentum
+    # after a flip. High value = regime is established; low = in transition.
+    regime_stability = df["days_since_regime_change"] / 63.0   # 0=fresh flip, 1=stable
+    df["mom_x_regime_stability"]  = df["spy_ret_r21"]   * regime_stability
+    df["mom63_x_regime_stability"] = df["spy_ret_r63"]  * regime_stability
+
+    # Bear intraday confirmation: open_drive_flag × bear_flag
+    # A strong open drive down in a bear regime is a powerful same-day confirmation.
+    # open_drive_flag is already in features (-0.083 Spearman overall, fires hardest in bear)
+    bear_flag = (df["regime"] == "bear").astype(float)
+    bull_flag = (df["regime"] == "bull").astype(float)
+    chop_flag = (df["regime"] == "chop").astype(float)
+    if "open_drive_flag" in df.columns:
+        df["open_drive_x_bear"] = df["open_drive_flag"] * bear_flag
+        df["open_drive_x_bull"] = df["open_drive_flag"] * bull_flag
+
+    # vix_rv_ratio × regime: vol risk premium fires hardest in bear
+    if "vix_rv_ratio" in df.columns:
+        df["vix_rv_x_bear"] = df["vix_rv_ratio"] * bear_flag
+        df["vix_rv_x_chop"] = df["vix_rv_ratio"] * chop_flag
+
+    # dix_chg_5d × regime: dark pool flow direction conditional on regime
+    if "dix_chg_5d" in df.columns:
+        df["dix_chg_x_bear"] = df["dix_chg_5d"] * bear_flag
+        df["dix_chg_x_bull"] = df["dix_chg_5d"] * bull_flag
+
+    # sector_risk_off_r5 × bear: flight-to-safety rotation strongest in downtrends
+    if "sector_risk_off_r5" in df.columns:
+        df["sector_riskoff_x_bear"] = df["sector_risk_off_r5"] * bear_flag
+
+    # ── 18. Moon phase + weather features ─────────────────────────────────────
+    # Moon phase: daily astronomical data, no API needed (pure math in fetchMoonPhase.py)
+    # Weather: NYC Central Park + Chicago O'Hare daily TMAX/TMIN/PRCP from NOAA CDO API
+    # Both are loaded from cache CSVs and merged on date (index).
+    # Reference: Dichev & Janes (2003, JoF) lunar cycles; Hirshleifer & Shumway (2003, JoF) weather
+    print("  loading moon phase + weather features...")
+    MOON_PATH    = os.path.join(CACHE_DIR, "moon_phase_daily.csv")
+    WEATHER_PATH = os.path.join(CACHE_DIR, "weather_daily.csv")
+
+    # Moon phase
+    if os.path.exists(MOON_PATH):
+        moon_df = pd.read_csv(MOON_PATH, parse_dates=["date"])
+        moon_df = moon_df.set_index("date")
+        moon_cols = ["moon_phase", "moon_phase_sin", "moon_phase_cos",
+                     "days_to_full_moon", "days_to_new_moon",
+                     "moon_full_flag", "moon_new_flag"]
+        for col in moon_cols:
+            if col in moon_df.columns:
+                df[col] = moon_df[col].reindex(df.index)
+        n_moon = df["moon_phase"].notna().sum() if "moon_phase" in df.columns else 0
+        print(f"    moon phase coverage: {n_moon}/{len(df)} rows ({n_moon/len(df)*100:.0f}%)")
+    else:
+        print(f"    [warn] moon phase cache not found — run fetchMoonPhase.py")
+
+    # Weather (NYC + Chicago)
+    if os.path.exists(WEATHER_PATH):
+        wx_df = pd.read_csv(WEATHER_PATH, parse_dates=["date"])
+        wx_df = wx_df.set_index("date")
+        wx_cols = [c for c in wx_df.columns if any(
+            c.startswith(pfx) for pfx in
+            ["tmax_", "tmin_", "prcp_", "snow_", "tavg_",
+             "temp_range_", "prcp_flag_", "cold_flag_", "hot_flag_", "snow_flag_"]
+        )]
+        for col in wx_cols:
+            df[col] = wx_df[col].reindex(df.index)
+        n_nyc = df["tavg_nyc"].notna().sum() if "tavg_nyc" in df.columns else 0
+        n_chi = df["tavg_chi"].notna().sum() if "tavg_chi" in df.columns else 0
+        print(f"    weather coverage: NYC={n_nyc} rows, CHI={n_chi} rows")
+        # sunshine proxy: no precip + wide temp range = clear day
+        if "prcp_flag_nyc" in df.columns and "temp_range_nyc" in df.columns:
+            df["sunshine_proxy_nyc"] = (
+                (1 - df["prcp_flag_nyc"].fillna(0)) *
+                df["temp_range_nyc"].fillna(df["temp_range_nyc"].median())
+            )
+        if "prcp_flag_chi" in df.columns and "temp_range_chi" in df.columns:
+            df["sunshine_proxy_chi"] = (
+                (1 - df["prcp_flag_chi"].fillna(0)) *
+                df["temp_range_chi"].fillna(df["temp_range_chi"].median())
+            )
+    else:
+        print(f"    [warn] weather cache not found — run fetchWeatherDaily.py (needs NOAA_CDO_TOKEN in .env)")
+
     # ── targets (no leakage — shift(-1) and shift(-5)) ───────────────────────
     print("  computing targets...")
     df["next_ret_1d"]  = df["SPY_ret"].shift(-1)

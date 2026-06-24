@@ -1,6 +1,6 @@
 model_id,target,model_type,train_date,train_rows,val_rows,val_rmse,val_mae,val_r2,val_spearman,val_dir_acc,val_auc,top5_features
-spy_ridge_next_ret_1d_2026-06-24,next_ret_1d,ridge,2026-06-24,1717,252,0.011886,0.00786,-0.014,0.0355,0.5556,,qqq_ret_1d=0.004; XLF_ret=0.002; gld_ret_1d=0.002; gld_z21=0.002; spy_z21=0.002
-spy_gbm_next_ret_1d_2026-06-24,next_ret_1d,gbm,2026-06-24,1717,252,0.01216,0.007458,-0.0612,0.0956,0.5556,,spy_drawdown_252=0.101; vix_level=0.099; qqq_ret_1d=0.062; spy_ret_r5=0.052; gld_corr_x_vol=0.045
-spy_logistic_next_dir_1d_2026-06-24,next_dir_1d,logistic,2026-06-24,1718,252,0.496054,0.479159,-0.0004,0.133,0.5437,0.5774,XLI_ret=0.330; XLF_ret=0.212; qqq_ret_1d=0.173; fedfunds_chg_21d=0.160; spy_consec_down=0.135
-spy_gbm_next_dir_1d_2026-06-24,next_dir_1d,gbm,2026-06-24,1718,252,0.49441,0.478979,0.0062,0.1484,0.5913,0.5864,gld_corr_x_era=0.072; vwap_dev_open=0.072; gld_z21=0.047; qqq_ret_1d=0.044; spy_drawdown_252=0.040
+spy_ridge_next_ret_1d_2026-06-24,next_ret_1d,ridge,2026-06-24,818,252,0.01213,0.008161,-0.0559,0.0844,0.5913,,qqq_ret_1d=0.004; XLF_ret=0.003; spy_drawdown_252=0.002; gld_ret_1d=0.002; gld_z21=0.002
+spy_gbm_next_ret_1d_2026-06-24,next_ret_1d,gbm,2026-06-24,818,252,0.011834,0.007181,-0.0051,0.1657,0.5952,,vix_level=0.078; spy_drawdown_252=0.072; mom63_x_regime_stability=0.056; qqq_ret_1d=0.046; sector_riskoff_x_bear=0.035
+spy_logistic_next_dir_1d_2026-06-24,next_dir_1d,logistic,2026-06-24,819,252,0.497221,0.47229,-0.0051,0.1644,0.5794,0.5957,XLI_ret=0.343; XLF_ret=0.231; sunshine_proxy_chi=0.226; days_to_new_moon=0.209; fedfunds_chg_21d=0.203
+spy_gbm_next_dir_1d_2026-06-24,next_dir_1d,gbm,2026-06-24,819,252,0.489016,0.474538,0.0278,0.1788,0.5992,0.6041,gld_corr_x_era=0.070; vwap_dev_open=0.056; vol_concentration=0.033; gld_z21=0.031; qqq_ret_1d=0.031
 spy_gbm_next_ret_5d_2026-06-24,next_ret_5d,gbm,2026-06-24,1612,252,0.384625,0.283691,-286.9159,0.0368,0.4563,,spy_vol_r63=0.075; vwap_dev_r5=0.062; vix_z252=0.048; vix_term_slope=0.043; spy_vol_r10=0.038

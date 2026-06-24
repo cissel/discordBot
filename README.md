@@ -4,8 +4,6 @@ There are many discord bots but this one is mine. I love it dearly.
 
 Built so I could send a message from my phone and have it run scripts, pull data, and post results back to the server - even if I'm not at the helm. Runs on a Raspberry Pi. Speaks Python and R.
 
-**191+ commits · 15,500+ lines · March 2025 - present**
-
 ---
 
 ## commands
@@ -122,6 +120,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `zonemap` | pitch location subplots by pitch type for any pitcher |
 | `fantasyownership` | fantasy points vs ownership % scatter (log scale) - filter by position and FA/all |
 | `fantasycumulative` | cumulative fantasy points per player over the season - faceted ggplot, day-by-day |
+| `fantasyszn` | cumulative fantasy points for all 8 teams over the season - sorted by standings |
 
 ![fantasy risk](outputs/sports/mlb/fantasy/fantasyRisk.png)
 ![pitch zone map](outputs/sports/mlb/pitchzone_example.png)
@@ -178,8 +177,8 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `options` | options flow snapshot for a ticker |
 | `short` | most shorted stocks |
 | `trades` | recent trade chart |
-|| `model` | SPY returns model - OLS + NW-HAC robust SEs + AR lags + options flow (1Y/2Y/3Y/5Y/max lookback) |
-|| `signal` | SPY ML model signal - next-day direction probability and 5-day outlook. Optional `show_context` param shows VIX, yield curve, and event calendar. Flags upcoming FOMC/CPI/NFP events. Use `/spysignal` (standalone - markets group at 25-cmd limit). |
+| `model` | SPY returns model - OLS + NW-HAC robust SEs + AR lags + options flow (1Y/2Y/3Y/5Y/max lookback) |
+| `signal` | SPY ML model signal - next-day direction probability and 5-day outlook. Optional `show_context` param shows VIX, yield curve, and event calendar. Flags upcoming FOMC/CPI/NFP events. Use `/spysignal` (standalone - markets group at 25-cmd limit). |
 
 #### SPY ML feature pipeline (daily cron at 4:15 PM ET)
 | Script | Output | Description |
@@ -261,6 +260,20 @@ Duval County residential real estate - median price per sqft by zip code, and pr
 ### `/dj`
 Plays music from a Pioneer rekordbox USB library in a voice channel. Supports queue, skip, stop, and playlist browsing by genre or artist.
 
+### `/billboard`
+Top music charts sourced from Apple Music / iTunes. Updated daily.
+
+| mode | description |
+|---|---|
+| `songs` | Top 10 songs right now (default) |
+| `artists` | Top 10 artists right now, ranked by number of songs in the top charts |
+| `genre` | Top 10 songs in a chosen genre (Pop, Hip-Hop/Rap, Rock, Country, R&B/Soul, Electronic, Dance, Latin, K-Pop, J-Pop, Reggae, Christian/Gospel, Classical, Jazz, Soundtrack) |
+
+### misc
+`/ping`, `/duval`, `/westside`, `/ts`, `/goodmorning`, `/dontavius`, `/r2`, `/chucktronic`, `/serversdown`, and a handful of others best discovered in the wild.
+
+---
+
 ### `/history`
 | command | description |
 |---|---|
@@ -278,15 +291,3 @@ Plays music from a Pioneer rekordbox USB library in a voice channel. Supports qu
 ![daily messages](outputs/metrics/dailyMessages.png)
 ![invite graph](outputs/server/invite_graph.png)
 ![repo graph](outputs/server/repo_graph.png)
-
-### `/billboard`
-Top music charts sourced from Apple Music / iTunes. Updated daily.
-
-| mode | description |
-|---|---|
-| `songs` | Top 10 songs right now (default) |
-| `artists` | Top 10 artists right now, ranked by number of songs in the top charts |
-| `genre` | Top 10 songs in a chosen genre (Pop, Hip-Hop/Rap, Rock, Country, R&B/Soul, Electronic, Dance, Latin, K-Pop, J-Pop, Reggae, Christian/Gospel, Classical, Jazz, Soundtrack) |
-
-### misc
-`/ping`, `/duval`, `/westside`, `/ts`, `/goodmorning`, `/dontavius`, `/r2`, `/chucktronic`, `/serversdown`, and a handful of others best discovered in the wild.

@@ -2949,6 +2949,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             app_commands.Choice(name="Daily",      value="1d"),
         ],
         horizon=[
+            app_commands.Choice(name="Rest of Day (1min bars to close)", value="rod"),
             app_commands.Choice(name="1 Hour",    value="1h"),
             app_commands.Choice(name="4 Hours",   value="4h"),
             app_commands.Choice(name="1 Day",     value="1d"),
@@ -2973,6 +2974,13 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     ):
         symbol = symbol.upper().strip()
         await _defer(interaction)
+
+        # ── guard: rod is stocks + 1min only ───────────────────────────────
+        if horizon == "rod" and (category != "stocks" or timeframe != "1min"):
+            await interaction.followup.send(
+                "⚠️ **Rest of Day** horizon is only available for **Stocks** with **1 Minute** bars."
+            )
+            return
 
         # ── step 1: fetch data ──────────────────────────────────────────────
         await interaction.followup.send(
@@ -3076,8 +3084,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         bars_detail = f"**Bars used:** {n_bars:,}"
         if data_src:
             bars_detail += f"  ({data_src})"
+        horizon_label = f"Rest of Day ({horizon_bars} min)" if horizon == "rod" else horizon
         emb = discord.Embed(
-            title=f"{emoji} {display_sym} - Forecast ({horizon})",
+            title=f"{emoji} {display_sym} - Forecast ({horizon_label})",
             description=f"**Model:** {model_desc}\n{bars_detail}  |  **Forecast steps:** {horizon_bars}",
             color=color,
         )
@@ -5727,6 +5736,59 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         else:
             await _send(interaction, "No MLB standings data available.")
 
+    # ── /mlb fantasyszn ───────────────────────────────────────────────────────
+    @mlb_group.command(
+        name="fantasyszn",
+        description="World Sillies 2026 - fantasy points for all 8 teams by day, sorted by standings"
+    )
+    @app_commands.describe(
+        mode="cumulative (default) or daily fantasy points",
+        force_refresh="Re-fetch all data even if cache is fresh (default: no)",
+    )
+    @app_commands.choices(mode=[
+        app_commands.Choice(name="cumulative", value="cumulative"),
+        app_commands.Choice(name="daily",      value="daily"),
+    ])
+    async def mlb_fantasyszn(
+        interaction: discord.Interaction,
+        mode: str = "cumulative",
+        force_refresh: bool = False,
+    ):
+        await _defer(interaction)
+        csv_path  = os.path.join(op, "sports/mlb/fantasy/szn_daily.csv")
+        plot_path = os.path.join(op, f"sports/mlb/fantasy/szn_plot_{mode}.png")
+        py_script = os.path.join(pp, "worldSilliesSzn.py")
+        r_script  = os.path.join(rp, "mlbFantasySzn.R")
+
+        fetch_args = [PYTHON, py_script]
+        if force_refresh:
+            fetch_args.append("--force")
+        fetch_result = await asyncio.to_thread(_run, *fetch_args)
+        if fetch_result.returncode != 0:
+            await _send(interaction, f"data fetch error: ```{fetch_result.stderr[:400]}```")
+            return
+
+        if not os.path.exists(csv_path) or os.path.getsize(csv_path) < 100:
+            await _send(interaction, "no data available yet - try again later.")
+            return
+
+        plot_result = await asyncio.to_thread(
+            _run, "Rscript", r_script, csv_path, plot_path, mode
+        )
+        if plot_result.returncode != 0:
+            await _send(interaction, f"plot error: ```{plot_result.stderr[:400]}```")
+            return
+        if not os.path.exists(plot_path):
+            await _send(interaction, "plot file not generated - check R script.")
+            return
+
+        mode_label = "cumulative" if mode == "cumulative" else "daily"
+        await _send(
+            interaction,
+            f"⚾ **World Sillies 2026** - {mode_label} fantasy points by team",
+            file=discord.File(plot_path, filename=f"szn_plot_{mode}.png"),
+        )
+
     # ── /mlb fantasycumulative ─────────────────────────────────────────────────
     @mlb_group.command(
         name="fantasycumulative",
@@ -5771,11 +5833,14 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         py_script = os.path.join(pp, "worldSilliesCumFP.py")
         r_script  = os.path.join(rp, "mlbCumFantasyPts.R")
 
-        # fetch data
+        # fetch data — first-time fetch can take ~3min; use a long timeout
         fetch_args = [PYTHON, py_script, "--team", team]
         if force_refresh:
             fetch_args.append("--force")
-        fetch_result = await asyncio.to_thread(_run, *fetch_args)
+        fetch_result = await asyncio.to_thread(
+            lambda: subprocess.run(fetch_args, capture_output=True, text=True,
+                                   check=False, timeout=360)
+        )
         if fetch_result.returncode != 0:
             await _send(interaction, f"data fetch error: ```{fetch_result.stderr[:400]}```")
             return

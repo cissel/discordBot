@@ -69,6 +69,11 @@ for (i in 2:nrow(df)) {
   df$pct[i] <- (df$close[i] - df$close[i-1]) / df$close[i-1]
 }
 
+# Overall % change for the displayed window (first open -> last close)
+window_start <- if ("open" %in% names(df)) df$open[1] else df$close[1]
+window_end   <- tail(df$close, 1)
+window_pct   <- (window_end - window_start) / window_start * 100
+
 df <- df %>% mutate(vol_color = if_else(close >= open, "up", "down"))
 
 lr <- lm(df$close ~ as.numeric(df$time))
@@ -88,7 +93,7 @@ p_price <- ggplot(df, aes(x = time, y = close)) +
   labs(x = NULL,
        y = "Share Price (USD)",
        subtitle = paste0("$", tail(df$close, 1),
-                         " (", round(tail(df$pct * 100, 1), 2), "%)"),
+                         " (", round(window_pct, 2), "%)"),
        title = paste0("$", ticker, " - ", tf_label, " as of ", max(df$time)),
        caption = NULL) +
   scale_y_continuous(labels = scales::dollar) +

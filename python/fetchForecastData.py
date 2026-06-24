@@ -46,7 +46,7 @@ model_arg = sys.argv[5].lower() if len(sys.argv) > 5 else "auto"
 # ── validation ────────────────────────────────────────────────────────────────
 
 VALID_TIMEFRAMES = ["1min", "5min", "15min", "1h", "1d"]
-VALID_HORIZONS   = ["1h", "4h", "1d", "1w", "1mo", "3mo", "6mo", "1yr"]
+VALID_HORIZONS   = ["1h", "4h", "1d", "1w", "1mo", "3mo", "6mo", "1yr", "rod"]
 VALID_CATEGORIES = ["stocks", "crypto", "economic"]
 
 if category not in VALID_CATEGORIES:
@@ -76,6 +76,18 @@ if category in ("stocks", "crypto"):
         print(f"ERROR: horizon '{horizon}' is too short for daily bar timeframe '{timeframe}'. "
               f"Use an intraday timeframe for intraday horizons.", file=sys.stderr)
         sys.exit(1)
+    if horizon == "rod" and (category != "stocks" or timeframe != "1min"):
+        print("ERROR: 'Rest of Day' horizon is only available for stocks with 1min timeframe.", file=sys.stderr)
+        sys.exit(1)
+
+# ── compute rest-of-day horizon_bars dynamically ──────────────────────────────
+# rod = minutes remaining until 16:00 ET (NYSE close); min 1, max 390
+if horizon == "rod":
+    import zoneinfo
+    et_now   = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
+    close_et = et_now.replace(hour=16, minute=0, second=0, microsecond=0)
+    rod_bars = max(1, int((close_et - et_now).total_seconds() / 60))
+    rod_bars = min(rod_bars, 390)   # cap at full trading day
 
 # ── map timeframe + horizon to Alpaca bar size and lookback ───────────────────
 
@@ -90,14 +102,14 @@ ALPACA_BAR_MAP = {
 # how many bars of history to pull for model training
 # rule of thumb: want at least 500 bars, more for daily
 HISTORY_BARS = {
-    "1min":  {"1h": 1,  "4h": 5,   "1d": 30},   # days of history
+    "1min":  {"1h": 1,  "4h": 5,   "1d": 30,  "rod": 5},   # days of history
     "5min":  {"1h": 3,  "4h": 10,  "1d": 60},
     "15min": {"1h": 5,  "4h": 20,  "1d": 90},
     "1h":    {"1h": 30, "4h": 60,  "1d": 180},
     "1d":    {"1w": 365, "1mo": 730, "3mo": 1095, "6mo": 1460, "1yr": 1825},
 }
 
-# how many bars forward to forecast
+# how many bars forward to forecast  (rod is computed dynamically above)
 HORIZON_BARS = {
     "1min":  {"1h": 60,  "4h": 240,  "1d": 390},
     "5min":  {"1h": 12,  "4h": 48,   "1d": 78},
@@ -239,7 +251,7 @@ if category == "stocks":
 
     bar_tf          = ALPACA_BAR_MAP[timeframe]
     history_days    = HISTORY_BARS[timeframe][horizon]
-    horizon_bars    = HORIZON_BARS[timeframe][horizon]
+    horizon_bars    = rod_bars if horizon == "rod" else HORIZON_BARS[timeframe][horizon]
 
     # for intraday, start from today; for daily, go back by history_days
     if timeframe in INTRADAY_TF:

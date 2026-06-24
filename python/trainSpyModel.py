@@ -140,7 +140,53 @@ SPY_FEATURES = [
     "am_range",                      # rho_dir=-0.029
     # Block signals
     "block_active_flag",             # rho_dir=+0.024
+    # Regime-change recency + stability interactions (section 17)
+    "days_since_regime_change",      # how long current regime has been active (capped 63)
+    "regime_transition_flag",        # 1 if regime changed within last 5 days
+    "mom_x_regime_stability",        # spy_ret_r21 × regime_stability — fades stale momentum post-flip
+    "mom63_x_regime_stability",      # spy_ret_r63 × regime_stability
+    # Intraday × regime interactions
+    "open_drive_x_bear",             # open_drive_flag × bear — intraday confirmation in downtrends
+    "open_drive_x_bull",             # open_drive_flag × bull
+    # Vol/flow × regime interactions
+    "vix_rv_x_bear",                 # vix_rv_ratio × bear — vol risk premium in stress regimes
+    "vix_rv_x_chop",                 # vix_rv_ratio × chop
+    "dix_chg_x_bear",                # dix_chg_5d × bear — dark pool flow in downtrends
+    "dix_chg_x_bull",                # dix_chg_5d × bull
+    "sector_riskoff_x_bear",         # sector_risk_off_r5 × bear — flight-to-safety rotation
 ]
+
+# ── Moon phase + weather feature lists ────────────────────────────────────────
+# Added as a separate block so they're easy to isolate/ablate.
+# GBM L2 regularization will zero these out if they carry no signal.
+# Sparse — weather data starts 2015, moon phase is dense from any date.
+MOON_FEATURES = [
+    "moon_phase",           # 0=new, 0.5=full, 1=new — continuous cycle
+    "moon_phase_sin",       # cyclic encoding (preferred over raw for ML)
+    "moon_phase_cos",       # cyclic encoding
+    "days_to_full_moon",    # countdown to next full moon (capped 15)
+    "days_to_new_moon",     # countdown to next new moon (capped 15)
+    "moon_full_flag",       # 1 if within 2 days of full moon
+    "moon_new_flag",        # 1 if within 2 days of new moon
+]
+WEATHER_FEATURES = [
+    # NYC (Central Park) — financial center, Hirshleifer & Shumway (2003) effect
+    "tavg_nyc",             # avg temp C — baseline mood proxy
+    "temp_range_nyc",       # diurnal range — wide = clear sky
+    "prcp_flag_nyc",        # 1 if meaningful precipitation (>0.5mm)
+    "cold_flag_nyc",        # 1 if tavg < 5C
+    "hot_flag_nyc",         # 1 if tavg > 28C
+    "snow_flag_nyc",        # 1 if snowfall > 0
+    "sunshine_proxy_nyc",   # (1 - prcp_flag) * temp_range — clear warm day proxy
+    # Chicago (O'Hare) — CME/CBOT derivatives hub
+    "tavg_chi",
+    "temp_range_chi",
+    "prcp_flag_chi",
+    "sunshine_proxy_chi",
+]
+
+# Extend SPY_FEATURES with moon + weather
+SPY_FEATURES = SPY_FEATURES + MOON_FEATURES + WEATHER_FEATURES
 
 # Sparse features — imputed with median when unavailable
 # NOTE: VWAP/intraday are now DENSE (2021+ backfill complete, 52% of rows).
@@ -173,6 +219,18 @@ SPARSE_FEATURES = [
     # gld_spy_corr_63 / gld_corr63_x_era: 63-day rolling corr, ~63-row warmup NaN window
     "gld_spy_corr_63",
     "gld_corr63_x_era",
+    # Regime-interaction features — inherit sparsity from intraday/VWAP parent features
+    "open_drive_x_bear", "open_drive_x_bull",
+    "dix_chg_x_bear",    "dix_chg_x_bull",
+    "sector_riskoff_x_bear",
+    "mom_x_regime_stability", "mom63_x_regime_stability",
+    # Moon phase — dense (pure math), but listed here to safely impute any edge-case NaNs
+    "moon_phase", "moon_phase_sin", "moon_phase_cos",
+    "days_to_full_moon", "days_to_new_moon", "moon_full_flag", "moon_new_flag",
+    # Weather — occasional missing days (holidays, station gaps); impute with column median
+    "tavg_nyc", "temp_range_nyc", "prcp_flag_nyc", "cold_flag_nyc",
+    "hot_flag_nyc", "snow_flag_nyc", "sunshine_proxy_nyc",
+    "tavg_chi", "temp_range_chi", "prcp_flag_chi", "sunshine_proxy_chi",
 ]
 
 # GBM feature list — drops individual ETF rets (overfits at ~1600 train rows)
@@ -208,6 +266,13 @@ BEAR_FEATURES = sorted(set(SPY_FEATURES) | {
     "days_to_nfp",       # rho_5d=-0.023 bear — countdown to labour report
     "vix_spike_flag",    # bear-specific: regime transition days (VIX jump + above MA)
     "vix_ma20_ratio",    # VIX vs its own trend — elevated = persistent stress
+    # Run 23: regime-conditional interactions — fire only in bear
+    "open_drive_x_bear",     # intraday confirmation in downtrends
+    "vix_rv_x_bear",         # vol risk premium in stress regimes
+    "dix_chg_x_bear",        # dark pool flow direction in bear
+    "sector_riskoff_x_bear", # flight-to-safety sector rotation in bear
+    "mom_x_regime_stability",  # fades stale momentum post-flip (useful at bear entry)
+    "regime_transition_flag",  # bear entries often coincide with transition days
 })
 
 # Bull features: intraday momentum / VWAP signals that fire in uptrends
@@ -437,12 +502,34 @@ def walk_forward_cv(df, features, target, model_type, n_folds=5, fold_size=252, 
                     bh_r   = r_bt.mean() * ANNUAL
                     bh_v   = r_bt.std() * np.sqrt(ANNUAL)
                     bh_sh  = bh_r / bh_v if bh_v > 0 else 0.0
+
+                    # Regime-conditional sizing in WFCV: half-bear t=0.53 + kill switch
+                    # Mirrors live predictSpy.py sizing rule for honest WFCV Sharpe estimate.
+                    sized_sharpe = None
+                    try:
+                        if "regime" in va.columns and "gex_sign" in va.columns and "vix_z21" in va.columns:
+                            va_reg_bt   = va["regime"].values[valid]
+                            va_gex_bt   = va["gex_sign"].values[valid]
+                            va_vix_bt   = va["vix_z21"].values[valid]
+                            is_bear_wf  = (va_reg_bt == "bear").astype(float)
+                            kill_wf     = ((va_reg_bt == "bear") & (va_gex_bt <= 0) & (va_vix_bt > 1.5)).astype(float)
+                            raw_pos_wf  = (p_bt > 0.53).astype(float)
+                            sizing_wf   = np.where(is_bear_wf, 0.5, 1.0)
+                            pos_sized   = raw_pos_wf * sizing_wf * (1 - kill_wf)
+                            dr_sized    = pos_sized * r_bt - np.abs(np.diff(np.append(0, pos_sized))) * TX_COST
+                            ar_sized    = dr_sized.mean() * ANNUAL
+                            av_sized    = dr_sized.std()  * np.sqrt(ANNUAL)
+                            sized_sharpe = ar_sized / av_sized if av_sized > 0 else 0.0
+                    except Exception:
+                        pass
+
                     fold_info.update({
-                        "bt_sharpe":    round(sharpe, 3),
-                        "bt_maxdd":     round(mdd, 3),
-                        "bt_ann_ret":   round(ann_r, 3),
-                        "bh_sharpe":    round(bh_sh, 3),
-                        "bt_signals":   int(pos.sum()),
+                        "bt_sharpe":      round(sharpe, 3),
+                        "bt_maxdd":       round(mdd, 3),
+                        "bt_ann_ret":     round(ann_r, 3),
+                        "bh_sharpe":      round(bh_sh, 3),
+                        "bt_signals":     int(pos.sum()),
+                        "bt_sized_sharpe": round(sized_sharpe, 3) if sized_sharpe is not None else None,
                     })
         else:
             y_pd = m.predict(X_va)
@@ -906,6 +993,29 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
 
                 split    = max(len(df_p) - min(63, len(df_p)//5), int(len(df_p)*0.8))
                 tr_r, va_r = df_p.iloc[:split], df_p.iloc[split:]
+
+                # ── Bear oversampling: repeat minority bear rows with small noise ──
+                # Bear = ~15% of all training rows; class imbalance hurts recall.
+                # Strategy: duplicate bear rows 2x with N(0, 0.01) jitter on numeric cols.
+                # Only applied to bear model (bull/chop have balanced class distribution).
+                if regime_name == "bear":
+                    pos_mask = tr_r["next_dir_1d"] == 1
+                    neg_mask = tr_r["next_dir_1d"] == 0
+                    n_pos    = pos_mask.sum()
+                    n_neg    = neg_mask.sum()
+                    minority_mask = pos_mask if n_pos < n_neg else neg_mask
+                    minority_rows = tr_r[minority_mask]
+                    if len(minority_rows) > 10:
+                        rng = np.random.default_rng(42)
+                        noise = rng.normal(0, 0.01, size=minority_rows[avail].shape)
+                        aug_df = minority_rows.copy()
+                        aug_df[avail] = minority_rows[avail].values + noise
+                        tr_r = pd.concat([tr_r, aug_df], ignore_index=True)
+                        print(f"    [bear oversample] +{len(aug_df)} rows "
+                              f"(minority class: {'up' if n_pos < n_neg else 'down'}, "
+                              f"was {min(n_pos,n_neg)}/{len(tr_r)-len(aug_df)} "
+                              f"-> {min(n_pos,n_neg)+len(aug_df)}/{len(tr_r)})")
+
                 sw_r     = compute_sample_weights(tr_r["date"], half_life_days=half_life)
                 m_r      = Pipeline([("sc", StandardScaler()),
                                      ("m", LogisticRegression(C=0.1, max_iter=500, random_state=42))])
@@ -942,7 +1052,7 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                 # CalibratedClassifierCV with cv="prefit" wraps the already-trained
                 # pipeline and fits the calibration layer on the val set.
                 # Saves a separate _calibrated pkl for use in predictSpy.py.
-                if regime_name == "bear" and len(va_r) >= 20:
+                if regime_name in ("bear", "chop") and len(va_r) >= 20:
                     try:
                         # sklearn 1.9+: cv="prefit" removed — use cv=None, ensemble=False
                         # This wraps the already-fitted pipeline and learns isotonic calibration
@@ -953,12 +1063,12 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                         cal_probs = cal_model.predict_proba(va_r[avail].values)[:, 1]
                         cal_auc   = roc_auc_score(y_va_r, cal_probs) if len(np.unique(y_va_r)) > 1 else None
                         cal_da    = accuracy_score(y_va_r, (cal_probs >= 0.5).astype(int))
-                        cal_path  = os.path.join(MODEL_DIR, f"spy_logistic_regime_bear_calibrated_{TODAY}.pkl")
+                        cal_path  = os.path.join(MODEL_DIR, f"spy_logistic_regime_{regime_name}_calibrated_{TODAY}.pkl")
                         with open(cal_path, "wb") as fc:
                             pickle.dump({"model": cal_model, "features": avail,
-                                         "regime": "bear", "calibrated": True,
+                                         "regime": regime_name, "calibrated": True,
                                          "method": "isotonic", "trained_on": TODAY}, fc)
-                        print(f"    calibrated bear: dir_acc={cal_da:.4f}  AUC={round(cal_auc,4) if cal_auc else 'N/A'}")
+                        print(f"    calibrated {regime_name}: dir_acc={cal_da:.4f}  AUC={round(cal_auc,4) if cal_auc else 'N/A'}")
                         print(f"    saved calibrated -> {cal_path}")
                         # Plot calibration curve
                         try:
@@ -970,10 +1080,10 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                             ax.plot(mean_pred_cal, frac_pos_cal, "r-o", ms=4, label=f"Calibrated (Brier={brier_score_loss(y_va_r, cal_probs):.3f})")
                             ax.set_xlabel("Mean predicted prob")
                             ax.set_ylabel("Fraction positive")
-                            ax.set_title("Bear model calibration curve")
+                            ax.set_title(f"{regime_name.capitalize()} model calibration curve")
                             ax.legend(fontsize=8)
                             fig.tight_layout()
-                            cal_plot_path = os.path.expanduser("~/discordBot/outputs/markets/bear_calibration_curve.png")
+                            cal_plot_path = os.path.expanduser(f"~/discordBot/outputs/markets/{regime_name}_calibration_curve.png")
                             fig.savefig(cal_plot_path, dpi=120)
                             plt.close(fig)
                             print(f"    calibration plot -> {cal_plot_path}")
@@ -999,6 +1109,62 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                 print(f"    ERROR: {e}")
     else:
         print("  [warn] 'regime' column missing from spy_features.csv — run buildSpyFeatures.py")
+
+    # ── Bear-only expanding WFCV ───────────────────────────────────────────────
+    # Standard WFCV mixes all regimes. Bear model needs its own honest CV since
+    # it trains on ~400 rows and the 63-row val window is a single slice.
+    # Bear-only CV: 4 expanding folds × 50 bear rows each, trained on all prior bear rows.
+    if "regime" in df.columns:
+        print(f"\n{'='*56}")
+        print("  Bear-only expanding WFCV (4 folds x 50 bear rows)")
+        print(f"{'='*56}")
+        try:
+            bear_df_cv = df[df["regime"] == "bear"].copy().reset_index(drop=True)
+            bear_p, bear_avail = prep_df(bear_df_cv, BEAR_FEATURES, "next_dir_1d")
+            BEAR_FOLD = 50
+            N_BEAR_FOLDS = 4
+            total_bear = len(bear_p)
+            if total_bear < (N_BEAR_FOLDS + 1) * BEAR_FOLD:
+                print(f"  [skip] only {total_bear} bear rows — need {(N_BEAR_FOLDS+1)*BEAR_FOLD}+")
+            else:
+                fold_starts_b = [total_bear - (N_BEAR_FOLDS - i) * BEAR_FOLD
+                                  for i in range(N_BEAR_FOLDS)]
+                bear_accs, bear_aucs = [], []
+                print(f"  {'Fold':<8} {'Date range':<26} {'Dir Acc':>8} {'AUC':>8} {'n':>5}")
+                print("  " + "-" * 60)
+                for fs_b in fold_starts_b:
+                    if fs_b < BEAR_FOLD:
+                        continue
+                    tr_b = bear_p.iloc[:fs_b]
+                    va_b = bear_p.iloc[fs_b:fs_b + BEAR_FOLD]
+                    if len(va_b) < 20:
+                        continue
+                    sw_b = compute_sample_weights(tr_b["date"], half_life_days=half_life)
+                    m_b  = Pipeline([("sc", StandardScaler()),
+                                     ("m", LogisticRegression(C=0.1, max_iter=500, random_state=42))])
+                    try:
+                        m_b.fit(tr_b[bear_avail].values, tr_b["next_dir_1d"].values,
+                                **{"m__sample_weight": sw_b})
+                    except TypeError:
+                        m_b.fit(tr_b[bear_avail].values, tr_b["next_dir_1d"].values)
+                    yp_b  = m_b.predict_proba(va_b[bear_avail].values)[:, 1]
+                    yd_b  = (yp_b >= 0.5).astype(int)
+                    acc_b = accuracy_score(va_b["next_dir_1d"].values, yd_b)
+                    try:
+                        auc_b = roc_auc_score(va_b["next_dir_1d"].values, yp_b)
+                    except Exception:
+                        auc_b = None
+                    bear_accs.append(acc_b)
+                    if auc_b: bear_aucs.append(auc_b)
+                    d0 = str(va_b["date"].iloc[0].date())
+                    d1 = str(va_b["date"].iloc[-1].date())
+                    auc_str = f"{auc_b:.4f}" if auc_b else "  N/A"
+                    print(f"  fold {len(bear_accs):<3}  {d0} - {d1}  {acc_b:.4f}  {auc_str}  {len(va_b):>5}")
+                if bear_accs:
+                    print(f"\n  Bear WFCV: dir_acc={np.mean(bear_accs):.4f} ± {np.std(bear_accs):.4f}"
+                          + (f"  AUC={np.mean(bear_aucs):.4f} ± {np.std(bear_aucs):.4f}" if bear_aucs else ""))
+        except Exception as e_bwfcv:
+            print(f"  [bear WFCV error: {e_bwfcv}]")
 
     # ── threshold backtest with transaction costs ─────────────────────────────
     # For each probability threshold t: long SPY when blend_prob > t, flat otherwise.
@@ -1283,11 +1449,13 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                 auc_f = f"  auc={fd['auc']:.4f}" if "auc" in fd else ""
                 bt_str = ""
                 if "bt_sharpe" in fd:
+                    sized_str = (f" sized={fd['bt_sized_sharpe']:.3f}"
+                                 if fd.get("bt_sized_sharpe") is not None else "")
                     bt_str = (f"  | bt@0.54: Sharpe={fd['bt_sharpe']:.3f}"
                               f" ret={fd['bt_ann_ret']*100:.1f}%"
                               f" dd={fd['bt_maxdd']*100:.1f}%"
                               f" BH={fd['bh_sharpe']:.3f}"
-                              f" n={fd['bt_signals']}")
+                              f" n={fd['bt_signals']}{sized_str}")
                 print(f"    fold {i+1} ({fd['start']} - {fd['end']})"
                       f"  acc={fd['dir_acc']:.4f}{auc_f}{regime_str}{bt_str}")
 
