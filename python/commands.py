@@ -4674,6 +4674,19 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             try:    return f"{float(val):.3f}"
             except: return "---"
 
+        # ML scores for pitchers (loaded once, used in both mode branches)
+        try:
+            import sys as _sys
+            _sys.path.insert(0, pp)
+            from predictFantasy import get_ml_scores as _gml
+            _ml_pit = _gml("pitchers", ("daily",))
+        except Exception:
+            _ml_pit = {}
+        def _pit_ml(name):
+            import unicodedata as _ud
+            k = _ud.normalize("NFD", str(name)).encode("ascii","ignore").decode().strip().lower()
+            return _ml_pit.get(k, {}).get("ml_pts_daily")
+
         # ── Pitcher-favored: composite lineup score ───────────────────────────
         if mode == "pitchers":
             try:
@@ -4693,21 +4706,21 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
             rows_text = ""
             for _, row in df.head(10).iterrows():
+                ml = _pit_ml(row['pitcher'])
+                ml_str = f"  🤖 `{ml:.1f}` pts" if ml is not None else ""
                 rows_text += (
                     f"**{row['pitcher']}** vs {row['opposing_team']} *({row['matchup']})*\n"
-                    f"Composite OPS-against: `{fmt(row['composite_ops'])}` - "
-                    f"Coverage: `{row['coverage']}` batters · `{int(row['total_pa'])}` total PA\n"
-                    f"Best matchup: {row['best_batter']} `{fmt(row['best_ops'])}` OPS · "
-                    f"Toughest: {row['worst_batter']} `{fmt(row['worst_ops'])}` OPS\n\n"
+                    f"OPS-against: `{fmt(row['composite_ops'])}` · batters: `{row['coverage']}` · `{int(row['total_pa'])}` PA{ml_str}\n"
+                    f"Best: {row['best_batter']} `{fmt(row['best_ops'])}` · "
+                    f"Toughest: {row['worst_batter']} `{fmt(row['worst_ops'])}`\n\n"
                 )
                 # Split into two fields if getting long
                 if len(rows_text) > 900:
-                    embed.add_field(name="🧊 Pitcher Favored (Composite Lineup)", value=rows_text.strip(), inline=False)
+                    embed.add_field(name="\u200b", value=rows_text.strip(), inline=False)
                     rows_text = ""
 
             if rows_text.strip():
-                field_name = "🧊 Pitcher Favored (Composite Lineup)" if not embed.fields else "\u200b"
-                embed.add_field(name=field_name, value=rows_text.strip(), inline=False)
+                embed.add_field(name="\u200b", value=rows_text.strip(), inline=False)
 
             embed.set_footer(text="Composite OPS-against: lower = tougher outing for batters - Data via Baseball Savant / Statcast")
             await _send(interaction, embed=embed)
@@ -4731,19 +4744,23 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         )
 
         def format_batter_row(row):
+            ml = row.get("ml_pts_daily")
+            ml_str = f"  🤖`{float(ml):.1f}`" if ml is not None and str(ml) not in ("", "None") else ""
             return (
                 f"**{row['batter']}** vs {row['pitcher']} *({row['matchup']})*\n"
                 f"`{fmt(row['AVG'])} / {fmt(row['OBP'])} / {fmt(row['SLG'])}` · "
                 f"OPS: `{fmt(row['OPS'])}` · "
-                f"{int(row['H'])}H {int(row['HR'])}HR {int(row['BB'])}BB {int(row['K'])}K in {int(row['PA'])}PA\n\n"
+                f"{int(row['H'])}H {int(row['HR'])}HR {int(row['BB'])}BB {int(row['K'])}K in {int(row['PA'])}PA{ml_str}\n\n"
             )
 
         def format_pitcher_row(row):
+            ml = _pit_ml(row['pitcher'])
+            ml_str = f"  🤖`{float(ml):.1f}`" if ml is not None else ""
             return (
                 f"**{row['pitcher']}** vs {row['batter']} *({row['matchup']})*\n"
                 f"`{fmt(row['AVG'])} / {fmt(row['OBP'])} / {fmt(row['SLG'])}` · "
                 f"OPS: `{fmt(row['OPS'])}` · "
-                f"{int(row['H'])}H {int(row['HR'])}HR {int(row['BB'])}BB {int(row['K'])}K in {int(row['PA'])}PA\n\n"
+                f"{int(row['H'])}H {int(row['HR'])}HR {int(row['BB'])}BB {int(row['K'])}K in {int(row['PA'])}PA{ml_str}\n\n"
             )
 
         def add_fields(embed, rows, formatter, base_name, emoji):
@@ -4771,11 +4788,248 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             n = 5 if mode == "both" else 10
             add_fields(embed, df.head(n), format_batter_row, "Batter Favored (Highest OPS)", "🔥")
 
-        if mode in ("both", "pitchers"):
-            n = 5 if mode == "both" else 10
-            add_fields(embed, df.tail(n).iloc[::-1].reset_index(drop=True), format_pitcher_row, "Pitcher Favored (Lowest OPS)", "🧊")
+        if mode == "both":
+            # Pitcher section: use composite lineup CSV (same format as pitcher-only mode)
+            try:
+                pit_df = pd.read_csv(pitcher_csv_path)
+            except Exception:
+                pit_df = pd.DataFrame()
+            if not pit_df.empty:
+                n_pit = 5
+                rows_text = ""
+                for _, row in pit_df.head(n_pit).iterrows():
+                    ml = _pit_ml(row['pitcher'])
+                    ml_str = f"  🤖 `{ml:.1f}` pts" if ml is not None else ""
+                    rows_text += (
+                        f"**{row['pitcher']}** vs {row['opposing_team']} *({row['matchup']})*\n"
+                        f"OPS-against: `{fmt(row['composite_ops'])}` · batters: `{row['coverage']}` · `{int(row['total_pa'])}` PA{ml_str}\n"
+                        f"Best: {row['best_batter']} `{fmt(row['best_ops'])}` · "
+                        f"Toughest: {row['worst_batter']} `{fmt(row['worst_ops'])}`\n\n"
+                    )
+                if rows_text.strip():
+                    embed.add_field(name="🧊 Pitcher Favored (Best Composite Lineup)", value=rows_text.strip(), inline=False)
+
+        if mode == "pitchers":
+            # pitcher-only is handled above via composite CSV with early return
+            pass
 
         embed.set_footer(text="Data via Baseball Savant / Statcast")
+        await _send(interaction, embed=embed)
+
+    # ── /mlb ml ───────────────────────────────────────────────────────────────
+    @mlb_group.command(name="ml", description="Top batters & pitchers by ML predicted fantasy score for today's or tomorrow's games")
+    @app_commands.describe(
+        mode="Which players to show (default: both)",
+        day="Today's or tomorrow's games (default: tomorrow)"
+    )
+    @app_commands.choices(
+        mode=[
+            app_commands.Choice(name="Both (Top 5 each)",    value="both"),
+            app_commands.Choice(name="Top 10 Batters",       value="batters"),
+            app_commands.Choice(name="Top 10 Pitchers",      value="pitchers"),
+        ],
+        day=[
+            app_commands.Choice(name="Tomorrow", value="tomorrow"),
+            app_commands.Choice(name="Today",    value="today"),
+        ]
+    )
+    async def mlb_ml(interaction: discord.Interaction, mode: str = "both", day: str = "tomorrow"):
+        await _defer(interaction)
+        print(f"[DEBUG] /mlb ml called with mode='{mode}' day='{day}'")
+
+        # Team abbreviation -> full name map (features CSV uses abbrevs, games CSV uses full names)
+        TEAM_ABBREV = {
+            "ARI": "Arizona Diamondbacks", "ATH": "Athletics",         "ATL": "Atlanta Braves",
+            "BAL": "Baltimore Orioles",    "BOS": "Boston Red Sox",    "CHC": "Chicago Cubs",
+            "CHW": "Chicago White Sox",    "CIN": "Cincinnati Reds",   "CLE": "Cleveland Guardians",
+            "COL": "Colorado Rockies",     "DET": "Detroit Tigers",    "HOU": "Houston Astros",
+            "KCR": "Kansas City Royals",   "LAA": "Los Angeles Angels","LAD": "Los Angeles Dodgers",
+            "MIA": "Miami Marlins",        "MIL": "Milwaukee Brewers", "MIN": "Minnesota Twins",
+            "NYM": "New York Mets",        "NYY": "New York Yankees",  "OAK": "Athletics",
+            "PHI": "Philadelphia Phillies","PIT": "Pittsburgh Pirates","SDP": "San Diego Padres",
+            "SEA": "Seattle Mariners",     "SFG": "San Francisco Giants","STL": "St. Louis Cardinals",
+            "TBR": "Tampa Bay Rays",       "TEX": "Texas Rangers",     "TOR": "Toronto Blue Jays",
+            "WSN": "Washington Nationals",
+        }
+
+        games_csv = os.path.join(op, "sports/mlb/gamesToday.csv" if day == "today" else "sports/mlb/gamesTomorrow.csv")
+        starters_csv = os.path.join(op, "sports/mlb/probableStartersToday.csv" if day == "today" else "sports/mlb/probableStarters.csv")
+        feat_dir  = os.path.join(op, "features/sports")
+
+        date_str = datetime.today().strftime("%B %d, %Y") if day == "today" else (datetime.today() + timedelta(days=1)).strftime("%B %d, %Y")
+
+        try:
+            import sys as _sys
+            _sys.path.insert(0, pp)
+            from predictFantasy import get_ml_scores as _gml
+            bat_scores = _gml("batters",  ("daily", "weekly"))
+            pit_scores = _gml("pitchers", ("daily",))
+        except Exception as e:
+            await _send(interaction, f"❌ Could not load ML models: {e}")
+            return
+
+        def norm(name):
+            import unicodedata as _ud
+            return _ud.normalize("NFD", str(name)).encode("ascii", "ignore").decode().strip().lower()
+
+        # Build set of teams playing today/tomorrow from games CSV
+        playing_teams = set()
+        matchup_map   = {}   # team -> matchup string
+        try:
+            gdf = pd.read_csv(games_csv)
+            for _, row in gdf.iterrows():
+                m = str(row["matchup"])
+                if " @ " in m:
+                    away, home = m.split(" @ ", 1)
+                    playing_teams.add(away.strip())
+                    playing_teams.add(home.strip())
+                    matchup_map[away.strip()] = m
+                    matchup_map[home.strip()] = m
+        except Exception:
+            pass
+
+        if not playing_teams:
+            await _send(interaction, f"❌ No games found for {date_str}. Check that the games CSV has been generated.")
+            return
+
+        # Build probable starters set (for pitchers)
+        starting_pitchers = set()  # norm name -> matchup
+        starting_pitcher_matchup = {}
+        try:
+            sdf = pd.read_csv(starters_csv)
+            for _, row in sdf.iterrows():
+                k = norm(row["pitcher_name"])
+                starting_pitchers.add(k)
+                starting_pitcher_matchup[k] = str(row.get("matchup", ""))
+        except Exception:
+            pass
+
+        # Load most-recent team per batter from features CSV
+        batter_team = {}   # norm_name -> (team, fantasy_position, bat_order)
+        try:
+            bdf = pd.read_csv(os.path.join(feat_dir, "batter_features.csv"),
+                              usecols=["player_name", "game_date", "team", "fantasy_position", "BatOrder"],
+                              parse_dates=["game_date"], low_memory=False)
+            bdf = bdf.sort_values("game_date").groupby("player_name").last().reset_index()
+            for _, row in bdf.iterrows():
+                full_team = TEAM_ABBREV.get(str(row["team"]), str(row["team"]))
+                batter_team[norm(row["player_name"])] = (
+                    full_team,
+                    str(row.get("fantasy_position", "")),
+                    row.get("BatOrder", None)
+                )
+        except Exception:
+            pass
+
+        # Load most-recent team per pitcher
+        pitcher_team = {}  # norm_name -> team
+        try:
+            pdf = pd.read_csv(os.path.join(feat_dir, "pitcher_features.csv"),
+                              usecols=["player_name", "game_date", "team", "fantasy_position"],
+                              parse_dates=["game_date"], low_memory=False)
+            pdf = pdf.sort_values("game_date").groupby("player_name").last().reset_index()
+            for _, row in pdf.iterrows():
+                full_team = TEAM_ABBREV.get(str(row["team"]), str(row["team"]))
+                pitcher_team[norm(row["player_name"])] = (full_team, str(row.get("fantasy_position", "")))
+        except Exception:
+            pass
+
+        embed = discord.Embed(
+            title=f"🤖 ML Fantasy Predictions - {date_str}",
+            description="Predicted fantasy points · Daily = next game · Weekly = next 7 days",
+            color=0x002D72
+        )
+
+        # ── Batters ───────────────────────────────────────────────────────────
+        if mode in ("both", "batters"):
+            n = 5 if mode == "both" else 10
+            bat_rows = []
+            for norm_name, scores in bat_scores.items():
+                daily  = scores.get("ml_pts_daily")
+                weekly = scores.get("ml_pts_weekly")
+                if daily is None and weekly is None:
+                    continue
+                info = batter_team.get(norm_name)
+                if info is None:
+                    continue
+                team, pos, bat_order = info
+                if team not in playing_teams:
+                    continue
+                matchup = matchup_map.get(team, "")
+                bat_rows.append({
+                    "norm_name": norm_name,
+                    "display":   norm_name.title(),
+                    "team":      team,
+                    "pos":       pos,
+                    "bat_order": bat_order,
+                    "daily":     daily,
+                    "weekly":    weekly,
+                    "matchup":   matchup,
+                })
+            bat_rows.sort(key=lambda x: (x["weekly"] or 0), reverse=True)
+
+            if bat_rows:
+                text = ""
+                for r in bat_rows[:n]:
+                    d_str = f"`{r['daily']:.1f}`"  if r["daily"]  is not None else "---"
+                    w_str = f"`{r['weekly']:.1f}`" if r["weekly"] is not None else "---"
+                    order_str = f" · Bat #{int(r['bat_order'])}" if r["bat_order"] and str(r["bat_order"]) not in ("nan", "None") else ""
+                    text += (
+                        f"**{r['display']}** ({r['pos']}) - {r['team']}{order_str}\n"
+                        f"Daily: {d_str} pts · Weekly: {w_str} pts\n"
+                        f"*{r['matchup']}*\n\n"
+                    )
+                embed.add_field(name="🔥 Top Batters (by weekly projection)", value=text.strip(), inline=False)
+            else:
+                embed.add_field(name="🔥 Top Batters", value="No batter projections available for this day.", inline=False)
+
+        # ── Pitchers ──────────────────────────────────────────────────────────
+        if mode in ("both", "pitchers"):
+            n = 5 if mode == "both" else 10
+            pit_rows = []
+            for norm_name, scores in pit_scores.items():
+                daily = scores.get("ml_pts_daily")
+                if daily is None:
+                    continue
+                info = pitcher_team.get(norm_name)
+                if info is None:
+                    continue
+                team, pos = info
+                if team not in playing_teams:
+                    continue
+                # prefer probable starters, but include all if mode == pitchers
+                is_starter = norm_name in starting_pitchers
+                matchup = starting_pitcher_matchup.get(norm_name, matchup_map.get(team, ""))
+                pit_rows.append({
+                    "norm_name":  norm_name,
+                    "display":    norm_name.title(),
+                    "team":       team,
+                    "pos":        pos,
+                    "daily":      daily,
+                    "is_starter": is_starter,
+                    "matchup":    matchup,
+                })
+            # Sort: starters first (in both mode), then by daily score
+            if mode == "both":
+                pit_rows = [r for r in pit_rows if r["is_starter"]]
+            pit_rows.sort(key=lambda x: x["daily"], reverse=True)
+
+            if pit_rows:
+                text = ""
+                for r in pit_rows[:n]:
+                    sp_tag = " `SP`" if r["is_starter"] else f" `{r['pos']}`"
+                    text += (
+                        f"**{r['display']}**{sp_tag} - {r['team']}\n"
+                        f"Daily: `{r['daily']:.1f}` pts\n"
+                        f"*{r['matchup']}*\n\n"
+                    )
+                header = "🧊 Top Pitchers (probable starters, by daily projection)" if mode == "both" else "\u200b"
+                embed.add_field(name=header, value=text.strip(), inline=False)
+            else:
+                label = "🧊 Top Pitchers" if mode == "both" else "\u200b"
+                embed.add_field(name=label, value="No pitcher projections available for this day.", inline=False)
+
+        embed.set_footer(text="ML model trained on Statcast features · World Sillies scoring")
         await _send(interaction, embed=embed)
 
     # ── /mlb fantasyrisk ──────────────────────────────────────────────────────
@@ -4993,6 +5247,13 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             emb.add_field(name="🔟 Last 7",  value=f"K: {int(k7) if pd.notna(k7) else '-'}  W: {int(w7) if pd.notna(w7) else '-'}  ERA: {float(era7):.2f if pd.notna(era7) else '-'}", inline=False)
             emb.add_field(name="📊 Season",  value=f"K: {int(ks) if pd.notna(ks) else '-'}  W: {int(ws) if pd.notna(ws) else '-'}  ERA: {float(eras):.2f if pd.notna(eras) else '-'}", inline=False)
         emb.set_footer(text="World Sillies scoring · data via Baseball Savant")
+        # ML score
+        ml_d = row.get("ml_pts_daily")
+        ml_w = row.get("ml_pts_weekly")
+        if pd.notna(ml_w) and ml_w != "":
+            emb.add_field(name="🤖 ML Forecast", value=f"**{float(ml_w):.1f}** pts next 7 days  ·  **{float(ml_d):.1f}** pts next game", inline=False)
+        elif pd.notna(ml_d) and ml_d != "":
+            emb.add_field(name="🤖 ML Forecast", value=f"**{float(ml_d):.1f}** pts next game", inline=False)
         await _send(interaction, embed=emb)
 
     @mlb_group.command(name="hotcold", description="Who's hot and who's cold in the last 7 days")
@@ -5018,7 +5279,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         def _fmt_row(r):
             trend = float(r["trend_pct"]) if pd.notna(r.get("trend_pct")) else 0
             arrow = f"{trend:+.0f}%"
-            return f"**{r['player_name']}** ({r['team']})  `{float(r['avg_pts_last7']):.1f} pts/g`  {arrow}"
+            ml_w  = r.get("ml_pts_weekly")
+            ml_str = f"  🤖`{float(ml_w):.1f}`wk" if pd.notna(ml_w) and ml_w != "" else ""
+            return f"**{r['player_name']}** ({r['team']})  `{float(r['avg_pts_last7']):.1f} pts/g`  {arrow}{ml_str}"
         emb = discord.Embed(title="⚾ World Sillies - Hot & Cold Last 7 Days", color=0xFF4500)
         if not hot_b.empty:
             emb.add_field(name="🔥 Hot Bats",   value="\n".join(_fmt_row(r) for _, r in hot_b.iterrows()),  inline=False)
@@ -5187,6 +5450,15 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             else:
                 trend_str = "`-`"
 
+            # ML score badge
+            ml_d = p.get("ml_pts_daily")
+            ml_w = p.get("ml_pts_weekly")
+            ml_str = ""
+            if ml_w is not None:
+                ml_str = f"  ·  🤖 `{ml_w:.1f}` wk"
+            elif ml_d is not None:
+                ml_str = f"  ·  🤖 `{ml_d:.1f}`"
+
             # matchup snippet
             matchup_str = ""
             if show_matchup:
@@ -5199,7 +5471,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 elif pit:
                     matchup_str = f"  ·  vs {pit[:22]}"
 
-            return f"{sig}{inj_badge} **{name}** `{slot}`  {trend_str}{matchup_str}"
+            return f"{sig}{inj_badge} **{name}** `{slot}`  {trend_str}{ml_str}{matchup_str}"
 
         # ── batter embed ──────────────────────────────────────────────────────
         batters = sorted(data.get("batters", []), key=lambda x: SIGNAL_ORDER.get(x.get("signal",""), 9))
@@ -5491,14 +5763,15 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     f"**{team}  ·  {pos}**\n"
                     f"{stat_line or '-'}\n"
                     f"**Stream `{ss}`** - {s_sig}\n{stream_block}"
-                    f"{drop_line}"
+                    + (f"\n🤖 ML: `{p['ml_pts_daily']:.1f}` pts next game" if p.get("ml_pts_daily") is not None else "")
+                    + drop_line
                 )
             else:
                 val = (
                     f"**{team}  ·  {pos}**\n"
                     f"{stat_line or '-'}\n"
                     f"**Roster `{rs}`** - {r_sig}\n{roster_block}"
-                    f"{drop_line}"
+                    + drop_line
                 )
 
             emb.add_field(
@@ -5637,12 +5910,17 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
                 reason_block = "\n".join(f"  · {r}" for r in reasons) if reasons else "  · no recent data"
 
+                ml_line = ""
+                if p.get("ml_pts_weekly") is not None:
+                    ml_line = f"\n🤖 ML: `{p['ml_pts_weekly']:.1f}` pts/wk  ·  `{p['ml_pts_daily']:.1f}` pts/game" if p.get("ml_pts_daily") is not None else f"\n🤖 ML: `{p['ml_pts_weekly']:.1f}` pts/wk"
+
                 val = (
                     f"**{team}  ·  {pos}**  ·  {pct:.0f}% owned\n"
                     f"{stat_line or '-'}\n"
                     f"**Stream `{ss}`** - {s_sig}\n"
                     f"**Roster `{rs}`** - {r_sig}\n"
                     f"{reason_block}"
+                    f"{ml_line}"
                 )
                 emb.add_field(name=f"{medals[i]} {name}", value=val, inline=False)
 
@@ -5868,8 +6146,10 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
     tree.add_command(mlb_group)
 
-    # ── /markets signal (standalone — markets_group at 25-cmd limit) ─────────
-    @tree.command(name="spysignal", description="SPY ML model signal - next-day direction + 5-day outlook", guild=guild)
+    # ── /spy group ────────────────────────────────────────────────────────────
+    spy_group = app_commands.Group(name="spy", description="SPY ML model - signal, diagnostics, block gaps", guild_ids=[guild.id])
+
+    @spy_group.command(name="signal", description="SPY ML model signal - next-day direction + 5-day outlook")
     @app_commands.describe(show_context="Show full macro context (VIX, yield curve, event calendar)")
     async def spy_signal(interaction: discord.Interaction, show_context: bool = False):
         await interaction.response.defer(thinking=True)
@@ -5954,13 +6234,15 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # Position sizing
         if pos_size is not None:
-            size_pct = int(pos_size * 100)
+            size_pct = f"{pos_size * 100:.1f}"
             if pos_size == 0.0:
-                size_emoji = "⛔"
-            elif pos_size == 0.5:
-                size_emoji = "🟡"
+                size_emoji = "⛔"          # no signal / kill switch
+            elif pos_size < 0.25:
+                size_emoji = "🟡"          # small position
+            elif pos_size < 0.60:
+                size_emoji = "🟠"          # medium position (orange circle U+1F7E0)
             else:
-                size_emoji = "✅"
+                size_emoji = "✅"          # large position
             emb.add_field(
                 name=f"{size_emoji} Position Size: {size_pct}%",
                 value=f"_{sizing_reason}_",
@@ -6004,8 +6286,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, embeds=[emb])
 
 
-    # ── /spydiagnostics ───────────────────────────────────────────────────────
-    @tree.command(name="spydiagnostics", description="SPY ML model diagnostics - residuals, calibration, rolling accuracy, run history", guild=guild)
+    # ── /spy diagnostics ─────────────────────────────────────────────────────
+    @spy_group.command(name="diagnostics", description="SPY ML model diagnostics - residuals, calibration, rolling accuracy, run history")
     @app_commands.describe(regenerate="Re-run the eval pipeline before plotting (slow ~20s, default: no)")
     async def spy_diagnostics(interaction: discord.Interaction, regenerate: str = "no"):
         await interaction.response.defer(thinking=True)
@@ -6030,6 +6312,157 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, file=discord.File(out_img))
         except Exception as e:
             await _send(interaction, f"diagnostics error: `{e}`")
+
+
+    # ── /spy gaps ─────────────────────────────────────────────────────────────
+    @spy_group.command(name="gaps", description="Latest SPY block order gaps - size, exchange, direction, and implied move at each horizon")
+    async def spy_gaps(interaction: discord.Interaction):
+        await interaction.response.defer(thinking=True)
+        import json as _json
+        try:
+            result = await asyncio.to_thread(
+                lambda: __import__('subprocess').run(
+                    [PYTHON, os.path.join(pp, "spyGaps.py")],
+                    capture_output=True, text=True, timeout=20
+                )
+            )
+            if result.returncode != 0:
+                await _send(interaction, f"gaps error: `{result.stderr[:300]}`")
+                return
+            data = _json.loads(result.stdout)
+        except Exception as e:
+            await _send(interaction, f"gaps error: `{e}`")
+            return
+
+        if "error" in data:
+            await _send(interaction, f"gaps: {data['error']}")
+            return
+
+        blocks      = data.get("blocks", [])
+        mode        = data.get("mode", "")
+        unfilled_n  = data.get("unfilled_count", 0)
+        total_n     = data.get("total_events", 0)
+        live_price  = data.get("current_price")
+
+        if not blocks:
+            await _send(interaction, "No block gap data available.")
+            return
+
+        def dir_emoji(direction):
+            return "🟢" if direction == "above_market" else "🔴"
+
+        def dir_label(direction):
+            return "ABOVE market (bullish)" if direction == "above_market" else "BELOW market (bearish)"
+
+        embeds = []
+        for i, b in enumerate(blocks):
+            direction    = b.get("direction", "")
+            block_price  = b.get("block_price", 0)
+            mkt_price    = b.get("market_price", 0)
+            gap_pct      = b.get("gap_pct", 0)
+            dev_pct      = b.get("deviation_pct", 0)
+            dollar_str   = b.get("dollar_str", "?")
+            size_shares  = b.get("size_shares", 0)
+            exchange     = b.get("exchange", "?")
+            exch_name    = b.get("exchange_name", exchange)
+            trade_date   = b.get("trade_date", "?")
+            high_dev     = b.get("high_deviation", False)
+            is_filled    = b.get("is_filled", False)
+            filled_today = b.get("filled_today", False)
+            distance_pct = b.get("distance_pct")
+            fwd          = b.get("forward_moves", {})
+
+            # block time - strip timezone, just keep HH:MM ET
+            raw_time = b.get("block_time", "")
+            try:
+                t = raw_time.split(".")[0]
+                t = t.replace("T", " ")
+                block_time_str = t[-8:-3] + " ET"
+            except Exception:
+                block_time_str = raw_time[:16]
+
+            gap_sign     = "+" if gap_pct >= 0 else ""
+            high_dev_tag = " ⚡ HIGH DEV" if high_dev else ""
+
+            if filled_today:
+                filled_tag = " (FILLED TODAY 🔔)"
+                color      = 0xffaa00
+            elif is_filled:
+                filled_tag = " (FILLED)"
+                color      = 0x888888
+            else:
+                filled_tag = " (OPEN)"
+                color      = 0x00cc44 if direction == "above_market" else 0xff3333
+
+            title = f"{dir_emoji(direction)} SPY Block Gap - {trade_date}{filled_tag}"
+
+            # Current price / distance line
+            if live_price and not is_filled:
+                dist_sign = "+" if (distance_pct or 0) >= 0 else ""
+                live_line = f"**SPY Now:** ${live_price:,.2f}  |  **Dist to gap:** {dist_sign}{distance_pct:.2f}% away"
+            elif live_price and filled_today:
+                live_line = f"**SPY Now:** ${live_price:,.2f}  - gap touched today"
+            else:
+                live_line = None
+
+            desc_lines = [
+                f"**Block Price:** ${block_price:,.4f}  |  **Market Price at print:** ${mkt_price:,.4f}",
+                f"**Gap:** {gap_sign}{gap_pct:.4f}% from market  |  **Deviation:** {dev_pct:.4f}%{high_dev_tag}",
+                f"**Direction:** {dir_label(direction)}",
+                f"**Size:** {size_shares:,} shares  ({dollar_str})",
+                f"**Exchange:** {exchange} - {exch_name}",
+                f"**Printed:** {trade_date} at {block_time_str}",
+            ]
+            if live_line:
+                desc_lines.append(live_line)
+
+            emb = discord.Embed(
+                title=title,
+                description="\n".join(desc_lines),
+                color=color
+            )
+
+            # Forward horizon fields - show "today" first if filled intraday, then historical
+            HORIZ_ORDER = ["today", "1d", "3d", "1w", "2w", "1mo"] if "today" in fwd else ["1d", "3d", "1w", "2w", "1mo"]
+            for h in HORIZ_ORDER:
+                hd      = fwd.get(h, {})
+                label   = hd.get("label", h)
+                close   = hd.get("close")
+                pct_mkt = hd.get("pct_from_market")
+                pct_gap = hd.get("pct_toward_gap", 0.0)
+                reached = hd.get("reached", False)
+                filled  = hd.get("filled", False)
+
+                if not filled:
+                    val = "_pending_"
+                else:
+                    sign      = "+" if (pct_mkt or 0) >= 0 else ""
+                    reach_tag = " - **reached gap** ✓" if reached else ""
+                    val = (
+                        f"Close: **${close:,.2f}**\n"
+                        f"{sign}{pct_mkt:.2f}% from market{reach_tag}\n"
+                        f"_{pct_gap:.1f}% toward gap_"
+                    )
+
+                emb.add_field(name=label, value=val, inline=True)
+
+            # pad to multiple of 3 for clean Discord layout
+            n_fields = len(HORIZ_ORDER)
+            if n_fields % 3 != 0:
+                for _ in range(3 - (n_fields % 3)):
+                    emb.add_field(name="\u200b", value="\u200b", inline=True)
+
+            if mode == "unfilled":
+                footer_txt = f"Showing {len(blocks)} open gap(s) from last 90 days - {data.get('unfilled_total', unfilled_n)} total unfilled all-time - {total_n} total block events"
+            else:
+                footer_txt = f"No open gaps in last 90 days - showing most recent filled - {total_n} total block events"
+            emb.set_footer(text=footer_txt)
+
+            embeds.append(emb)
+
+        await _send(interaction, embeds=embeds)
+
+    tree.add_command(spy_group)
 
 
     # ── /markets gex ─────────────────────────────────────────────────────────

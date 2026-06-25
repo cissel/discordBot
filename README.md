@@ -178,7 +178,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `short` | most shorted stocks |
 | `trades` | recent trade chart |
 | `model` | SPY returns model - OLS + NW-HAC robust SEs + AR lags + options flow (1Y/2Y/3Y/5Y/max lookback) |
-| `signal` | SPY ML model signal - next-day direction probability and 5-day outlook. Optional `show_context` param shows VIX, yield curve, and event calendar. Flags upcoming FOMC/CPI/NFP events. Use `/spysignal` (standalone - markets group at 25-cmd limit). |
+| `signal` | SPY ML model signal - next-day direction probability and 5-day outlook. Optional `show_context` param shows VIX, yield curve, and event calendar. Flags upcoming FOMC/CPI/NFP events. Use `/spy signal` (under `/spy` group). |
 
 #### SPY ML feature pipeline (daily cron at 4:15 PM ET)
 | Script | Output | Description |
@@ -198,8 +198,9 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `evalSpyModel.py` | `outputs/features/markets/eval_spy_*.csv` | Re-runs val-set inference on all 5 SPY models, writes prediction CSVs for diagnostics |
 
 **Discord commands:**
-- `/spysignal` - next-day direction + 5-day outlook (standalone, markets group at limit)
-- `/spydiagnostics [regenerate]` - 5-panel diagnostic plot: calibration, residuals, rolling accuracy, run history
+- `/spy signal` - next-day direction + 5-day outlook (under `/spy` group)
+- `/spy diagnostics [regenerate]` - 5-panel diagnostic plot: calibration, residuals, rolling accuracy, run history
+- `/spy gaps` - latest SPY block order gaps: block price, exchange, direction, deviation %, dollar value, and % move from market price at each horizon (1d/3d/1w/2w/1mo)
 - `/btcsignal` - BTC ML model signal: next-day direction + 5-day outlook + on-chain context (MVRV, NUPL, hashrate, halving cycle, dominance)
 - `/btcdiagnostics [regenerate]` - BTC 5-panel diagnostic plot: predicted vs actual, residuals, rolling 30d accuracy, run history, MVRV zone accuracy
 - `/gex [timeframe]` - Dealer GEX + DIX chart: gamma exposure regime (suppression vs destabilizing) + dark pool buying pressure, 5 timeframes (3M/6M/1Y/3Y/ALL). Data: SqueezeMetrics 2011-present. Refreshes data on each call. Lives under `/markets gex`.
@@ -223,6 +224,15 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `BTC Dominance` | BTC % of total crypto market cap |
 | `BTC Realized Price` | on-chain cost basis layers - realized price, true market mean, active investor mean, STH realized price |
 | `BTC Miner Capitulation` | price relative to last difficulty bottom, colored by blocks elapsed since capitulation event |
+
+### `/spy`
+SPY ML model commands. Block gap detection runs daily via cron and accumulates forward outcomes over 1d/3d/1w/2w/1mo horizons.
+
+| command | description |
+|---|---|
+| `signal` | next-day direction + 5-day outlook. Optional `show_context` for VIX/yield curve/event calendar. Flags FOMC/CPI/NFP windows |
+| `diagnostics [regenerate]` | 5-panel diagnostic plot: calibration curve, residuals, rolling 30d accuracy, run history |
+| `gaps` | latest SPY block order gaps - block price, exchange, direction (above/below market at print), deviation %, dollar value, and % move from market price at each forward horizon |
 
 ### `/space`
 | command | description |

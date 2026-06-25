@@ -16,6 +16,13 @@ MLB_DIR     = BASE / "outputs/sports/mlb"
 FANTASY_DIR = BASE / "outputs/sports/mlb/fantasy"
 OUT_JSON    = FANTASY_DIR / "compare.json"
 
+import sys as _sys
+_sys.path.insert(0, str(BASE / "python"))
+try:
+    from predictFantasy import get_ml_scores as _get_ml_scores
+except Exception:
+    _get_ml_scores = None
+
 CURRENT_YEAR = datetime.date.today().year
 TODAY        = datetime.date.today()
 
@@ -518,6 +525,12 @@ def main():
 
     out_players = []
 
+    _ml_bat = _get_ml_scores("batters",  ("daily",)) if _get_ml_scores else {}
+    _ml_pit = _get_ml_scores("pitchers", ("daily",)) if _get_ml_scores else {}
+    def _ml_lookup(name, is_pitcher):
+        d = _ml_pit.get(norm(name), {}) if is_pitcher else _ml_bat.get(norm(name), {})
+        return d.get("ml_pts_daily"), None
+
     for name in names:
         print(f"  resolving {name}...")
         info = search_player(name)
@@ -562,6 +575,8 @@ def main():
                 "stream_score":  ss,
                 "roster_score":  rs,
                 "stream_signal": stream_signal(ss),
+                "ml_pts_daily":  _ml_lookup(info["fullName"], True)[0],
+                "ml_pts_weekly": _ml_lookup(info["fullName"], True)[1],
                 "roster_signal": roster_signal(rs),
                 "stream_reasons": sr,
                 "roster_reasons": rr,
@@ -598,6 +613,8 @@ def main():
                 "stream_score":  ss,
                 "roster_score":  rs,
                 "stream_signal": stream_signal(ss),
+                "ml_pts_daily":  _ml_lookup(info["fullName"], False)[0],
+                "ml_pts_weekly": _ml_lookup(info["fullName"], False)[1],
                 "roster_signal": roster_signal(rs),
                 "stream_reasons": sr,
                 "roster_reasons": rr,

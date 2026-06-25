@@ -89,7 +89,10 @@ def already_fetched(date, log_df):
     match = log_df[log_df["date"].astype(str) == date_str]
     if match.empty:
         return False
-    return match.iloc[-1]["status"] == "ok"
+    row = match.iloc[-1]
+    # Only treat as already fetched if we actually got rows.
+    # 0-row "ok" entries may be 5am runs before Savant publishes data (~9am ET).
+    return row["status"] == "ok" and int(row["rows"]) > 0
 
 
 def month_path(date):

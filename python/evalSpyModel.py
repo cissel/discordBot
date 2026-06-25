@@ -50,11 +50,11 @@ VAL_DAYS = 252
 # ── model configs ─────────────────────────────────────────────────────────────
 # (target, model_type)
 CONFIGS = [
-    ("next_ret_1d", "ridge"),
-    ("next_ret_1d", "gbm"),
-    ("next_dir_1d", "logistic"),
-    ("next_dir_1d", "gbm"),
-    ("next_ret_5d", "gbm"),
+    ("next_ret_1d",  "ridge"),
+    ("next_ret_1d",  "gbm"),
+    ("next_dir_1d",  "logistic"),
+    ("next_dir_1d",  "gbm_ensemble"),
+    ("next_ret_5d",  "gbm"),
 ]
 
 # Sparse features: impute with column median before dropna on core features.
@@ -67,20 +67,75 @@ SPARSE_FEATURES = [
     "sector_risk_on_r5", "sector_risk_off_r5", "sector_rotation_r5",
     "xlf_spy_rs_5d", "xle_spy_rs_5d",
     "sector_dispersion_1d", "sector_dispersion_r5",
-    # VWAP features
+    # VWAP / intraday — 52% coverage (pre-2021 gap)
     "vwap_dev_close", "vwap_dev_open",
     "vwap_cross_count", "vwap_time_above_pct",
     "high_vol_above_vwap", "vol_concentration",
     "vwap_dev_z21", "vwap_dev_r5", "vol_vwap_corr_5d",
+    "vwap_dev_am", "open_drive_flag", "late_reversal_flag",
+    "am_range", "pm_range", "gap_fill_flag", "vol_am_pct",
+    "premarket_ret", "premarket_vol_ratio", "overnight_gap",
     # Block signals
     "block_active_flag", "block_dollar_flow_5d",
     "block_net_direction_5d", "block_dev_mean_5d",
     "block_dark_pool_5d", "days_since_last_block",
     "block_highdev_5d",
-    # Intraday features
-    "first_hour_ret", "last_hour_ret", "am_range", "pm_range",
-    "gap_fill_flag", "vwap_dev_am", "open_drive_flag", "vol_am_pct",
-    "late_reversal_flag", "premarket_ret", "premarket_vol_ratio", "overnight_gap",
+    "first_hour_ret", "last_hour_ret",
+    # Regime interaction features (inherit sparsity from intraday parents)
+    "open_drive_x_bear", "open_drive_x_bull",
+    "dix_chg_x_bear", "dix_chg_x_bull",
+    "sector_riskoff_x_bear",
+    "mom_x_regime_stability", "mom63_x_regime_stability",
+    "vix_rv_x_bear", "vix_rv_x_chop",
+    # Moon phase (dense, listed for safety)
+    "moon_phase", "moon_phase_sin", "moon_phase_cos",
+    "days_to_full_moon", "days_to_new_moon",
+    "moon_full_flag", "moon_new_flag",
+    # Weather — occasional missing days
+    "tavg_nyc", "temp_range_nyc", "prcp_flag_nyc",
+    "snow_flag_nyc", "sunshine_proxy_nyc",
+    "tavg_chi", "temp_range_chi", "prcp_flag_chi", "sunshine_proxy_chi",
+    # Wikipedia — missing on market holidays
+    "wiki_stock_market_views", "wiki_sp500_views", "wiki_economy_views",
+    "wiki_total_views", "wiki_views_z21",
+    # Holidays — dense but listed for safety
+    "is_pre_holiday", "is_post_holiday", "days_to_next_holiday", "holiday_week",
+    # MTA — only from 2020-03-01
+    "mta_subway_riders", "mta_bus_riders", "mta_total_riders", "mta_riders_z21",
+    # Reddit WSB — 2018+, sparse before 2020
+    "wsb_avg_score", "wsb_avg_comments", "wsb_score_z21",
+    # Alt data 2
+    "daylight_hours_nyc", "daylight_chg_7d", "daylight_z365",
+    "earnings_season_flag", "days_to_earnings_season",
+    "pres_approval", "pres_approval_chg_21d",
+    "cboe_pcr_equity",
+    # Google Trends (weekly interpolated, +2bd lag)
+    "trends_spy", "trends_crash", "trends_recession", "trends_buy_stocks",
+    "trends_volatility", "trends_fear_index", "trends_fear_z21",
+    "trends_bankruptcy", "trends_unemployment", "trends_payday_loan",
+    "trends_margin_call", "trends_how_invest",
+    "trends_distress_index", "trends_risk_appetite_index",
+    # Sentiment
+    "aaii_bullish", "aaii_bearish", "aaii_bull_bear_spread", "aaii_bull_z8",
+    "cfg_value", "cfg_z21", "cfg_extreme_fear", "cfg_greed",
+    "icsa_z52", "icsa_chg_4w", "ccsa_z52", "umcsent_z12", "umcsent_chg_3m",
+    # Warmup-window NaN features
+    "vix_z252", "vvix_z21", "vvix_chg_5d", "vix_term_slope", "vix_term_z21",
+    "vix_spike_flag", "vix_ma20_ratio", "vwap_dev_close",
+    "gld_corr_x_vol", "gld_spy_corr_63", "gld_corr63_x_era",
+    # Rate shock / dist regime / interaction features
+    "rate_chg_63d", "rate_chg_252d", "rate_shock_flag", "rate_easing_flag",
+    "rate_speed_z63", "rate_shock_x_bear", "rate_speed_x_bear",
+    "ret_skew_21", "ret_skew_63", "ret_kurt_21", "ret_skew_z21",
+    "drawdown_63d", "regime_age_z",
+    "fear_z21_x_bear", "fear_z21_x_bull", "fear_z21_x_chop",
+    "crash_x_bear", "recession_x_bear",
+    "vol_x_bear", "buy_x_bull",
+    "distress_x_bear", "distress_x_chop",
+    "aaii_spread_x_bear", "aaii_spread_x_bull",
+    "cfg_z21_x_bear", "cfg_z21_x_bull",
+    "icsa_z52_x_bear", "icsa_z52_x_chop",
+    "fear_z21_x_rate_shock", "recession_x_rate_shock", "icsa_x_rate_shock",
 ]
 
 # Context columns included in each eval CSV (when present in spy_features.csv)
@@ -150,24 +205,35 @@ def is_classifier(target, model_type):
 def run_inference(bundle, val_df, avail, target):
     """
     Run model inference on val set.
+    Handles both single model (bundle['model']) and ensemble (bundle['models']).
     Classifiers: predicted = predict_proba[:,1], actual = binary label (0/1).
     Regressors:  predicted = predict(),          actual = continuous return.
     Returns a dict with keys: actual, predicted, prob_up (NaN for regressors).
     """
-    model    = bundle["model"]
-    X_val    = val_df[avail].values
-    y_val    = val_df[target].values
+    X_val = val_df[avail].values
+    y_val = val_df[target].values
 
-    clf = is_classifier(target, model_type=None)  # resolved below by caller
-    # Determine by whether predict_proba exists AND target is next_dir_1d
-    if target == "next_dir_1d":
-        prob_up   = model.predict_proba(X_val)[:, 1]
-        predicted = prob_up                    # primary output for classifiers
-        actual    = y_val.astype(float)
+    # Support both single model and ensemble (list of models)
+    if "models" in bundle:
+        models = bundle["models"]
+        if target == "next_dir_1d":
+            prob_up   = np.mean([m.predict_proba(X_val)[:, 1] for m in models], axis=0)
+            predicted = prob_up
+            actual    = y_val.astype(float)
+        else:
+            predicted = np.mean([m.predict(X_val) for m in models], axis=0)
+            actual    = y_val.astype(float)
+            prob_up   = np.full(len(actual), np.nan)
     else:
-        predicted = model.predict(X_val)
-        actual    = y_val.astype(float)
-        prob_up   = np.full(len(actual), np.nan)
+        model = bundle["model"]
+        if target == "next_dir_1d":
+            prob_up   = model.predict_proba(X_val)[:, 1]
+            predicted = prob_up
+            actual    = y_val.astype(float)
+        else:
+            predicted = model.predict(X_val)
+            actual    = y_val.astype(float)
+            prob_up   = np.full(len(actual), np.nan)
 
     return {
         "actual":    actual,
@@ -200,8 +266,17 @@ def compute_metrics(actual, predicted, prob_up, target):
 
 def get_top5_features(bundle, avail):
     """Extract top-5 feature names from model coefficients/importances."""
+    # Handle ensemble (list of models) — average importances
+    if "models" in bundle:
+        models = bundle["models"]
+        inners = [m.named_steps.get("m") if hasattr(m, "named_steps") else m for m in models]
+        if hasattr(inners[0], "feature_importances_"):
+            imps    = np.mean([m.feature_importances_ for m in inners], axis=0)
+            top_idx = np.argsort(imps)[::-1][:5]
+            return "; ".join([f"{avail[i]}={imps[i]:.3f}" for i in top_idx])
+        return ""
     model = bundle["model"]
-    inner = model.named_steps.get("m")
+    inner = model.named_steps.get("m") if hasattr(model, "named_steps") else model
     top5  = []
     if hasattr(inner, "feature_importances_"):
         imps    = inner.feature_importances_

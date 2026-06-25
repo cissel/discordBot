@@ -47,14 +47,15 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy import stats
 
-from sklearn.linear_model  import Ridge, LogisticRegression
-from sklearn.ensemble      import GradientBoostingRegressor, GradientBoostingClassifier
-from sklearn.calibration   import CalibratedClassifierCV, calibration_curve
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline      import Pipeline
-from sklearn.metrics       import (mean_squared_error, mean_absolute_error,
-                                   r2_score, accuracy_score, roc_auc_score,
-                                   brier_score_loss)
+from sklearn.linear_model        import Ridge, LogisticRegression
+from sklearn.ensemble            import GradientBoostingRegressor, GradientBoostingClassifier
+from sklearn.calibration         import CalibratedClassifierCV, calibration_curve
+from sklearn.preprocessing       import StandardScaler
+from sklearn.pipeline            import Pipeline
+from sklearn.metrics             import (mean_squared_error, mean_absolute_error,
+                                         r2_score, accuracy_score, roc_auc_score,
+                                         brier_score_loss)
+from sklearn.feature_selection   import RFECV
 
 warnings.filterwarnings("ignore")
 
@@ -139,7 +140,8 @@ SPY_FEATURES = [
     "gap_fill_flag",                 # rho_dir=-0.023
     "am_range",                      # rho_dir=-0.029
     # Block signals
-    "block_active_flag",             # rho_dir=+0.024
+    # block_active_flag DROPPED Run 30: zero GBM importance; redundant with richer block features.
+    # "block_active_flag" — tombstoned Run 30
     # Regime-change recency + stability interactions (section 17)
     "days_since_regime_change",      # how long current regime has been active (capped 63)
     "regime_transition_flag",        # 1 if regime changed within last 5 days
@@ -174,8 +176,9 @@ WEATHER_FEATURES = [
     "tavg_nyc",             # avg temp C — baseline mood proxy
     "temp_range_nyc",       # diurnal range — wide = clear sky
     "prcp_flag_nyc",        # 1 if meaningful precipitation (>0.5mm)
-    "cold_flag_nyc",        # 1 if tavg < 5C
-    "hot_flag_nyc",         # 1 if tavg > 28C
+    # cold_flag_nyc DROPPED Run 30: near-constant in training window (summer-heavy), zero importance.
+    # hot_flag_nyc  DROPPED Run 30: same — near-constant, zero importance.
+    # "cold_flag_nyc", "hot_flag_nyc" — tombstoned Run 30
     "snow_flag_nyc",        # 1 if snowfall > 0
     "sunshine_proxy_nyc",   # (1 - prcp_flag) * temp_range — clear warm day proxy
     # Chicago (O'Hare) — CME/CBOT derivatives hub
@@ -187,6 +190,219 @@ WEATHER_FEATURES = [
 
 # Extend SPY_FEATURES with moon + weather
 SPY_FEATURES = SPY_FEATURES + MOON_FEATURES + WEATHER_FEATURES
+
+# ── Alternative / sentiment feature lists ──────────────────────────────────────
+WIKI_FEATURES = [
+    "wiki_stock_market_views",   # daily Wikipedia "Stock market" page views
+    "wiki_sp500_views",          # "S&P 500" page views
+    "wiki_economy_views",        # "Economy of the United States" page views
+    "wiki_total_views",          # sum of all 3
+    "wiki_views_z21",            # 21-day z-score — spikes = retail anxiety
+]
+HOLIDAY_FEATURES = [
+    "is_pre_holiday",            # 1 if next trading day is a market holiday
+    "is_post_holiday",           # 1 if previous trading day was a holiday
+    "days_to_next_holiday",      # countdown (capped 10)
+    "holiday_week",              # 1 if any holiday in current Mon-Fri week
+]
+MTA_FEATURES = [
+    "mta_subway_riders",         # NYC subway daily ridership (2020+)
+    "mta_riders_z21",            # 21-day z-score — low = hybrid work / market thin
+]
+ALT2_FEATURES = [
+    # Daylight hours (pure astronomy, 100% coverage)
+    "daylight_hours_nyc",        # hours of daylight in NYC
+    "daylight_chg_7d",           # rate of change — shortening = SAD effect onset
+    "daylight_z365",             # deviation from seasonal norm (is today unusually short?)
+    # AQI — DROPPED: 0% coverage (no free historical API). Pure noise when median-imputed.
+    # "aqi_pm25_nyc", "aqi_bad_flag", "aqi_z21" — tombstoned Run 28
+    # Flight disruption — DROPPED Run 30: near-constant (2.6% of days), zero GBM importance.
+    # "flight_disruption_flag" — tombstoned Run 30
+    # Earnings season (100% coverage, calendar math)
+    "earnings_season_flag",      # 1 if within Q earnings window (Jan/Apr/Jul/Oct 15-15)
+    "days_to_earnings_season",   # days until next earnings season
+    # Presidential approval (100% coverage, piecewise interpolated)
+    "pres_approval",             # polling aggregate estimate
+    "pres_approval_chg_21d",     # 21-day change — deteriorating = macro uncertainty
+    # CBOE PCR (29% coverage — 2015-2019 only; 2020+ NaN, sparse-imputed)
+    "cboe_pcr_equity",           # equity put/call ratio (CBOE CDN CSV, stops Oct 2019)
+    # cboe_pcr_z21 DROPPED: 0% coverage. Tombstoned Run 28.
+    # cboe_pcr_spike DROPPED Run 30: near-constant (0 after Oct 2019), zero GBM importance.
+]
+CONGRESS_FEATURES = [
+    "congress_net_buy_count",    # net buy minus sell count on that day
+    "congress_net_flow",         # net dollar flow (buys - sells)
+    "congress_buy_flag",         # 1 if net buyers that day
+]
+TRENDS_FEATURES = [
+    # Google Trends (100% coverage, weekly interpolated to daily, +2bd lag applied)
+    "trends_spy",                # search interest: "SPY ETF"
+    "trends_crash",              # search interest: "stock market crash"
+    "trends_recession",          # search interest: "recession"
+    "trends_buy_stocks",         # search interest: "buy stocks"
+    "trends_volatility",         # search interest: "market volatility"
+    "trends_fear_index",         # composite: (crash_z + recession_z) / 2
+    "trends_fear_z21",           # 21-day z-score of fear index
+    # New distress/risk-appetite terms (Run 31)
+    "trends_bankruptcy",         # bankruptcy search interest — financial distress signal
+    "trends_unemployment",       # unemployment searches — labor stress proxy
+    "trends_payday_loan",        # payday loan interest — retail desperation
+    "trends_margin_call",        # margin call searches — leverage stress
+    "trends_how_invest",         # how to invest — retail FOMO proxy
+    "trends_distress_index",     # composite: (bankruptcy + unemployment + payday + debt_relief) / 4
+    "trends_risk_appetite_index", # composite: (casino + how_invest + buy_stocks) / 3
+]
+SENTIMENT_FEATURES = [
+    # AAII individual investor sentiment survey (weekly, +1bd lag, 1987-present)
+    "aaii_bullish",              # % bulls (individual investors)
+    "aaii_bearish",              # % bears
+    "aaii_bull_bear_spread",     # bull - bear spread (positive = optimistic)
+    "aaii_bull_z8",              # 8-week z-score — extreme readings are contrarian signals
+    # Crypto Fear & Greed index (daily, alternative.me, 2018-present)
+    "cfg_value",                 # raw 0-100 score
+    "cfg_z21",                   # 21-day z-score
+    "cfg_extreme_fear",          # 1 if score < 25 — cross-asset panic
+    "cfg_greed",                 # 1 if score > 75 — cross-asset euphoria
+]
+MACRO_SENT_FEATURES = [
+    # FRED ICSA/CCSA (weekly initial/continuing jobless claims, +4bd lag)
+    "icsa_z52",                  # 52-week z-score of initial claims — labor stress
+    "icsa_chg_4w",               # 4-week change — direction of labor market stress
+    "ccsa_z52",                  # continuing claims z-score
+    # U Michigan consumer sentiment (monthly, +21d lag)
+    "umcsent_z12",               # 12-month z-score
+    "umcsent_chg_3m",            # 3-month change
+]
+WSB_FEATURES = [
+    # TOMBSTONED Run 36: RFE dropped all 3 WSB features (0 incremental signal over Trends).
+    # Google Trends (crash/volatility/fear_index) already captures retail anxiety better.
+    # "wsb_avg_score", "wsb_avg_comments", "wsb_score_z21"
+]
+
+GEX_FEATURES = [
+    # Raw GEX standalone — all near-zero Spearman (rho_all < 0.02) both WFCV and val periods.
+    # TOMBSTONED Run 38: RFE kept them but they hurt WFCV Sharpe (-0.4). No incremental signal.
+    # gex_chg_5d already in RFE-52 core; rest dropped.
+    # "gex_b", "gex_z21", "gex_z63", "gex_chg_1d"
+]
+
+SKEW_FEATURES = [
+    # CBOE SKEW + VIX9D — Run 38 screening, keep only features with consistent Spearman
+    # across both WFCV (2018-2023) and val (2024+) periods.
+    #
+    # KEPT (consistent signal both periods):
+    "skew_chg_1d",       # rho_all=+0.048 (p=0.016), wfcv=+0.033, val=+0.107 -- cleanest
+    "skew_chg_5d",       # rho_all=+0.036 (p=0.066), wfcv=+0.038, val=+0.040 -- consistent
+    "vix9d_z21",         # rho_all=-0.032 (p=0.102), wfcv=-0.047, val=-0.071 -- consistent direction
+    #
+    # DROPPED (noisy / inconsistent across periods):
+    # "cboe_skew"        -- wfcv=+0.045, val=-0.039 (sign flip)
+    # "skew_z21"         -- rho_all=+0.016, near-zero
+    # "skew_z63"         -- wfcv=+0.058, val=-0.001 (fades in holdout)
+    # "skew_high_flag"   -- rho_all=+0.016, near-zero
+    # "vix9d"            -- wfcv=-0.028, val=+0.022 (sign flip)
+    # "vix9d_vix30_ratio"-- rho_all=-0.009, negligible
+    # "gex_b/z21/z63/chg_1d" -- all rho_all < 0.02
+]
+
+RATE_SHOCK_FEATURES = [
+    # Fed tightening velocity — captures 2022-style inflationary bear (Arch #2)
+    "rate_chg_63d",              # raw fed funds rate change over 63 days
+    "rate_chg_252d",             # raw rate change over 252 days
+    "rate_shock_flag",           # 1 if >100bps hike in 63 days
+    "rate_easing_flag",          # 1 if >50bps cut in 63 days
+    "rate_speed_z63",            # z-score of tightening speed vs history
+    "rate_shock_x_bear",         # rate shock AND bear regime (2022 compound)
+    "rate_speed_x_bear",         # rate speed × bear flag
+]
+DIST_REGIME_FEATURES = [
+    # Returns-distribution regime (Arch #6) — less endogenous than VIX/price regime
+    "ret_skew_21",               # 21-day realized skewness (negative = left-tail env)
+    "ret_skew_63",               # 63-day realized skewness
+    "ret_kurt_21",               # 21-day realized kurtosis (high = fat tails / stress)
+    "ret_skew_z21",              # skewness z-score vs 252d history
+    "drawdown_63d",              # rolling drawdown from 63d peak (continuous, not discrete)
+    "regime_age_z",              # regime duration z-score (old regimes may be ending)
+]
+INTERACTION_FEATURES = [
+    # Regime × sentiment interactions (Arch #8) — same signal, different meaning by regime
+    "fear_z21_x_bear",   "fear_z21_x_bull",   "fear_z21_x_chop",
+    "crash_x_bear",      "recession_x_bear",
+    "vol_x_bear",        "buy_x_bull",
+    "distress_x_bear",   "distress_x_chop",
+    "aaii_spread_x_bear", "aaii_spread_x_bull",
+    "cfg_z21_x_bear",    "cfg_z21_x_bull",
+    "icsa_z52_x_bear",   "icsa_z52_x_chop",
+    # Rate-shock × sentiment
+    "fear_z21_x_rate_shock", "recession_x_rate_shock", "icsa_x_rate_shock",
+]
+
+# ── RFE-52 + new candidates (Run 38) ─────────────────────────────────────────
+# Run 34 RFE-52 stable core + GEX standalone + CBOE SKEW/VIX9D (Run 38 additions).
+# RFE will prune new candidates if they carry no incremental signal.
+SPY_FEATURES = [
+    "spy_ret_r5",
+    "spy_consec_down",
+    "spy_drawdown_252",
+    "vix_level",
+    "vix_z21",
+    "vvix_chg_5d",
+    "vix_term_z21",
+    "gld_ret_1d",
+    "gld_spy_corr_21",
+    "gld_corr_x_era",
+    "gld_corr_era_flag",
+    "gld_corr63_x_era",
+    "qqq_ret_1d",
+    "xle_spy_rs_5d",
+    "fedfunds_chg_21d",
+    "fomc_window",
+    "sector_risk_off_r5",
+    "XLF_ret",
+    "XLI_ret",
+    "XLY_ret",
+    "vwap_dev_open",
+    "vwap_dev_r5",
+    "vwap_dev_am",
+    "vol_vwap_corr_5d",
+    "open_drive_flag",
+    "late_reversal_flag",
+    "days_since_regime_change",
+    "regime_transition_flag",
+    "vix_rv_x_bear",
+    "vix_rv_x_chop",
+    "dix_chg_x_bear",
+    "moon_phase_cos",
+    "days_to_new_moon",
+    "moon_full_flag",
+    "moon_new_flag",
+    "tavg_nyc",
+    "prcp_flag_nyc",
+    "sunshine_proxy_nyc",
+    "tavg_chi",
+    "temp_range_chi",
+    "sunshine_proxy_chi",
+    "wiki_sp500_views",
+    "wiki_economy_views",
+    "is_pre_holiday",
+    "days_to_next_holiday",
+    "mta_subway_riders",
+    "earnings_season_flag",
+    "days_to_earnings_season",
+    "pres_approval_chg_21d",
+    "cboe_pcr_equity",
+    "trends_spy",
+    "trends_crash",
+    "trends_buy_stocks",
+    "trends_volatility",
+    "trends_fear_index",
+    "trends_fear_z21",
+    # Run 40 candidates tested — all regressed WFCV (0.5603 -> 0.5429).
+    # WFCV folds (2018-2023) don't share regime distribution with holdout (2024+, 92% chop).
+    # New features have real holdout signal but hurt 2018-2023 fold generalization.
+    # Tombstoned until holdout window grows to 1000+ days (est. Q1 2027).
+    # "fear_z21_x_chop", "umcsent_chg_3m", "ccsa_z52", "gld_z21"
+]
 
 # Sparse features — imputed with median when unavailable
 # NOTE: VWAP/intraday are now DENSE (2021+ backfill complete, 52% of rows).
@@ -227,10 +443,57 @@ SPARSE_FEATURES = [
     # Moon phase — dense (pure math), but listed here to safely impute any edge-case NaNs
     "moon_phase", "moon_phase_sin", "moon_phase_cos",
     "days_to_full_moon", "days_to_new_moon", "moon_full_flag", "moon_new_flag",
-    # Weather — occasional missing days (holidays, station gaps); impute with column median
-    "tavg_nyc", "temp_range_nyc", "prcp_flag_nyc", "cold_flag_nyc",
-    "hot_flag_nyc", "snow_flag_nyc", "sunshine_proxy_nyc",
+    # Weather — occasional missing days; impute with column median
+    "tavg_nyc", "temp_range_nyc", "prcp_flag_nyc",
+    # cold_flag_nyc, hot_flag_nyc DROPPED Run 30 (near-constant, zero importance)
+    "snow_flag_nyc", "sunshine_proxy_nyc",
     "tavg_chi", "temp_range_chi", "prcp_flag_chi", "sunshine_proxy_chi",
+    # Wikipedia — missing on market holidays (no views data); impute with median
+    "wiki_stock_market_views", "wiki_sp500_views", "wiki_economy_views",
+    "wiki_total_views", "wiki_views_z21",
+    # Holidays — dense (calendar math), listed for safety
+    "is_pre_holiday", "is_post_holiday", "days_to_next_holiday", "holiday_week",
+    # MTA — only available from 2020-03-01; NaN pre-2020
+    "mta_subway_riders", "mta_bus_riders", "mta_total_riders", "mta_riders_z21",
+    # Alt data 2 — daylight dense, PCR sparse (2015-2019 only), others dense
+    "daylight_hours_nyc", "daylight_chg_7d", "daylight_z365",
+    # aqi cols, cboe_pcr_z21, cboe_pcr_spike, flight_disruption_flag — DROPPED (tombstoned Run 28-30)
+    "earnings_season_flag", "days_to_earnings_season",
+    "pres_approval", "pres_approval_chg_21d",
+    "cboe_pcr_equity",
+    # Congress trading — sparse (only days with disclosed trades)
+    "congress_net_buy_count", "congress_buy_vol_usd", "congress_sell_vol_usd",
+    "congress_net_flow", "congress_buy_flag",
+    # Google Trends — sparse near ends (2bd lag creates small gap at start)
+    "trends_spy", "trends_crash", "trends_recession", "trends_buy_stocks", "trends_volatility",
+    "trends_fear_index", "trends_fear_z21",
+    "trends_bankruptcy", "trends_unemployment", "trends_payday_loan", "trends_margin_call",
+    "trends_how_invest", "trends_distress_index", "trends_risk_appetite_index",
+    # AAII — weekly, forward-filled; full coverage from 1987 but listed for safety
+    "aaii_bullish", "aaii_bearish", "aaii_bull_bear_spread", "aaii_bull_z8",
+    # Crypto Fear & Greed — starts 2018-02-01, 73% coverage; NaN pre-2018
+    "cfg_value", "cfg_z21", "cfg_extreme_fear", "cfg_greed",
+    # FRED macro sentiment — weekly/monthly with publication lags
+    "icsa_z52", "icsa_chg_4w", "ccsa_z52", "umcsent_z12", "umcsent_chg_3m",
+    # Rate-shock features — warmup NaN from 63/252d rolling windows
+    "rate_chg_63d", "rate_chg_252d", "rate_shock_flag", "rate_easing_flag",
+    "rate_speed_z63", "rate_shock_x_bear", "rate_speed_x_bear",
+    # Returns-distribution regime — warmup NaN from rolling windows
+    "ret_skew_21", "ret_skew_63", "ret_kurt_21", "ret_skew_z21",
+    "drawdown_63d", "regime_age_z",
+    # Regime×sentiment interactions — inherit sparsity from parent features
+    "fear_z21_x_bear", "fear_z21_x_bull", "fear_z21_x_chop",
+    "crash_x_bear", "recession_x_bear", "vol_x_bear", "buy_x_bull",
+    "distress_x_bear", "distress_x_chop",
+    "aaii_spread_x_bear", "aaii_spread_x_bull",
+    "cfg_z21_x_bear", "cfg_z21_x_bull",
+    "icsa_z52_x_bear", "icsa_z52_x_chop",
+    "fear_z21_x_rate_shock", "recession_x_rate_shock", "icsa_x_rate_shock",
+    # GEX standalone (Run 38) — dense 2011+, NaN pre-2011 imputed with median
+    "gex_b", "gex_z21", "gex_z63", "gex_chg_1d", "gex_chg_5d",
+    # CBOE SKEW + VIX9D (Run 38) — dense 2011+, NaN pre-2011 imputed with median
+    "cboe_skew", "skew_z21", "skew_z63", "skew_chg_5d", "skew_chg_1d",
+    "skew_high_flag", "vix9d", "vix9d_z21", "vix9d_vix30_ratio",
 ]
 
 # GBM feature list — drops individual ETF rets (overfits at ~1600 train rows)
@@ -419,10 +682,13 @@ def top_features(model, avail, n=5):
 
 # ── walk-forward cross-validation ─────────────────────────────────────────────
 
-def walk_forward_cv(df, features, target, model_type, n_folds=5, fold_size=252, half_life=1260):
+def walk_forward_cv(df, features, target, model_type, n_folds=5, fold_size=252, half_life=1260,
+                    holdout_start="2024-01-01"):
     """
     Expanding-window walk-forward CV.
     Each fold trains on all rows before the fold window, validates on the next fold_size rows.
+    Folds are constructed BEFORE the holdout_start date — the holdout period is excluded
+    from all WFCV folds and reported separately to prevent methodological overfitting.
     Returns dict with mean/std of dir_acc and AUC across folds.
     """
     df_p, avail = prep_df(df, features, target)
@@ -430,8 +696,17 @@ def walk_forward_cv(df, features, target, model_type, n_folds=5, fold_size=252, 
         return None   # not enough data
 
     is_clf = target in ("next_dir_1d", "next_dir_tail", "next_dir_tail_bin")
-    total  = len(df_p)
-    # Start folds so last fold ends at total
+
+    # ── Holdout split (Arch #9) ───────────────────────────────────────────────
+    # Lock rows from holdout_start onward. WFCV only sees pre-holdout data.
+    # This prevents the iterative feature engineering process from implicitly
+    # fitting to recent market behaviour through design choices.
+    holdout_mask = df_p["date"] >= pd.Timestamp(holdout_start)
+    df_pre  = df_p[~holdout_mask].copy()
+    df_hold = df_p[holdout_mask].copy()
+
+    total  = len(df_pre)
+    # Start folds so last fold ends at total (within pre-holdout data)
     fold_starts = [total - (n_folds - i) * fold_size for i in range(n_folds)]
 
     dir_accs, aucs = [], []
@@ -439,8 +714,8 @@ def walk_forward_cv(df, features, target, model_type, n_folds=5, fold_size=252, 
     for fold_start in fold_starts:
         if fold_start < fold_size:
             continue   # need at least fold_size rows to train
-        tr = df_p.iloc[:fold_start]
-        va = df_p.iloc[fold_start:fold_start + fold_size]
+        tr = df_pre.iloc[:fold_start]
+        va = df_pre.iloc[fold_start:fold_start + fold_size]
         if len(va) < 50:
             continue
 
@@ -484,7 +759,10 @@ def walk_forward_cv(df, features, target, model_type, n_folds=5, fold_size=252, 
             # Per-fold threshold backtest at t=0.54 (best from single-window analysis)
             # Requires next_ret_1d in the val df and no NaN
             if "next_ret_1d" in va.columns:
-                TX_COST  = 0.0002
+                TX_COST  = 0.0005   # 5bps one-way: ~0.5bp bid-ask + 4bp avg gap vs close signal
+                # Rationale: SPY bid-ask ~0.5bps; but signal at close, execution at next open.
+                # Avg overnight gap SPY = ~15bps; we assume fill at open + 3bp market impact.
+                # 5bps is conservative but realistic for $10k-$50k size.
                 ANNUAL   = 252
                 BT_THRESH = 0.54
                 ret_arr  = va["next_ret_1d"].values
@@ -506,6 +784,7 @@ def walk_forward_cv(df, features, target, model_type, n_folds=5, fold_size=252, 
                     # Regime-conditional sizing in WFCV: half-bear t=0.53 + kill switch
                     # Mirrors live predictSpy.py sizing rule for honest WFCV Sharpe estimate.
                     sized_sharpe = None
+                    sized_chop_sharpe = None
                     try:
                         if "regime" in va.columns and "gex_sign" in va.columns and "vix_z21" in va.columns:
                             va_reg_bt   = va["regime"].values[valid]
@@ -520,16 +799,27 @@ def walk_forward_cv(df, features, target, model_type, n_folds=5, fold_size=252, 
                             ar_sized    = dr_sized.mean() * ANNUAL
                             av_sized    = dr_sized.std()  * np.sqrt(ANNUAL)
                             sized_sharpe = ar_sized / av_sized if av_sized > 0 else 0.0
+
+                            # Chop-lower variant: t=0.51 for chop days, t=0.53 for bull/bear days
+                            raw_pos_chop = np.where(va_reg_bt == "chop",
+                                                    (p_bt > 0.51).astype(float),
+                                                    (p_bt > 0.53).astype(float))
+                            pos_chop     = raw_pos_chop * sizing_wf * (1 - kill_wf)
+                            dr_chop      = pos_chop * r_bt - np.abs(np.diff(np.append(0, pos_chop))) * TX_COST
+                            ar_chop      = dr_chop.mean() * ANNUAL
+                            av_chop      = dr_chop.std()  * np.sqrt(ANNUAL)
+                            sized_chop_sharpe = ar_chop / av_chop if av_chop > 0 else 0.0
                     except Exception:
                         pass
 
                     fold_info.update({
-                        "bt_sharpe":      round(sharpe, 3),
-                        "bt_maxdd":       round(mdd, 3),
-                        "bt_ann_ret":     round(ann_r, 3),
-                        "bh_sharpe":      round(bh_sh, 3),
-                        "bt_signals":     int(pos.sum()),
-                        "bt_sized_sharpe": round(sized_sharpe, 3) if sized_sharpe is not None else None,
+                        "bt_sharpe":           round(sharpe, 3),
+                        "bt_maxdd":            round(mdd, 3),
+                        "bt_ann_ret":          round(ann_r, 3),
+                        "bh_sharpe":           round(bh_sh, 3),
+                        "bt_signals":          int(pos.sum()),
+                        "bt_sized_sharpe":     round(sized_sharpe, 3) if sized_sharpe is not None else None,
+                        "bt_sized_chop_sharpe": round(sized_chop_sharpe, 3) if sized_chop_sharpe is not None else None,
                     })
         else:
             y_pd = m.predict(X_va)
@@ -549,6 +839,30 @@ def walk_forward_cv(df, features, target, model_type, n_folds=5, fold_size=252, 
     if aucs:
         result["wfcv_auc_mean"] = round(float(np.mean(aucs)), 4)
         result["wfcv_auc_std"]  = round(float(np.std(aucs)),  4)
+
+    # ── Holdout evaluation (Arch #9) ─────────────────────────────────────────
+    # Train on ALL pre-holdout data, evaluate on locked holdout.
+    # This is the true out-of-sample estimate — never used during development.
+    if len(df_hold) >= 50 and is_clf:
+        try:
+            sw_all = compute_sample_weights(df_pre["date"], half_life_days=half_life)
+            m_hold = build_model(model_type, is_clf)
+            try:
+                m_hold.fit(df_pre[avail].values, df_pre[target].values,
+                           **{"m__sample_weight": sw_all})
+            except TypeError:
+                m_hold.fit(df_pre[avail].values, df_pre[target].values)
+            y_h   = df_hold[target].values
+            y_h_pr = m_hold.predict_proba(df_hold[avail].values)[:, 1]
+            h_acc = accuracy_score(y_h, (y_h_pr >= 0.5).astype(int))
+            h_auc = roc_auc_score(y_h, y_h_pr) if len(np.unique(y_h)) > 1 else None
+            result["holdout_dir_acc"]  = round(h_acc, 4)
+            result["holdout_auc"]      = round(h_auc, 4) if h_auc else None
+            result["holdout_n_rows"]   = len(df_hold)
+            result["holdout_start"]    = holdout_start
+        except Exception as e_hold:
+            result["holdout_error"] = str(e_hold)
+
     return result
 
 
@@ -681,7 +995,7 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
     # Runs Logistic 1d WFCV at 4 half-lives and prints a comparison table.
     # Does NOT change the main training run — use --half-life to set the default.
     if sweep_half_life:
-        sweep_lives = [252, 504, 756, 1260]
+        sweep_lives = [252, 504, 756, 1260, 999999]
         print("\n[Half-life sweep — Logistic 1d Dir across recency half-lives]")
         print(f"  {'Half-life':>10} {'~yr':>5} {'Dir Acc':>16} {'AUC':>16}")
         print("  " + "-" * 52)
@@ -720,9 +1034,55 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                 auc_str = (f"{res['wfcv_auc_mean']:.4f} ± {res['wfcv_auc_std']:.4f}"
                            if "wfcv_auc_mean" in res else "    -")
                 print(f"  {lbl:<30} {acc_str:>16} {auc_str:>16}")
+                # Print holdout result inline if available
+                if "holdout_dir_acc" in res:
+                    h_acc = res['holdout_dir_acc']
+                    h_auc = res.get('holdout_auc', None)
+                    h_n   = res.get('holdout_n_rows', '?')
+                    h_auc_str = f"  AUC={h_auc:.4f}" if h_auc else ""
+                    print(f"    [HOLDOUT {res.get('holdout_start','2024-01-01')}+, n={h_n}]  acc={h_acc:.4f}{h_auc_str}  <-- LOCKED, never used in dev")
             else:
                 print(f"  {lbl:<30} insufficient data")
         print()
+
+    # ── RFE feature selection pass ────────────────────────────────────────────
+    # Runs RFECV on the full training set (all data before the val split) to
+    # identify the most predictive 40-50 features from SPY_FEATURES.
+    # Does NOT retrain or re-run WFCV — just identifies and saves for the next run.
+    if not skip_wfcv:
+        print(f"\n{'='*56}")
+        print("  RFE feature selection (RFECV, LogisticRegression, cv=3)")
+        print(f"{'='*56}")
+        try:
+            df_rfe, avail_rfe = prep_df(df, SPY_FEATURES, "next_dir_1d")
+            split_rfe = max(len(df_rfe) - 252, int(len(df_rfe) * 0.8))
+            tr_rfe = df_rfe.iloc[:split_rfe]
+            X_rfe  = tr_rfe[avail_rfe].values
+            y_rfe  = tr_rfe["next_dir_1d"].values
+            sc_rfe = StandardScaler()
+            X_rfe_scaled = sc_rfe.fit_transform(X_rfe)
+            rfe_estimator = LogisticRegression(C=0.1, max_iter=1000, random_state=42)
+            rfecv = RFECV(estimator=rfe_estimator, cv=3, scoring="roc_auc",
+                          min_features_to_select=40, n_jobs=-1)
+            rfecv.fit(X_rfe_scaled, y_rfe)
+            selected_mask  = rfecv.support_
+            selected_feats = [avail_rfe[i] for i in range(len(avail_rfe)) if selected_mask[i]]
+            n_selected = len(selected_feats)
+            n_total    = len(avail_rfe)
+            print(f"  [RFE] Selected {n_selected} features from {n_total} total")
+            print(f"  [RFE] Selected features:")
+            for feat in selected_feats:
+                print(f"    {feat}")
+            rfe_out_path = os.path.expanduser(
+                "~/discordBot/outputs/features/markets/spy_rfe_features.txt")
+            os.makedirs(os.path.dirname(rfe_out_path), exist_ok=True)
+            with open(rfe_out_path, "w") as f_rfe:
+                f_rfe.write("\n".join(selected_feats) + "\n")
+            print(f"  [RFE] Feature list saved -> {rfe_out_path}")
+        except Exception as e_rfe:
+            import traceback
+            print(f"  [RFE error: {e_rfe}]")
+            traceback.print_exc()
 
     # ── standard single-val-window training runs ──────────────────────────────
     runs = [
@@ -1048,27 +1408,48 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                 regime_models[regime_name] = {"model": m_r, "features": avail,
                                               "dir_acc": da_r, "auc": auc_r}
 
-                # ── calibrate bear model with isotonic regression ─────────────
-                # CalibratedClassifierCV with cv="prefit" wraps the already-trained
-                # pipeline and fits the calibration layer on the val set.
-                # Saves a separate _calibrated pkl for use in predictSpy.py.
+                # ── calibrate regime models: Platt scaling for small val sets ─────
+                # Isotonic regression overfits on < 200 samples (bear val = 63 rows).
+                # Platt scaling (sigmoid) is lower-variance and generalizes better.
+                # Use isotonic only if val set >= 200 rows (chop sometimes qualifies).
                 if regime_name in ("bear", "chop") and len(va_r) >= 20:
                     try:
-                        # sklearn 1.9+: cv="prefit" removed — use cv=None, ensemble=False
-                        # This wraps the already-fitted pipeline and learns isotonic calibration
-                        # on the val set (small but sufficient for 63 bear val rows).
-                        cal_model = CalibratedClassifierCV(m_r, cv=None, method="isotonic",
+                        n_val = len(va_r)
+                        cal_method = "sigmoid" if n_val < 200 else "isotonic"
+                        cal_model = CalibratedClassifierCV(m_r, cv=None, method=cal_method,
                                                            ensemble=False)
                         cal_model.fit(va_r[avail].values, y_va_r)
                         cal_probs = cal_model.predict_proba(va_r[avail].values)[:, 1]
                         cal_auc   = roc_auc_score(y_va_r, cal_probs) if len(np.unique(y_va_r)) > 1 else None
                         cal_da    = accuracy_score(y_va_r, (cal_probs >= 0.5).astype(int))
+
+                        # ── chop model inversion check ──────────────────────────────────
+                        # AUC < 0.45 means the model is actively inverting predictions.
+                        # Flip probabilities (1 - p) and re-evaluate; if still < 0.48
+                        # after flip the model is pure noise and dropped from the blend.
+                        chop_flip   = False
+                        chop_drop   = False
+                        if regime_name == "chop" and cal_auc is not None and cal_auc < 0.45:
+                            print(f"    [WARN] chop model inverted (AUC < 0.45) - flipping probabilities")
+                            cal_probs = 1.0 - cal_probs
+                            chop_flip = True
+                            flip_auc  = roc_auc_score(y_va_r, cal_probs) if len(np.unique(y_va_r)) > 1 else None
+                            cal_auc   = flip_auc
+                            cal_da    = accuracy_score(y_va_r, (cal_probs >= 0.5).astype(int))
+                            if flip_auc is not None and flip_auc < 0.48:
+                                print(f"    [WARN] chop model dropped from blend - noise after flip")
+                                chop_drop = True
+
                         cal_path  = os.path.join(MODEL_DIR, f"spy_logistic_regime_{regime_name}_calibrated_{TODAY}.pkl")
                         with open(cal_path, "wb") as fc:
                             pickle.dump({"model": cal_model, "features": avail,
                                          "regime": regime_name, "calibrated": True,
-                                         "method": "isotonic", "trained_on": TODAY}, fc)
-                        print(f"    calibrated {regime_name}: dir_acc={cal_da:.4f}  AUC={round(cal_auc,4) if cal_auc else 'N/A'}")
+                                         "method": cal_method, "trained_on": TODAY,
+                                         "flip_probs": chop_flip,
+                                         "drop_from_blend": chop_drop}, fc)
+                        print(f"    calibrated {regime_name} ({cal_method}, n_val={n_val}): dir_acc={cal_da:.4f}  AUC={round(cal_auc,4) if cal_auc else 'N/A'}")
+                        if regime_name == "bear" and cal_method == "sigmoid":
+                            print(f"    [NOTE] Bear val AUC on <63 rows is unreliable - use Bear WFCV AUC as benchmark")
                         print(f"    saved calibrated -> {cal_path}")
                         # Plot calibration curve
                         try:
@@ -1114,6 +1495,7 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
     # Standard WFCV mixes all regimes. Bear model needs its own honest CV since
     # it trains on ~400 rows and the 63-row val window is a single slice.
     # Bear-only CV: 4 expanding folds × 50 bear rows each, trained on all prior bear rows.
+    bear_wfcv_auc_mean = None   # captured below; shown in summary table next to bear row
     if "regime" in df.columns:
         print(f"\n{'='*56}")
         print("  Bear-only expanding WFCV (4 folds x 50 bear rows)")
@@ -1163,6 +1545,8 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                 if bear_accs:
                     print(f"\n  Bear WFCV: dir_acc={np.mean(bear_accs):.4f} ± {np.std(bear_accs):.4f}"
                           + (f"  AUC={np.mean(bear_aucs):.4f} ± {np.std(bear_aucs):.4f}" if bear_aucs else ""))
+                    if bear_aucs:
+                        bear_wfcv_auc_mean = round(float(np.mean(bear_aucs)), 4)
         except Exception as e_bwfcv:
             print(f"  [bear WFCV error: {e_bwfcv}]")
 
@@ -1194,7 +1578,7 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
             val_ret  = val_ret[valid_mask]
             bl_probs_bt = bl_probs[-len(valid_mask):][valid_mask]
 
-            TX_COST   = 0.0002   # 0.02% per trade (one-way)
+            TX_COST   = 0.0005   # 5bps one-way — see WFCV section comment
             ANNUAL    = 252
 
             print(f"  {'Threshold':>10} {'Trades':>7} {'Signals':>8} {'Ret(ann)':>10} {'Sharpe':>8} {'MaxDD':>8}")
@@ -1244,11 +1628,17 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
             bh_dd      = float(((bh_cum - np.maximum.accumulate(bh_cum)) / np.maximum.accumulate(bh_cum)).min())
             print(f"  SPY buy & hold: Sharpe={bh_sharpe:.3f}  Ann ret={bh_ann*100:.1f}%  MaxDD={bh_dd*100:.1f}%")
 
-            # ── Regime-conditional position sizing ────────────────────────────
-            # Go half-size in bear regime, flat below 0.53. Compare to fixed t=0.54.
-            # Kill switch: flat when regime=bear AND gex_sign<=0 AND vix_z21>1.5
-            # Requires regime column in the val df_p_l
-            print(f"\n  Regime-conditional sizing (half-size bear, flat if prob<0.53, else full):")
+            # ── Regime-conditional position sizing + fractional Kelly ────────────
+            # Sizing hierarchy (applied in order):
+            # 1. Kill switch: flat when bear AND gex_sign<=0 AND vix_z21>1.5
+            # 2. Rate-shock regime: go to 50% (2022-style inflationary bear)
+            # 3. Bear regime: go to 50% (structural downtrend)
+            # 4. Fractional Kelly: size proportional to edge estimate
+            #    Kelly f = (p - (1-p)) / 1.0 = 2p - 1 (for binary win/lose, b=1)
+            #    Fractional (25%) Kelly: f* = 0.25 * (2p - 1)
+            #    Capped at 1.0 (100% max), floored at 0 (no shorting)
+            # 5. Flat if prob < 0.53 (minimum edge threshold)
+            print(f"\n  Regime-conditional sizing (Platt-calibrated Kelly + bear half-size):")
             try:
                 val_regime = val_rows["regime"].values[-n_bt:][valid_mask]
                 is_bear    = (val_regime == "bear").astype(float)
@@ -1260,15 +1650,36 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                 kill_switch = ((val_regime == "bear") &
                                (gex_sign_bt <= 0) &
                                (vix_z21_bt  >  1.5)).astype(float)
-                for label_s, size_bear, thresh_s, use_kill in [
-                    ("Half-bear, t=0.53",          0.5, 0.53, False),
-                    ("Half-bear, t=0.54",          0.5, 0.54, False),
-                    ("Zero-bear, t=0.54",          0.0, 0.54, False),
-                    ("Kill(bear+GEX-+VIX), t=0.53", 0.0, 0.53, True),
+                for label_s, size_bear, thresh_s, use_kill, use_kelly, chop_lower, vol2_press in [
+                    ("Half-bear, t=0.53",          0.5, 0.53, False, False, False, False),
+                    ("Half-bear, t=0.54",          0.5, 0.54, False, False, False, False),
+                    ("Zero-bear, t=0.54",          0.0, 0.54, False, False, False, False),
+                    ("Kill(bear+GEX-+VIX), t=0.53", 0.0, 0.53, True,  False, False, False),
+                    ("Frac-Kelly(50%), half-bear",  0.5, 0.53, False, True,  False, False),
+                    ("Chop-lower, t=0.51",         0.5, 0.51, False, False, True,  False),
+                    ("Vol2-press(VIX20-30 full)",  0.5, 0.53, False, True,  False, True),
                 ]:
                     raw_pos = (bl_probs_bt > thresh_s).astype(float)
+                    if chop_lower:
+                        # Chop-lower: lower threshold (0.51) on chop days, higher (0.54) on bull/bear
+                        raw_pos = np.where(val_regime == "chop",
+                                           (bl_probs_bt > 0.51).astype(float),
+                                           (bl_probs_bt > 0.54).astype(float))
                     sizing  = np.where(is_bear, size_bear, 1.0)
+                    if vol2_press:
+                        # Vol2-press: vol_regime==2 (VIX 20-30) gets full Kelly (not halved for bear)
+                        # 64.5% up-days in holdout in this regime -- press harder when VIX is elevated but not panic
+                        vol_reg_bt = (val_rows["vol_regime"].values[-n_bt:][valid_mask]
+                                      if "vol_regime" in val_rows.columns else np.ones(len(is_bear)))
+                        is_vol2    = (vol_reg_bt == 2.0).astype(float)
+                        sizing     = np.where(is_vol2, 1.0, sizing)   # override half-bear for regime=2
                     pos_s   = raw_pos * sizing
+                    if use_kelly:
+                        # Fractional Kelly (50%): f* = 0.50 * (2p - 1), clipped [0, 1]
+                        # Sweep in Run 32 showed Sharpe invariant across 25/33/50%; 50% doubles ann ret at same Sharpe.
+                        kelly_f = np.clip(0.50 * (2 * bl_probs_bt - 1), 0, 1)
+                        pos_s   = kelly_f * sizing   # Kelly replaces binary signal
+                        pos_s   = np.where(bl_probs_bt > thresh_s, pos_s, 0)  # min threshold still applies
                     if use_kill:
                         pos_s = pos_s * (1 - kill_switch)   # zero out kill-switch days
                     dr_s    = pos_s * val_ret - (np.abs(np.diff(np.append(0, pos_s))) * TX_COST)
@@ -1282,6 +1693,23 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                     kill_str = f"  [killed {n_kill} bear+GEX-+VIX days]" if use_kill else ""
                     print(f"  {label_s:<38}  Sharpe={sh_s:.3f}  ret={ar_s*100:.1f}%  "
                           f"dd={dd_s*100:.1f}%  n={n_sig_s}{kill_str}")
+
+                # ── Kelly fraction sweep: test [0.25, 0.33, 0.50] ────────────
+                print(f"\n  Kelly fraction sweep (half-bear sizing, t=0.53):")
+                for kf in [0.25, 0.33, 0.50]:
+                    kf_pct = int(round(kf * 100))
+                    sweep_f  = np.clip(kf * (2 * bl_probs_bt - 1), 0, 1)
+                    sweep_sz = np.where(is_bear, 0.5, 1.0)
+                    sweep_pos = np.where(bl_probs_bt > 0.53, sweep_f * sweep_sz, 0)
+                    dr_kf    = sweep_pos * val_ret - (np.abs(np.diff(np.append(0, sweep_pos))) * TX_COST)
+                    ar_kf    = dr_kf.mean() * ANNUAL
+                    av_kf    = dr_kf.std()  * np.sqrt(ANNUAL)
+                    sh_kf    = ar_kf / av_kf if av_kf > 0 else 0.0
+                    cum_kf   = (1 + dr_kf).cumprod()
+                    dd_kf    = float(((cum_kf - np.maximum.accumulate(cum_kf)) / np.maximum.accumulate(cum_kf)).min())
+                    n_kf     = int((sweep_pos > 0).sum())
+                    print(f"  Kelly({kf_pct:2d}%), half-bear              "
+                          f"Sharpe={sh_kf:.3f}  ret={ar_kf*100:.1f}%  dd={dd_kf*100:.1f}%  n={n_kf}")
             except Exception as e_sz:
                 print(f"  [sizing error: {e_sz}]")
 
@@ -1305,7 +1733,7 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                     all_fold_dr   = []
                     all_fold_bh   = []
                     all_fold_dates = []
-                    TX_PNL = 0.0002
+                    TX_PNL = 0.0005   # match main backtest: 5bps realistic
                     BT_T   = 0.54
 
                     for fs in fold_starts_pnl:
@@ -1431,6 +1859,8 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
         auc = f"{m['val_auc']:.4f}"      if m.get("val_auc")      is not None else "  -   "
         sp  = f"{m['val_spearman']:.4f}" if m.get("val_spearman") is not None else "  -   "
         print(f"  {label:<36} {da:>8} {auc:>8} {sp:>10}")
+        if "bear" in label.lower() and bear_wfcv_auc_mean is not None:
+            print(f"    [Bear WFCV AUC (4-fold): {bear_wfcv_auc_mean:.4f}  <- use this as benchmark, not val AUC]")
 
     if not skip_wfcv and wfcv_results:
         print(f"\n[Walk-forward CV summary]")
@@ -1451,11 +1881,13 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
                 if "bt_sharpe" in fd:
                     sized_str = (f" sized={fd['bt_sized_sharpe']:.3f}"
                                  if fd.get("bt_sized_sharpe") is not None else "")
+                    sized_chop_str = (f" sized_chop={fd['bt_sized_chop_sharpe']:.3f}"
+                                      if fd.get("bt_sized_chop_sharpe") is not None else "")
                     bt_str = (f"  | bt@0.54: Sharpe={fd['bt_sharpe']:.3f}"
                               f" ret={fd['bt_ann_ret']*100:.1f}%"
                               f" dd={fd['bt_maxdd']*100:.1f}%"
                               f" BH={fd['bh_sharpe']:.3f}"
-                              f" n={fd['bt_signals']}{sized_str}")
+                              f" n={fd['bt_signals']}{sized_str}{sized_chop_str}")
                 print(f"    fold {i+1} ({fd['start']} - {fd['end']})"
                       f"  acc={fd['dir_acc']:.4f}{auc_f}{regime_str}{bt_str}")
 

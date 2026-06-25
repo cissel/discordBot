@@ -475,7 +475,37 @@ def build_pitcher_features():
     # ── opponent difficulty ───────────────────────────────────────────────────
     df = build_opponent_difficulty(df)
 
-    # ── season-to-date ppg (within season) ───────────────────────────────────
+    # ── opponent wOBA (rolling quality of batters the pitcher faces) ──────────
+    # Load batter game logs to get team-level wOBA by date
+    try:
+        batter_df = load_game_logs("batter_game_logs.csv")
+        batter_df = batter_df.sort_values("game_date")
+        # team-level mean wOBA per game date (as offensive team)
+        team_woba = (
+            batter_df.groupby(["team", "game_date"])["wOBA"]
+            .mean()
+            .reset_index()
+            .rename(columns={"wOBA": "team_woba"})
+        )
+        team_woba = team_woba.sort_values("game_date")
+        # rolling 14-day mean wOBA per team (shifted to avoid leakage)
+        team_woba["opp_woba_r14"] = (
+            team_woba.groupby("team")["team_woba"]
+            .transform(lambda x: x.shift(1).rolling(14, min_periods=3).mean())
+        )
+        # pitcher's opponent = the batting team they faced
+        # opponent column in pitcher_game_logs has the team abbreviation (with @ prefix stripped)
+        df["opp_team"] = df["opponent"].str.lstrip("@")
+        df = df.merge(
+            team_woba[["team", "game_date", "opp_woba_r14"]].rename(columns={"team": "opp_team"}),
+            on=["opp_team", "game_date"], how="left"
+        )
+        df.drop(columns=["opp_team"], inplace=True)
+        hit_rate = df["opp_woba_r14"].notna().mean()
+        print(f"  opp_woba_r14: {hit_rate:.1%} rows populated")
+    except Exception as e:
+        print(f"  opp_woba_r14: skipped ({e})")
+        df["opp_woba_r14"] = np.nan
     df = df.sort_values(["playerid", "season", "game_date"])
     df["cum_pts"]    = df.groupby(["playerid", "season"])["fantasy_pts"].transform(
         lambda x: x.shift(1).expanding().sum())

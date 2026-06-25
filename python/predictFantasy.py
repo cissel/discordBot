@@ -22,7 +22,8 @@ Usage:
   python predictFantasy.py --fa_only               # free agents only (reads freeagents.csv)
 """
 
-import os, sys, argparse, pickle, glob
+import os, sys, argparse, pickle, glob, unicodedata, warnings
+warnings.filterwarnings("ignore")
 import pandas as pd
 import numpy as np
 
@@ -31,6 +32,99 @@ FEAT_DIR   = os.path.join(BASE, "outputs/features/sports")
 MODEL_DIR  = os.path.join(BASE, "models/sports")
 FA_CSV     = os.path.join(BASE, "outputs/sports/mlb/fantasy/freeagents.csv")
 OUT_DIR    = FEAT_DIR  # predictions go alongside features
+
+# ── sparse feature list (must match trainFantasyModel.py) ─────────────────────
+SPARSE_FEATURES = [
+    "sp_era", "sp_xera", "sp_k9", "sp_whip", "sp_quality", "platoon_adv",
+    "opp_woba_r14",
+    "bat_speed_r14", "swing_length_r14", "attack_angle_r14", "sweet_spot_pct_r14",
+    "fastball_pct_r14", "breaking_pct_r14", "offspeed_pct_r14",
+    "chase_rate_r14", "zone_contact_r14", "whiff_rate_r14", "first_pitch_strike_r14",
+    "xba_r14", "xwoba_pitch_r14", "hard_contact_r14", "barrel_rate_r14",
+    "times_thru_order_r14", "count_leverage_r14",
+]
+
+def _norm(s):
+    return unicodedata.normalize("NFD", str(s)).encode("ascii", "ignore").decode().strip().lower()
+
+# ── shared ML score lookup ────────────────────────────────────────────────────
+_ml_cache = {}  # module-level cache so repeated calls in same process are free
+
+def get_ml_scores(player_type="batters", horizons=("daily", "weekly"),
+                  model_pref=("lgbm", "ridge")):
+    """
+    Return a dict keyed by normalised player name:
+      { "yordan alvarez": {"ml_pts_daily": 4.2, "ml_pts_weekly": 28.1}, ... }
+
+    Tries model types in model_pref order, falls back silently.
+    Results are cached per (player_type, tuple(horizons)) for the process lifetime.
+    """
+    cache_key = (player_type, tuple(horizons))
+    if cache_key in _ml_cache:
+        return _ml_cache[cache_key]
+
+    feat_file = "batter" if player_type == "batters" else "pitcher"
+    feat_path = os.path.join(FEAT_DIR, f"{feat_file}_features.csv")
+    if not os.path.exists(feat_path):
+        return {}
+
+    try:
+        df = pd.read_csv(feat_path, parse_dates=["game_date"], low_memory=False)
+    except Exception:
+        return {}
+
+    # Most recent row per player
+    df = df.sort_values("game_date").groupby("playerid").last().reset_index()
+
+    scores = {}  # norm_name -> dict
+
+    for horizon in horizons:
+        bundle = None
+        for mt in model_pref:
+            pattern = os.path.join(MODEL_DIR, player_type,
+                                   f"{player_type}_{horizon}_{mt}_*.pkl")
+            files = sorted(glob.glob(pattern))
+            if files:
+                try:
+                    with open(files[-1], "rb") as f:
+                        bundle = pickle.load(f)
+                    break
+                except Exception:
+                    continue
+        if bundle is None:
+            continue
+
+        model        = bundle["model"]
+        feature_cols = bundle["feature_cols"]
+        avail        = [c for c in feature_cols if c in df.columns]
+        if not avail:
+            continue
+
+        cur = df.copy()
+        for col in SPARSE_FEATURES:
+            if col in cur.columns:
+                med = cur[col].median()
+                cur[col] = cur[col].fillna(med if pd.notna(med) else 0.0)
+
+        core = [c for c in avail if c not in SPARSE_FEATURES]
+        cur  = cur.dropna(subset=core)
+        if cur.empty:
+            continue
+
+        try:
+            preds = model.predict(cur[avail].values)
+        except Exception:
+            continue
+
+        col_name = f"ml_pts_{horizon}"
+        for name, pred in zip(cur["player_name"].values, preds):
+            key = _norm(name)
+            if key not in scores:
+                scores[key] = {"player_name": name}
+            scores[key][col_name] = round(float(pred), 1)
+
+    _ml_cache[cache_key] = scores
+    return scores
 
 def load_latest_model(player_type, horizon, model_type="ridge"):
     """Find the most recently saved model for this combo."""

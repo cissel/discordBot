@@ -21,6 +21,13 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import pandas as pd
 
+import sys as _sys
+_sys.path.insert(0, str(BASE / "python"))
+try:
+    from predictFantasy import get_ml_scores as _get_ml_scores
+except Exception:
+    _get_ml_scores = None
+
 # ── paths ──────────────────────────────────────────────────────────────────────
 BASE        = Path(os.path.expanduser("~/discordBot"))
 PYTHON      = str(BASE / "venv/bin/python3")
@@ -215,6 +222,10 @@ def main():
     mismatch   = load_mismatch(day)
     starters   = load_starters()
 
+    # ML scores
+    _ml_bat = _get_ml_scores("batters", ("daily", "weekly")) if _get_ml_scores else {}
+    _ml_pit = _get_ml_scores("pitchers", ("daily", "weekly")) if _get_ml_scores else {}
+
     results = {"batters": [], "pitchers": [], "bench": [], "generated": datetime.now().isoformat()}
 
     for _, row in my_roster.iterrows():
@@ -270,6 +281,8 @@ def main():
                 "signal":           sig,
                 "today_pts":        pts,
                 "reason":           reason_batter(s_avg, r_avg, trend, matchup_ops, matchup_pa, injured, pitcher_name),
+                "ml_pts_daily":     _ml_bat.get(norm(name), {}).get("ml_pts_daily"),
+                "ml_pts_weekly":    _ml_bat.get(norm(name), {}).get("ml_pts_weekly"),
             }
             if is_bench:
                 results["bench"].append(entry)
@@ -311,6 +324,8 @@ def main():
                 "signal":           sig,
                 "today_pts":        pts,
                 "reason":           reason_pitcher(s_avg, r_avg, trend, injured, opponent),
+                "ml_pts_daily":     _ml_pit.get(norm(name), {}).get("ml_pts_daily"),
+                "ml_pts_weekly":    _ml_pit.get(norm(name), {}).get("ml_pts_weekly"),
             }
             if is_bench:
                 results["bench"].append(entry)

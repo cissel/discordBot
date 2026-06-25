@@ -12,6 +12,13 @@ import os
 import unicodedata
 import pandas as pd
 
+import sys as _sys
+_sys.path.insert(0, os.path.expanduser("~/discordBot/python"))
+try:
+    from predictFantasy import get_ml_scores as _get_ml_scores
+except Exception:
+    _get_ml_scores = None
+
 # ── paths ──────────────────────────────────────────────────────────────────────
 BASE       = os.path.expanduser("~/discordBot/outputs/sports/mlb/fantasy")
 BATTER_CSV = os.path.join(BASE, "playerData", "batter_game_logs.csv")
@@ -207,6 +214,21 @@ def main():
     if not batter_match.empty and not pitcher_match.empty:
         player_type = "batter+pitcher"
 
+    # Attach ML scores
+    if _get_ml_scores and rows:
+        _ml_bat = _get_ml_scores("batters",  ("daily", "weekly"))
+        _ml_pit = _get_ml_scores("pitchers", ("daily", "weekly"))
+        for row in rows:
+            ptype = row.get("player_type", "")
+            ml_d  = _ml_bat if ptype == "batter" else _ml_pit
+            key   = _normalize(row["player_name"])
+            row["ml_pts_daily"]  = ml_d.get(key, {}).get("ml_pts_daily",  "")
+            row["ml_pts_weekly"] = ml_d.get(key, {}).get("ml_pts_weekly", "")
+    else:
+        for row in rows:
+            row["ml_pts_daily"]  = ""
+            row["ml_pts_weekly"] = ""
+
     # ── write output ───────────────────────────────────────────────────────────
     COLS = [
         "player_name", "player_type", "games_total", "games_last7",
@@ -215,6 +237,7 @@ def main():
         "hr_season", "rbi_season", "woba_season",
         "k_last7", "w_last7", "era_last7",
         "k_season", "w_season", "era_season",
+        "ml_pts_daily", "ml_pts_weekly",
     ]
     out_df = pd.DataFrame(rows, columns=COLS)
     os.makedirs(os.path.dirname(OUT_CSV), exist_ok=True)

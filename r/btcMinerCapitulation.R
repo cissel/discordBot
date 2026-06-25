@@ -1,10 +1,16 @@
 #!/usr/bin/env Rscript
 # btcMinerCapitulation.R
-# BTC price / price at last difficulty bottom (%)
-# colored by cumulative blocks elapsed since that bottom
-# Difficulty bottoms = known historical miner capitulation events
-# + algorithm detects new ones in recent data (>=10% HR drop, 45-day local min)
-# Data: CoinMetrics Community API (PriceUSD, HashRate, BlkCnt)
+#
+# Replicates the bitbo.io "Miner Capitulation" chart.
+# Y-axis: % change of each Bitcoin difficulty adjustment epoch
+# X-axis: Date (BTC price line in background)
+# Colored bands: green (0 to -5%), yellow (-5 to -10%), red (< -10%)
+# Each epoch dot sits at (date_of_adjustment, pct_change)
+#
+# Data sources:
+#   - blockchain.info API: daily difficulty (free, full history)
+#   - CoinMetrics community API: PriceUSD, BlkCnt (for halvings)
+#
 # Usage: Rscript btcMinerCapitulation.R [output.png]
 
 suppressPackageStartupMessages({
@@ -16,27 +22,55 @@ suppressPackageStartupMessages({
   library(jsonlite)
 })
 
-# -- paths ---------------------------------------------------
+# ── paths ─────────────────────────────────────────────────────────────────────
 args      <- commandArgs(trailingOnly = TRUE)
 out_png   <- if (length(args) >= 1) args[1] else
                path.expand("~/discordBot/outputs/markets/btcMinerCap.png")
 cache_dir <- path.expand("~/discordBot/outputs/markets/cache")
-cache_csv <- file.path(cache_dir, "BTC_miner_cap_daily.csv")
+diff_csv  <- file.path(cache_dir, "BTC_difficulty_daily.csv")
+price_csv <- file.path(cache_dir, "BTC_miner_cap_daily.csv")
 dir.create(cache_dir,        showWarnings = FALSE, recursive = TRUE)
 dir.create(dirname(out_png), showWarnings = FALSE, recursive = TRUE)
 
-# -- fetch / cache -------------------------------------------
-need_fetch <- TRUE
-if (file.exists(cache_csv)) {
-  age_h <- as.numeric(difftime(Sys.time(), file.mtime(cache_csv), units = "hours"))
-  if (age_h < 24) need_fetch <- FALSE
+# ── fetch / cache: difficulty ─────────────────────────────────────────────────
+need_diff <- TRUE
+if (file.exists(diff_csv)) {
+  age_h <- as.numeric(difftime(Sys.time(), file.mtime(diff_csv), units = "hours"))
+  if (age_h < 24) need_diff <- FALSE
 }
 
-if (need_fetch) {
-  cat("[btcMinerCap] fetching CoinMetrics...\n")
-  url <- paste0(
+if (need_diff) {
+  cat("[btcMinerCap] fetching difficulty from blockchain.info...\n")
+  url  <- "https://api.blockchain.info/charts/difficulty?timespan=all&sampled=false&metadata=false&cors=true&format=json"
+  resp <- tryCatch(httr::GET(url, httr::timeout(30)), error = function(e) NULL)
+  if (!is.null(resp) && httr::status_code(resp) == 200) {
+    raw  <- jsonlite::fromJSON(httr::content(resp, as = "text", encoding = "UTF-8"))
+    df_d <- as.data.frame(raw$values) %>%
+      rename(ts = x, difficulty = y) %>%
+      mutate(date = as.Date(as.POSIXct(ts, origin = "1970-01-01", tz = "UTC"))) %>%
+      filter(difficulty > 0) %>%
+      select(date, difficulty) %>%
+      arrange(date)
+    readr::write_csv(df_d, diff_csv)
+    cat("[btcMinerCap] difficulty cache written\n")
+  } else {
+    if (!file.exists(diff_csv)) stop("Difficulty fetch failed and no cache available.")
+    cat("[btcMinerCap] difficulty fetch failed, using cache\n")
+  }
+}
+
+# ── fetch / cache: price + blkcnt ─────────────────────────────────────────────
+need_price <- TRUE
+if (file.exists(price_csv)) {
+  age_h <- as.numeric(difftime(Sys.time(), file.mtime(price_csv), units = "hours"))
+  if (age_h < 24) need_price <- FALSE
+}
+
+if (need_price) {
+  cat("[btcMinerCap] fetching price/blkcnt from CoinMetrics...\n")
+  url  <- paste0(
     "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics",
-    "?assets=btc&metrics=PriceUSD,HashRate,BlkCnt",
+    "?assets=btc&metrics=PriceUSD,BlkCnt",
     "&frequency=1d&start_time=2011-01-01&page_size=10000"
   )
   resp <- tryCatch(httr::GET(url, httr::timeout(30)), error = function(e) NULL)
@@ -45,131 +79,105 @@ if (need_fetch) {
       httr::content(resp, as = "text", encoding = "UTF-8"),
       simplifyDataFrame = TRUE
     )
-    df_r <- as.data.frame(raw$data) %>%
+    df_p <- as.data.frame(raw$data) %>%
       mutate(
-        date     = as.Date(substr(time, 1, 10)),
-        price    = as.numeric(PriceUSD),
-        hashrate = as.numeric(HashRate),
-        blkcnt   = as.numeric(BlkCnt)
+        date   = as.Date(substr(time, 1, 10)),
+        price  = as.numeric(PriceUSD),
+        blkcnt = as.numeric(BlkCnt)
       ) %>%
-      filter(!is.na(date), !is.na(price), price > 0,
-             !is.na(hashrate), hashrate > 0, !is.na(blkcnt)) %>%
-      select(date, price, hashrate, blkcnt) %>%
+      filter(!is.na(date), !is.na(price), price > 0, !is.na(blkcnt)) %>%
+      select(date, price, blkcnt) %>%
       arrange(date)
-    readr::write_csv(df_r, cache_csv)
-    cat("[btcMinerCap] cache written\n")
+    readr::write_csv(df_p, price_csv)
+    cat("[btcMinerCap] price cache written\n")
   } else {
-    if (!file.exists(cache_csv)) stop("Fetch failed and no cache available.")
-    cat("[btcMinerCap] fetch failed, using cache\n")
+    if (!file.exists(price_csv)) stop("Price fetch failed and no cache available.")
+    cat("[btcMinerCap] price fetch failed, using cache\n")
   }
 }
 
-# -- load ----------------------------------------------------
-df <- readr::read_csv(cache_csv, col_types = cols(
-  date     = col_date(),
-  price    = col_double(),
-  hashrate = col_double(),
-  blkcnt   = col_double()
-)) %>%
+# ── load ──────────────────────────────────────────────────────────────────────
+diff_daily <- readr::read_csv(diff_csv,
+  col_types = cols(date = col_date(), difficulty = col_double())) %>%
+  arrange(date)
+
+price_daily <- readr::read_csv(price_csv,
+  col_types = cols(date = col_date(), price = col_double(), blkcnt = col_double())) %>%
   filter(!is.na(price), price > 0) %>%
+  arrange(date)
+
+# ── extract difficulty adjustment epochs ──────────────────────────────────────
+# Difficulty only changes every 2016 blocks (~14 days). The blockchain.info
+# data is daily so many consecutive rows share the same difficulty value.
+# We want one row per epoch: the date the new difficulty took effect + pct change.
+#
+# Strategy: find rows where difficulty changes, compute % change vs prior epoch.
+# Then cluster any changes within 3 days of each other (API noise) keeping the
+# largest-magnitude change per cluster.
+
+epochs_raw <- diff_daily %>%
+  mutate(prev_diff = lag(difficulty)) %>%
+  filter(!is.na(prev_diff), prev_diff > 0, difficulty != prev_diff) %>%
+  mutate(pct_change = (difficulty - prev_diff) / prev_diff * 100)
+
+# Cluster micro-transitions: group changes within 3 days, keep max abs change
+epochs <- epochs_raw %>%
   arrange(date) %>%
   mutate(
-    idx        = row_number(),
-    cum_blocks = cumsum(blkcnt),
-    hr_smooth  = zoo::rollmedian(hashrate, k = 29, fill = NA, align = "center")
-  )
+    gap       = as.integer(date - lag(date, default = as.Date("1900-01-01"))),
+    new_group = gap > 3 | row_number() == 1,
+    group_id  = cumsum(new_group)
+  ) %>%
+  group_by(group_id) %>%
+  slice_max(abs(pct_change), n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select(date, difficulty, pct_change) %>%
+  arrange(date)
 
-# -- difficulty bottom identification ------------------------
-# Anchor dates: known major miner capitulation bottoms.
-# For each anchor we find the actual local HR minimum within +-30 days.
-anchor_dates <- as.Date(c(
-  "2011-12-15",   # earliest: pre-2012 bear
-  "2014-12-17",   # 2014-15 bear bottom
-  "2016-08-09",   # post-2016-halving dip
-  "2018-12-29",   # 2018 bear bottom
-  "2020-03-25",   # COVID crash
-  "2021-06-27",   # China mining ban
-  "2022-12-24",   # FTX / 2022 bear bottom
-  "2024-05-27"    # post-2024-halving dip
-))
+cat(sprintf("[btcMinerCap] %d difficulty adjustment epochs\n", nrow(epochs)))
+cat(sprintf("  Most negative: %+.1f%% on %s\n",
+  min(epochs$pct_change), epochs$date[which.min(epochs$pct_change)]))
+cat(sprintf("  Latest epoch:  %+.1f%% on %s\n",
+  tail(epochs$pct_change, 1), tail(epochs$date, 1)))
 
-# For each anchor, find the row index of the local HR minimum within +-30 days
-find_local_min_near <- function(df, anchor, window_days = 30L) {
-  lo <- anchor - window_days
-  hi <- anchor + window_days
-  sub <- df %>% filter(date >= lo, date <= hi)
-  if (nrow(sub) == 0) return(NA_integer_)
-  sub$idx[which.min(sub$hr_smooth)]
-}
+# ── auto-detect halvings from cumulative block count ──────────────────────────
+# First halving at block 210,000 on 2012-11-28.
+# Self-calibrate GENESIS_BLK so cum_blocks matches block 210,000 on that date.
+price_daily <- price_daily %>%
+  mutate(cum_blocks = cumsum(blkcnt))
 
-known_bottom_idxs <- sapply(anchor_dates, find_local_min_near, df = df, window_days = 30L)
-known_bottom_idxs <- sort(unique(known_bottom_idxs[!is.na(known_bottom_idxs)]))
+fh_date    <- as.Date("2012-11-28")
+fh_idx     <- which.min(abs(price_daily$date - fh_date))
+genesis_blk <- 210000L - as.integer(round(price_daily$cum_blocks[fh_idx]))
+price_daily$abs_height <- genesis_blk + price_daily$cum_blocks
 
-# -- detect additional bottoms in recent data (last 2 years) -
-# For anything after the last known anchor, use the algorithmic approach:
-# local HR min within 45 days AND >=10% below preceding 1-yr peak
-last_known_date <- df$date[max(known_bottom_idxs)]
-recent_df       <- df %>% filter(date > last_known_date + 60)  # 60-day buffer
+halving_heights <- seq(210000L, max(price_daily$abs_height), by = 210000L)
+halvings <- vapply(halving_heights, function(h) {
+  idx <- which(price_daily$abs_height >= h)[1]
+  if (is.na(idx)) return(NA_real_)
+  as.numeric(price_daily$date[idx])
+}, numeric(1))
+halvings <- as.Date(halvings[!is.na(halvings)], origin = "1970-01-01")
 
-hr_arr <- df$hr_smooth
-recent_bottoms <- integer(0)
+cat(sprintf("[btcMinerCap] %d halvings detected\n", length(halvings)))
 
-if (nrow(recent_df) > 90) {
-  order_days <- 45L
-  for (i in seq_len(nrow(recent_df))) {
-    gi <- recent_df$idx[i]   # global index in df
-    if (is.na(hr_arr[gi]))   next
-    lo <- max(1L, gi - order_days); hi <- min(nrow(df), gi + order_days)
-    if (hr_arr[gi] != min(hr_arr[lo:hi], na.rm = TRUE)) next
-    # Must be a genuine drop: >=10% below 1-yr preceding peak
-    peak_lo  <- max(1L, gi - 365L)
-    yr_peak  <- max(hr_arr[peak_lo:gi], na.rm = TRUE)
-    if (hr_arr[gi] > yr_peak * 0.90) next
-    recent_bottoms <- c(recent_bottoms, gi)
-  }
-  # Dedup within 90-day clusters
-  if (length(recent_bottoms) > 0) {
-    deduped <- c(recent_bottoms[1])
-    for (b in recent_bottoms[-1]) {
-      if (b - tail(deduped, 1) < 90) {
-        # Replace if lower
-        if (hr_arr[b] < hr_arr[tail(deduped, 1)])
-          deduped[length(deduped)] <- b
-      } else {
-        deduped <- c(deduped, b)
-      }
-    }
-    recent_bottoms <- deduped
-  }
-}
+# ── join price onto epochs for tooltip / current-state display ────────────────
+epochs <- epochs %>%
+  left_join(price_daily %>% select(date, price), by = "date") %>%
+  # fill price for epoch dates that may not be in price_daily exactly
+  arrange(date) %>%
+  tidyr::fill(price, .direction = "downup")
 
-all_bottom_idxs <- sort(unique(c(known_bottom_idxs, recent_bottoms)))
-cat(sprintf("[btcMinerCap] %d difficulty bottoms total\n", length(all_bottom_idxs)))
-for (bi in all_bottom_idxs) {
-  cat(sprintf("  %s  px=$%.0f\n", df$date[bi], df$price[bi]))
-}
+# ── current state summary ─────────────────────────────────────────────────────
+last_ep   <- tail(epochs, 1)
+last_neg  <- epochs %>% filter(pct_change < 0) %>% tail(1)
+sub_txt <- sprintf(
+  "Latest adjustment: %+.1f%% on %s  |  Last negative: %+.1f%% on %s",
+  last_ep$pct_change, format(last_ep$date, "%b %d %Y"),
+  last_neg$pct_change, format(last_neg$date, "%b %d %Y")
+)
 
-# -- assign each row to its most recent bottom ---------------
-n <- nrow(df)
-assigned <- integer(n)
-for (i in seq_len(n)) {
-  prior <- all_bottom_idxs[all_bottom_idxs <= i]
-  assigned[i] <- if (length(prior) > 0) tail(prior, 1L) else all_bottom_idxs[1]
-}
-
-df$bottom_idx       <- assigned
-df$price_at_bottom  <- df$price[df$bottom_idx]
-df$blocks_at_bottom <- df$cum_blocks[df$bottom_idx]
-df$pct_from_bottom  <- df$price / df$price_at_bottom * 100
-df$blocks_since     <- pmax(0, df$cum_blocks - df$blocks_at_bottom)
-
-# -- trim to plot range --------------------------------------
-df_plot <- df %>%
-  filter(!is.na(pct_from_bottom), pct_from_bottom > 0,
-         !is.na(blocks_since),
-         date >= as.Date("2012-01-01"))
-
-# -- theme (bot navy) ----------------------------------------
+# ── theme (bot navy) ──────────────────────────────────────────────────────────
 BG   <- "#02233F"
 GRID <- "#274066"
 TXT  <- "white"
@@ -190,75 +198,132 @@ theme_btc <- theme_minimal(base_size = 11) +
     legend.text       = element_text(color = TXT, size = 8),
     legend.title      = element_text(color = TXT, size = 9),
     legend.position   = "right",
-    plot.margin       = margin(10, 10, 10, 10)
+    plot.margin       = margin(10, 14, 10, 10)
   )
 
-# -- color scale: 0 (blue) -> 50k (cyan) -> 100k (green) -> 150k (yellow) -> 200k (red) --
-blk_palette <- c("#1a6fc4", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c")
+# ── band definitions (bitbo zones) ────────────────────────────────────────────
+#  green:  0%  to -5%   minor stress
+#  yellow: -5% to -10%  significant stress
+#  red:    < -10%        extreme capitulation
 
-# -- halving dates -------------------------------------------
-halvings <- as.Date(c("2012-11-28", "2016-07-09", "2020-05-11", "2024-04-19"))
+# ── plot ──────────────────────────────────────────────────────────────────────
+# Primary: BTC price (log scale, right axis) drawn as a faint line
+# Secondary: epoch difficulty % change as bars/segments, colored by zone
 
-# -- y-axis --------------------------------------------------
-y_brk <- c(50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000)
-y_lbl <- c("50%", "100%", "200%", "500%", "1,000%",
-           "2,000%", "5,000%", "10,000%", "20,000%", "50,000%")
+# Trim price to same date range as epochs
+plot_start <- as.Date("2012-01-01")
+price_plot <- price_daily %>% filter(date >= plot_start)
+epochs_plot <- epochs %>% filter(date >= plot_start)
 
-# -- subtitle ------------------------------------------------
-last_row  <- tail(df_plot %>% filter(!is.na(blocks_since)), 1)
-pct_delta <- last_row$pct_from_bottom - 100
-direction <- if (pct_delta >= 0) "above" else "below"
-sub_txt   <- sprintf(
-  "Current: %.0f%% %s last diff bottom ($%.0f)  |  Blocks since bottom: %s",
-  abs(pct_delta), direction, last_row$price_at_bottom,
-  format(round(last_row$blocks_since), big.mark = ",")
+# Assign zone color to each epoch
+epochs_plot <- epochs_plot %>%
+  mutate(zone = case_when(
+    pct_change <= -10 ~ "Extreme (< -10%)",
+    pct_change <= -5  ~ "Significant (-5 to -10%)",
+    pct_change <   0  ~ "Minor (0 to -5%)",
+    TRUE              ~ "Positive"
+  ))
+
+zone_colors <- c(
+  "Extreme (< -10%)"       = "#e74c3c",
+  "Significant (-5 to -10%)" = "#f1c40f",
+  "Minor (0 to -5%)"       = "#27ae60",
+  "Positive"               = "#4a90d9"
 )
 
-# -- plot ----------------------------------------------------
-p <- ggplot(df_plot, aes(x = date, y = pct_from_bottom, color = blocks_since)) +
+# Dual-axis: price (log, right) + difficulty pct (left)
+# We scale the price axis to fit within the plot area as a secondary line.
+# Use sec_axis with a transform: price_scaled = log10(price) normalized to [y_lo, y_hi]
+y_lo <- min(epochs_plot$pct_change) * 1.15
+y_hi <- max(epochs_plot$pct_change, 0) * 1.10 + 5
 
-  geom_vline(
-    xintercept = halvings,
-    color      = "#8899aa",
-    linetype   = "dashed",
-    linewidth  = 0.5,
-    alpha      = 0.8
+price_lo <- min(price_plot$price[price_plot$date >= plot_start], na.rm = TRUE)
+price_hi <- max(price_plot$price, na.rm = TRUE)
+
+# Map log10(price) into the UPPER portion of the y-axis only (above 0),
+# so the price line doesn't overlap the capitulation bars below zero.
+# Price occupies [0, y_hi], capitulation bars occupy [y_lo, 0].
+log_lo <- log10(price_lo)
+log_hi <- log10(price_hi)
+px_to_y  <- function(p) 0 + (log10(p) - log_lo) / (log_hi - log_lo) * y_hi
+y_to_px  <- function(y) 10^(log_lo + (y - 0)    / (y_hi - 0)        * (log_hi - log_lo))
+
+price_plot <- price_plot %>% mutate(y_scaled = px_to_y(price))
+
+# Price axis breaks - only show values that map well above the 0 line
+px_brk_raw <- c(1000, 10000, 100000)
+px_brk_raw <- px_brk_raw[px_brk_raw >= price_lo * 0.5 & px_brk_raw <= price_hi * 2]
+px_brk_y   <- px_to_y(px_brk_raw)
+# Drop any breaks that map too close to the 0 line (less than 15% of y_hi)
+keep       <- px_brk_y >= y_hi * 0.15
+px_brk_y   <- px_brk_y[keep]
+px_brk_raw <- px_brk_raw[keep]
+px_brk_lbl <- paste0("$", formatC(px_brk_raw/1000, format="fg"), "k")
+
+p <- ggplot() +
+
+  # -- background band: positive (above 0)
+  annotate("rect", xmin = plot_start, xmax = max(epochs_plot$date) + 30,
+           ymin = 0, ymax = y_hi, fill = "#1a4a2a", alpha = 0.18) +
+
+  # -- band: 0 to -5% (minor green)
+  annotate("rect", xmin = plot_start, xmax = max(epochs_plot$date) + 30,
+           ymin = -5, ymax = 0, fill = "#27ae60", alpha = 0.12) +
+
+  # -- band: -5 to -10% (yellow)
+  annotate("rect", xmin = plot_start, xmax = max(epochs_plot$date) + 30,
+           ymin = -10, ymax = -5, fill = "#f1c40f", alpha = 0.12) +
+
+  # -- band: < -10% (red)
+  annotate("rect", xmin = plot_start, xmax = max(epochs_plot$date) + 30,
+           ymin = y_lo, ymax = -10, fill = "#e74c3c", alpha = 0.12) +
+
+  # -- BTC price (scaled to left axis, faint line) -- draw FIRST so it's behind bars
+  geom_line(data = price_plot,
+            aes(x = date, y = y_scaled),
+            color = "#f0a500", linewidth = 0.55, alpha = 0.65) +
+
+  # -- halvings
+  geom_vline(xintercept = halvings, color = "#8899aa",
+             linetype = "dashed", linewidth = 0.45, alpha = 0.8) +
+
+  annotate("label",
+    x = halvings, y = rep(y_hi * 0.92, length(halvings)),
+    label = rep("Halving", length(halvings)),
+    fill = "#0d3358", color = "#aaccee", size = 2.3, fontface = "bold") +
+
+  # -- zero line
+  geom_hline(yintercept = 0, color = "#ffffff", linewidth = 0.4, alpha = 0.4) +
+
+  # -- epoch bars (segments from 0 down to pct_change)
+  geom_segment(data = epochs_plot,
+               aes(x = date, xend = date, y = 0, yend = pct_change, color = zone),
+               linewidth = 0.9, alpha = 0.85) +
+
+  # -- epoch dots
+  geom_point(data = epochs_plot,
+             aes(x = date, y = pct_change, color = zone),
+             size = 1.6, alpha = 0.95) +
+
+  # -- threshold lines
+  geom_hline(yintercept = -5,  color = "#f1c40f", linewidth = 0.3, linetype = "dotted", alpha = 0.6) +
+  geom_hline(yintercept = -10, color = "#e74c3c", linewidth = 0.3, linetype = "dotted", alpha = 0.6) +
+
+  scale_color_manual(
+    values = zone_colors,
+    name   = "Difficulty drop",
+    guide  = guide_legend(override.aes = list(linewidth = 2, size = 3))
   ) +
 
-  annotate(
-    "label",
-    x        = halvings,
-    y        = rep(52, 4),
-    label    = rep("Halving", 4),
-    fill     = "#0d3358",
-    color    = "#aaccee",
-    size     = 2.4,
-    fontface = "bold"
-  ) +
-
-  geom_point(size = 0.85, alpha = 0.95) +
-
-  scale_color_gradientn(
-    colors = blk_palette,
-    limits = c(0, 200000),
-    oob    = scales::squish,
-    breaks = c(0, 50000, 100000, 150000, 200000),
-    labels = c("0", "50k", "100k", "150k", "200k+"),
-    name   = "Blocks since\ndifficulty bottom",
-    guide  = guide_colorbar(
-      barwidth       = 0.8,
-      barheight      = 12,
-      title.position = "right",
-      title.hjust    = 0.5,
-      title.theme    = element_text(color = TXT, size = 8, angle = 90)
+  scale_y_continuous(
+    name   = "Difficulty adjustment (%)",
+    labels = function(x) paste0(ifelse(x >= 0, "+", ""), round(x, 1), "%"),
+    sec.axis = sec_axis(
+      transform = ~ y_to_px(.),
+      name   = "BTC Price (USD)",
+      breaks = px_brk_y,
+      labels = px_brk_lbl
     )
-  ) +
-
-  scale_y_log10(
-    breaks = y_brk,
-    labels = y_lbl,
-    limits = c(48, 60000),
-    expand = c(0, 0)
   ) +
 
   scale_x_date(
@@ -268,14 +333,18 @@ p <- ggplot(df_plot, aes(x = date, y = pct_from_bottom, color = blocks_since)) +
   ) +
 
   labs(
-    title    = "Miner Capitulation - BTC Price / Price at Difficulty Bottom",
+    title    = "BTC Miner Capitulation - Difficulty Adjustment % per Epoch",
     subtitle = sub_txt,
-    x        = "Day",
-    y        = "BTC price / price at diff bottom",
-    caption  = "Source: CoinMetrics (HashRate, BlkCnt, PriceUSD) | JHCV"
+    x        = NULL,
+    caption  = "Source: blockchain.info (difficulty), CoinMetrics (price) | JHCV"
   ) +
-  theme_btc
 
-# -- save ----------------------------------------------------
-ggsave(out_png, p, width = 12, height = 7, dpi = 150, bg = BG)
+  theme_btc +
+  theme(
+    axis.title.y.right = element_text(color = "#f0a500", size = 9),
+    axis.text.y.right  = element_text(color = "#f0a500", size = 8)
+  )
+
+# ── save ──────────────────────────────────────────────────────────────────────
+ggsave(out_png, p, width = 13, height = 7, dpi = 150, bg = BG)
 cat(sprintf("[btcMinerCap] saved -> %s\n", out_png))

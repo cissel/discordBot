@@ -587,28 +587,32 @@ def build_features():
 
     # ── 16. Market regime label (rule-based, for regime-split models) ──────────
     # Three regimes derived purely from lagged data — no leakage:
-    #   bull  = low VIX AND price above both 50d and 200d MA
-    #   bear  = elevated VIX AND price below 200d MA  (both conditions required)
+    #   bull  = low VIX (< p33) AND price above both 50d and 200d MA
+    #   bear  = very elevated VIX (> p80) AND price more than 3% below 200d MA
+    #           (both conditions required — stricter threshold reduces false bear labels)
     #   chop  = everything else (includes elevated VIX but price above MAs,
     #            and low VIX with price below MAs — transitional states)
     #
     # The AND requirement prevents mislabeling elevated-VIX-in-uptrend days as "bear".
-    # Those days belong in chop — the bear model should only train on genuine downtrends.
+    # The 3% gap filter (spy_cum < spy_ma200 * 0.97) ensures the bear label only fires
+    # during genuine, confirmed downtrends — not marginal 200d MA breaches.
+    # Those borderline days belong in chop — the bear model should only train on genuine downtrends.
     print("  building regime labels...")
     spy_cum   = (1 + df["SPY_ret"].fillna(0)).cumprod()
     spy_ma50  = spy_cum.rolling(50,  min_periods=50).mean()
     spy_ma200 = spy_cum.rolling(200, min_periods=200).mean()
     vix_p33   = df["vix_level"].quantile(0.33)
     vix_p67   = df["vix_level"].quantile(0.67)
-    # Bull: VIX calm AND price trending up on both timeframes
+    vix_p80   = df["vix_level"].quantile(0.80)
+    # Bull: VIX calm (< p33) AND price trending up on both timeframes
     bull_mask = (df["vix_level"] < vix_p33) & (spy_cum > spy_ma50) & (spy_cum > spy_ma200)
-    # Bear: VIX elevated AND price broken below 200d MA (genuine downtrend)
-    bear_mask = (df["vix_level"] > vix_p67) & (spy_cum < spy_ma200)
+    # Bear: VIX very elevated (> p80) AND price more than 3% below 200d MA (genuine downtrend)
+    bear_mask = (df["vix_level"] > vix_p80) & (spy_cum < spy_ma200 * 0.97)
     # Chop: everything else
     df["regime"] = np.where(bull_mask, "bull", np.where(bear_mask, "bear", "chop"))
     regime_counts = df["regime"].value_counts()
     print(f"    bull={regime_counts.get('bull',0)}  bear={regime_counts.get('bear',0)}  chop={regime_counts.get('chop',0)}")
-    print(f"    VIX p33={vix_p33:.1f}  p67={vix_p67:.1f}")
+    print(f"    VIX p33={vix_p33:.1f}  p67={vix_p67:.1f}  p80={vix_p80:.1f}")
 
     # ── 17. Regime-change recency + interaction features ─────────────────────
     # days_since_regime_change: how many days since the regime last flipped.
@@ -656,6 +660,59 @@ def build_features():
     # sector_risk_off_r5 × bear: flight-to-safety rotation strongest in downtrends
     if "sector_risk_off_r5" in df.columns:
         df["sector_riskoff_x_bear"] = df["sector_risk_off_r5"] * bear_flag
+
+    # ── 17b. Rate-shock regime features (Arch #2) ──────────────────────────────
+    # The 2022 bear was driven by Fed tightening velocity — a qualitatively different
+    # regime from price-driven bears (2020 COVID, 2008 GFC). Rate-shock regime fires
+    # when the Fed is hiking aggressively: >100bps over 63 trading days.
+    # Captured as a continuous feature (tightening speed) + discrete flag.
+    if "FEDFUNDS" in df.columns:
+        ff = df["FEDFUNDS"].ffill()
+        # Rate change over rolling 63-day window (approx 3 months / 2 FOMC meetings)
+        ff_chg_63  = ff.diff(63)
+        # Tightening velocity z-score (how aggressive is current hiking vs history)
+        ff_chg_252 = ff.diff(252)
+        ff_spd_z63 = (ff_chg_63 - ff_chg_63.rolling(252).mean()) / (ff_chg_63.rolling(252).std() + 1e-9)
+        df["rate_chg_63d"]       = ff_chg_63           # raw rate change 63d (bps ~ %)
+        df["rate_chg_252d"]      = ff_chg_252           # raw rate change 252d
+        df["rate_shock_flag"]    = (ff_chg_63 > 1.0).astype(float)   # >100bps in 63d = shock
+        df["rate_easing_flag"]   = (ff_chg_63 < -0.5).astype(float)  # >50bps cut in 63d = easing
+        df["rate_speed_z63"]     = ff_spd_z63           # z-score of tightening speed
+        # Interaction: rate shock × bear (the 2022-specific compound regime)
+        df["rate_shock_x_bear"]  = df["rate_shock_flag"] * bear_flag
+        df["rate_speed_x_bear"]  = df["rate_speed_z63"]  * bear_flag
+        print(f"    rate-shock regime: {int(df['rate_shock_flag'].sum())} shock days, "
+              f"{int(df['rate_easing_flag'].sum())} easing days")
+
+    # ── 17c. Returns-distribution regime features (Arch #6) ────────────────────
+    # Replaces endogenous VIX/price regime with forward-looking distribution stats.
+    # These characterize the RETURNS ENVIRONMENT rather than the price level:
+    #   - realized skewness of last N days (negative = left-tail environment)
+    #   - realized kurtosis (high = fat-tail / stressed)
+    #   - rolling drawdown depth (how far from recent peak)
+    #   - regime_age_z: how old is the current regime vs its historical duration
+    if "SPY_ret" in df.columns:
+        r = df["SPY_ret"].fillna(0)
+        # Rolling realized skewness and kurtosis (21d and 63d)
+        df["ret_skew_21"]  = r.rolling(21).skew()
+        df["ret_skew_63"]  = r.rolling(63).skew()
+        df["ret_kurt_21"]  = r.rolling(21).kurt()
+        # Standardized skewness z-score (vs 252d history) — negative = fear regime
+        skew_mu = df["ret_skew_21"].rolling(252).mean()
+        skew_sd = df["ret_skew_21"].rolling(252).std() + 1e-9
+        df["ret_skew_z21"] = (df["ret_skew_21"] - skew_mu) / skew_sd
+        # Rolling drawdown from 63d peak (continuous, not discrete regime)
+        cum_63 = r.rolling(63).apply(lambda x: (1 + x).prod(), raw=True)
+        roll_max = r.rolling(63).apply(lambda x: (1 + x).cumprod().max(), raw=True)
+        df["drawdown_63d"]  = ((cum_63 - roll_max) / (roll_max + 1e-9)).clip(-1, 0)
+        # Regime age z-score: days_since_regime_change normalized by historical
+        # average duration of that regime type. Long-lived regimes may be ending.
+        if "days_since_regime_change" in df.columns:
+            dsc = df["days_since_regime_change"]
+            dsc_mean = dsc.rolling(504).mean()
+            dsc_std  = dsc.rolling(504).std() + 1e-9
+            df["regime_age_z"] = (dsc - dsc_mean) / dsc_std
+        print(f"    returns-distribution regime: ret_skew_21, ret_kurt_21, drawdown_63d, regime_age_z added")
 
     # ── 18. Moon phase + weather features ─────────────────────────────────────
     # Moon phase: daily astronomical data, no API needed (pure math in fetchMoonPhase.py)
@@ -709,8 +766,176 @@ def build_features():
     else:
         print(f"    [warn] weather cache not found — run fetchWeatherDaily.py (needs NOAA_CDO_TOKEN in .env)")
 
-    # ── targets (no leakage — shift(-1) and shift(-5)) ───────────────────────
-    print("  computing targets...")
+    # ── 19. Alternative / sentiment data ──────────────────────────────────────
+    # Loads from three cache CSVs:
+    #   fetchAlternativeData.py  -> alternative_data_daily.csv  (wiki, congress, holidays, MTA)
+    #   fetchAlternativeData2.py -> alt_data2_daily.csv         (daylight, PCR, earnings, approval)
+    #   fetchGoogleTrends.py     -> google_trends_daily.csv     (trends: SPY, crash, recession...)
+    # All merged on date index; NaN-safe (missing rows handled by SPARSE_FEATURES imputation).
+    ALT1_PATH = os.path.join(CACHE_DIR, "alternative_data_daily.csv")
+    ALT2_PATH = os.path.join(CACHE_DIR, "alt_data2_daily.csv")
+    TRENDS_PATH = os.path.join(CACHE_DIR, "google_trends_daily.csv")
+
+    if os.path.exists(ALT1_PATH):
+        alt1 = pd.read_csv(ALT1_PATH, parse_dates=["date"]).set_index("date")
+        alt1_cols = [c for c in alt1.columns if c != "date"]
+        for col in alt1_cols:
+            df[col] = alt1[col].reindex(df.index)
+        print(f"  alt data 1: {len(alt1_cols)} cols, wikipedia={df['wiki_total_views'].notna().sum() if 'wiki_total_views' in df.columns else 0} rows")
+    else:
+        print(f"  [warn] alternative_data_daily.csv not found — run fetchAlternativeData.py")
+
+    if os.path.exists(ALT2_PATH):
+        alt2 = pd.read_csv(ALT2_PATH, parse_dates=["date"]).set_index("date")
+        alt2_cols = [c for c in alt2.columns if c != "date"]
+        for col in alt2_cols:
+            df[col] = alt2[col].reindex(df.index)
+        print(f"  alt data 2: {len(alt2_cols)} cols, daylight={df['daylight_hours_nyc'].notna().sum() if 'daylight_hours_nyc' in df.columns else 0} rows")
+    else:
+        print(f"  [warn] alt_data2_daily.csv not found — run fetchAlternativeData2.py")
+
+    if os.path.exists(TRENDS_PATH):
+        trends = pd.read_csv(TRENDS_PATH, parse_dates=["date"]).set_index("date")
+        trends_cols = [c for c in trends.columns if c != "date"]
+        # CRITICAL: apply +2 business-day publication lag.
+        # Google weekly Trends covers Mon-Sun, published ~Tuesday after week ends.
+        # Without lag, Monday predictions see data from a week not yet published — look-ahead.
+        # Shift the index forward 2bd so that any given date only sees prior-week Trends.
+        trends_lagged = trends[trends_cols].copy()
+        trends_lagged.index = trends_lagged.index + pd.tseries.offsets.BusinessDay(2)
+        trends_lagged = trends_lagged[~trends_lagged.index.duplicated(keep="last")]
+        for col in trends_cols:
+            df[col] = trends_lagged[col].reindex(df.index)
+        trend_cov = df["trends_spy"].notna().mean() if "trends_spy" in df.columns else 0
+        print(f"  google trends: {len(trends_cols)} cols, trends_spy={trend_cov:.0%} coverage (+2bd publication lag applied)")
+    else:
+        print(f"  [info] google_trends_daily.csv not found — run fetchGoogleTrends.py (optional)")
+
+    # ── 20. Sentiment + macro sentiment data ───────────────────────────────────
+    # fetchSentimentData.py    -> sentiment_daily.csv    (AAII + Crypto Fear & Greed)
+    # fetchMacroSentiment.py   -> macro_sentiment_daily.csv (ICSA, UMCSENT, CSCICP03)
+    SENTIMENT_PATH     = os.path.join(CACHE_DIR, "sentiment_daily.csv")
+    MACRO_SENT_PATH    = os.path.join(CACHE_DIR, "macro_sentiment_daily.csv")
+
+    if os.path.exists(SENTIMENT_PATH):
+        sent = pd.read_csv(SENTIMENT_PATH, parse_dates=["date"]).set_index("date")
+        for col in [c for c in sent.columns if c != "date"]:
+            df[col] = sent[col].reindex(df.index)
+        aaii_cov = df["aaii_bull_bear_spread"].notna().mean() if "aaii_bull_bear_spread" in df.columns else 0
+        cfg_cov  = df["cfg_z21"].notna().mean() if "cfg_z21" in df.columns else 0
+        print(f"  sentiment: aaii={aaii_cov:.0%}, crypto_fear_greed={cfg_cov:.0%}")
+    else:
+        print(f"  [warn] sentiment_daily.csv not found — run fetchSentimentData.py")
+
+    if os.path.exists(MACRO_SENT_PATH):
+        msent = pd.read_csv(MACRO_SENT_PATH, parse_dates=["date"]).set_index("date")
+        for col in [c for c in msent.columns if c != "date"]:
+            df[col] = msent[col].reindex(df.index)
+        icsa_cov = df["icsa_z52"].notna().mean() if "icsa_z52" in df.columns else 0
+        print(f"  macro sentiment: icsa={icsa_cov:.0%} coverage")
+    else:
+        print(f"  [warn] macro_sentiment_daily.csv not found — run fetchMacroSentiment.py")
+
+    # ── 20b. Regime × sentiment interaction features (Arch #8) ─────────────────
+    # Top features from R29/R30: trends_fear_z21, trends_buy_stocks, trends_volatility,
+    # wiki_economy_views, sunshine_proxy_chi. These likely have regime-conditional effects:
+    # a recession-search spike in 2019 (bull) meant nothing; same spike in 2022 (bear) was signal.
+    bear_f  = (df["regime"] == "bear").astype(float)  if "regime" in df.columns else pd.Series(0, index=df.index)
+    bull_f  = (df["regime"] == "bull").astype(float)  if "regime" in df.columns else pd.Series(0, index=df.index)
+    chop_f  = (df["regime"] == "chop").astype(float)  if "regime" in df.columns else pd.Series(0, index=df.index)
+
+    for feat, label in [
+        ("trends_fear_z21",        "fear_z21"),
+        ("trends_crash",           "crash"),
+        ("trends_recession",       "recession"),
+        ("trends_volatility",      "vol"),
+        ("trends_buy_stocks",      "buy"),
+        ("trends_distress_index",  "distress"),
+        ("aaii_bull_bear_spread",  "aaii_spread"),
+        ("cfg_z21",                "cfg_z21"),
+        ("icsa_z52",               "icsa_z52"),
+    ]:
+        if feat in df.columns:
+            df[f"{label}_x_bear"] = df[feat] * bear_f
+            df[f"{label}_x_bull"] = df[feat] * bull_f
+            df[f"{label}_x_chop"] = df[feat] * chop_f
+
+    # Rate-shock × key sentiment: does fear signal amplify in rate-shock regime?
+    if "rate_shock_flag" in df.columns:
+        for feat, label in [
+            ("trends_fear_z21",   "fear_z21"),
+            ("trends_recession",  "recession"),
+            ("icsa_z52",          "icsa"),
+        ]:
+            if feat in df.columns:
+                df[f"{label}_x_rate_shock"] = df[feat] * df["rate_shock_flag"]
+
+    print(f"  regime×sentiment interactions: added")
+
+    # ── 21. Reddit WSB sentiment (score-based only — count capped at 100) ──────
+    # fetchRedditWSB.py -> wsb_daily.csv
+    # wsb_post_count is capped at 100 (API pagination limit) — useless as volume signal.
+    # wsb_avg_score and wsb_avg_comments carry genuine virality/sentiment signal.
+    WSB_PATH = os.path.join(CACHE_DIR, "wsb_daily.csv")
+    if os.path.exists(WSB_PATH):
+        wsb = pd.read_csv(WSB_PATH, parse_dates=["date"]).set_index("date")
+        # Only wire score-based cols — skip post_count and posts_z21 (capped noise)
+        wsb_cols = [c for c in wsb.columns if c not in ("wsb_post_count", "wsb_posts_z21")]
+        for col in wsb_cols:
+            df[col] = wsb[col].reindex(df.index)
+        score_cov = df["wsb_avg_score"].notna().mean() if "wsb_avg_score" in df.columns else 0
+        print(f"  reddit WSB: {len(wsb_cols)} cols, avg_score={score_cov:.0%} coverage")
+    else:
+        print(f"  [info] wsb_daily.csv not found — run fetchRedditWSB.py (optional)")
+
+    # ── 22. CBOE SKEW Index + VIX9D ───────────────────────────────────────────
+    # fetchCboeSkew.py -> cboe_skew_daily.csv
+    # SKEW measures tail-risk premium: high SKEW = market buying OTM puts.
+    # Range ~100-160+; level, z-score, 5d change, and bear-regime interaction.
+    # VIX9D = 9-day VIX (short-term fear); vix9d_vix30_ratio = term structure slope.
+    SKEW_PATH = os.path.join(CACHE_DIR, "cboe_skew_daily.csv")
+    if os.path.exists(SKEW_PATH):
+        skew_df = pd.read_csv(SKEW_PATH, parse_dates=["date"]).set_index("date").sort_index()
+        skew_df.index = pd.to_datetime(skew_df.index)
+        skew_df = skew_df[~skew_df.index.duplicated(keep="first")]
+
+        # Level and z-scores
+        s = skew_df["cboe_skew"]
+        skew_df["skew_z21"]    = (s - s.rolling(21).mean()) / (s.rolling(21).std() + 1e-9)
+        skew_df["skew_z63"]    = (s - s.rolling(63).mean()) / (s.rolling(63).std() + 1e-9)
+        skew_df["skew_chg_5d"] = s.diff(5)
+        skew_df["skew_chg_1d"] = s.diff(1)
+        # High SKEW flag: top tercile (>= 130 historically ~ p67)
+        skew_df["skew_high_flag"] = (s >= s.rolling(252).quantile(0.67)).astype(float)
+
+        # VIX9D / VIX30 ratio: > 1 = inverted (short-term fear > long-term) -> near-term event risk
+        if "vix9d" in skew_df.columns and "VIX" in df.columns:
+            vix30_aligned = df["VIX"].reindex(skew_df.index, method=None)
+            vix30_aligned = vix30_aligned[~vix30_aligned.index.duplicated(keep="first")]
+            skew_dedup    = skew_df[~skew_df.index.duplicated(keep="first")]
+            skew_df["vix9d_vix30_ratio"] = (
+                skew_dedup["vix9d"] / vix30_aligned.replace(0, np.nan)
+            )
+        # VIX9D z21
+        if "vix9d" in skew_df.columns:
+            v9 = skew_df["vix9d"]
+            skew_df["vix9d_z21"] = (v9 - v9.rolling(21).mean()) / (v9.rolling(21).std() + 1e-9)
+
+        SKEW_COLS = [
+            "cboe_skew", "skew_z21", "skew_z63",
+            "skew_chg_5d", "skew_chg_1d", "skew_high_flag",
+            "vix9d", "vix9d_z21", "vix9d_vix30_ratio",
+        ]
+        for col in SKEW_COLS:
+            if col in skew_df.columns:
+                df[col] = skew_df[col].reindex(df.index)
+
+        skew_cov = df["cboe_skew"].notna().mean()
+        print(f"  CBOE SKEW: {len(SKEW_COLS)} cols, coverage={skew_cov:.0%}")
+    else:
+        print(f"  [info] cboe_skew_daily.csv not found — run fetchCboeSkew.py")
+
+
     df["next_ret_1d"]  = df["SPY_ret"].shift(-1)
     df["next_ret_5d"]  = df["SPY_ret"].shift(-1).rolling(5).sum().shift(-4)  # sum of next 5
     df["next_dir_1d"]  = (df["next_ret_1d"] > 0).astype(float)

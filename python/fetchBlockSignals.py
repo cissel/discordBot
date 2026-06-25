@@ -247,7 +247,7 @@ def fetch_trades_for_day(ticker: str, day: date) -> pd.DataFrame:
         "t": "time", "p": "price", "s": "size",
         "x": "exchange", "c": "conditions", "z": "tape",
     })
-    df["time"]  = pd.to_datetime(df["time"], utc=True).dt.tz_convert("America/New_York")
+    df["time"]  = pd.to_datetime(df["time"], utc=True, format="ISO8601").dt.tz_convert("America/New_York")
     df["price"] = df["price"].astype(float)
     df["size"]  = df["size"].astype(int)
     df = df.sort_values("time").reset_index(drop=True)
@@ -514,6 +514,126 @@ def process_pending_outcomes(events: pd.DataFrame) -> pd.DataFrame:
     return events
 
 
+# ── refresh partial outcomes (any horizon close still empty) ──────────────────
+def refresh_partial_outcomes() -> None:
+    """
+    Re-compute outcomes for any row in block_outcomes.csv where ANY horizon
+    close is still empty but enough trading days have elapsed for it to exist.
+    Covers:
+      - Blocks from yesterday with empty close_1d
+      - Older blocks where 3d/1w/2w/1mo closes never got written
+    """
+    if not os.path.exists(OUTCOMES_CSV):
+        return
+
+    outcomes = pd.read_csv(OUTCOMES_CSV)
+    if outcomes.empty:
+        return
+
+    today = date.today()
+
+    def _empty(val):
+        if val is None:
+            return True
+        try:
+            if isinstance(val, float) and np.isnan(val):
+                return True
+        except Exception:
+            pass
+        return str(val).strip() == ""
+
+    # A row needs refresh if ANY horizon close is empty AND enough days have
+    # elapsed for that horizon to have data.
+    HORIZON_DAYS = {"close_1d": 1, "close_3d": 3, "close_1w": 5,
+                    "close_2w": 10, "close_1mo": 21}
+
+    def row_needs_refresh(row):
+        try:
+            trade_date = pd.to_datetime(row.get("trade_date")).date()
+        except Exception:
+            return False
+        trading_days_elapsed = len(get_trading_days(trade_date, today)) - 1  # exclude trade_date itself
+        for col, min_days in HORIZON_DAYS.items():
+            if trading_days_elapsed >= min_days and _empty(row.get(col)):
+                return True
+        return False
+
+    needs_refresh = outcomes[outcomes.apply(row_needs_refresh, axis=1)].copy()
+
+    if needs_refresh.empty:
+        print("No partial outcome rows to refresh.")
+        return
+
+    print(f"Refreshing {len(needs_refresh)} partial outcome row(s) with empty closes...")
+
+    # Fetch bars once across the full date range needed
+    all_trade_dates = pd.to_datetime(needs_refresh["trade_date"]).dt.date
+    fetch_start = min(all_trade_dates) - timedelta(days=5)
+    fetch_end   = today + timedelta(days=5)
+    bars_cache: dict = {}
+
+    updated_rows = {}
+
+    for df_idx, row in needs_refresh.iterrows():
+        ticker     = str(row.get("ticker", TICKER))
+        trade_date = pd.to_datetime(row.get("trade_date")).date()
+
+        print(f"  [{df_idx}] {ticker} {trade_date} @ ${float(row['block_price']):.4f} ...",
+              end=" ", flush=True)
+
+        cache_key = ticker
+        if cache_key not in bars_cache:
+            try:
+                bars_cache[cache_key] = fetch_daily_bars(ticker, fetch_start, fetch_end)
+            except Exception as exc:
+                print(f"ERROR fetching bars: {exc}")
+                continue
+
+        all_bars = bars_cache[cache_key]
+        if all_bars.empty:
+            print("no bars available.")
+            continue
+
+        # Forward bars: trading days STRICTLY AFTER trade_date
+        forward = all_bars[all_bars["date"] > trade_date].reset_index(drop=True)
+
+        if forward.empty:
+            print("no forward bars yet.")
+            continue
+
+        pseudo_row = row.copy()
+        pseudo_row["price"] = row["block_price"]
+        pseudo_row["time"]  = row["block_time"]
+
+        try:
+            outcome, all_filled = compute_outcomes_for_event(
+                pseudo_row, forward, int(row.get("event_idx", df_idx))
+            )
+        except Exception as exc:
+            print(f"ERROR: {exc}")
+            continue
+
+        updated_rows[df_idx] = outcome
+        status = "all horizons filled" if all_filled else "partial"
+        print(f"done ({status}).")
+        time.sleep(0.1)
+
+    if not updated_rows:
+        print("  Nothing updated.")
+        return
+
+    # Apply updates back into outcomes DataFrame
+    update_df = pd.DataFrame(updated_rows).T
+    update_df.index = list(updated_rows.keys())
+
+    for col in OUTCOMES_COLS:
+        if col in update_df.columns:
+            outcomes.loc[list(updated_rows.keys()), col] = update_df[col].astype(outcomes[col].dtype, errors="ignore").values
+
+    outcomes[OUTCOMES_COLS].to_csv(OUTCOMES_CSV, index=False)
+    print(f"  Refreshed {len(updated_rows)} row(s) in {OUTCOMES_CSV}.")
+
+
 # ── process a single trading day ──────────────────────────────────────────────
 def process_day(day: date) -> int:
     """
@@ -576,7 +696,10 @@ def run_daily() -> None:
     else:
         process_day(day)
 
-    # Outcome pass for any pending rows
+    # Refresh any outcome rows where closes are still empty (partial fills from prior days)
+    refresh_partial_outcomes()
+
+    # Outcome pass for any pending rows (forward_bars_pulled == False)
     if os.path.exists(EVENTS_CSV):
         events = pd.read_csv(EVENTS_CSV)
         events = process_pending_outcomes(events)

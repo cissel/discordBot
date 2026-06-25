@@ -20,6 +20,13 @@ import os
 import sys
 import pandas as pd
 
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.expanduser("~/discordBot/python"))
+try:
+    from predictFantasy import get_ml_scores as _get_ml_scores
+except Exception:
+    _get_ml_scores = None
+
 # ── paths ──────────────────────────────────────────────────────────────────────
 BASE        = os.path.expanduser("~/discordBot/outputs/sports/mlb/fantasy")
 BATTER_CSV  = os.path.join(BASE, "playerData", "batter_game_logs.csv")
@@ -112,6 +119,16 @@ def build_player_summary(df: pd.DataFrame) -> pd.DataFrame:
 def main():
     os.makedirs(BASE, exist_ok=True)
 
+    _ml_bat = _get_ml_scores("batters", ("daily", "weekly")) if _get_ml_scores else {}
+    _ml_pit = _get_ml_scores("pitchers", ("daily", "weekly")) if _get_ml_scores else {}
+    import unicodedata as _ud
+    def _norm(s):
+        return _ud.normalize("NFD", str(s)).encode("ascii","ignore").decode().strip().lower()
+    def _attach_ml(df, ml_dict):
+        df["ml_pts_daily"]  = df["player_name"].apply(lambda n: ml_dict.get(_norm(n), {}).get("ml_pts_daily"))
+        df["ml_pts_weekly"] = df["player_name"].apply(lambda n: ml_dict.get(_norm(n), {}).get("ml_pts_weekly"))
+        return df
+
     bat_raw = load_csv(BATTER_CSV,  "batter")
     pit_raw = load_csv(PITCHER_CSV, "pitcher")
 
@@ -132,6 +149,7 @@ def main():
                 [OUT_COLS]
                 .reset_index(drop=True)
             )
+            hot_bat = _attach_ml(hot_bat, _ml_bat)
             hot_bat.to_csv(OUT_HOT_BAT, index=False)
 
             # Cold batters: bottom 5 among those with season avg >= 3.0
@@ -143,6 +161,7 @@ def main():
                 [OUT_COLS]
                 .reset_index(drop=True)
             )
+            cold_bat = _attach_ml(cold_bat, _ml_bat)
             cold_bat.to_csv(OUT_COLD_BAT, index=False)
     else:
         errors.append("batter data unavailable")
@@ -162,6 +181,7 @@ def main():
                 [OUT_COLS]
                 .reset_index(drop=True)
             )
+            hot_pit = _attach_ml(hot_pit, _ml_pit)
             hot_pit.to_csv(OUT_HOT_PIT, index=False)
 
             # Cold pitchers: bottom 3 among those with season avg >= 10.0
@@ -173,6 +193,7 @@ def main():
                 [OUT_COLS]
                 .reset_index(drop=True)
             )
+            cold_pit = _attach_ml(cold_pit, _ml_pit)
             cold_pit.to_csv(OUT_COLD_PIT, index=False)
     else:
         errors.append("pitcher data unavailable")

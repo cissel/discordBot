@@ -12,6 +12,16 @@ from io import StringIO
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import sys as _sys, unicodedata as _ud
+_sys.path.insert(0, str(Path("~/discordBot/python").expanduser()))
+try:
+    from predictFantasy import get_ml_scores as _get_ml_scores
+except Exception:
+    _get_ml_scores = None
+
+def _ml_norm(s):
+    return _ud.normalize("NFD", str(s)).encode("ascii","ignore").decode().strip().lower()
+
 # ── Paths ─────────────────────────────────────────────────────────────────────
 MLB_DIR = Path("~/discordBot/outputs/sports/mlb").expanduser()
 
@@ -379,6 +389,15 @@ def main():
               f"composite OPS {score['composite_ops']} ({score['coverage']} batters, "
               f"{score['total_pa']} total PA)")
 
+    # Attach ML daily score to batter rows (per-game prediction, matches mismatch scope)
+    if _get_ml_scores:
+        _ml = _get_ml_scores("batters", ("daily",))
+        for row in all_rows:
+            row["ml_pts_daily"] = _ml.get(_ml_norm(row["batter"]), {}).get("ml_pts_daily")
+    else:
+        for row in all_rows:
+            row["ml_pts_daily"] = None
+
     # ── Write batter-favored CSV (sorted by OPS desc = batter best at top) ──
     if not all_rows:
         print("[WARN] No per-pair matchup data found.")
@@ -386,7 +405,7 @@ def main():
         all_rows.sort(key=lambda r: r["OPS"], reverse=True)
         fieldnames = [
             "pitcher","pitcher_team","batter","opposing_team","matchup",
-            "PA","AB","H","HR","BB","K","AVG","OBP","SLG","OPS"
+            "PA","AB","H","HR","BB","K","AVG","OBP","SLG","OPS","ml_pts_daily"
         ]
         with open(OUT_CSV, "w", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)

@@ -63,7 +63,10 @@ VIX_REGIMES = [(15, "LOW"), (20, "NORMAL"), (30, "ELEVATED"), (999, "FEAR")]
 
 
 def load_best_model(model_type, target):
-    """Load the most recently saved model of a given type/target."""
+    """Load the most recently saved model of a given type/target.
+    Returns (model_or_models, features) where model_or_models is either
+    a single model (logistic/gbm/ridge) or a list (gbm_ensemble).
+    """
     pattern = f"spy_{model_type}_{target}_"
     candidates = sorted(
         [f for f in os.listdir(MODEL_DIR) if f.startswith(pattern) and f.endswith(".pkl")],
@@ -74,14 +77,41 @@ def load_best_model(model_type, target):
     path = os.path.join(MODEL_DIR, candidates[0])
     with open(path, "rb") as f:
         bundle = pickle.load(f)
-    return bundle["model"], bundle.get("features", [])
+    # GBM ensemble stores list under "models", single models under "model"
+    model = bundle.get("models") or bundle.get("model")
+    return model, bundle.get("features", [])
+
+
+def predict_ensemble(models_list, X):
+    """Average predict_proba[:,1] across a list of models."""
+    return float(np.mean([m.predict_proba(X)[:, 1] for m in models_list], axis=0)[0])
 
 
 def load_regime_model(regime_name):
-    """Load a regime-specific logistic model. Returns (model, feats) or (None, None).
-    For 'bear': prefers the calibrated version if available."""
-    if regime_name == "bear":
-        cal_pattern = "spy_logistic_regime_bear_calibrated_"
+    """Load a regime-specific logistic model. Returns (model, feats, flip_probs, drop_from_blend, platt, gbm_chop_models) or
+    (None, None, False, False, None, None).
+    For 'chop': prefers dedicated chop model if available, then calibrated, then base.
+    For 'bear': prefers calibrated version if available.
+    Dedicated chop model bundle has a 'platt' key for calibration and optional 'gbm_chop_models' for chop-blend."""
+    # Dedicated chop model takes priority
+    if regime_name == "chop":
+        ded_pattern = "spy_logistic_chop_dedicated_"
+        ded_candidates = sorted(
+            [f for f in os.listdir(MODEL_DIR) if f.startswith(ded_pattern) and f.endswith(".pkl")],
+            reverse=True
+        )
+        if ded_candidates:
+            path = os.path.join(MODEL_DIR, ded_candidates[0])
+            with open(path, "rb") as f:
+                bundle = pickle.load(f)
+            return (bundle["model"], bundle.get("features", []),
+                    bundle.get("flip_probs", False),
+                    bundle.get("drop_from_blend", False),
+                    bundle.get("platt", None),
+                    bundle.get("gbm_chop_models", None))
+
+    if regime_name in ("bear", "chop"):
+        cal_pattern = f"spy_logistic_regime_{regime_name}_calibrated_"
         cal_candidates = sorted(
             [f for f in os.listdir(MODEL_DIR) if f.startswith(cal_pattern) and f.endswith(".pkl")],
             reverse=True
@@ -90,19 +120,21 @@ def load_regime_model(regime_name):
             path = os.path.join(MODEL_DIR, cal_candidates[0])
             with open(path, "rb") as f:
                 bundle = pickle.load(f)
-            return bundle["model"], bundle.get("features", [])
+            flip   = bundle.get("flip_probs", False)
+            drop   = bundle.get("drop_from_blend", False)
+            return bundle["model"], bundle.get("features", []), flip, drop, None, None
     pattern = f"spy_logistic_regime_{regime_name}_"
     candidates = sorted(
         [f for f in os.listdir(MODEL_DIR) if f.startswith(pattern) and f.endswith(".pkl")
-         and "calibrated" not in f],
+         and "calibrated" not in f and "dedicated" not in f],
         reverse=True
     )
     if not candidates:
-        return None, None
+        return None, None, False, False, None, None
     path = os.path.join(MODEL_DIR, candidates[0])
     with open(path, "rb") as f:
         bundle = pickle.load(f)
-    return bundle["model"], bundle.get("features", [])
+    return bundle["model"], bundle.get("features", []), False, False, None, None
 
 
 def predict_tomorrow_regime(df, row_df):
@@ -186,6 +218,8 @@ def get_top_signals(row, features):
     checks = [
         ("vix_z252",       lambda v: "VIX historically elevated" if v > 1.5 else ("VIX historically low" if v < -1.0 else None)),
         ("vix_z21",        lambda v: "VIX spiking short-term" if v > 2.0 else ("VIX compressing" if v < -1.5 else None)),
+        ("vix9d_z21",      lambda v: "VIX9D elevated (near-term fear)" if v > 1.5 else ("VIX9D low (near-term calm)" if v < -1.5 else None)),
+        ("skew_chg_1d",    lambda v: f"SKEW surged +{v:.1f} (tail hedging up)" if v > 3.0 else (f"SKEW dropped {v:.1f} (tail risk unwinding)" if v < -3.0 else None)),
         ("spy_ret_r5",     lambda v: f"SPY up {v*100:.1f}% past week" if v > 0.02 else (f"SPY down {abs(v)*100:.1f}% past week" if v < -0.02 else None)),
         ("spy_ret_r63",    lambda v: f"SPY up {v*100:.0f}% past qtr" if v > 0.08 else (f"SPY down {abs(v)*100:.0f}% past qtr" if v < -0.05 else None)),
         ("spy_drawdown_252", lambda v: f"SPY {abs(v)*100:.0f}% off 52w high" if v < -0.08 else None),
@@ -242,50 +276,130 @@ def predict(target_date=None):
     # ── 1-day direction model ─────────────────────────────────────────────────
     # Use regime-specific Logistic for TODAY's regime.
     # Fallback: universal Logistic if regime model unavailable.
-    regime_model, regime_feats = (load_regime_model(routing_regime)
-                                  if routing_regime else (None, None))
-    if regime_model and regime_feats:
+    regime_model, regime_feats, regime_flip, regime_drop, regime_platt, regime_gbm_chop = (
+        load_regime_model(routing_regime)
+        if routing_regime else (None, None, False, False, None, None)
+    )
+    if regime_model and regime_feats and not regime_drop:
         logistic_model  = regime_model
         logistic_feats  = regime_feats
-        model_label_1d  = f"logistic_regime_{routing_regime}"
+        regime_platt_live = regime_platt
+        regime_gbm_chop_live = regime_gbm_chop
+        if routing_regime == "chop" and regime_platt is not None:
+            model_label_1d = "logistic_chop_dedicated"
+        else:
+            model_label_1d = f"logistic_regime_{routing_regime}"
     else:
         logistic_model, logistic_feats = load_best_model("logistic", "next_dir_1d")
+        regime_platt_live = None
+        regime_gbm_chop_live = None
         model_label_1d = "logistic"
         if routing_regime and not regime_model:
             warnings_list.append(f"Regime model '{routing_regime}' not found, using universal logistic")
-    next_day_result = None
-    if logistic_model and logistic_feats:
-        avail = [f for f in logistic_feats if f in df.columns]
-        missing = [f for f in logistic_feats if f not in df.columns]
-        if missing:
-            warnings_list.append(f"Logistic: {len(missing)} features missing from data (will impute with 0)")
-        # Build X with exactly the features the model was trained on
-        X_row = pd.DataFrame(index=row_df.index)
-        for f in logistic_feats:
+        elif regime_drop:
+            warnings_list.append(f"Regime model '{routing_regime}' dropped (noise after flip), using universal logistic")
+
+    # ── GBM ensemble ──────────────────────────────────────────────────────────
+    gbm_ens_models, gbm_ens_feats = load_best_model("gbm_ensemble", "next_dir_1d")
+
+    def build_X(model_feats):
+        """Build a 1-row feature DataFrame for inference, imputing NaNs with column medians."""
+        X = pd.DataFrame(index=row_df.index)
+        missing = []
+        for f in model_feats:
             if f in df.columns:
-                X_row[f] = row_df[f].values
+                X[f] = row_df[f].values
             else:
-                X_row[f] = 0.0  # missing feature — impute with 0
-        # Impute NaNs with column median from full history
-        for col in X_row.columns:
-            if X_row[col].isna().any():
+                X[f] = 0.0
+                missing.append(f)
+        if missing:
+            warnings_list.append(f"{len(missing)} features missing from data (imputed 0)")
+        for col in X.columns:
+            if X[col].isna().any():
                 med = df[col].median() if col in df.columns else 0.0
-                X_row[col] = X_row[col].fillna(med if pd.notna(med) else 0.0)
+                X[col] = X[col].fillna(med if pd.notna(med) else 0.0)
+        return X
+
+    # ── Logistic prob ─────────────────────────────────────────────────────────
+    prob_logistic = None
+    if logistic_model and logistic_feats:
         try:
-            prob_up = float(logistic_model.predict_proba(X_row.values)[0][1])
-            direction = "UP" if prob_up >= 0.5 else "DOWN"
-            next_day_result = {
-                "direction":   direction,
-                "probability": round(prob_up, 4),
-                "confidence":  confidence_label(prob_up),
-                "model":       model_label_1d,
-                "regime":      current_regime,
-                "regime_pred": routing_regime,
-            }
+            X_log = build_X(logistic_feats)
+            p_raw = float(logistic_model.predict_proba(X_log.values)[0][1])
+            if regime_flip:
+                p_raw = 1.0 - p_raw
+            # Apply Platt calibration if available (dedicated chop model)
+            if regime_platt_live is not None:
+                logit_p = np.log(np.clip(p_raw, 1e-6, 1-1e-6) / (1 - np.clip(p_raw, 1e-6, 1-1e-6)))
+                prob_logistic = float(regime_platt_live.predict_proba(
+                    np.array([[logit_p]])
+                )[0][1])
+            else:
+                prob_logistic = p_raw
         except Exception as e:
             warnings_list.append(f"Logistic inference error: {e}")
     else:
         warnings_list.append("Logistic model not found")
+
+    # ── GBM ensemble prob ─────────────────────────────────────────────────────
+    prob_gbm_ens = None
+    if gbm_ens_models and gbm_ens_feats:
+        try:
+            X_ens = build_X(gbm_ens_feats)
+            prob_gbm_ens = predict_ensemble(gbm_ens_models, X_ens.values)
+        except Exception as e:
+            warnings_list.append(f"GBM ensemble inference error: {e}")
+    else:
+        warnings_list.append("GBM ensemble model not found")
+
+    # ── GBM chop ensemble prob (chop regime only) ─────────────────────────────
+    prob_gbm_chop = None
+    if regime_gbm_chop_live and routing_regime == "chop" and logistic_feats:
+        try:
+            X_chop = build_X(logistic_feats)   # same feature set as dedicated logistic
+            prob_gbm_chop = float(np.mean(
+                [m.predict_proba(X_chop.values)[:, 1] for m in regime_gbm_chop_live],
+                axis=0
+            )[0])
+        except Exception as e:
+            warnings_list.append(f"GBM chop inference error: {e}")
+
+    # ── Blend: 50/50 logistic + GBM ──────────────────────────────────────────
+    # In chop: prefer dedicated chop GBM over universal GBM ensemble if available.
+    # Matches the strategy tested in WFCV (Sharpe 1.855 universal; chop-blend ~1.939).
+    # Falls back to whichever model is available.
+    if routing_regime == "chop" and prob_logistic is not None and prob_gbm_chop is not None:
+        prob_blend  = (prob_logistic + prob_gbm_chop) / 2.0
+        blend_label = "blend_chop_log_gbm"
+    elif prob_logistic is not None and prob_gbm_ens is not None:
+        prob_blend    = (prob_logistic + prob_gbm_ens) / 2.0
+        blend_label   = "blend_50_50"
+    elif prob_logistic is not None:
+        prob_blend    = prob_logistic
+        blend_label   = model_label_1d + "_only"
+        warnings_list.append("GBM ensemble unavailable, using logistic only")
+    elif prob_gbm_ens is not None:
+        prob_blend    = prob_gbm_ens
+        blend_label   = "gbm_ensemble_only"
+        warnings_list.append("Logistic unavailable, using GBM ensemble only")
+    else:
+        prob_blend    = None
+        blend_label   = "none"
+
+    next_day_result = None
+    if prob_blend is not None:
+        direction = "UP" if prob_blend >= 0.5 else "DOWN"
+        next_day_result = {
+            "direction":    direction,
+            "probability":  round(prob_blend, 4),
+            "prob_logistic": round(prob_logistic, 4) if prob_logistic is not None else None,
+            "prob_gbm_ens":  round(prob_gbm_ens,  4) if prob_gbm_ens  is not None else None,
+            "prob_gbm_chop": round(prob_gbm_chop, 4) if prob_gbm_chop is not None else None,
+            "confidence":   confidence_label(prob_blend),
+            "model":        blend_label,
+            "regime":       current_regime,
+            "regime_pred":  routing_regime,
+        }
 
     # ── 5-day return model (GBM) ──────────────────────────────────────────────
     gbm_model, gbm_feats = load_best_model("gbm", "next_ret_5d")
@@ -357,33 +471,39 @@ def predict(target_date=None):
         "is_event_window": is_event_window,
     }
 
-    top_signals = get_top_signals(row, logistic_feats or [])
+    top_signals = get_top_signals(row, logistic_feats or gbm_ens_feats or [])
 
-    # ── position sizing (live rule, mirrors backtest best combo) ──────────────
-    # Rule: half-bear t=0.53 + kill switch (flat when bear+GEX-+VIX spike)
-    #   - Kill switch: regime=bear AND gex_sign<=0 AND vix_z21>1.5 -> 0.0
-    #   - Bear regime otherwise: 0.5 (half size)
-    #   - prob_up < 0.53: 0.0 (no signal)
-    #   - Otherwise: 1.0 (full size)
+    # ── position sizing (live rule — Frac-Kelly 50%, chop-lower t=0.51, kill switch) ──
+    # Kelly(50%): pos = clip(0.50 * (2p - 1), 0, 1), halved in bear regime.
+    # Kill switch: regime=bear AND gex_sign<=0 AND vix_z21>1.5 -> flat.
+    # Chop-lower (Run 35): threshold=0.51 in chop regime, 0.53 in bull/bear.
+    # Signal: 50/50 blend of logistic + GBM ensemble (matches WFCV Sharpe 1.855).
     position_size   = 0.0
-    sizing_reason   = "no signal (prob < 0.53)"
-    if next_day_result:
-        prob_up_live = next_day_result["probability"]
+    sizing_reason   = "no signal"
+    if next_day_result and prob_blend is not None:
         gex_sign_live = float(row["gex_sign"]) if "gex_sign" in row.index and pd.notna(row.get("gex_sign")) else 1.0
         vix_z21_live  = float(row["vix_z21"])  if "vix_z21"  in row.index and pd.notna(row.get("vix_z21"))  else 0.0
         kill = (current_regime == "bear") and (gex_sign_live <= 0) and (vix_z21_live > 1.5)
+        # Regime-conditional threshold: lower bar in chop, standard in bull/bear
+        live_thresh = 0.51 if current_regime == "chop" else 0.53
         if kill:
             position_size = 0.0
             sizing_reason = f"kill switch (bear + GEX negative + VIX z21={vix_z21_live:.2f})"
-        elif prob_up_live < 0.53:
+        elif prob_blend < live_thresh:
             position_size = 0.0
-            sizing_reason = f"no signal (prob={prob_up_live:.3f} < 0.53)"
-        elif current_regime == "bear":
-            position_size = 0.5
-            sizing_reason = f"half size (bear regime, prob={prob_up_live:.3f})"
+            sizing_reason = f"no signal (blend={prob_blend:.3f} < {live_thresh:.2f}, regime={current_regime})"
         else:
-            position_size = 1.0
-            sizing_reason = f"full size ({current_regime} regime, prob={prob_up_live:.3f})"
+            kelly_f = float(np.clip(0.50 * (2 * prob_blend - 1), 0.0, 1.0))
+            bear_mult = 0.5 if current_regime == "bear" else 1.0
+            position_size = round(kelly_f * bear_mult, 4)
+            sizing_reason = (
+                f"Kelly(50%) blend size={position_size:.3f} "
+                f"(blend={prob_blend:.3f} log={prob_logistic:.3f} "
+                + (f"gbm_chop={prob_gbm_chop:.3f}" if prob_gbm_chop is not None else f"gbm={prob_gbm_ens:.3f}" if prob_gbm_ens is not None else "gbm=n/a")
+                + f", regime={current_regime}"
+                + (", half-bear" if current_regime == "bear" else "")
+                + (f", chop-lower t={live_thresh}" if current_regime == "chop" else "") + ")"
+            )
 
     result = {
         "date":          str(row_date),

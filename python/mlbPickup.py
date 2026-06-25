@@ -25,6 +25,14 @@ from mlbCompare import (
     norm,
 )
 
+import sys as _sys
+if str(Path(__file__).parent) not in _sys.path:
+    _sys.path.insert(0, str(Path(__file__).parent))
+try:
+    from predictFantasy import get_ml_scores as _get_ml_scores
+except Exception:
+    _get_ml_scores = None
+
 BASE        = Path(os.path.expanduser("~/discordBot"))
 FANTASY_DIR = BASE / "outputs/sports/mlb/fantasy"
 FA_CSV      = FANTASY_DIR / "freeagents.csv"
@@ -158,6 +166,12 @@ def main():
     fas = load_free_agents(mode)
     print(f"[pickup] {len(fas)} eligible free agents to score")
 
+    _ml_bat = _get_ml_scores("batters",  ("daily", "weekly")) if _get_ml_scores else {}
+    _ml_pit = _get_ml_scores("pitchers", ("daily", "weekly")) if _get_ml_scores else {}
+    import unicodedata as _ud
+    def _ml_norm(s):
+        return _ud.normalize("NFD", str(s)).encode("ascii","ignore").decode().strip().lower()
+
     # score all FAs in parallel - cap at 8 workers to be polite
     results = []
     with ThreadPoolExecutor(max_workers=8) as ex:
@@ -176,9 +190,22 @@ def main():
             except Exception as e:
                 print(f"  [{done}/{len(fas)}] {name}: error - {e}", file=sys.stderr)
 
+    # Attach ML scores
+    for r in results:
+        n = _ml_norm(r["name"])
+        if r["is_pitcher"]:
+            d = _ml_pit.get(n, {})
+        else:
+            d = _ml_bat.get(n, {})
+        r["ml_pts_daily"]  = d.get("ml_pts_daily")
+        r["ml_pts_weekly"] = d.get("ml_pts_weekly")
+
     # split and rank
-    batters  = sorted([r for r in results if not r["is_pitcher"]], key=lambda x: -(x["stream_score"] + x["roster_score"]))
-    pitchers = sorted([r for r in results if r["is_pitcher"]],     key=lambda x: -(x["stream_score"] + x["roster_score"]))
+    def _blend(r):
+        ml = r.get("ml_pts_weekly") or 0
+        return -((r["stream_score"] + r["roster_score"]) * 0.6 + ml * 2.0)
+    batters  = sorted([r for r in results if not r["is_pitcher"]], key=_blend)
+    pitchers = sorted([r for r in results if r["is_pitcher"]],     key=_blend)
 
     top_batters  = batters[:5]
     top_pitchers = pitchers[:5]
