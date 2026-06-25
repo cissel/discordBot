@@ -280,7 +280,7 @@ Top music charts sourced from Apple Music / iTunes. Updated daily.
 | `genre` | Top 10 songs in a chosen genre (Pop, Hip-Hop/Rap, Rock, Country, R&B/Soul, Electronic, Dance, Latin, K-Pop, J-Pop, Reggae, Christian/Gospel, Classical, Jazz, Soundtrack) |
 
 ### misc
-`/ping`, `/duval`, `/westside`, `/ts`, `/goodmorning`, `/dontavius`, `/r2`, `/chucktronic`, `/serversdown`, and a handful of others best discovered in the wild.
+`/ping`, `/duval`, `/westside`, `/ts`, `/goodmorning`, `/dontavius`, `/r2`, `/chucktronic`, `/serversdown`, `/usa`, and a handful of others best discovered in the wild.
 
 ---
 

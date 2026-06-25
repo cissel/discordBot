@@ -56,6 +56,7 @@
 #
 #   /nascar   nextevent | standings
 #
+#   /usa
 #   /jaxplanes
 #   /serversdown
 #   /standings            (already existed in original commands.py)
@@ -4862,8 +4863,16 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             import sys as _sys
             _sys.path.insert(0, pp)
             from predictFantasy import get_ml_scores as _gml
-            bat_scores = _gml("batters",  ("daily", "weekly"))
-            pit_scores = _gml("pitchers", ("daily",))
+            # Only load the models we actually need for the requested mode
+            # (batter model is ~12s blocking; skip if pitcher-only)
+            if mode in ("both", "batters"):
+                bat_scores = await asyncio.to_thread(_gml, "batters",  ("daily", "weekly"))
+            else:
+                bat_scores = {}
+            if mode in ("both", "pitchers"):
+                pit_scores = await asyncio.to_thread(_gml, "pitchers", ("daily",))
+            else:
+                pit_scores = {}
         except Exception as e:
             await _send(interaction, f"❌ Could not load ML models: {e}")
             return
@@ -4876,7 +4885,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         playing_teams = set()
         matchup_map   = {}   # team -> matchup string
         try:
-            gdf = pd.read_csv(games_csv)
+            gdf = await asyncio.to_thread(pd.read_csv, games_csv)
             for _, row in gdf.iterrows():
                 m = str(row["matchup"])
                 if " @ " in m:
@@ -4896,7 +4905,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         starting_pitchers = set()  # norm name -> matchup
         starting_pitcher_matchup = {}
         try:
-            sdf = pd.read_csv(starters_csv)
+            sdf = await asyncio.to_thread(pd.read_csv, starters_csv)
             for _, row in sdf.iterrows():
                 k = norm(row["pitcher_name"])
                 starting_pitchers.add(k)
@@ -4906,33 +4915,43 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         # Load most-recent team per batter from features CSV
         batter_team = {}   # norm_name -> (team, fantasy_position, bat_order)
-        try:
-            bdf = pd.read_csv(os.path.join(feat_dir, "batter_features.csv"),
-                              usecols=["player_name", "game_date", "team", "fantasy_position", "BatOrder"],
-                              parse_dates=["game_date"], low_memory=False)
-            bdf = bdf.sort_values("game_date").groupby("player_name").last().reset_index()
-            for _, row in bdf.iterrows():
-                full_team = TEAM_ABBREV.get(str(row["team"]), str(row["team"]))
-                batter_team[norm(row["player_name"])] = (
-                    full_team,
-                    str(row.get("fantasy_position", "")),
-                    row.get("BatOrder", None)
+        if mode in ("both", "batters"):
+            try:
+                bdf = await asyncio.to_thread(
+                    pd.read_csv,
+                    os.path.join(feat_dir, "batter_features.csv"),
+                    usecols=["player_name", "game_date", "team", "fantasy_position", "BatOrder"],
+                    parse_dates=["game_date"],
+                    low_memory=False
                 )
-        except Exception:
-            pass
+                bdf = bdf.sort_values("game_date").groupby("player_name").last().reset_index()
+                for _, row in bdf.iterrows():
+                    full_team = TEAM_ABBREV.get(str(row["team"]), str(row["team"]))
+                    batter_team[norm(row["player_name"])] = (
+                        full_team,
+                        str(row.get("fantasy_position", "")),
+                        row.get("BatOrder", None)
+                    )
+            except Exception:
+                pass
 
         # Load most-recent team per pitcher
         pitcher_team = {}  # norm_name -> team
-        try:
-            pdf = pd.read_csv(os.path.join(feat_dir, "pitcher_features.csv"),
-                              usecols=["player_name", "game_date", "team", "fantasy_position"],
-                              parse_dates=["game_date"], low_memory=False)
-            pdf = pdf.sort_values("game_date").groupby("player_name").last().reset_index()
-            for _, row in pdf.iterrows():
-                full_team = TEAM_ABBREV.get(str(row["team"]), str(row["team"]))
-                pitcher_team[norm(row["player_name"])] = (full_team, str(row.get("fantasy_position", "")))
-        except Exception:
-            pass
+        if mode in ("both", "pitchers"):
+            try:
+                pdf = await asyncio.to_thread(
+                    pd.read_csv,
+                    os.path.join(feat_dir, "pitcher_features.csv"),
+                    usecols=["player_name", "game_date", "team", "fantasy_position"],
+                    parse_dates=["game_date"],
+                    low_memory=False
+                )
+                pdf = pdf.sort_values("game_date").groupby("player_name").last().reset_index()
+                for _, row in pdf.iterrows():
+                    full_team = TEAM_ABBREV.get(str(row["team"]), str(row["team"]))
+                    pitcher_team[norm(row["player_name"])] = (full_team, str(row.get("fantasy_position", "")))
+            except Exception:
+                pass
 
         embed = discord.Embed(
             title=f"🤖 ML Fantasy Predictions - {date_str}",
@@ -5023,10 +5042,10 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                         f"Daily: `{r['daily']:.1f}` pts\n"
                         f"*{r['matchup']}*\n\n"
                     )
-                header = "🧊 Top Pitchers (probable starters, by daily projection)" if mode == "both" else "\u200b"
+                header = "🧊 Top Pitchers (probable starters, by daily projection)" if mode == "both" else "🧊 Top 10 Pitchers (by daily projection)"
                 embed.add_field(name=header, value=text.strip(), inline=False)
             else:
-                label = "🧊 Top Pitchers" if mode == "both" else "\u200b"
+                label = "🧊 Top Pitchers" if mode == "both" else "🧊 Top 10 Pitchers"
                 embed.add_field(name=label, value="No pitcher projections available for this day.", inline=False)
 
         embed.set_footer(text="ML model trained on Statcast features · World Sillies scoring")
@@ -7837,6 +7856,26 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         except Exception as ex:
             await _send(interaction, f"Could not fetch chart data: {ex}")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # /usa
+    # ─────────────────────────────────────────────────────────────────────────
+    @tree.command(
+        name="usa",
+        description="USA! USA! USA!",
+        guild=guild,
+    )
+    async def usa(interaction: discord.Interaction):
+        await _quick(interaction, "USA")
+        m1 = await interaction.original_response()
+        await asyncio.sleep(1)
+        m2 = await interaction.channel.send("USA", reference=m1)
+        await asyncio.sleep(1)
+        m3 = await interaction.channel.send("USA", reference=m2)
+        await asyncio.sleep(1)
+        m4 = await interaction.channel.send("🦅🦅🦅", reference=m3)
+        await asyncio.sleep(1)
+        await interaction.channel.send("🇺🇸 🇺🇸 🇺🇸", reference=m4)
 
     # ── /snapshot ─────────────────────────────────────────────────────────────
     # Markets overview: equities / bonds / forex - 3-row patchwork dashboard.

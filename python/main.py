@@ -84,6 +84,19 @@ class BotClient(discord.Client):
                           PYTHON_PATH=PYTHON_PATH,
                           OUTPUT_PATH=OUTPUT_PATH)
 
+        @self.tree.error
+        async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+            import traceback
+            tb = traceback.format_exc()
+            cmd = interaction.command.name if interaction.command else "unknown"
+            print(f"[cmd error] /{cmd}: {error}\n{tb}", flush=True)
+            try:
+                if not interaction.response.is_done():
+                    await interaction.response.defer(thinking=True, ephemeral=True)
+                await interaction.followup.send(f"❌ command error: `{error}`", ephemeral=True)
+            except Exception:
+                pass
+
         for cmd in self.tree.get_commands(guild=GUILD):
             print(f"  registered: /{cmd.name}")
             if hasattr(cmd, 'commands'):
