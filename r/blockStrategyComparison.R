@@ -26,8 +26,8 @@ combined <- gap_fill %>%
   pivot_longer(cols = c(gap_fill, bear_exit, bnh),
                names_to = "series", values_to = "value") %>%
   mutate(series = recode(series,
-    "gap_fill"  = "Gap-Fill (parallel positions)",
-    "bear_exit" = "Bear-Exit + Gap Re-entry",
+    "gap_fill"  = "Block Signal (parallel positions)",
+    "bear_exit" = "Bear-Exit + Re-entry",
     "bnh"       = "Buy-and-Hold SPY"
   ))
 
@@ -39,9 +39,9 @@ finals <- combined %>%
                         round((value - 1) * 100, 1), "%"))
 
 colors <- c(
-  "Gap-Fill (parallel positions)" = "#00cc66",
-  "Bear-Exit + Gap Re-entry"      = "#ffaa00",
-  "Buy-and-Hold SPY"              = "#4488ff"
+  "Block Signal (parallel positions)" = "#00cc66",
+  "Bear-Exit + Re-entry"              = "#ffaa00",
+  "Buy-and-Hold SPY"                  = "#4488ff"
 )
 
 # ── Panel 1: Equity curves ────────────────────────────────────────────────────
@@ -122,7 +122,7 @@ p3 <- ggplot(dd_df, aes(x = date, y = drawdown, color = series, fill = series)) 
   scale_y_continuous(labels = function(x) paste0(x, "%"), name = "Drawdown (%)") +
   scale_x_date(name = NULL, date_breaks = "2 months", date_labels = "%b '%y") +
   labs(title    = "Drawdown from Peak",
-       subtitle = "Bear-Exit strategy drawdown vs BnH and gap-fill") +
+       subtitle = "Bear-Exit strategy drawdown vs BnH and block signal") +
   theme_minimal(base_size = 10) +
   theme(
     plot.title       = element_text(face = "bold", size = 11, color = "#eeeeee"),

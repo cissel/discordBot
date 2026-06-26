@@ -23,7 +23,7 @@ eq_long <- equity %>%
                names_to  = "series",
                values_to = "value") %>%
   mutate(series = recode(series,
-                         "equity" = "Gap-Fill Strategy",
+                         "equity" = "Block Signal Strategy",
                          "bnh"    = "Buy-and-Hold SPY"))
 
 # Final values for labels
@@ -43,13 +43,13 @@ p1 <- ggplot(eq_long, aes(x = date, y = value, color = series)) +
   geom_text(data = final_vals,
             aes(label = label, x = date + 5, y = value),
             hjust = 0, size = 3.0, fontface = "bold", show.legend = FALSE) +
-  scale_color_manual(values = c("Gap-Fill Strategy" = strat_color,
-                                "Buy-and-Hold SPY"  = bnh_color)) +
+  scale_color_manual(values = c("Block Signal Strategy" = strat_color,
+                                "Buy-and-Hold SPY"      = bnh_color)) +
   scale_y_continuous(labels = percent_format(accuracy = 1),
                      name   = "Portfolio Value ($1 start)") +
   scale_x_date(name = NULL, date_breaks = "2 months", date_labels = "%b '%y",
                expand = expansion(mult = c(0.01, 0.12))) +
-  labs(title    = "SPY Block Gap-Fill Strategy vs Buy-and-Hold",
+  labs(title    = "SPY Block Signal Strategy vs Buy-and-Hold",
        subtitle = paste0("Parallel equal-weight | ", nrow(trades),
                          " trades | Jun 2025 - Jun 2026"),
        color    = NULL) +

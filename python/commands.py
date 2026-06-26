@@ -820,6 +820,117 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         await _send(interaction, file=discord.File(img, filename="repo_graph.png"))
 
+    @history_group.command(name="repofilesize", description="discordBot repo - per-file LOC growth over time (stacked area)")
+    async def hist_repofilesize(interaction: discord.Interaction):
+        await _defer(interaction)
+
+        # Step 1: generate per-file CSV from git history (~60-90s for full history)
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                PYTHON, os.path.join(pp, "repoFileSize.py"),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=180)
+            except asyncio.TimeoutError:
+                proc.kill()
+                await proc.communicate()
+                await _send(interaction, "⏱️ timed out building file-size data, try again", ephemeral=True)
+                return
+        except Exception as e:
+            await _send(interaction, f"❌ failed to build file-size data: {e}", ephemeral=True)
+            return
+
+        if proc.returncode != 0 or b"error" in stdout.lower():
+            err = stderr.decode()[-300:] if stderr else stdout.decode()[-300:]
+            await _send(interaction, f"❌ file-size data error\n```{err}```", ephemeral=True)
+            return
+
+        # Step 2: render the R plot
+        try:
+            proc2 = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "repoFileSize.R"),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout2, stderr2 = await asyncio.wait_for(proc2.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc2.kill()
+                await proc2.communicate()
+                await _send(interaction, "⏱️ R plot timed out, try again", ephemeral=True)
+                return
+        except Exception as e:
+            await _send(interaction, f"❌ R plot failed: {e}", ephemeral=True)
+            return
+
+        img = os.path.expanduser("~/discordBot/outputs/server/repo_filesize.png")
+        if not os.path.exists(img):
+            err = stderr2.decode()[-300:] if stderr2 else "no output"
+            await _send(interaction, f"❌ plot not generated\n```{err}```", ephemeral=True)
+            return
+
+        await _send(interaction, file=discord.File(img, filename="repo_filesize.png"))
+
+    @history_group.command(name="repotreemap", description="discordBot repo - current file sizes as a treemap")
+    async def hist_repotreemap(interaction: discord.Interaction):
+        await _defer(interaction)
+
+        # Reuse existing repo_filesize.csv if fresh, else regenerate
+        import time
+        csv_path = os.path.expanduser("~/discordBot/outputs/server/repo_filesize.csv")
+        csv_stale = not os.path.exists(csv_path) or (time.time() - os.path.getmtime(csv_path) > 3600)
+
+        if csv_stale:
+            try:
+                proc = await asyncio.create_subprocess_exec(
+                    PYTHON, os.path.join(pp, "repoFileSize.py"),
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                try:
+                    stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=180)
+                except asyncio.TimeoutError:
+                    proc.kill()
+                    await proc.communicate()
+                    await _send(interaction, "⏱️ timed out building file-size data, try again", ephemeral=True)
+                    return
+            except Exception as e:
+                await _send(interaction, f"❌ failed to build file-size data: {e}", ephemeral=True)
+                return
+
+            if proc.returncode != 0 or b"error" in stdout.lower():
+                err = stderr.decode()[-300:] if stderr else stdout.decode()[-300:]
+                await _send(interaction, f"❌ file-size data error\n```{err}```", ephemeral=True)
+                return
+
+        # Render treemap
+        try:
+            proc2 = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "repoTreemap.R"),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout2, stderr2 = await asyncio.wait_for(proc2.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc2.kill()
+                await proc2.communicate()
+                await _send(interaction, "⏱️ R plot timed out, try again", ephemeral=True)
+                return
+        except Exception as e:
+            await _send(interaction, f"❌ R plot failed: {e}", ephemeral=True)
+            return
+
+        img = os.path.expanduser("~/discordBot/outputs/server/repo_treemap.png")
+        if not os.path.exists(img):
+            err = stderr2.decode()[-300:] if stderr2 else "no output"
+            await _send(interaction, f"❌ plot not generated\n```{err}```", ephemeral=True)
+            return
+
+        await _send(interaction, file=discord.File(img, filename="repo_treemap.png"))
+
     tree.add_command(history_group)
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -6481,6 +6592,250 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         await _send(interaction, embeds=embeds)
 
+
+    # ── /spy trade ────────────────────────────────────────────────────────────
+    @spy_group.command(name="trade", description="SPY paper trading - show signal + proposed order, optionally execute")
+    @app_commands.describe(execute="Actually place the paper trade order (default: dry run preview only)")
+    async def spy_trade(interaction: discord.Interaction, execute: bool = False):
+        await interaction.response.defer(thinking=True)
+        import json as _json
+        try:
+            cmd = [PYTHON, os.path.join(pp, "tradeSpy.py")]
+            if execute:
+                cmd.append("--execute")
+            result = await asyncio.to_thread(
+                lambda: __import__('subprocess').run(
+                    cmd, capture_output=True, text=True, timeout=60
+                )
+            )
+            if result.returncode != 0:
+                await _send(interaction, f"tradeSpy error: `{result.stderr[:300]}`")
+                return
+            data = _json.loads(result.stdout)
+        except Exception as e:
+            await _send(interaction, f"trade error: `{e}`")
+            return
+
+        errors = data.get("errors", [])
+        if errors and "not set in .env" in " ".join(errors):
+            await _send(interaction, (
+                "**Paper trading keys not configured.**\n"
+                "1. Go to <https://app.alpaca.markets/paper-trading>\n"
+                "2. Create/open a paper account and copy the API keys\n"
+                "3. Add to `~/discordBot/.env`:\n"
+                "```\nAPCA_PAPER_API_KEY_ID=PKxxxxxx\nAPCA_PAPER_API_SECRET_KEY=xxxxxxxxx\n```"
+            ))
+            return
+
+        sig      = data.get("signal") or {}
+        acct     = data.get("account") or {}
+        pos      = data.get("current_position") or {}
+        target   = data.get("target") or {}
+        order    = data.get("order") or {}
+        risk     = data.get("risk_checks") or {}
+        nd       = sig.get("next_day") or {}
+        executed = data.get("executed", False)
+        order_id = data.get("order_id")
+
+        def dir_emoji(d): return "🟢" if d == "UP" else "🔴" if d == "DOWN" else "⚪"
+        def conf_emoji(c): return {"HIGH": "🔥", "MED": "⚡", "LOW": "💤"}.get(c or "", "")
+
+        action     = order.get("action", "HOLD")
+        order_shrs = order.get("shares", 0)
+        action_color = 0x00ff99 if action == "BUY" else 0xff4444 if action == "SELL" else 0x888888
+
+        title_tag = ""
+        if executed:
+            title_tag = " - EXECUTED ✅"
+        elif execute and not risk.get("passed"):
+            title_tag = " - BLOCKED ⛔"
+        else:
+            title_tag = " - DRY RUN 🔍"
+
+        emb = discord.Embed(
+            title=f"SPY Paper Trade{title_tag}",
+            color=action_color
+        )
+
+        # Account summary
+        equity       = acct.get("equity", 0)
+        daily_pnl    = acct.get("daily_pnl", 0)
+        daily_pct    = acct.get("daily_pct", 0)
+        pnl_sign     = "+" if daily_pnl >= 0 else ""
+        acct_lines = [
+            f"Equity: **${equity:,.2f}**  |  Cash: **${acct.get('cash',0):,.2f}**",
+            f"Daily P&L: **{pnl_sign}${daily_pnl:,.2f}** ({pnl_sign}{daily_pct:.2f}%)",
+        ]
+        emb.add_field(name="Paper Account", value="\n".join(acct_lines), inline=False)
+
+        # Current position
+        curr_shares = int(pos.get("shares", 0))
+        if curr_shares > 0:
+            unrl = pos.get("unrealized_pl", 0)
+            unrl_pct = pos.get("unrealized_pct", 0)
+            unrl_sign = "+" if unrl >= 0 else ""
+            pos_lines = [
+                f"**{curr_shares} shares** @ avg ${pos.get('avg_entry',0):,.2f}",
+                f"Unrealized: {unrl_sign}${unrl:,.2f} ({unrl_sign}{unrl_pct:.2f}%)",
+            ]
+            emb.add_field(name="Current Position", value="\n".join(pos_lines), inline=True)
+        else:
+            emb.add_field(name="Current Position", value="_Flat (no SPY held)_", inline=True)
+
+        # Signal summary
+        nd_dir  = nd.get("direction", "N/A")
+        nd_prob = nd.get("probability", 0.5)
+        nd_conf = nd.get("confidence", "LOW")
+        kelly   = target.get("position_size_kelly", 0)
+        spy_px  = target.get("spy_price")
+        sig_lines = [
+            f"{dir_emoji(nd_dir)} **{nd_dir}** - {nd_prob*100:.1f}% {conf_emoji(nd_conf)} ({nd_conf})",
+            f"Kelly size: **{kelly*100:.1f}%** of equity",
+        ]
+        if spy_px:
+            sig_lines.append(f"SPY: **${spy_px:,.2f}**")
+        emb.add_field(name="Signal", value="\n".join(sig_lines), inline=True)
+
+        # Proposed order
+        tgt_shares   = target.get("target_shares", 0)
+        tgt_notional = target.get("target_notional", 0)
+        order_lines  = [f"**{action}** {order_shrs} shares" if order_shrs > 0 else "**HOLD** (no change)"]
+        if tgt_shares > 0:
+            order_lines.append(f"Target: {tgt_shares} shares (~${tgt_notional:,.0f})")
+        order_lines.append(f"_{order.get('reason', '')}_")
+        emb.add_field(name="Order", value="\n".join(order_lines), inline=False)
+
+        # Risk checks
+        flags = risk.get("flags", [])
+        blocks = [f for f in flags if f.startswith("BLOCK:")]
+        warns  = [f for f in flags if f.startswith("WARN:")]
+        if blocks:
+            emb.add_field(name="⛔ Risk Blocks", value="\n".join(f"- {f[7:]}" for f in blocks), inline=False)
+        if warns:
+            emb.add_field(name="⚠️ Warnings", value="\n".join(f"- {f[6:]}" for f in warns), inline=False)
+
+        # Executed confirmation
+        if executed and order_id:
+            emb.add_field(name="Order ID", value=f"`{order_id}`", inline=False)
+
+        # Errors
+        if errors:
+            emb.add_field(name="Errors", value="\n".join(f"- {e}" for e in errors[:3]), inline=False)
+
+        sizing_reason = sig.get("sizing_reason", "")
+        footer_parts = []
+        if sizing_reason:
+            footer_parts.append(sizing_reason)
+        if not execute:
+            footer_parts.append("Dry run - use execute:True to place order")
+        emb.set_footer(text=" | ".join(footer_parts) if footer_parts else "Paper trading only")
+
+        await _send(interaction, embeds=[emb])
+
+
+    # ── /spy status ───────────────────────────────────────────────────────────
+    @spy_group.command(name="status", description="SPY paper account status - equity, position, recent orders, trade log")
+    async def spy_status(interaction: discord.Interaction):
+        await interaction.response.defer(thinking=True)
+        import json as _json
+        try:
+            result = await asyncio.to_thread(
+                lambda: __import__('subprocess').run(
+                    [PYTHON, os.path.join(pp, "spyTradeState.py")],
+                    capture_output=True, text=True, timeout=30
+                )
+            )
+            if result.returncode != 0:
+                await _send(interaction, f"spyTradeState error: `{result.stderr[:300]}`")
+                return
+            data = _json.loads(result.stdout)
+        except Exception as e:
+            await _send(interaction, f"status error: `{e}`")
+            return
+
+        err = data.get("error")
+        if err:
+            await _send(interaction, f"**Setup needed:** {err}")
+            return
+
+        acct  = data.get("account") or {}
+        pos   = data.get("position") or {}
+        log   = data.get("trade_log") or {}
+        orders= data.get("orders", [])
+
+        equity    = acct.get("equity", 0)
+        daily_pnl = acct.get("daily_pnl", 0)
+        daily_pct = acct.get("daily_pct", 0)
+        pnl_sign  = "+" if daily_pnl >= 0 else ""
+        color     = 0x00ff99 if daily_pnl >= 0 else 0xff4444
+
+        emb = discord.Embed(title="SPY Paper Account Status", color=color)
+
+        # Account
+        emb.add_field(
+            name="Account",
+            value=(
+                f"Equity: **${equity:,.2f}**  |  Cash: **${acct.get('cash',0):,.2f}**\n"
+                f"Daily P&L: **{pnl_sign}${daily_pnl:,.2f}** ({pnl_sign}{daily_pct:.2f}%)"
+            ),
+            inline=False
+        )
+
+        # Position
+        curr_shares = int(pos.get("shares", 0))
+        if curr_shares > 0:
+            unrl = pos.get("unrealized_pl", 0)
+            unrl_pct = pos.get("unrealized_pct", 0)
+            unrl_sign = "+" if unrl >= 0 else ""
+            emb.add_field(
+                name="Position",
+                value=(
+                    f"**{curr_shares} shares** @ avg ${pos.get('avg_entry',0):,.2f}\n"
+                    f"Unrealized: {unrl_sign}${unrl:,.2f} ({unrl_sign}{unrl_pct:.2f}%)"
+                ),
+                inline=True
+            )
+        else:
+            emb.add_field(name="Position", value="_Flat_", inline=True)
+
+        # Trade log summary
+        total_exec = log.get("total_executed", 0)
+        buys       = log.get("total_buys", 0)
+        sells      = log.get("total_sells", 0)
+        emb.add_field(
+            name="Trade Log",
+            value=f"Total executed: **{total_exec}**  |  Buys: {buys}  |  Sells: {sells}",
+            inline=True
+        )
+
+        # Recent trades
+        recent = log.get("recent", [])[:5]
+        if recent:
+            lines = []
+            for r in recent:
+                exec_tag = "✅" if str(r.get("executed","")).lower() == "true" else "⬜"
+                lines.append(
+                    f"{exec_tag} {r.get('date','')} {r.get('action','')} {r.get('shares','')}sh "
+                    f"{r.get('direction','')} {r.get('prob','')}"
+                )
+            emb.add_field(name="Recent Trades", value="\n".join(lines), inline=False)
+
+        # Recent orders from broker
+        if orders:
+            order_lines = []
+            for o in orders[:5]:
+                order_lines.append(
+                    f"{o.get('side','').upper()} {o.get('filled_qty','?')}sh "
+                    f"@ ${o.get('filled_avg','?')} [{o.get('status','')}] {o.get('created_at','')}"
+                )
+            emb.add_field(name="Broker Orders (recent)", value="\n".join(order_lines), inline=False)
+
+        errors = data.get("errors", [])
+        if errors:
+            emb.set_footer(text=" | ".join(errors[:2]))
+
+        await _send(interaction, embeds=[emb])
+
     tree.add_command(spy_group)
 
 
@@ -7866,16 +8221,21 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         guild=guild,
     )
     async def usa(interaction: discord.Interaction):
-        await _quick(interaction, "USA")
-        m1 = await interaction.original_response()
+        await _quick(interaction, "WE NEED USA RIGHT NOW", tts=True)
         await asyncio.sleep(1)
-        m2 = await interaction.channel.send("USA", reference=m1)
+        await interaction.channel.send("USA", tts=True)
         await asyncio.sleep(1)
-        m3 = await interaction.channel.send("USA", reference=m2)
+        await interaction.channel.send("USA", tts=True)
         await asyncio.sleep(1)
-        m4 = await interaction.channel.send("🦅🦅🦅", reference=m3)
+        await interaction.channel.send("USA", tts=True)
         await asyncio.sleep(1)
-        await interaction.channel.send("🇺🇸 🇺🇸 🇺🇸", reference=m4)
+        await interaction.channel.send("🦅🦅🦅")
+        await asyncio.sleep(1)
+        await interaction.channel.send("💥🎆🔫🎇💣🎆💥")
+        await asyncio.sleep(1)
+        await interaction.channel.send("🇺🇸 🇺🇸 🇺🇸")
+        await asyncio.sleep(1)
+        await interaction.channel.send(file=discord.File("/home/jhcv/discordBot/outputs/misc/lane_pittman.gif"))
 
     # ── /snapshot ─────────────────────────────────────────────────────────────
     # Markets overview: equities / bonds / forex - 3-row patchwork dashboard.

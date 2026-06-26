@@ -264,7 +264,7 @@ bottom_row <- (p_scatter | p_heat) + plot_layout(widths = c(1.2, 1))
 final <- top_row / middle_row / bottom_row +
   plot_layout(heights = c(2, 1.6, 2)) +
   plot_annotation(
-    title    = "Block Gap-Fill Strategy - Signal Filter Analysis",
+    title    = "Block Signal Strategy - Signal Filter Analysis",
     subtitle = "Full backfill complete: 3,087 block events | Jan 2022-Jun 2026 | Two active data windows shown (2023-2024 = cash gap)",
     caption  = "Filters: A=DIX>=median  B=GEX>0  C=VIX contango  D=CVD>0  |  Entry T+1 open | TC 0.01%/side | Cash when flat",
     theme = theme(

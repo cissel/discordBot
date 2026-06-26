@@ -226,13 +226,15 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `BTC Miner Capitulation` | price relative to last difficulty bottom, colored by blocks elapsed since capitulation event |
 
 ### `/spy`
-SPY ML model commands. Block gap detection runs daily via cron and accumulates forward outcomes over 1d/3d/1w/2w/1mo horizons.
+SPY ML model commands. Block gap detection runs daily via cron and accumulates forward outcomes over 1d/3d/1w/2w/1mo horizons. Paper trading via Alpaca paper account (requires `APCA_PAPER_API_KEY_ID` + `APCA_PAPER_API_SECRET_KEY` in `.env`).
 
 | command | description |
 |---|---|
 | `signal` | next-day direction + 5-day outlook. Optional `show_context` for VIX/yield curve/event calendar. Flags FOMC/CPI/NFP windows |
 | `diagnostics [regenerate]` | 5-panel diagnostic plot: calibration curve, residuals, rolling 30d accuracy, run history |
 | `gaps` | latest SPY block order gaps - block price, exchange, direction (above/below market at print), deviation %, dollar value, and % move from market price at each forward horizon |
+| `trade [execute]` | paper trade execution - shows signal, proposed order (Kelly-sized), account equity, risk checks. Default: dry run preview. Pass `execute:True` to actually place the market order |
+| `status` | paper account status - equity, current SPY position, recent orders, trade log summary |
 
 ### `/space`
 | command | description |
@@ -294,6 +296,8 @@ Top music charts sourced from Apple Music / iTunes. Updated daily.
 | `userreport` | channel activity breakdown for a specific user - same stacked area as server but filtered to one person |
 | `invitegraph` | bubble network of who invited who to the server |
 | `repograph` | repo growth over time - cumulative lines of code + weekly commits |
+| `repofilesize` | per-file LOC growth over time - stacked area chart, top 20 files (blue=python, green=R) |
+| `repotreemap` | current repo file sizes as a treemap - box area = LOC, grouped by directory |
 
 ![server history](outputs/metrics/allMessages.png)
 ![channel history](outputs/metrics/channelMessages.png)
