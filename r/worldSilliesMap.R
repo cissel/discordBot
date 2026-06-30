@@ -57,7 +57,7 @@ q_labels <- tibble(
            mean_pf + (max(df$pf) - mean_pf) * 0.42,
            mean_pf - (mean_pf - min(df$pf)) * 0.42,
            mean_pf - (mean_pf - min(df$pf)) * 0.42),
-  label = c("Good but unlucky", "Dominant", "Bad and unlucky", "Lucky")
+  label = c("Dominant", "Good but unlucky", "Lucky", "Bad and unlucky")
 )
 
 #####

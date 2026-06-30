@@ -187,7 +187,8 @@ class BotClient(discord.Client):
             print(f"[DJ] warmup failed: {e}")
 
     async def _launch_alert_loop(self):
-        """Background loop - checks for launch alerts every 30 minutes."""
+        """Background loop - checks for launch alerts.
+        Every 30 minutes normally, every 5 minutes when a tracked launch is < 2h away."""
         await asyncio.sleep(60)  # wait 1 min after startup before first check
         while not self.is_closed():
             try:
@@ -195,7 +196,27 @@ class BotClient(discord.Client):
                 asyncio.create_task(self.run_launch_alerts())
             except Exception as e:
                 print(f"[launchAlert] loop error: {e}")
-            await asyncio.sleep(30 * 60)  # 30 minutes
+            # Determine sleep interval: 5 min if a tracked launch is < 2h away, else 30 min
+            try:
+                import json as _json
+                from pathlib import Path as _Path
+                from datetime import datetime as _dt, timezone as _tz
+                from dateutil import parser as _dp
+                _sf = _Path(os.path.expanduser("~/discordBot/outputs/aerospace/launch_alerts.json"))
+                if _sf.exists():
+                    _st = _json.loads(_sf.read_text())
+                    _now = _dt.now(_tz.utc)
+                    _soon = any(
+                        0 < (_dp.isoparse(v["launch_time_utc"]).astimezone(_tz.utc) - _now).total_seconds() < 2 * 3600
+                        for v in _st.get("tracked", {}).values()
+                        if not v.get("alert_5m_sent", False)
+                    )
+                    _interval = 5 * 60 if _soon else 30 * 60
+                else:
+                    _interval = 30 * 60
+            except Exception:
+                _interval = 30 * 60
+            await asyncio.sleep(_interval)
 
     async def on_message(self, message: discord.Message):
         if message.author == self.user:
@@ -266,7 +287,7 @@ class BotClient(discord.Client):
         try:
             result = await asyncio.to_thread(
                 lambda: _sp.run([PYTHON_PATH, SCRIPT],
-                                capture_output=True, text=True, timeout=30)
+                                capture_output=True, text=True, timeout=60)
             )
             output = result.stdout.strip()
         except Exception as e:
