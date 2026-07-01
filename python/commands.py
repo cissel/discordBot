@@ -4931,23 +4931,49 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     # ── /mlb ml ───────────────────────────────────────────────────────────────
     @mlb_group.command(name="ml", description="Top batters & pitchers by ML predicted fantasy score for today's or tomorrow's games")
     @app_commands.describe(
-        mode="Which players to show (default: both)",
+        position="Filter by position (default: all)",
+        scope="All players, free agents only, or starting FAs (default: all)",
         day="Today's or tomorrow's games (default: tomorrow)"
     )
     @app_commands.choices(
-        mode=[
-            app_commands.Choice(name="Both (Top 5 each)",    value="both"),
-            app_commands.Choice(name="Top 10 Batters",       value="batters"),
-            app_commands.Choice(name="Top 10 Pitchers",      value="pitchers"),
+        position=[
+            app_commands.Choice(name="All Positions",      value="all"),
+            app_commands.Choice(name="All Batters",        value="batters"),
+            app_commands.Choice(name="C - Catcher",        value="C"),
+            app_commands.Choice(name="1B - First Base",    value="1B"),
+            app_commands.Choice(name="2B - Second Base",   value="2B"),
+            app_commands.Choice(name="3B - Third Base",    value="3B"),
+            app_commands.Choice(name="SS - Shortstop",     value="SS"),
+            app_commands.Choice(name="OF - Outfield",      value="OF"),
+            app_commands.Choice(name="SP - Starter",       value="SP"),
+            app_commands.Choice(name="RP - Relief",        value="RP"),
+        ],
+        scope=[
+            app_commands.Choice(name="All Players",               value="all"),
+            app_commands.Choice(name="Free Agents Only",          value="fa"),
+            app_commands.Choice(name="FA Starters (Today)",       value="fa_sp_today"),
+            app_commands.Choice(name="FA Starters (Tomorrow)",    value="fa_sp_tomorrow"),
         ],
         day=[
             app_commands.Choice(name="Tomorrow", value="tomorrow"),
             app_commands.Choice(name="Today",    value="today"),
         ]
     )
-    async def mlb_ml(interaction: discord.Interaction, mode: str = "both", day: str = "tomorrow"):
+    async def mlb_ml(interaction: discord.Interaction, position: str = "all", scope: str = "all", day: str = "tomorrow"):
         await _defer(interaction)
-        print(f"[DEBUG] /mlb ml called with mode='{mode}' day='{day}'")
+        print(f"[DEBUG] /mlb ml called with position='{position}' scope='{scope}' day='{day}'")
+
+        # Derive mode from position: batters vs pitchers vs both
+        BATTER_POS = {"C", "1B", "2B", "3B", "SS", "OF"}
+        PITCHER_POS = {"SP", "RP"}
+        if position == "batters":
+            mode = "batters"   # "All Batters" choice - no fielding position filter
+        elif position in BATTER_POS:
+            mode = "batters"
+        elif position in PITCHER_POS:
+            mode = "pitchers"
+        else:
+            mode = "both"
 
         # Team abbreviation -> full name map (features CSV uses abbrevs, games CSV uses full names)
         TEAM_ABBREV = {
@@ -4967,6 +4993,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         games_csv = os.path.join(op, "sports/mlb/gamesToday.csv" if day == "today" else "sports/mlb/gamesTomorrow.csv")
         starters_csv = os.path.join(op, "sports/mlb/probableStartersToday.csv" if day == "today" else "sports/mlb/probableStarters.csv")
         feat_dir  = os.path.join(op, "features/sports")
+        fa_csv    = os.path.join(op, "sports/mlb/fantasy/freeagents.csv")
+        roster_csv = os.path.join(op, "sports/mlb/fantasy/roster.csv")
 
         date_str = datetime.today().strftime("%B %d, %Y") if day == "today" else (datetime.today() + timedelta(days=1)).strftime("%B %d, %Y")
 
@@ -4974,8 +5002,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             import sys as _sys
             _sys.path.insert(0, pp)
             from predictFantasy import get_ml_scores as _gml
-            # Only load the models we actually need for the requested mode
-            # (batter model is ~12s blocking; skip if pitcher-only)
             if mode in ("both", "batters"):
                 bat_scores = await asyncio.to_thread(_gml, "batters",  ("daily", "weekly"))
             else:
@@ -5013,7 +5039,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             return
 
         # Build probable starters set (for pitchers)
-        starting_pitchers = set()  # norm name -> matchup
+        starting_pitchers = set()
         starting_pitcher_matchup = {}
         try:
             sdf = await asyncio.to_thread(pd.read_csv, starters_csv)
@@ -5023,6 +5049,148 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 starting_pitcher_matchup[k] = str(row.get("matchup", ""))
         except Exception:
             pass
+
+        # ── Roster & FA lookup (for scope filtering and status indicators) ──
+        # owned_players: norm_name -> team_name (or "You" for team_id 4)
+        # fa_players:    set of norm_name (free agents)
+        # player_status: norm_name -> "INJ"/"SUSP"/"DTD"/"ACTIVE"/None
+        owned_players = {}   # norm_name -> owning team name
+        fa_players = set()
+        player_status = {}   # norm_name -> status tag
+
+        def _parse_injury(status_str):
+            """Convert ESPN injury status to a compact tag."""
+            s = str(status_str).upper().strip()
+            if s in ("INJURY_RESERVE", "IL", "10-DAY-IL", "15-DAY-IL", "45-DAY-IL", "60-DAY-IL",
+                     "FIFTEEN_DAY_DL", "SIXTY_DAY_DL", "TEN_DAY_DL"):
+                return "IL"
+            if s in ("SUSPENSION",):
+                return "SUSP"
+            if s in ("DAY-TO-DAY", "DTD", "Q", "QUESTIONABLE"):
+                return "DTD"
+            if s in ("OUT", "O"):
+                return "OUT"
+            if s == "ACTIVE" or s == "" or s == "NAN" or s == "NONE":
+                return None
+            return None
+
+        # Always pre-load injury/suspension statuses from cached CSVs so suspended
+        # players (e.g. Wander Franco) are filtered even in scope="all".
+        import csv as _csv_mod
+        for _status_csv in (fa_csv, roster_csv):
+            try:
+                if os.path.exists(_status_csv):
+                    with open(_status_csv, newline="") as _sf:
+                        for _r in _csv_mod.DictReader(_sf):
+                            _nn = norm(_r.get("player_name", ""))
+                            if not _nn:
+                                continue
+                            _st = _parse_injury(_r.get("injury_status", ""))
+                            if _st:
+                                player_status[_nn] = _st
+            except Exception:
+                pass
+
+        # Hardcoded long-term suspensions not captured by ESPN CSV data.
+        # Players here appear in batter_features.csv (historical data) but aren't
+        # on any ESPN roster/FA list so they slip through status checks.
+        _HARDCODED_SUSP = {
+            "wander franco",       # suspended Aug 2023, indefinitely
+        }
+        for _hn in _HARDCODED_SUSP:
+            player_status[_hn] = "SUSP"
+
+        # Always fetch ESPN roster statuses (lightweight - no FA scan) to catch
+        # current IL/suspension tags for any scope, including scope="all".
+        try:
+            from espn_api.baseball import League as _EsLeagueStatus
+
+            def _fetch_roster_statuses():
+                try:
+                    league = _EsLeagueStatus(league_id=1858112591, year=2026)
+                    for t in league.teams:
+                        owner = "You" if t.team_id == 4 else t.team_name
+                        for p in t.roster:
+                            nn = norm(p.name)
+                            owned_players[nn] = owner
+                            st = _parse_injury(p.injuryStatus)
+                            if st:
+                                player_status[nn] = st
+                except Exception:
+                    pass
+
+            if scope == "all":
+                # Only do the quick roster pull - no FA scan needed
+                await asyncio.to_thread(_fetch_roster_statuses)
+        except Exception:
+            pass
+
+        if scope != "all":
+            # Fetch ESPN league rosters + FA list
+            try:
+                import csv as _csv
+                from espn_api.baseball import League as _EsLeague
+
+                def _fetch_league_data():
+                    league = _EsLeague(league_id=1858112591, year=2026)
+                    owned = {}
+                    for t in league.teams:
+                        owner = "You" if t.team_id == 4 else t.team_name
+                        for p in t.roster:
+                            owned[norm(p.name)] = owner
+                            st = _parse_injury(p.injuryStatus)
+                            if st:
+                                player_status[norm(p.name)] = st
+                    return owned
+
+                owned_players = await asyncio.to_thread(_fetch_league_data)
+
+                # Fetch FA for relevant positions
+                positions_to_fetch = []
+                if mode in ("both", "batters"):
+                    positions_to_fetch.extend(list(BATTER_POS) if position in ("all", "batters") else [position])
+                if mode in ("both", "pitchers"):
+                    positions_to_fetch.extend(list(PITCHER_POS) if position in ("all", "batters") else [position])
+
+                for fa_pos in positions_to_fetch:
+                    try:
+                        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), fa_pos, "100")
+                        if os.path.exists(fa_csv):
+                            with open(fa_csv, newline="") as f:
+                                for r in _csv.DictReader(f):
+                                    nn = norm(r.get("player_name", ""))
+                                    if nn:
+                                        fa_players.add(nn)
+                                    st = _parse_injury(r.get("injury_status", ""))
+                                    if st:
+                                        player_status[nn] = st
+                    except Exception:
+                        pass
+            except Exception as e:
+                print(f"[WARN] /mlb ml FA fetch failed: {e}")
+                # Fall back to no filtering rather than crashing
+                scope = "all"
+
+        def _status_icon(norm_name):
+            """Return status indicator emoji for a player."""
+            if norm_name in owned_players:
+                owner = owned_players[norm_name]
+                if owner == "You":
+                    return "🏠"  # on your team
+                return "🔒"  # rostered elsewhere
+            st = player_status.get(norm_name)
+            if st == "IL":
+                return "🏥"
+            if st == "SUSP":
+                return "🚫"
+            if st in ("OUT", "DTD"):
+                return "⚠️"
+            if scope != "all" and norm_name in fa_players:
+                return "🟢"
+            # scope=all: anyone not in owned_players is a FA - show green dot
+            if scope == "all" and owned_players and norm_name not in owned_players:
+                return "🟢"
+            return ""
 
         # Load most-recent team per batter from features CSV
         batter_team = {}   # norm_name -> (team, fantasy_position, bat_order)
@@ -5064,9 +5232,14 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             except Exception:
                 pass
 
+        # Build scope description for embed
+        scope_desc = {"all": "All Players", "fa": "Free Agents Only",
+                      "fa_sp_today": "FA Starting Today", "fa_sp_tomorrow": "FA Starting Tomorrow"}.get(scope, scope)
+        pos_desc = {"all": "All Positions", "batters": "All Batters"}.get(position, position)
+
         embed = discord.Embed(
-            title=f"🤖 ML Fantasy Predictions - {date_str}",
-            description="Predicted fantasy points · Daily = next game · Weekly = next 7 days",
+            title=f"🤖 ML Predictions - {date_str}",
+            description=f"{pos_desc} · {scope_desc}\nDaily = next game · Weekly = next 7 days",
             color=0x002D72
         )
 
@@ -5085,6 +5258,24 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 team, pos, bat_order = info
                 if team not in playing_teams:
                     continue
+                # Position filter
+                if position != "all" and position != "batters" and position not in BATTER_POS:
+                    continue  # pitcher-only filter, skip batters
+                if position in BATTER_POS and pos != position:
+                    continue
+                # Scope filter
+                if scope == "fa":
+                    if norm_name in owned_players:
+                        continue
+                elif scope in ("fa_sp_today", "fa_sp_tomorrow"):
+                    if norm_name in owned_players:
+                        continue
+                    # For batters, just being FA and playing is enough
+                    # (the "starter" filter only applies to pitchers)
+                # Filter out injured/suspended regardless of scope
+                st = player_status.get(norm_name)
+                if st in ("IL", "SUSP", "OUT"):
+                    continue
                 matchup = matchup_map.get(team, "")
                 bat_rows.append({
                     "norm_name": norm_name,
@@ -5100,18 +5291,27 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
             if bat_rows:
                 text = ""
-                for r in bat_rows[:n]:
+                shown = 0
+                for r in bat_rows:
+                    if shown >= n:
+                        break
+                    icon = _status_icon(r["norm_name"])
                     d_str = f"`{r['daily']:.1f}`"  if r["daily"]  is not None else "---"
                     w_str = f"`{r['weekly']:.1f}`" if r["weekly"] is not None else "---"
                     order_str = f" · Bat #{int(r['bat_order'])}" if r["bat_order"] and str(r["bat_order"]) not in ("nan", "None") else ""
-                    text += (
-                        f"**{r['display']}** ({r['pos']}) - {r['team']}{order_str}\n"
+                    entry = (
+                        f"{icon} **{r['display']}** ({r['pos']}) - {r['team']}{order_str}\n"
                         f"Daily: {d_str} pts · Weekly: {w_str} pts\n"
                         f"*{r['matchup']}*\n\n"
                     )
-                embed.add_field(name="🔥 Top Batters (by weekly projection)", value=text.strip(), inline=False)
+                    if len(text) + len(entry) > 1024:
+                        break
+                    text += entry
+                    shown += 1
+                pos_label = f" {position}" if position in BATTER_POS else (" (All Batters)" if position == "batters" else "")
+                embed.add_field(name=f"🔥 Top Batters{pos_label} (by weekly)", value=text.strip()[:1024], inline=False)
             else:
-                embed.add_field(name="🔥 Top Batters", value="No batter projections available for this day.", inline=False)
+                embed.add_field(name="🔥 Top Batters", value="No batter projections match your filters.", inline=False)
 
         # ── Pitchers ──────────────────────────────────────────────────────────
         if mode in ("both", "pitchers"):
@@ -5127,7 +5327,26 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 team, pos = info
                 if team not in playing_teams:
                     continue
-                # prefer probable starters, but include all if mode == pitchers
+                # Position filter
+                if position in PITCHER_POS and pos != position:
+                    continue
+                # Scope filter
+                if scope == "fa":
+                    if norm_name in owned_players:
+                        continue
+                elif scope in ("fa_sp_today", "fa_sp_tomorrow"):
+                    if norm_name in owned_players:
+                        continue
+                    if norm_name not in starting_pitchers:
+                        continue
+                elif scope == "all" and mode == "both":
+                    # Original behavior: both mode only shows probable starters
+                    if norm_name not in starting_pitchers:
+                        continue
+                # Filter out injured/suspended regardless of scope
+                st = player_status.get(norm_name)
+                if st in ("IL", "SUSP", "OUT"):
+                    continue
                 is_starter = norm_name in starting_pitchers
                 matchup = starting_pitcher_matchup.get(norm_name, matchup_map.get(team, ""))
                 pit_rows.append({
@@ -5139,27 +5358,36 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     "is_starter": is_starter,
                     "matchup":    matchup,
                 })
-            # Sort: starters first (in both mode), then by daily score
-            if mode == "both":
-                pit_rows = [r for r in pit_rows if r["is_starter"]]
             pit_rows.sort(key=lambda x: x["daily"], reverse=True)
 
             if pit_rows:
                 text = ""
-                for r in pit_rows[:n]:
+                shown = 0
+                for r in pit_rows:
+                    if shown >= n:
+                        break
+                    icon = _status_icon(r["norm_name"])
                     sp_tag = " `SP`" if r["is_starter"] else f" `{r['pos']}`"
-                    text += (
-                        f"**{r['display']}**{sp_tag} - {r['team']}\n"
+                    entry = (
+                        f"{icon} **{r['display']}**{sp_tag} - {r['team']}\n"
                         f"Daily: `{r['daily']:.1f}` pts\n"
                         f"*{r['matchup']}*\n\n"
                     )
-                header = "🧊 Top Pitchers (probable starters, by daily projection)" if mode == "both" else "🧊 Top 10 Pitchers (by daily projection)"
-                embed.add_field(name=header, value=text.strip(), inline=False)
+                    if len(text) + len(entry) > 1024:
+                        break
+                    text += entry
+                    shown += 1
+                pos_label = f" {position}" if position in PITCHER_POS else ""
+                scope_suffix = " (FA starters)" if scope in ("fa_sp_today", "fa_sp_tomorrow") else ""
+                embed.add_field(name=f"🧊 Top Pitchers{pos_label} (by daily){scope_suffix}", value=text.strip()[:1024], inline=False)
             else:
-                label = "🧊 Top Pitchers" if mode == "both" else "🧊 Top 10 Pitchers"
-                embed.add_field(name=label, value="No pitcher projections available for this day.", inline=False)
+                embed.add_field(name="🧊 Top Pitchers", value="No pitcher projections match your filters.", inline=False)
 
-        embed.set_footer(text="ML model trained on Statcast features · World Sillies scoring")
+        # Legend for scope modes
+        if scope != "all":
+            embed.set_footer(text="🟢 FA · 🏠 Your team · 🔘 Rostered · ⚠️ DTD/OUT · ML model · World Sillies scoring")
+        else:
+            embed.set_footer(text="ML model trained on Statcast features · World Sillies scoring")
         await _send(interaction, embed=embed)
 
     # ── /mlb fantasyrisk ──────────────────────────────────────────────────────

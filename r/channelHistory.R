@@ -3,6 +3,7 @@
 ##### Required Packages #####
 
 library(tidyverse)
+library(lubridate)
 
 #####
 
@@ -46,7 +47,7 @@ df <- read_csv("outputs/metrics/server_messages.csv")
 ##### Channel Activity #####
 
 ca <- df |>
-  mutate(date = as.Date(datetime)) |>
+  mutate(date = as.Date(with_tz(ymd_hms(datetime, tz = "UTC"), tzone = "America/New_York"))) |>
   group_by(channel, date) |>
   summarize(n = n(), .groups = "drop_last") |>  # keep grouping by channel
   arrange(channel, date) |>

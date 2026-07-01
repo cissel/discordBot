@@ -73,8 +73,13 @@ def get_ml_scores(player_type="batters", horizons=("daily", "weekly"),
     except Exception:
         return {}
 
-    # Most recent row per player
+    # Most recent row per player - drop stale players (last game > 400 days ago)
+    # This prevents retired/long-suspended players (Schwindel, Brantley, Franco, etc.)
+    # from appearing in predictions based on years-old feature data.
+    import datetime as _dt
+    _cutoff = pd.Timestamp(_dt.date.today() - _dt.timedelta(days=400))
     df = df.sort_values("game_date").groupby("playerid").last().reset_index()
+    df = df[df["game_date"] >= _cutoff]
 
     scores = {}  # norm_name -> dict
 

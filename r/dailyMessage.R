@@ -4,6 +4,7 @@
 
 library(tidyverse)
 library(zoo)
+library(lubridate)
 
 #####
 
@@ -39,7 +40,7 @@ myLegend <- theme(legend.position = "right",
 setwd("~/discordBot")
 
 df <- read_csv("outputs/metrics/server_messages.csv") |>
-  mutate(date = as.Date(datetime))
+  mutate(date = as.Date(with_tz(ymd_hms(datetime, tz = "UTC"), tzone = "America/New_York")))
 
 # counts per date x channel (for stacked bars)
 cdm <- df |>

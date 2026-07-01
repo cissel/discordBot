@@ -3,6 +3,7 @@
 ##### Required Packages #####
 
 library(tidyverse)
+library(lubridate)
 
 #####
 
@@ -46,7 +47,7 @@ df <- read_csv("outputs/metrics/server_messages.csv")
 ##### All Activity #####
 
 aa <- df |>
-  mutate(date = as.Date(datetime)) |>
+  mutate(date = as.Date(with_tz(ymd_hms(datetime, tz = "UTC"), tzone = "America/New_York"))) |>
   count(date, channel, name = "n") |>
   complete(date = seq.Date(min(date), max(date), by = "day"),
            channel,

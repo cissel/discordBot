@@ -111,7 +111,8 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `fantasyroster` | your roster |
 | `fantasyfa` | free agent pool |
 | `gmscore` | grades every manager's decisions from last week (A+ to F) |
-| `hotcold` | hottest and coldest batters + pitchers in the last 7 days |
+|| `hotcold` | hottest and coldest batters + pitchers in the last 7 days |
+| `ml` | ML fantasy predictions - filter by position (All Positions/All Batters/C/1B/2B/3B/SS/OF/SP/RP) and scope (all/free agents/FA starters) · suspended/IL players excluded · shows injury/roster status icons |
 | `playertrends` | recent scoring trend chart for a player |
 | `modeldiagnostics` | ML model diagnostics - residuals, loss curves, Spearman history |
 | `whohits` | best historical hitters vs today's probable pitchers |
