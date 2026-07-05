@@ -236,6 +236,7 @@ SPY ML model commands. Block gap detection runs daily via cron and accumulates f
 | `gaps` | latest SPY block order gaps - block price, exchange, direction (above/below market at print), deviation %, dollar value, and % move from market price at each forward horizon |
 | `trade [execute]` | paper trade execution - shows signal, proposed order (Kelly-sized), account equity, risk checks. Default: dry run preview. Pass `execute:True` to actually place the market order |
 | `status` | paper account status - equity, current SPY position, recent orders, trade log summary |
+| `performance` | live forward track record - equity curve vs SPY buy & hold, rolling 20d hit rate vs backtest expectation, drawdown, calibration gap, and model drift check. Builds from the daily trade log (autopilot rows accumulate via the 4:15 PM EOD cron) |
 
 ### `/space`
 | command | description |

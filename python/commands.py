@@ -2438,7 +2438,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         ][:25]
 
     @osrs_group.command(name="lvl", description="full skill sheet for a player")
-    @app_commands.describe(player="RSN to look up (defaults to cissel if not given)")
+    @app_commands.describe(player="RSN to look up (defaults to captdeadhead if not given)")
     @app_commands.autocomplete(player=osrs_player_autocomplete)
     async def osrs_lvl(interaction: discord.Interaction, player: str = ""):
         await _defer(interaction)
@@ -7063,6 +7063,139 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             emb.set_footer(text=" | ".join(errors[:2]))
 
         await _send(interaction, embeds=[emb])
+
+    # ── /spy performance ──────────────────────────────────────────────────────
+    @spy_group.command(name="performance", description="Live forward track record - equity vs B&H, hit rate vs backtest, drawdown, drift check")
+    async def spy_performance(interaction: discord.Interaction):
+        await interaction.response.defer(thinking=True)
+        import json as _json
+
+        # 1. Data layer - joins trade log with realized SPY returns
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                PYTHON, os.path.join(pp, "spyPerformance.py"),
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+            except asyncio.TimeoutError:
+                proc.kill(); await proc.communicate()
+                await _send(interaction, "performance data step timed out, try again")
+                return
+            if proc.returncode != 0:
+                await _send(interaction, f"spyPerformance error: `{stderr.decode()[:300]}`")
+                return
+            sm = _json.loads(stdout.decode())
+        except Exception as e:
+            await _send(interaction, f"performance error: `{e}`")
+            return
+
+        if not sm.get("log_exists") or sm.get("days_logged", 0) == 0:
+            await _send(interaction, (
+                "**No trade log yet.** The autopilot writes one row per trading day "
+                "(EOD cron, 4:15 PM ET) once paper keys are set in `.env`. "
+                "Run `/spy trade` once or wait for the next market close."
+            ))
+            return
+
+        # 2. Plot layer
+        img_path = os.path.join(op, "markets/spy_performance.png")
+        try:
+            rproc = await asyncio.create_subprocess_exec(
+                "Rscript", os.path.join(rp, "spyPerformancePlot.R"),
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                await asyncio.wait_for(rproc.communicate(), timeout=120)
+            except asyncio.TimeoutError:
+                rproc.kill(); await rproc.communicate()
+        except Exception:
+            pass  # embed still useful without the chart
+
+        n_res   = sm.get("days_resolved", 0)
+        pending = sm.get("days_pending", 0)
+        drift   = sm.get("drift_flag")
+        color   = 0xff4444 if drift else 0x00ff99 if (sm.get("live_sharpe") or 0) > 0 else 0x4fc3f7
+
+        emb = discord.Embed(title="SPY Model - Forward Track Record", color=color)
+
+        # Record window
+        window = f"{sm.get('first_date','?')} to {sm.get('last_date','?')}"
+        emb.add_field(
+            name="Record",
+            value=(f"**{n_res}** resolved days ({pending} pending)\n{window}\n"
+                   f"Executed trades: **{sm.get('executed_trades', 0)}**"),
+            inline=True,
+        )
+
+        # Returns
+        tot  = sm.get("total_return_pct")
+        bht  = sm.get("bh_return_pct")
+        mdd  = sm.get("max_drawdown_pct")
+        ret_lines = []
+        if tot is not None:
+            ret_lines.append(f"Strategy: **{'+' if tot >= 0 else ''}{tot:.2f}%**")
+        if bht is not None:
+            ret_lines.append(f"SPY B&H: {'+' if bht >= 0 else ''}{bht:.2f}%")
+        if mdd is not None:
+            ret_lines.append(f"Max DD: {mdd:.2f}%")
+        emb.add_field(name="Returns", value="\n".join(ret_lines) or "_pending_", inline=True)
+
+        # Sharpe: live vs backtest
+        ls, bs, ws = sm.get("live_sharpe"), sm.get("bh_sharpe"), sm.get("wfcv_sharpe")
+        sh_lines = []
+        if ls is not None: sh_lines.append(f"Live: **{ls:.2f}**")
+        if bs is not None: sh_lines.append(f"B&H: {bs:.2f}")
+        if ws is not None: sh_lines.append(f"WFCV backtest: {ws:.2f}")
+        emb.add_field(name="Sharpe (ann.)", value="\n".join(sh_lines) or "_pending_", inline=True)
+
+        # Hit rate + calibration
+        hr, mc, gap = sm.get("hit_rate"), sm.get("mean_confidence"), sm.get("calibration_gap")
+        rh, eh = sm.get("rolling_hit_20d"), sm.get("expected_hit")
+        hit_lines = []
+        if hr is not None:
+            hit_lines.append(f"Overall: **{hr*100:.1f}%**")
+        if rh is not None:
+            hit_lines.append(f"Rolling 20d: {rh*100:.1f}%" + (f" (expected {eh*100:.0f}%)" if eh else ""))
+        if mc is not None and gap is not None:
+            sign = "+" if gap >= 0 else ""
+            hit_lines.append(f"Calibration: predicted {mc*100:.1f}% vs actual, gap {sign}{gap*100:.1f}pp")
+        emb.add_field(name="Hit Rate", value="\n".join(hit_lines) or "_pending_", inline=True)
+
+        # Exposure
+        dim, ak = sm.get("days_in_market"), sm.get("avg_kelly")
+        exp_lines = []
+        if dim is not None and n_res:
+            exp_lines.append(f"In market: {dim}/{n_res} days ({dim/n_res*100:.0f}%)")
+        if ak is not None:
+            exp_lines.append(f"Avg Kelly size: {ak*100:.1f}%")
+        emb.add_field(name="Exposure", value="\n".join(exp_lines) or "_pending_", inline=True)
+
+        # Drift verdict
+        if drift is True:
+            emb.add_field(
+                name="⚠️ DRIFT WARNING",
+                value="Rolling 20d hit rate is below the backtest confidence band. "
+                      "Model may be degrading - review before adding size.",
+                inline=False,
+            )
+        elif drift is False:
+            emb.add_field(name="Drift Check", value="✅ Live accuracy within backtest expectations", inline=False)
+
+        note = sm.get("min_days_note")
+        footer = []
+        if note:
+            footer.append(note)
+        if not sm.get("broker_history"):
+            footer.append("broker equity unavailable - using signal-based returns")
+        emb.set_footer(text=" | ".join(footer) if footer else "Signal-based returns: kelly x next-day SPY return")
+
+        if os.path.exists(img_path):
+            emb.set_image(url="attachment://spy_performance.png")
+            await _send(interaction, embed=emb,
+                        file=discord.File(img_path, filename="spy_performance.png"))
+        else:
+            await _send(interaction, embed=emb)
 
     tree.add_command(spy_group)
 

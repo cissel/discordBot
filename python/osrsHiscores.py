@@ -16,13 +16,13 @@ OUTPUT = Path("~/discordBot/outputs/osrs/hiscores.csv").expanduser()
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
 PLAYERS = [
-    "cissel",
+    "captdeadhead",
     "SubieVapeski",
     "Pexci",
     "TrimIsLife",
     "Squidlies",
     "Wmwhite",
-    "The Bog Body",
+    "swampdog",
     "Fart Johnsun",
 ]
 

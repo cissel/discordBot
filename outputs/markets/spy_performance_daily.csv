@@ -1,0 +1,2 @@
+date,outcome_date,direction,prob,kelly,regime,executed,realized_ret,strat_ret,hit,strat_equity,bh_equity,broker_equity
+2026-07-02,,UP,0.5587,0.0587,chop,True,,,,,,81887.55
