@@ -1,0 +1,48 @@
+Command: venv/bin/python3 python/trainBtcModel.py --notes weekly retrain
+Loading features from /home/jhcv/discordBot/outputs/features/markets/btc_features.csv...
+Loaded 4284 rows x 78 columns
+Date range: 2014-09-17 to 2026-06-09
+
+Training: Linear baseline (next_ret_1d / ridge)
+  next_ret_1d/ridge: train=3646, val=365, feats=65
+  -> dir_acc=0.482  Spearman=0.005  RMSE=0.0230
+  Top features: eth_ret_5d(0.006), btc_ret_r5(0.005), eth_ret_1d(0.005), btc_halving_cycle_pct(0.004), btc_eth_rs_5d(0.004)
+  Saved: /home/jhcv/discordBot/models/markets/btc/btc_ridge_next_ret_1d_2026-07-06.pkl
+
+Training: Nonlinear return (next_ret_1d / gbm)
+  next_ret_1d/gbm: train=3646, val=365, feats=63
+  -> dir_acc=0.479  Spearman=-0.036  RMSE=0.0236
+  Top features: btc_ret_r5(0.072), btc_blkcnt_z21(0.054), btc_mvrv_z252(0.050), btc_ret_r63(0.046), btc_s2f_dev(0.042)
+  Saved: /home/jhcv/discordBot/models/markets/btc/btc_gbm_next_ret_1d_2026-07-06.pkl
+
+Training: Direction logistic (next_dir_1d / logistic)
+  next_dir_1d/logistic: train=3647, val=365, feats=65
+  -> dir_acc=0.496  AUC=0.496  Spearman=-0.007
+  Top features: btc_dominance(0.208), fedfunds(0.169), yield_curve(0.161), eth_ret_1d(0.156), btc_rsi_14(0.132)
+  Saved: /home/jhcv/discordBot/models/markets/btc/btc_logistic_next_dir_1d_2026-07-06.pkl
+
+Training: Direction GBM (next_dir_1d / gbm)
+  next_dir_1d/gbm: train=3647, val=365, feats=63
+  -> dir_acc=0.452  AUC=0.473  Spearman=-0.046
+  Top features: btc_rsi_14(0.059), btc_rv_z252(0.052), btc_z21(0.043), btc_dominance(0.035), btc_eth_rs_5d(0.032)
+  Saved: /home/jhcv/discordBot/models/markets/btc/btc_gbm_next_dir_1d_2026-07-06.pkl
+
+Training: 5d return GBM (next_ret_5d / gbm)
+  next_ret_5d/gbm: train=3642, val=365, feats=63
+  -> dir_acc=0.567  Spearman=0.148  RMSE=0.0489
+  Top features: btc_halving_cycle_pct(0.079), btc_s2f_dev(0.052), btc_days_since_halving(0.049), btc_mvrv_z252(0.047), btc_vol_r63(0.046)
+  Saved: /home/jhcv/discordBot/models/markets/btc/btc_gbm_next_ret_5d_2026-07-06.pkl
+
+================================================================================
+SUMMARY
+================================================================================
+Target             Model        Dir Acc    AUC      Spearman     Top feature
+--------------------------------------------------------------------------------
+next_ret_1d        ridge        0.482      -        0.005        eth_ret_5d(0.006)
+next_ret_1d        gbm          0.479      -        -0.036       btc_ret_r5(0.072)
+next_dir_1d        logistic     0.496      0.496    -0.007       btc_dominance(0.208)
+next_dir_1d        gbm          0.452      0.473    -0.046       btc_rsi_14(0.059)
+next_ret_5d        gbm          0.567      -        0.148        btc_halving_cycle_pct(0.079)
+
+Experiment log: /home/jhcv/discordBot/models/meta/btc_experiment_log.csv
+Done.

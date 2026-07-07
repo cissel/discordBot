@@ -8,7 +8,7 @@ library(nflfastR)
 #####
 
 # pull schedule
-sched <- fast_scraper_schedules(2025)
+sched <- fast_scraper_schedules(2026)
 
 # filter for jags
 jax <- sched |> subset(home_team == "JAX" | away_team == "JAX")

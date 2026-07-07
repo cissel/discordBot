@@ -1,0 +1,276 @@
+Command: venv/bin/python3 python/trainSpyModel.py --notes weekly retrain
+[trainSpyModel] loading features...
+  loaded 2622 rows, 2016-01-05 to 2026-06-09
+  recency half-life: 1260 days (~5.0yr)  [default=1260, swept Run 20]
+  Tail target: bottom quintile <= -0.536%, top >= 0.743% (1050 rows)
+
+[Walk-forward CV — 5 folds × 252 days each]
+  Model                                   Dir Acc              AUC
+  -----------------------------------------------------------------
+  Logistic 1d Dir                 0.5587 ± 0.0197  0.5656 ± 0.0173
+    [HOLDOUT 2024-01-01+, n=611]  acc=0.5516  AUC=0.5711  <-- LOCKED, never used in dev
+  GBM Clf 1d Dir                  0.5460 ± 0.0221  0.5574 ± 0.0225
+    [HOLDOUT 2024-01-01+, n=611]  acc=0.5696  AUC=0.5796  <-- LOCKED, never used in dev
+  GBM Ensemble 1d                 0.5460 ± 0.0221  0.5574 ± 0.0225
+    [HOLDOUT 2024-01-01+, n=611]  acc=0.5696  AUC=0.5796  <-- LOCKED, never used in dev
+  GBM 5d Ret                      0.5079 ± 0.0371                -
+
+
+========================================================
+  RFE feature selection (RFECV, LogisticRegression, cv=3)
+========================================================
+  [RFE] Selected 56 features from 56 total
+  [RFE] Selected features:
+    spy_ret_r5
+    spy_consec_down
+    spy_drawdown_252
+    vix_level
+    vix_z21
+    vvix_chg_5d
+    vix_term_z21
+    gld_ret_1d
+    gld_spy_corr_21
+    gld_corr_x_era
+    gld_corr_era_flag
+    gld_corr63_x_era
+    qqq_ret_1d
+    xle_spy_rs_5d
+    fedfunds_chg_21d
+    fomc_window
+    sector_risk_off_r5
+    XLF_ret
+    XLI_ret
+    XLY_ret
+    vwap_dev_open
+    vwap_dev_r5
+    vwap_dev_am
+    vol_vwap_corr_5d
+    open_drive_flag
+    late_reversal_flag
+    days_since_regime_change
+    regime_transition_flag
+    vix_rv_x_bear
+    vix_rv_x_chop
+    dix_chg_x_bear
+    moon_phase_cos
+    days_to_new_moon
+    moon_full_flag
+    moon_new_flag
+    tavg_nyc
+    prcp_flag_nyc
+    sunshine_proxy_nyc
+    tavg_chi
+    temp_range_chi
+    sunshine_proxy_chi
+    wiki_sp500_views
+    wiki_economy_views
+    is_pre_holiday
+    days_to_next_holiday
+    mta_subway_riders
+    earnings_season_flag
+    days_to_earnings_season
+    pres_approval_chg_21d
+    cboe_pcr_equity
+    trends_spy
+    trends_crash
+    trends_buy_stocks
+    trends_volatility
+    trends_fear_index
+    trends_fear_z21
+  [RFE] Feature list saved -> /home/jhcv/discordBot/outputs/features/markets/spy_rfe_features.txt
+
+========================================================
+  1d return | Ridge
+========================================================
+  saved -> /home/jhcv/discordBot/models/markets/spy/spy_ridge_next_ret_1d_2026-07-06.pkl
+  train rows : 2343 | val rows: 252
+  Spearman     : 0.1156  <- ranking accuracy
+  Dir accuracy : 0.5159
+  RMSE         : 0.010434
+  R2           : -0.8856
+  Top features : vix_level=0.004; trends_volatility=0.003; trends_buy_stocks=0.003; trends_spy=0.002; XLF_ret=0.001
+
+========================================================
+  1d return | GBM
+========================================================
+  saved -> /home/jhcv/discordBot/models/markets/spy/spy_gbm_next_ret_1d_2026-07-06.pkl
+  train rows : 2343 | val rows: 252
+  Spearman     : 0.1518  <- ranking accuracy
+  Dir accuracy : 0.5437
+  RMSE         : 0.00808
+  R2           : -0.1308
+  Top features : trends_crash=0.089; vix_level=0.081; trends_spy=0.080; trends_fear_z21=0.059; qqq_ret_1d=0.058
+
+========================================================
+  1d direction | Logistic
+========================================================
+  saved -> /home/jhcv/discordBot/models/markets/spy/spy_logistic_next_dir_1d_2026-07-06.pkl
+  train rows : 2344 | val rows: 252
+  dir accuracy : 0.5476  <- primary metric
+  ROC-AUC      : 0.5816
+  Brier score  : 0.2615
+  Spearman     : 0.1404
+  Top features : trends_volatility=0.318; prcp_flag_nyc=0.208; vix_level=0.207; XLI_ret=0.205; sunshine_proxy_nyc=0.178
+
+========================================================
+  1d direction | GBM Clf
+========================================================
+  saved -> /home/jhcv/discordBot/models/markets/spy/spy_gbm_next_dir_1d_2026-07-06.pkl
+  train rows : 2344 | val rows: 252
+  dir accuracy : 0.5516  <- primary metric
+  ROC-AUC      : 0.578
+  Brier score  : 0.2452
+  Spearman     : 0.1342
+  Top features : trends_fear_z21=0.096; gld_corr_x_era=0.055; gld_ret_1d=0.052; sunshine_proxy_chi=0.043; sector_risk_off_r5=0.042
+
+========================================================
+  5d return | GBM
+========================================================
+  saved -> /home/jhcv/discordBot/models/markets/spy/spy_gbm_next_ret_5d_2026-07-06.pkl
+  train rows : 2298 | val rows: 252
+  Spearman     : 0.2482  <- ranking accuracy
+  Dir accuracy : 0.5516
+  RMSE         : 0.01817
+  R2           : -0.3177
+  Top features : trends_fear_z21=0.100; spy_ret_r63=0.090; trends_fear_index=0.061; trends_spy=0.057; pres_approval_chg_21d=0.046
+
+========================================================
+  1d direction | GBM Ensemble (15 seeds)
+========================================================
+  saved -> /home/jhcv/discordBot/models/markets/spy/spy_gbm_ensemble_next_dir_1d_2026-07-06.pkl  (15 models)
+  train rows : 2344 | val rows: 252
+  dir accuracy : 0.5516
+  ROC-AUC      : 0.5757
+  Brier score  : 0.2458
+  Spearman     : 0.1303
+  Top features : trends_fear_z21=0.094; gld_corr_x_era=0.057; gld_ret_1d=0.049; vwap_dev_open=0.046; sunshine_proxy_chi=0.043
+
+========================================================
+  1d direction | Meta-learner (Ridge stacker)
+========================================================
+  saved -> /home/jhcv/discordBot/models/markets/spy/spy_meta_stacker_2026-07-06.pkl
+  stacker coefs: logistic=0.456  gbm=7.805
+  val rows     : 252
+  dir accuracy : 0.5437  <- primary metric
+  ROC-AUC      : 0.578
+  Brier score  : 0.262
+  Spearman     : 0.1341
+  vs 50/50 blend: dir_acc=0.5675  AUC=0.5895  (meta delta: acc=-0.0238 auc=-0.0115)
+
+  50/50 blend (reference): dir_acc=0.5675  AUC=0.5895
+
+========================================================
+  Regime-split Logistic models (bull / bear / chop)
+========================================================
+
+  -- BULL (post-2021: 218 rows) --
+    train=175  val=43
+    dir_acc=0.6279  AUC=0.6169  Spearman=0.2024
+    top: vix_level=0.381; wiki_economy_views=0.304; is_pre_holiday=0.287; pm_range=0.249; moon_full_flag=0.237
+
+  -- BEAR (234 rows) --
+    [bear oversample] +92 rows (minority class: up, was 92/188 -> 184/280)
+    train=280  val=46
+    dir_acc=0.5435  AUC=0.4425  Spearman=-0.0973
+    top: vix_rv_x_bear=0.336; days_to_earnings_season=0.324; vix_rv_ratio=0.322; spy_ret_r5=0.298; vix_z21=0.295
+    calibrated bear (sigmoid, n_val=46): dir_acc=0.6087  AUC=0.9762
+    [NOTE] Bear val AUC on <63 rows is unreliable - use Bear WFCV AUC as benchmark
+    saved calibrated -> /home/jhcv/discordBot/models/markets/spy/spy_logistic_regime_bear_calibrated_2026-07-06.pkl
+    calibration plot -> /home/jhcv/discordBot/outputs/markets/bear_calibration_curve.png
+
+  -- CHOP (1651 rows) --
+    train=1562  val=63
+    dir_acc=0.5556  AUC=0.5576  Spearman=0.0988
+    top: sunshine_proxy_nyc=0.276; prcp_flag_nyc=0.275; trends_fear_z21=0.252; fedfunds_chg_21d=0.246; trends_buy_stocks=0.230
+    calibrated chop (sigmoid, n_val=63): dir_acc=0.5714  AUC=0.8724
+    saved calibrated -> /home/jhcv/discordBot/models/markets/spy/spy_logistic_regime_chop_calibrated_2026-07-06.pkl
+    calibration plot -> /home/jhcv/discordBot/outputs/markets/chop_calibration_curve.png
+
+========================================================
+  Bear-only expanding WFCV (4 folds x 50 bear rows)
+========================================================
+  [skip] only 234 bear rows — need 250+
+
+========================================================
+  Threshold backtest (val set, 0.02% tx cost per trade)
+========================================================
+  [using meta-stacker probs]
+   Threshold  Trades  Signals   Ret(ann)   Sharpe    MaxDD
+  ----------------------------------------------------------
+        0.50      57      156      17.0%    1.728    -5.6% <-- best
+        0.52      63      149      17.5%    1.787    -5.9% <-- best
+        0.54      61      143      21.3%    2.280    -6.3% <-- best
+        0.55      67      136      19.6%    2.163    -6.3%
+        0.56      69      129      18.6%    2.085    -5.4%
+        0.57      71      125      19.3%    2.170    -5.4%
+        0.58      73      117      17.2%    1.961    -5.8%
+        0.60      71      108      15.8%    1.841    -5.4%
+        0.62      69       93      17.7%    2.272    -3.9%
+        0.65      67       85      16.7%    2.194    -3.6%
+
+  Best threshold: 0.54  Sharpe=2.280  Ann ret=21.3%  MaxDD=-6.3%  Signals=143/252 days
+  SPY buy & hold: Sharpe=1.809  Ann ret=21.9%  MaxDD=-9.0%
+
+  Regime-conditional sizing (Platt-calibrated Kelly + bear half-size):
+  Half-bear, t=0.53                       Sharpe=2.265  ret=20.4%  dd=-5.9%  n=145
+  Half-bear, t=0.54                       Sharpe=2.217  ret=19.9%  dd=-6.3%  n=143
+  Zero-bear, t=0.54                       Sharpe=2.095  ret=18.6%  dd=-6.3%  n=141
+  Kill(bear+GEX-+VIX), t=0.53             Sharpe=2.143  ret=19.0%  dd=-5.9%  n=143  [killed 2 bear+GEX-+VIX days]
+  Frac-Kelly(50%), half-bear              Sharpe=2.079  ret=4.1%  dd=-1.3%  n=145
+  Chop-lower, t=0.51                      Sharpe=1.597  ret=15.1%  dd=-5.9%  n=152
+  Vol2-press(VIX20-30 full)               Sharpe=2.079  ret=4.1%  dd=-1.3%  n=145
+
+  Kelly fraction sweep (half-bear sizing, t=0.53):
+  Kelly(25%), half-bear              Sharpe=2.079  ret=2.1%  dd=-0.7%  n=145
+  Kelly(33%), half-bear              Sharpe=2.079  ret=2.7%  dd=-0.9%  n=145
+  Kelly(50%), half-bear              Sharpe=2.079  ret=4.1%  dd=-1.3%  n=145
+  WFCV PnL CSV -> /home/jhcv/discordBot/outputs/features/markets/spy_wfcv_pnl.csv
+
+  WFCV cumulative PnL chart -> /home/jhcv/discordBot/outputs/markets/spy_wfcv_pnl_curve.png
+  Strategy:  total=164.0%  ann=20.1%  Sharpe=1.787  MaxDD=-13.7%
+  B&H:       total=75.2%  ann=12.7%  Sharpe=0.744
+
+========================================================
+SUMMARY
+========================================================
+  Model                                 Dir Acc      AUC   Spearman
+  ------------------------------------------------------------------
+  1d return | Ridge                      0.5159     -        0.1156
+  1d return | GBM                        0.5437     -        0.1518
+  1d direction | Logistic                0.5476   0.5816     0.1404
+  1d direction | GBM Clf                 0.5516   0.5780     0.1342
+  5d return | GBM                        0.5516     -        0.2482
+  1d direction | GBM Ensemble (15s)      0.5516   0.5757     0.1303
+  1d direction | Meta-stacker            0.5437   0.5780     0.1341
+  1d direction | Blend (50/50)           0.5675   0.5895     0.1539
+  Regime Logistic | bull                 0.6279   0.6169     0.2024
+  Regime Logistic | bear                 0.5435   0.4425    -0.0973
+  Regime Logistic | chop                 0.5556   0.5576     0.0988
+
+[Walk-forward CV summary]
+  Logistic 1d Dir                 dir_acc=0.5587 ± 0.0197  auc=0.5656 ± 0.0173
+    fold 1 (2018-12-20 - 2019-12-19)  acc=0.5635  auc=0.5393  bull=44% bear=4% chop=52%  | bt@0.54: Sharpe=2.146 ret=23.6% dd=-6.2% BH=2.086 n=173 sized=2.534 sized_chop=2.470
+    fold 2 (2019-12-20 - 2020-12-28)  acc=0.5556  auc=0.5840  bull=10% bear=21% chop=68%  | bt@0.54: Sharpe=1.069 ret=29.8% dd=-19.8% BH=0.460 n=115 sized=1.182 sized_chop=1.119
+    fold 3 (2020-12-29 - 2021-12-28)  acc=0.5833  auc=0.5854  bull=0% bear=0% chop=100%  | bt@0.54: Sharpe=2.133 ret=25.9% dd=-6.3% BH=2.040 n=226 sized=2.033 sized_chop=2.070
+    fold 4 (2021-12-29 - 2022-12-28)  acc=0.5238  auc=0.5593  bull=0% bear=55% chop=45%  | bt@0.54: Sharpe=0.285 ret=5.0% dd=-12.6% BH=-0.841 n=145 sized=-0.520 sized_chop=-0.593
+    fold 5 (2022-12-29 - 2023-12-29)  acc=0.5675  auc=0.5600  bull=30% bear=0% chop=69%  | bt@0.54: Sharpe=2.411 ret=25.9% dd=-6.0% BH=1.724 n=173 sized=2.397 sized_chop=2.184
+  GBM Clf 1d Dir                  dir_acc=0.5460 ± 0.0221  auc=0.5574 ± 0.0225
+    fold 1 (2018-12-20 - 2019-12-19)  acc=0.5635  auc=0.5432  bull=44% bear=4% chop=52%  | bt@0.54: Sharpe=2.631 ret=27.8% dd=-4.4% BH=2.086 n=152 sized=2.226 sized_chop=2.376
+    fold 2 (2019-12-20 - 2020-12-28)  acc=0.5437  auc=0.5871  bull=10% bear=21% chop=68%  | bt@0.54: Sharpe=-0.000 ret=-0.0% dd=-33.3% BH=0.460 n=86 sized=1.014 sized_chop=1.105
+    fold 3 (2020-12-29 - 2021-12-28)  acc=0.5754  auc=0.5784  bull=0% bear=0% chop=100%  | bt@0.54: Sharpe=2.771 ret=25.8% dd=-5.7% BH=2.040 n=122 sized=2.932 sized_chop=2.823
+    fold 4 (2021-12-29 - 2022-12-28)  acc=0.5119  auc=0.5522  bull=0% bear=55% chop=45%  | bt@0.54: Sharpe=0.654 ret=11.2% dd=-12.2% BH=-0.841 n=136 sized=0.127 sized_chop=-0.336
+    fold 5 (2022-12-29 - 2023-12-29)  acc=0.5357  auc=0.5263  bull=30% bear=0% chop=69%  | bt@0.54: Sharpe=1.447 ret=12.5% dd=-9.3% BH=1.724 n=113 sized=1.370 sized_chop=1.644
+  GBM Ensemble 1d                 dir_acc=0.5460 ± 0.0221  auc=0.5574 ± 0.0225
+    fold 1 (2018-12-20 - 2019-12-19)  acc=0.5635  auc=0.5432  bull=44% bear=4% chop=52%  | bt@0.54: Sharpe=2.631 ret=27.8% dd=-4.4% BH=2.086 n=152 sized=2.226 sized_chop=2.376
+    fold 2 (2019-12-20 - 2020-12-28)  acc=0.5437  auc=0.5871  bull=10% bear=21% chop=68%  | bt@0.54: Sharpe=-0.000 ret=-0.0% dd=-33.3% BH=0.460 n=86 sized=1.014 sized_chop=1.105
+    fold 3 (2020-12-29 - 2021-12-28)  acc=0.5754  auc=0.5784  bull=0% bear=0% chop=100%  | bt@0.54: Sharpe=2.771 ret=25.8% dd=-5.7% BH=2.040 n=122 sized=2.932 sized_chop=2.823
+    fold 4 (2021-12-29 - 2022-12-28)  acc=0.5119  auc=0.5522  bull=0% bear=55% chop=45%  | bt@0.54: Sharpe=0.654 ret=11.2% dd=-12.2% BH=-0.841 n=136 sized=0.127 sized_chop=-0.336
+    fold 5 (2022-12-29 - 2023-12-29)  acc=0.5357  auc=0.5263  bull=30% bear=0% chop=69%  | bt@0.54: Sharpe=1.447 ret=12.5% dd=-9.3% BH=1.724 n=113 sized=1.370 sized_chop=1.644
+  GBM 5d Ret                      dir_acc=0.5079 ± 0.0371  auc=-
+    fold 1 (2018-12-20 - 2019-12-19)  acc=0.5278  bull=44% bear=4% chop=52%
+    fold 2 (2019-12-20 - 2020-12-28)  acc=0.5278  bull=10% bear=21% chop=68%
+    fold 3 (2020-12-29 - 2021-12-28)  acc=0.5079  bull=0% bear=0% chop=100%
+    fold 4 (2021-12-29 - 2022-12-28)  acc=0.5397  bull=0% bear=55% chop=45%
+    fold 5 (2022-12-29 - 2023-12-29)  acc=0.4365  bull=30% bear=0% chop=69%
+
+[trainSpyModel] done. Log: /home/jhcv/discordBot/models/meta/spy_experiment_log.csv

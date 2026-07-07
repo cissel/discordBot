@@ -1,0 +1,20 @@
+Weekly retrain pipeline started at Mon  6 Jul 06:01:12 EDT 2026
+=== Running: trainFantasyModel ===
+[trainFantasyModel] SUCCESS (1347s) -> /home/jhcv/discordBot/logs/weekly_retrain/trainFantasyModel_20260706_060112.log
+=== Running: buildIntradayFeatures ===
+[buildIntradayFeatures] SUCCESS (266s) -> /home/jhcv/discordBot/logs/weekly_retrain/buildIntradayFeatures_20260706_060112.log
+=== Running: buildSpyFeatures ===
+[buildSpyFeatures] SUCCESS (7s) -> /home/jhcv/discordBot/logs/weekly_retrain/buildSpyFeatures_20260706_060112.log
+=== Running: trainSpyModel ===
+[trainSpyModel] SUCCESS (188s) -> /home/jhcv/discordBot/logs/weekly_retrain/trainSpyModel_20260706_060112.log
+=== Running: trainChopModel ===
+[trainChopModel] SUCCESS (86s) -> /home/jhcv/discordBot/logs/weekly_retrain/trainChopModel_20260706_060112.log
+=== Running: buildOvernightModel ===
+[buildOvernightModel] SUCCESS (5s) -> /home/jhcv/discordBot/logs/weekly_retrain/buildOvernightModel_20260706_060112.log
+=== Running: buildRegimePredModel ===
+[buildRegimePredModel] SUCCESS (17s) -> /home/jhcv/discordBot/logs/weekly_retrain/buildRegimePredModel_20260706_060112.log
+=== Running: buildBtcFeatures ===
+[buildBtcFeatures] SUCCESS (5s) -> /home/jhcv/discordBot/logs/weekly_retrain/buildBtcFeatures_20260706_060112.log
+=== Running: trainBtcModel ===
+[trainBtcModel] SUCCESS (48s) -> /home/jhcv/discordBot/logs/weekly_retrain/trainBtcModel_20260706_060112.log
+Weekly retrain pipeline finished at Mon  6 Jul 06:34:01 EDT 2026
