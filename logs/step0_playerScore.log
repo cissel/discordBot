@@ -1,0 +1,122 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+>>> Pulling batter leaderboards by position...
+  Pulling: C
+  Pulling: 1B
+  Pulling: 2B
+  Pulling: 3B
+  Pulling: SS
+  Pulling: OF
+  Total unique batters: 218
+
+>>> Pulling pitcher leaderboard...
+  SP: 250 | RP: 50
+Saved player_pool.csv (518 total players)
+
+>>> Fetching Batters game logs for 218 players...
+  Progress: 10/218
+  Progress: 20/218
+  Progress: 30/218
+  Progress: 40/218
+  Progress: 50/218
+  Progress: 60/218
+  Progress: 70/218
+  Progress: 80/218
+  Progress: 90/218
+  Progress: 100/218
+  Progress: 110/218
+  Progress: 120/218
+  Progress: 130/218
+  Progress: 140/218
+  Progress: 150/218
+  Progress: 160/218
+  Progress: 170/218
+  Progress: 180/218
+  Progress: 190/218
+  Progress: 200/218
+  Progress: 210/218
+
+>>> Fetching SP game logs for 250 players...
+  Progress: 10/250
+  Progress: 20/250
+  Progress: 30/250
+  Progress: 40/250
+  Progress: 50/250
+  Progress: 60/250
+  Progress: 70/250
+  Progress: 80/250
+  Progress: 90/250
+  Progress: 100/250
+  Progress: 110/250
+  Progress: 120/250
+  Progress: 130/250
+  Progress: 140/250
+  Progress: 150/250
+  Progress: 160/250
+  Progress: 170/250
+  Progress: 180/250
+  Progress: 190/250
+  Progress: 200/250
+  Progress: 210/250
+  Progress: 220/250
+  Progress: 230/250
+  Progress: 240/250
+  Progress: 250/250
+
+>>> Fetching RP game logs for 50 players...
+  Progress: 10/50
+  Progress: 20/50
+  Progress: 30/50
+  Progress: 40/50
+  Progress: 50/50
+
+Saved batter_game_logs.csv  (15691 rows)
+Saved pitcher_game_logs.csv (6039 rows)
+
+===== TOP 10 BATTERS BY FANTASY PTS =====
+# A tibble: 10 × 5
+   player_name     fantasy_position games fantasy_pts avg_pts_per_game
+   <chr>           <chr>            <int>       <dbl>            <dbl>
+ 1 James Wood      OF                  93         301             3.24
+ 2 Junior Caminero 3B                  89         277             3.11
+ 3 Miguel Vargas   3B                  89         277             3.11
+ 4 Otto Lopez      SS                  90         271             3.01
+ 5 Ben Rice        1B                  86         264             3.07
+ 6 Bryce Harper    1B                  92         262             2.85
+ 7 Matt Olson      1B                  90         260             2.89
+ 8 Juan Soto       OF                  73         259             3.55
+ 9 Freddie Freeman 1B                  90         256             2.84
+10 Bryan Reynolds  OF                  92         255             2.77
+
+===== TOP 10 PITCHERS BY FANTASY PTS =====
+# A tibble: 10 × 5
+   player_name        fantasy_position games fantasy_pts avg_pts_per_game
+   <chr>              <chr>            <int>       <dbl>            <dbl>
+ 1 Jacob Misiorowski  SP                  18        386.            21.4 
+ 2 Cam Schlittler     SP                  19        315.            16.6 
+ 3 Cristopher Sánchez SP                  19        295.            15.5 
+ 4 Max Meyer          SP                  19        270.            14.2 
+ 5 Yoshinobu Yamamoto SP                  16        268.            16.8 
+ 6 Chase Burns        SP                  17        266.            15.7 
+ 7 Joe Ryan           SP                  19        260.            13.7 
+ 8 Braxton Ashcraft   SP                  18        255             14.2 
+ 9 Logan Gilbert      SP                  18        255             14.2 
+10 Mason Miller       RP                  36        253.             7.04
+
+===== OUTPUT FILES =====
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/player_pool.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_game_logs.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_game_logs.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_season_summary.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_season_summary.csv 
+EXIT_CODE:0

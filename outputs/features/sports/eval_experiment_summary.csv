@@ -1,5 +1,5 @@
 model_id,player_type,horizon,model_type,train_date,train_rows,val_rows,val_rmse,val_mae,val_r2,val_spearman
-pitchers_daily_ridge_2026-06-24,pitchers,daily,ridge,2026-06-24,48435,595,7.2978,5.0391,0.1888,0.4508
-pitchers_daily_gbm_2026-06-24,pitchers,daily,gbm,2026-06-24,48435,595,6.9257,4.8503,0.2695,0.5101
-pitchers_weekly_ridge_2026-06-24,pitchers,weekly,ridge,2026-06-24,45972,589,8.305,6.2123,0.0815,0.305
-pitchers_weekly_gbm_2026-06-24,pitchers,weekly,gbm,2026-06-24,45972,589,7.8952,5.954,0.1699,0.448
+pitchers_daily_ridge_2026-07-06,pitchers,daily,ridge,2026-07-06,49386,631,7.3866,5.1045,0.1384,0.3293
+pitchers_daily_gbm_2026-07-06,pitchers,daily,gbm,2026-07-06,49386,631,7.4243,5.0862,0.1296,0.343
+pitchers_weekly_ridge_2026-07-06,pitchers,weekly,ridge,2026-07-06,46881,626,8.505,6.4632,0.0601,0.2398
+pitchers_weekly_gbm_2026-07-06,pitchers,weekly,gbm,2026-07-06,46881,626,8.5476,6.4615,0.0507,0.2401

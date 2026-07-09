@@ -1,17 +1,14 @@
-matchup,time
-Milwaukee Brewers @ St. Louis Cardinals,2:15 PM ET
-Milwaukee Brewers @ St. Louis Cardinals,7:45 PM ET
-Chicago Cubs @ Baltimore Orioles,6:35 PM ET
-Athletics @ Detroit Tigers,6:40 PM ET
-Atlanta Braves @ Pittsburgh Pirates,6:40 PM ET
-Seattle Mariners @ Miami Marlins,6:40 PM ET
-New York Yankees @ Tampa Bay Rays,6:40 PM ET
-Houston Astros @ Washington Nationals,6:45 PM ET
-Kansas City Royals @ New York Mets,7:10 PM ET
-Philadelphia Phillies @ Cincinnati Reds,7:10 PM ET
-Cleveland Guardians @ Minnesota Twins,7:40 PM ET
-Boston Red Sox @ Chicago White Sox,7:40 PM ET
-Los Angeles Angels @ Texas Rangers,8:05 PM ET
-Arizona Diamondbacks @ San Diego Padres,9:40 PM ET
-Toronto Blue Jays @ San Francisco Giants,9:45 PM ET
-Colorado Rockies @ Los Angeles Dodgers,10:10 PM ET
+date,game_time,game_pk,teams_away_team_name,teams_away_league_record_pct,teams_away_score,teams_home_team_name,teams_home_league_record_pct,teams_home_score,venue_name,status_abstract_game_state
+2026-07-09,12:35 pm,823359,Atlanta Braves,.582,6,Pittsburgh Pirates,.505,4,PNC Park,Live
+2026-07-09,01:10 pm,823606,Kansas City Royals,.409,3,New York Mets,.419,7,Citi Field,Live
+2026-07-09,01:10 pm,822954,New York Yankees,.543,10,Tampa Bay Rays,.600,3,Tropicana Field,Live
+2026-07-09,01:35 pm,824816,Chicago Cubs,.565,1,Baltimore Orioles,.452,1,Oriole Park at Camden Yards,Live
+2026-07-09,01:40 pm,823683,Cleveland Guardians,.505,2,Minnesota Twins,.495,1,Target Field,Live
+2026-07-09,02:10 pm,824577,Boston Red Sox,.467,2,Chicago White Sox,.516,0,Rate Field,Live
+2026-07-09,06:40 pm,824251,Athletics,.446,NA,Detroit Tigers,.457,NA,Comerica Park,Preview
+2026-07-09,06:40 pm,823846,Seattle Mariners,.505,0,Miami Marlins,.548,0,loanDepot park,Preview
+2026-07-09,07:10 pm,824494,Philadelphia Phillies,.548,NA,Cincinnati Reds,.462,NA,Great American Ball Park,Preview
+2026-07-09,07:45 pm,823034,Milwaukee Brewers,.630,NA,St. Louis Cardinals,.527,NA,Busch Stadium,Preview
+2026-07-09,08:05 pm,822877,Los Angeles Angels,.398,NA,Texas Rangers,.500,NA,Globe Life Field,Preview
+2026-07-09,09:40 pm,823277,Arizona Diamondbacks,.489,NA,San Diego Padres,.500,NA,Petco Park,Preview
+2026-07-09,09:45 pm,823201,Colorado Rockies,.404,NA,San Francisco Giants,.413,NA,Oracle Park,Preview
