@@ -1905,18 +1905,24 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 f"https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard"
                 f"?dates={today.strftime('%Y%m%d')}-{future.strftime('%Y%m%d')}"
             )
-            try:
-                async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
-                    async with s.get(url, timeout=aiohttp.ClientTimeout(total=10)) as r:
-                        if r.status != 200:
-                            return None
-                        data = await r.json()
-                for ev in data.get("events", []):
-                    stype = ev.get("status", {}).get("type", {}).get("name", "")
-                    if stype not in ("STATUS_FINAL", "STATUS_POSTPONED"):
-                        return ev
-            except Exception:
-                pass
+            last_err = None
+            for attempt in range(2):  # one retry - concurrent /ball load can cause transient timeouts
+                try:
+                    async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                        async with s.get(url, timeout=aiohttp.ClientTimeout(total=15)) as r:
+                            if r.status != 200:
+                                last_err = f"HTTP {r.status}"
+                                continue
+                            data = await r.json()
+                    for ev in data.get("events", []):
+                        stype = ev.get("status", {}).get("type", {}).get("name", "")
+                        if stype not in ("STATUS_FINAL", "STATUS_POSTPONED"):
+                            return ev
+                    return None  # fetch succeeded, just no upcoming event
+                except Exception as ex:
+                    last_err = repr(ex)
+                    continue
+            print(f"[ball/_fetch_ufc_event] failed after retry: {last_err}", flush=True)
             return None
 
         async def _fetch_wc_today(date_str: str):
@@ -1980,6 +1986,32 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 pass
             return None
 
+        async def _fetch_mlb_asg():
+            """Return MLB All-Star Game info dict {date: iso, venue: str} for the
+            current season, or None. Home Run Derby is always the night before."""
+            year = _dt.date.today().year
+            url = (
+                f"https://statsapi.mlb.com/api/v1/schedule"
+                f"?sportId=1&gameTypes=A&season={year}"
+            )
+            try:
+                async with aiohttp.ClientSession(headers={"User-Agent": "discordBot/1.0"}) as s:
+                    async with s.get(url, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                        if r.status != 200:
+                            return None
+                        data = await r.json()
+                for d in data.get("dates", []):
+                    for g in d.get("games", []):
+                        if g.get("gameType") == "A":
+                            return {
+                                "date": g.get("gameDate", ""),
+                                "venue": g.get("venue", {}).get("name", ""),
+                                "description": g.get("description", "MLB All-Star Game"),
+                            }
+            except Exception:
+                pass
+            return None
+
         # ── run all fetches concurrently ─────────────────────────────────────
         target_date = _dt.date.today() + _dt.timedelta(days=1 if is_tomorrow else 0)
         date_str    = target_date.strftime("%Y%m%d")
@@ -1995,6 +2027,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 _fetch_wc_today(date_str),
                 _fetch_f1_event(),
                 _fetch_nascar_next(),
+                _fetch_mlb_asg(),
                 return_exceptions=True,
             )
         else:
@@ -2008,6 +2041,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 _fetch_wc_today(date_str),
                 _fetch_f1_event(),
                 _fetch_nascar_next(),
+                _fetch_mlb_asg(),
                 return_exceptions=True,
             )
 
@@ -2015,6 +2049,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         wc_events    = results[6] if not isinstance(results[6], Exception) else []
         f1_race      = results[7] if not isinstance(results[7], Exception) else None
         nascar_event = results[8] if not isinstance(results[8], Exception) else None
+        mlb_asg      = results[9] if not isinstance(results[9], Exception) else None
 
         embeds = []
 
@@ -2072,6 +2107,25 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     else:
                         emb.add_field(name=matchup, value=time_val, inline=False)
                 embeds.append(emb)
+
+        # ── MLB Home Run Derby (night before the All-Star Game) ────────────────
+        if mlb_asg and mlb_asg.get("date"):
+            try:
+                asg_dt_utc = _dt.datetime.fromisoformat(mlb_asg["date"].replace("Z", "+00:00"))
+                asg_dt_et  = asg_dt_utc.astimezone(eastern)
+                derby_date = asg_dt_et.date() - _dt.timedelta(days=1)
+                if derby_date == target_date:
+                    emb = discord.Embed(
+                        title="💣 MLB Home Run Derby",
+                        description=f"*{asg_dt_et.strftime('%A, %B %-d')} - night before the All-Star Game*",
+                        color=0x002D72,
+                    )
+                    emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png")
+                    if mlb_asg.get("venue"):
+                        emb.add_field(name="🏟️ Venue", value=mlb_asg["venue"], inline=False)
+                    embeds.append(emb)
+            except Exception:
+                pass
 
         # ── PGA ──────────────────────────────────────────────────────────────
         tourn_csv = os.path.join(op, "sports/pga/tournament.csv")

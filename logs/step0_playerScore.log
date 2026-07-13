@@ -17,34 +17,34 @@ The following objects are masked from ‘package:base’:
   Pulling: 3B
   Pulling: SS
   Pulling: OF
-  Total unique batters: 218
+  Total unique batters: 216
 
 >>> Pulling pitcher leaderboard...
   SP: 250 | RP: 50
-Saved player_pool.csv (518 total players)
+Saved player_pool.csv (516 total players)
 
->>> Fetching Batters game logs for 218 players...
-  Progress: 10/218
-  Progress: 20/218
-  Progress: 30/218
-  Progress: 40/218
-  Progress: 50/218
-  Progress: 60/218
-  Progress: 70/218
-  Progress: 80/218
-  Progress: 90/218
-  Progress: 100/218
-  Progress: 110/218
-  Progress: 120/218
-  Progress: 130/218
-  Progress: 140/218
-  Progress: 150/218
-  Progress: 160/218
-  Progress: 170/218
-  Progress: 180/218
-  Progress: 190/218
-  Progress: 200/218
-  Progress: 210/218
+>>> Fetching Batters game logs for 216 players...
+  Progress: 10/216
+  Progress: 20/216
+  Progress: 30/216
+  Progress: 40/216
+  Progress: 50/216
+  Progress: 60/216
+  Progress: 70/216
+  Progress: 80/216
+  Progress: 90/216
+  Progress: 100/216
+  Progress: 110/216
+  Progress: 120/216
+  Progress: 130/216
+  Progress: 140/216
+  Progress: 150/216
+  Progress: 160/216
+  Progress: 170/216
+  Progress: 180/216
+  Progress: 190/216
+  Progress: 200/216
+  Progress: 210/216
 
 >>> Fetching SP game logs for 250 players...
   Progress: 10/250
@@ -80,38 +80,38 @@ Saved player_pool.csv (518 total players)
   Progress: 40/50
   Progress: 50/50
 
-Saved batter_game_logs.csv  (15691 rows)
-Saved pitcher_game_logs.csv (6039 rows)
+Saved batter_game_logs.csv  (16243 rows)
+Saved pitcher_game_logs.csv (6270 rows)
 
 ===== TOP 10 BATTERS BY FANTASY PTS =====
 # A tibble: 10 × 5
    player_name     fantasy_position games fantasy_pts avg_pts_per_game
    <chr>           <chr>            <int>       <dbl>            <dbl>
- 1 James Wood      OF                  93         301             3.24
- 2 Junior Caminero 3B                  89         277             3.11
- 3 Miguel Vargas   3B                  89         277             3.11
- 4 Otto Lopez      SS                  90         271             3.01
- 5 Ben Rice        1B                  86         264             3.07
- 6 Bryce Harper    1B                  92         262             2.85
- 7 Matt Olson      1B                  90         260             2.89
- 8 Juan Soto       OF                  73         259             3.55
- 9 Freddie Freeman 1B                  90         256             2.84
-10 Bryan Reynolds  OF                  92         255             2.77
+ 1 James Wood      OF                  96         323             3.36
+ 2 Junior Caminero 3B                  93         296             3.18
+ 3 Miguel Vargas   3B                  94         292             3.11
+ 4 Ben Rice        1B                  90         290             3.22
+ 5 Otto Lopez      SS                  94         281             2.99
+ 6 Juan Soto       OF                  77         270             3.51
+ 7 Bryan Reynolds  OF                  97         269             2.77
+ 8 Bryce Harper    1B                  96         268             2.79
+ 9 Jordan Walker   OF                  92         268             2.91
+10 Luis Arraez     2B                  90         264             2.93
 
 ===== TOP 10 PITCHERS BY FANTASY PTS =====
 # A tibble: 10 × 5
    player_name        fantasy_position games fantasy_pts avg_pts_per_game
    <chr>              <chr>            <int>       <dbl>            <dbl>
  1 Jacob Misiorowski  SP                  18        386.            21.4 
- 2 Cam Schlittler     SP                  19        315.            16.6 
- 3 Cristopher Sánchez SP                  19        295.            15.5 
- 4 Max Meyer          SP                  19        270.            14.2 
- 5 Yoshinobu Yamamoto SP                  16        268.            16.8 
- 6 Chase Burns        SP                  17        266.            15.7 
- 7 Joe Ryan           SP                  19        260.            13.7 
- 8 Braxton Ashcraft   SP                  18        255             14.2 
- 9 Logan Gilbert      SP                  18        255             14.2 
-10 Mason Miller       RP                  36        253.             7.04
+ 2 Cam Schlittler     SP                  20        327.            16.4 
+ 3 Cristopher Sánchez SP                  20        310.            15.5 
+ 4 Foster Griffin     SP                  19        273.            14.4 
+ 5 Dylan Cease        SP                  17        273             16.1 
+ 6 Joe Ryan           SP                  20        272.            13.6 
+ 7 Chase Burns        SP                  18        270.            15.0 
+ 8 Max Meyer          SP                  19        270.            14.2 
+ 9 Yoshinobu Yamamoto SP                  17        270.            15.8 
+10 Mason Miller       RP                  37        262.             7.09
 
 ===== OUTPUT FILES =====
    ~/discordBot/outputs/sports/mlb/fantasy/playerData/player_pool.csv 

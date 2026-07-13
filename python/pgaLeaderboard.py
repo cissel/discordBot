@@ -49,14 +49,37 @@ def main():
         sys.exit(1)
 
     events = data.get("events", [])
+
+    # Drop events that are already final and ended before today (ET).
+    # ESPN keeps last week's completed tournament in the feed for a bit
+    # after it wraps, which was leaking a "yesterday's golf" card into /ball.
+    ET = ZoneInfo("America/New_York")
+    today_et = datetime.now(ET).date()
+
+    def is_stale(ev):
+        status_type = ev.get("competitions", [{}])[0].get("status", {}).get("type", {}) \
+                      or ev.get("status", {}).get("type", {})
+        if not status_type.get("completed"):
+            return False
+        end_raw = ev.get("endDate") or ev.get("date")
+        if not end_raw:
+            return False
+        try:
+            end_dt = datetime.fromisoformat(end_raw.replace("Z", "+00:00")).astimezone(ET)
+            return end_dt.date() < today_et
+        except Exception:
+            return False
+
+    events = [ev for ev in events if not is_stale(ev)]
+
     if not events:
         # No active tournament this week
         OUT_TOURN.write_text("name,course,city,state,round,status,detail\n")
         OUT_LB.write_text("position,name,score,today,thru,round\n")
-        print("[pgaLeaderboard] no active PGA event")
+        print("[pgaLeaderboard] no active PGA event (filtered stale/completed)")
         return
 
-    # Grab first event (there's only ever one PGA event at a time)
+    # Grab first remaining event (there's only ever one PGA event at a time)
     event = events[0]
     tourn_name = event.get("name", "PGA Tour Event")
     competitions = event.get("competitions", [])

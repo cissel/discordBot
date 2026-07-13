@@ -40,7 +40,7 @@ Built so I could send a message from my phone and have it run scripts, pull data
 ![wind plot](outputs/weather/mayportWinds.png)
 
 ### `/ball`
-One command. All sports. Returns today's (or tomorrow's) schedule and scores across NHL, MLB, NBA, PGA, NFL, UFC, F1, NASCAR, and World Cup in a single multi-embed response.
+One command. All sports. Returns today's (or tomorrow's) schedule and scores across NHL, MLB, NBA, PGA, NFL, UFC, F1, NASCAR, and World Cup in a single multi-embed response. Also surfaces the MLB Home Run Derby the night before the All-Star Game (derived automatically from the ASG date each season). PGA card is filtered to drop tournaments that already finished before today, so a completed event doesn't linger in the feed.
 
 ### `/nhl`
 | command | description |

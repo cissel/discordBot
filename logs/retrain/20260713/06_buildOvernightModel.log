@@ -1,0 +1,29 @@
+============================================================
+buildOvernightModel.py
+============================================================
+
+Loading and merging features...
+  Merged rows (after inner join + target build): 1,352
+  Date range: 2021-01-04 to 2026-05-21
+
+Features used (13):
+  Daily    : ['vix_level', 'vix_chg_1d', 'yield_curve', 'fedfunds', 'spy_ret_r5', 'spy_vol_r5', 'spy_rsi_14', 'gld_ret_1d', 'uso_ret_1d', 'dxy_ret_1d', 'spy_z21', 'vix_z21', 'sector_rotation_r5']
+  Intraday : []
+
+Target balance: 55.9% positive (overnight gap up)
+
+Training LogisticRegression (C=0.1, StandardScaler)...
+  [WARN] Features not found in merged data, skipped: ['last_hour_ret', 'vwap_dev_am', 'late_reversal_flag', 'premarket_ret', 'premarket_vol_ratio', 'overnight_gap']
+
+----------------------------------------
+Train rows   : 1,100
+Val rows     : 252  (2025-05-21 to 2026-05-21)
+Val dir acc  : 0.6230
+Val AUC      : 0.5505
+Val Brier    : 0.2347
+----------------------------------------
+
+Model saved  -> /home/jhcv/discordBot/models/markets/overnight/overnight_dir_2026-07-13.pkl
+Log updated  -> /home/jhcv/discordBot/models/meta/overnight_experiment_log.csv
+
+Done.

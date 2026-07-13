@@ -1,0 +1,8 @@
+
+step1_fetchStatcastDaily:0
+step2_fetchSectorBars:0
+step3_buildSportsFeatures:0
+step4_buildPitchFeatures:0
+step5_fetchVixTermHistory:0
+step6_buildSpyFeatures:0
+step7_buildBtcFeatures:0

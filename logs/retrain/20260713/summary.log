@@ -1,0 +1,19 @@
+=== STEP: 1. MLB fantasy model retrain ===
+[OK] 1. MLB fantasy model retrain (1386s) -> logs/retrain/20260713/01_trainFantasyModel.log
+=== STEP: 2. Build intraday features ===
+[OK] 2. Build intraday features (267s) -> logs/retrain/20260713/02_buildIntradayFeatures.log
+=== STEP: 3. Build SPY features ===
+[OK] 3. Build SPY features (7s) -> logs/retrain/20260713/03_buildSpyFeatures.log
+=== STEP: 4. Train SPY models ===
+[OK] 4. Train SPY models (187s) -> logs/retrain/20260713/04_trainSpyModel.log
+=== STEP: 5. Train dedicated chop model ===
+[OK] 5. Train dedicated chop model (86s) -> logs/retrain/20260713/05_trainChopModel.log
+=== STEP: 6. Build overnight gap model ===
+[OK] 6. Build overnight gap model (5s) -> logs/retrain/20260713/06_buildOvernightModel.log
+=== STEP: 7. Build regime prediction model ===
+[OK] 7. Build regime prediction model (16s) -> logs/retrain/20260713/07_buildRegimePredModel.log
+=== STEP: 8. Build BTC features ===
+[OK] 8. Build BTC features (6s) -> logs/retrain/20260713/08_buildBtcFeatures.log
+=== STEP: 9. Train BTC models ===
+[OK] 9. Train BTC models (48s) -> logs/retrain/20260713/09_trainBtcModel.log
+=== PIPELINE COMPLETE ===

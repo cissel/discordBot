@@ -1,14 +1,14 @@
-[fetchSectorBars] existing: 2640 rows to 2026-07-07, fetching 2026-07-08 to 2026-07-08
-  fetching XLB... 1 bars
-  fetching XLC... 1 bars
-  fetching XLE... 1 bars
-  fetching XLF... 1 bars
-  fetching XLI... 1 bars
-  fetching XLK... 1 bars
-  fetching XLP... 1 bars
-  fetching XLRE... 1 bars
-  fetching XLU... 1 bars
-  fetching XLV... 1 bars
-  fetching XLY... 1 bars
-[fetchSectorBars] wrote 2641 rows -> /home/jhcv/discordBot/outputs/markets/cache/sector_bars_historical.csv
+[fetchSectorBars] existing: 2643 rows to 2026-07-10, fetching 2026-07-11 to 2026-07-12
+  fetching XLB... no data
+  fetching XLC... no data
+  fetching XLE... no data
+  fetching XLF... no data
+  fetching XLI... no data
+  fetching XLK... no data
+  fetching XLP... no data
+  fetching XLRE... no data
+  fetching XLU... no data
+  fetching XLV... no data
+  fetching XLY... no data
+  nothing fetched
 EXIT_CODE:0
