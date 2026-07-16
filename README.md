@@ -171,7 +171,7 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `fedrate` | Fed funds target rate history |
 | `yieldcurve` | latest US Treasury yield curve |
 | `yieldspread` | 10Y-2Y spread history (timeframe dropdown) |
-| `crudeoil` | WTI crude oil price chart |
+| `crudeoil` | WTI crude oil price chart, or full history of U.S. Strategic Petroleum Reserve barrels held (`view` dropdown: Price / SPR) |
 | `fear` | CNN Fear & Greed Index |
 | `movers` | top market gainers and losers |
 | `earnings` | upcoming earnings (7 days) or earnings history for a ticker |

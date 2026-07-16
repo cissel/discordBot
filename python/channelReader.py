@@ -98,7 +98,7 @@ async def on_ready():
             rows = []
             async for msg in channel.history(limit=None, after=after_dt, oldest_first=True):
                 rows.append({
-                    "datetime":          msg.created_at.isoformat(),
+                    "datetime":          msg.created_at.astimezone(timezone.utc).isoformat(),
                     "user_name":         msg.author.name,
                     "user_display_name": msg.author.display_name,
                     "channel":           channel.name,

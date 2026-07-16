@@ -13,6 +13,7 @@
 import asyncio
 import csv
 import os
+from datetime import timezone
 from pathlib import Path
 
 import discord
@@ -52,7 +53,7 @@ def _append_message(message: discord.Message):
             if write_header:
                 writer.writeheader()
             writer.writerow({
-                "datetime":          message.created_at.isoformat(),
+                "datetime":          message.created_at.astimezone(timezone.utc).isoformat(),
                 "user_name":         message.author.name,
                 "user_display_name": message.author.display_name,
                 "channel":           message.channel.name if hasattr(message.channel, "name") else "unknown",

@@ -70,31 +70,41 @@ HEADERS  = {"User-Agent": "discordBot/1.0 personal project"}
 def fetch_player(rsn):
     url = BASE_URL.format(urllib.parse.quote(rsn))
     req = urllib.request.Request(url, headers=HEADERS)
-    try:
-        with urllib.request.urlopen(req, timeout=10) as r:
-            text = r.read().decode("utf-8")
-        rows = text.strip().splitlines()
-        result = {}
-        for i, skill in enumerate(SKILLS):
-            if i >= len(rows):
-                break
-            parts = rows[i].split(",")
-            if len(parts) >= 2:
-                result[skill] = {
-                    "rank":  int(parts[0]) if parts[0] != "-1" else None,
-                    "level": int(parts[1]),
-                    "xp":    int(parts[2]) if len(parts) > 2 else 0,
-                }
-        return result
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            print(f"[osrsHiscores] {rsn}: not on hiscores (unranked or doesn't exist)")
-        else:
-            print(f"[osrsHiscores] {rsn}: HTTP {e.code}")
-        return None
-    except Exception as e:
-        print(f"[osrsHiscores] {rsn}: {e}")
-        return None
+    max_retries = 3
+    for attempt in range(1, max_retries + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=15) as r:
+                text = r.read().decode("utf-8")
+            rows = text.strip().splitlines()
+            result = {}
+            for i, skill in enumerate(SKILLS):
+                if i >= len(rows):
+                    break
+                parts = rows[i].split(",")
+                if len(parts) >= 2:
+                    result[skill] = {
+                        "rank":  int(parts[0]) if parts[0] != "-1" else None,
+                        "level": int(parts[1]),
+                        "xp":    int(parts[2]) if len(parts) > 2 else 0,
+                    }
+            return result
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                print(f"[osrsHiscores] {rsn}: not on hiscores (unranked or doesn't exist)")
+                return None
+            else:
+                if attempt < max_retries:
+                    time.sleep(0.5 * attempt)
+                    continue
+                print(f"[osrsHiscores] {rsn}: HTTP {e.code} after {max_retries} attempts")
+                return None
+        except Exception as e:
+            if attempt < max_retries:
+                time.sleep(0.5 * attempt)
+                continue
+            print(f"[osrsHiscores] {rsn}: {e} after {max_retries} attempts")
+            return None
+    return None
 
 def main():
     target_skill = sys.argv[1].lower() if len(sys.argv) > 1 else "total"
@@ -108,21 +118,15 @@ def main():
         time.sleep(0.3)  # be polite to Jagex servers
         if data and target_skill in data:
             s = data[target_skill]
-            rows.append({
-                "player": rsn,
-                "skill":  target_skill,
-                "level":  s["level"],
-                "rank":   s["rank"] if s["rank"] else "unranked",
-                "xp":     s["xp"],
-            })
-        else:
-            rows.append({
-                "player": rsn,
-                "skill":  target_skill,
-                "level":  0,
-                "rank":   "unranked",
-                "xp":     0,
-            })
+            # Only include players with level > 0 (skip unranked/inactive)
+            if s["level"] > 0:
+                rows.append({
+                    "player": rsn,
+                    "skill":  target_skill,
+                    "level":  s["level"],
+                    "rank":   s["rank"] if s["rank"] else "unranked",
+                    "xp":     s["xp"],
+                })
 
     # Sort by level descending
     rows.sort(key=lambda r: r["level"], reverse=True)

@@ -40,7 +40,7 @@ myLegend <- theme(legend.position = "right",
 setwd("~/discordBot")
 
 df <- read_csv("outputs/metrics/server_messages.csv") |>
-  mutate(date = as.Date(with_tz(ymd_hms(datetime, tz = "UTC"), tzone = "America/New_York")))
+  mutate(date = as.Date(with_tz(ymd_hms(datetime, tz = "UTC"), tzone = "America/New_York"), tz = "America/New_York"))
 
 # counts per date x channel (for stacked bars)
 cdm <- df |>
@@ -96,15 +96,19 @@ dmp <- ggplot(cdm,
   labs(
     x = "Time", 
     y = "Messages Sent",
-    #legend = "Channel",
     caption = "Source: Discord message log | JHCV", 
-    subtitle = max(dm$date, na.rm = TRUE),
+    subtitle = {
+      latest_date <- max(dm$date, na.rm = TRUE)
+      latest_total <- dm |> filter(date == latest_date) |> pull(n)
+      latest_ma7 <- dm |> filter(date == latest_date) |> pull(ma7)
+      latest_ma30 <- dm |> filter(date == latest_date) |> pull(ma30)
+      paste0(latest_date, " | Total: ", latest_total, " | MA7: ", 
+             ifelse(is.na(latest_ma7), "N/A", round(latest_ma7, 1)), 
+             " | MA30: ", ifelse(is.na(latest_ma30), "N/A", round(latest_ma30, 1)))
+    },
     title = "Room 40 Daily Activity") +
   
-  #scale_y_log10() +
-  
-  myTheme +
-  myLegend
+  myTheme
 
 ggsave("~/discordBot/outputs/metrics/dailyMessages.png",
        plot = dmp, 

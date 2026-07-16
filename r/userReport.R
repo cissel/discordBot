@@ -66,7 +66,7 @@ display_name <- user_df |> pull(user_display_name) |> first()
 ##### Channel Activity for User #####
 
 ua <- user_df |>
-  mutate(date = as.Date(with_tz(ymd_hms(datetime, tz = "UTC"), tzone = "America/New_York"))) |>
+  mutate(date = as.Date(with_tz(ymd_hms(datetime, tz = "UTC"), tzone = "America/New_York"), tz = "America/New_York")) |>
   count(date, channel, name = "n") |>
   complete(date = seq.Date(min(date), max(date), by = "day"),
            channel,
