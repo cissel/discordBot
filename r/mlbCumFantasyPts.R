@@ -70,7 +70,13 @@ if (nrow(df) == 0) {
 }
 
 # ── cumulative points per player ───────────────────────────────────────────────
+# Remove only days where ALL teams scored zero (all-star break), keep negative scores
 df <- df %>%
+  group_by(date) %>%
+  mutate(any_nonzero = any(daily_pts != 0)) %>%
+  ungroup() %>%
+  filter(any_nonzero) %>%
+  select(-any_nonzero) %>%
   arrange(player_name, date) %>%
   group_by(player_name) %>%
   mutate(cum_pts = cumsum(daily_pts)) %>%

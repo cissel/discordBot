@@ -75,6 +75,15 @@ if (nrow(df) == 0) {
   quit(status = 1)
 }
 
+# ── remove days where ALL teams scored zero (all-star break, etc.) ────────────
+# But keep days with negative scores - those are legit fantasy penalties
+df <- df %>%
+  group_by(date) %>%
+  mutate(any_nonzero = any(daily_pts != 0)) %>%
+  ungroup() %>%
+  filter(any_nonzero) %>%
+  select(-any_nonzero)
+
 # ── cumulative or daily ────────────────────────────────────────────────────────
 if (mode == "cumulative") {
   df <- df %>%
