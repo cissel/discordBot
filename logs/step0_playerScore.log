@@ -12,111 +12,43 @@ The following objects are masked from ‘package:base’:
 
 >>> Pulling batter leaderboards by position...
   Pulling: C
+Request failed [403]. Retrying in 1 seconds...
+Request failed [403]. Retrying in 1 seconds...
+2026-08-03 14:12:17.076506: Invalid arguments or no player batting leaders data available!
+    Error for C: object 'leaders' not found
   Pulling: 1B
+Request failed [403]. Retrying in 1 seconds...
+Request failed [403]. Retrying in 1.9 seconds...
+2026-08-03 14:12:21.1649: Invalid arguments or no player batting leaders data available!
+    Error for 1B: object 'leaders' not found
   Pulling: 2B
+Request failed [403]. Retrying in 1.2 seconds...
+Request failed [403]. Retrying in 1.6 seconds...
+2026-08-03 14:12:25.328438: Invalid arguments or no player batting leaders data available!
+    Error for 2B: object 'leaders' not found
   Pulling: 3B
+Request failed [403]. Retrying in 1 seconds...
+Request failed [403]. Retrying in 2.9 seconds...
+2026-08-03 14:12:30.392577: Invalid arguments or no player batting leaders data available!
+    Error for 3B: object 'leaders' not found
   Pulling: SS
+Request failed [403]. Retrying in 1 seconds...
+Request failed [403]. Retrying in 3.3 seconds...
+2026-08-03 14:12:35.88907: Invalid arguments or no player batting leaders data available!
+    Error for SS: object 'leaders' not found
   Pulling: OF
-  Total unique batters: 216
-
->>> Pulling pitcher leaderboard...
-  SP: 250 | RP: 50
-Saved player_pool.csv (516 total players)
-
->>> Fetching Batters game logs for 216 players...
-  Progress: 10/216
-  Progress: 20/216
-  Progress: 30/216
-  Progress: 40/216
-  Progress: 50/216
-  Progress: 60/216
-  Progress: 70/216
-  Progress: 80/216
-  Progress: 90/216
-  Progress: 100/216
-  Progress: 110/216
-  Progress: 120/216
-  Progress: 130/216
-  Progress: 140/216
-  Progress: 150/216
-  Progress: 160/216
-  Progress: 170/216
-  Progress: 180/216
-  Progress: 190/216
-  Progress: 200/216
-  Progress: 210/216
-
->>> Fetching SP game logs for 250 players...
-  Progress: 10/250
-  Progress: 20/250
-  Progress: 30/250
-  Progress: 40/250
-  Progress: 50/250
-  Progress: 60/250
-  Progress: 70/250
-  Progress: 80/250
-  Progress: 90/250
-  Progress: 100/250
-  Progress: 110/250
-  Progress: 120/250
-  Progress: 130/250
-  Progress: 140/250
-  Progress: 150/250
-  Progress: 160/250
-  Progress: 170/250
-  Progress: 180/250
-  Progress: 190/250
-  Progress: 200/250
-  Progress: 210/250
-  Progress: 220/250
-  Progress: 230/250
-  Progress: 240/250
-  Progress: 250/250
-
->>> Fetching RP game logs for 50 players...
-  Progress: 10/50
-  Progress: 20/50
-  Progress: 30/50
-  Progress: 40/50
-  Progress: 50/50
-
-Saved batter_game_logs.csv  (16243 rows)
-Saved pitcher_game_logs.csv (6270 rows)
-
-===== TOP 10 BATTERS BY FANTASY PTS =====
-# A tibble: 10 × 5
-   player_name     fantasy_position games fantasy_pts avg_pts_per_game
-   <chr>           <chr>            <int>       <dbl>            <dbl>
- 1 James Wood      OF                  96         323             3.36
- 2 Junior Caminero 3B                  93         296             3.18
- 3 Miguel Vargas   3B                  94         292             3.11
- 4 Ben Rice        1B                  90         290             3.22
- 5 Otto Lopez      SS                  94         281             2.99
- 6 Juan Soto       OF                  77         270             3.51
- 7 Bryan Reynolds  OF                  97         269             2.77
- 8 Bryce Harper    1B                  96         268             2.79
- 9 Jordan Walker   OF                  92         268             2.91
-10 Luis Arraez     2B                  90         264             2.93
-
-===== TOP 10 PITCHERS BY FANTASY PTS =====
-# A tibble: 10 × 5
-   player_name        fantasy_position games fantasy_pts avg_pts_per_game
-   <chr>              <chr>            <int>       <dbl>            <dbl>
- 1 Jacob Misiorowski  SP                  18        386.            21.4 
- 2 Cam Schlittler     SP                  20        327.            16.4 
- 3 Cristopher Sánchez SP                  20        310.            15.5 
- 4 Foster Griffin     SP                  19        273.            14.4 
- 5 Dylan Cease        SP                  17        273             16.1 
- 6 Joe Ryan           SP                  20        272.            13.6 
- 7 Chase Burns        SP                  18        270.            15.0 
- 8 Max Meyer          SP                  19        270.            14.2 
- 9 Yoshinobu Yamamoto SP                  17        270.            15.8 
-10 Mason Miller       RP                  37        262.             7.09
-
-===== OUTPUT FILES =====
-   ~/discordBot/outputs/sports/mlb/fantasy/playerData/player_pool.csv 
-   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_game_logs.csv 
-   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_game_logs.csv 
-   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_season_summary.csv 
-   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_season_summary.csv 
-EXIT_CODE:0
+Request failed [403]. Retrying in 1.4 seconds...
+Request failed [403]. Retrying in 1 seconds...
+2026-08-03 14:12:39.502465: Invalid arguments or no player batting leaders data available!
+    Error for OF: object 'leaders' not found
+Error in `distinct()`:
+! Must use existing variables.
+✖ `playerid` not found in `.data`.
+Backtrace:
+    ▆
+ 1. ├─... %>% distinct(playerid, .keep_all = TRUE)
+ 2. ├─dplyr::distinct(., playerid, .keep_all = TRUE)
+ 3. └─dplyr:::distinct.data.frame(., playerid, .keep_all = TRUE)
+ 4.   └─dplyr::distinct_prepare(...)
+ 5.     └─rlang::abort(bullets, call = error_call)
+Execution halted

@@ -1,0 +1,19 @@
+{
+  "tail_query": "N828QS",
+  "callsign": "EJA828",
+  "registration": "N828QS",
+  "hex": "ab5002",
+  "aircraft_type": "CESSNA 700 Citation Longitude",
+  "operator": "BROWN CAMPBELL, CARPER DANIEL E, DANIELS JERRY HOMER, DANIELS CY",
+  "altitude_ft": 43000,
+  "on_ground": false,
+  "ground_speed_kt": 473.6,
+  "vertical_rate_str": "level",
+  "heading_deg": 217.45,
+  "lat": 34.528679,
+  "lon": -78.582516,
+  "squawk": "7345",
+  "updated_utc": "2026-08-02 14:17 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N828QS.png"
+}

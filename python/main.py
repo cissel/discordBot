@@ -119,6 +119,7 @@ class BotClient(discord.Client):
         asyncio.create_task(self._dj_warmup())
         asyncio.create_task(self._snapshot_invites())
         asyncio.create_task(self._launch_alert_loop())
+        asyncio.create_task(self._flight_watch_loop())
 
     async def _snapshot_invites(self):
         """Cache current use-count for every invite in the guild."""
@@ -228,12 +229,32 @@ class BotClient(discord.Client):
             _append_message(message)
 
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
-        """Track reactions to launch alert messages for 1h/5m opt-in."""
+        """Track reactions to launch alert messages for 1h/5m opt-in,
+        and 🔔 reactions on /track messages for takeoff/landing opt-in."""
         import json as _json
         from pathlib import Path as _Path
 
         if payload.user_id == self.user.id:
             return  # ignore bot's own reactions
+
+        emoji = str(payload.emoji)
+
+        # ── flight watch opt-in (🔔 on a /track message) ─────────────────────
+        if emoji == "🔔":
+            watch_file = _Path(os.path.expanduser("~/discordBot/outputs/aerospace/flight_watches.json"))
+            if watch_file.exists():
+                try:
+                    wstate = _json.loads(watch_file.read_text())
+                    watches = wstate.get("watches", {})
+                    entry = watches.get(str(payload.message_id))
+                    if entry is not None:
+                        if payload.user_id not in entry.get("reactors", []):
+                            entry.setdefault("reactors", []).append(payload.user_id)
+                            watch_file.write_text(_json.dumps(wstate, indent=2))
+                            print(f"[flightWatch] user {payload.user_id} opted into alerts for {entry.get('tail_query')}")
+                except Exception as e:
+                    print(f"[flightWatch] reaction handler error: {e}")
+            return
 
         state_file = _Path(os.path.expanduser("~/discordBot/outputs/aerospace/launch_alerts.json"))
         if not state_file.exists():
@@ -242,7 +263,6 @@ class BotClient(discord.Client):
         try:
             state   = _json.loads(state_file.read_text())
             tracked = state.get("tracked", {})
-            emoji   = str(payload.emoji)
             msg_id  = payload.message_id
             uid     = payload.user_id
 
@@ -264,6 +284,108 @@ class BotClient(discord.Client):
                     break
         except Exception as e:
             print(f"[launchAlert] reaction handler error: {e}")
+
+    async def _flight_watch_loop(self):
+        """Background loop - checks watched flights (opted-in via /track's 🔔
+        reaction) for takeoff/landing transitions. Polls every 3 minutes."""
+        await asyncio.sleep(45)  # wait after startup before first check
+        while not self.is_closed():
+            try:
+                asyncio.create_task(self.run_flight_watch_check())
+            except Exception as e:
+                print(f"[flightWatch] loop error: {e}")
+            await asyncio.sleep(3 * 60)
+
+    async def run_flight_watch_check(self):
+        """Runs flightWatchCheck.py, parses ACTION: lines, posts takeoff/landing alerts."""
+        try:
+            await asyncio.wait_for(self._run_flight_watch_check_inner(), timeout=45)
+        except asyncio.TimeoutError:
+            print("[flightWatch] timed out after 45s - skipping this check")
+        except Exception as e:
+            print(f"[flightWatch] error: {e}")
+
+    async def _run_flight_watch_check_inner(self):
+        import subprocess as _sp
+
+        PYTHON_PATH = os.path.expanduser("~/discordBot/venv/bin/python3")
+        SCRIPT      = os.path.expanduser("~/discordBot/python/flightWatchCheck.py")
+
+        try:
+            result = await asyncio.to_thread(
+                lambda: _sp.run([PYTHON_PATH, SCRIPT],
+                                capture_output=True, text=True, timeout=60)
+            )
+            output = result.stdout.strip()
+            if result.stderr:
+                print(f"[flightWatch] stderr: {result.stderr.strip()}")
+        except Exception as e:
+            print(f"[flightWatch] script error: {e}")
+            return
+
+        if not output:
+            return
+
+        lines  = output.splitlines()
+        action = None
+        fields = {}
+        wid    = None
+
+        async def parse_block():
+            nonlocal action, fields, wid
+            if not action or not wid:
+                return
+
+            try:
+                channel = self.get_channel(int(fields.get("channel", 0)))
+                if not channel:
+                    print("[flightWatch] channel not found")
+                    return
+
+                tail_query   = fields.get("tail_query", "")
+                callsign     = fields.get("callsign", tail_query)
+                registration = fields.get("registration", tail_query)
+                reactors_str = fields.get("reactors", "")
+                reactors     = [int(x) for x in reactors_str.split(",") if x.strip().isdigit()]
+                mentions     = " ".join(f"<@{uid_}>" for uid_ in reactors) if reactors else None
+                presumed     = fields.get("presumed", "false") == "true"
+
+                label = callsign if callsign == registration else f"{callsign} ({registration})"
+
+                if action == "TAKEOFF":
+                    emb = discord.Embed(
+                        title=f"🛫 {label} is airborne",
+                        description="Wheels up! Track it with `/track " + tail_query + "`",
+                        color=0x00bfff,
+                    )
+                    await channel.send(content=mentions, embed=emb)
+                    print(f"[flightWatch] TAKEOFF alert sent for {label}")
+
+                elif action == "LANDED":
+                    note = " (presumed - lost ADS-B contact near touchdown)" if presumed else ""
+                    emb = discord.Embed(
+                        title=f"🛬 {label} has landed{note}",
+                        description="Welcome down!",
+                        color=0x00bfff,
+                    )
+                    await channel.send(content=mentions, embed=emb)
+                    print(f"[flightWatch] LANDED alert sent for {label}")
+
+            except Exception as e:
+                print(f"[flightWatch] parse_block error: {e}")
+
+        for line in lines:
+            if line.startswith("ACTION:"):
+                await parse_block()
+                parts  = line.split(":")
+                action = parts[1]
+                wid    = parts[2] if len(parts) > 2 else None
+                fields = {}
+            elif line.startswith("  ") and ":" in line:
+                k, _, v = line.strip().partition(": ")
+                fields[k] = v
+
+        await parse_block()
 
     async def run_launch_alerts(self):
         """

@@ -65,8 +65,13 @@ def main():
     if os.path.exists(OUT_PATH):
         existing = pd.read_csv(OUT_PATH, parse_dates=["date"])
         last_date = existing["date"].max().date()
-        start = (last_date + datetime.timedelta(days=1)).isoformat()
-        print(f"[fetchSectorBars] existing: {len(existing)} rows to {last_date}, fetching {start} to {end}")
+        # Fetch extra days BEFORE the gap so pct_change() has a real prior
+        # close to diff against instead of producing NaN on the first new row.
+        # 14 calendar days (~10 trading days) of overlap ensures the window's
+        # unseedable first row lands well before last_date, not on it.
+        start = (last_date - datetime.timedelta(days=14)).isoformat()
+        print(f"[fetchSectorBars] existing: {len(existing)} rows to {last_date}, "
+              f"fetching {start} to {end} (includes overlap for pct_change seed)")
     else:
         existing = pd.DataFrame()
         start = START_DATE
@@ -87,8 +92,21 @@ def main():
                 df["close"] = df["c"].astype(float)
                 df = df[["date","close"]].sort_values("date")
                 df[f"{sym}_ret"] = df["close"].pct_change()
-                frames[sym] = df.set_index("date")[f"{sym}_ret"]
-                print(f"{len(df)} bars")
+                # The very first row of ANY fetched slice is structurally
+                # unseedable (no prior close inside this window to diff
+                # against) -> pct_change() gives it NaN. Drop it here so we
+                # never carry an unseedable NaN row into the merge below;
+                # the overlap window ensures the dropped date is still
+                # covered by either the existing cache or a prior fetch.
+                df = df.iloc[1:]
+                # Bug fix: pd.DataFrame(dict_of_series) uses the dict KEY as the
+                # column name, not the Series' own .name — so the previous code
+                # silently wrote return values under the plain symbol column
+                # ("XLB") instead of "XLB_ret", and buildSpyFeatures.py only ever
+                # reads *_ret columns. Explicitly rename here to avoid recreating it.
+                series = df.set_index("date")[f"{sym}_ret"].rename(f"{sym}_ret")
+                frames[f"{sym}_ret"] = series
+                print(f"{len(df)} bars (+1 seed row dropped)")
             else:
                 print("no data")
         except Exception as e:
@@ -103,13 +121,27 @@ def main():
     new_df["date"] = pd.to_datetime(new_df["date"])
 
     if not existing.empty:
-        combined = pd.concat([existing, new_df], ignore_index=True)
-        combined = combined.drop_duplicates("date").sort_values("date")
+        # Overlap window recomputed pct_change with a real seed close, so prefer
+        # the freshly computed rows over stale/NaN existing rows for any
+        # overlapping dates before falling back to existing history.
+        combined = pd.concat([new_df, existing], ignore_index=True)
+        combined = combined.drop_duplicates("date", keep="first").sort_values("date")
     else:
         combined = new_df.sort_values("date")
 
     combined.to_csv(OUT_PATH, index=False)
     print(f"[fetchSectorBars] wrote {len(combined)} rows -> {OUT_PATH}")
+
+    # Sanity check: flag if the most recent row still has no _ret data (would
+    # silently recreate the exact staleness bug this fix addresses).
+    ret_cols = [c for c in combined.columns if c.endswith("_ret")]
+    last_row = combined.iloc[-1]
+    if last_row[ret_cols].isna().all():
+        print(f"  [WARN] most recent row ({last_row['date']}) has ALL-NaN _ret columns — "
+              f"check Alpaca API response / market holiday before trusting this run.")
+    else:
+        print(f"  [OK] most recent row ({last_row['date']}) has valid _ret data "
+              f"({last_row[ret_cols].notna().sum()}/{len(ret_cols)} sectors).")
 
 
 if __name__ == "__main__":

@@ -33,7 +33,6 @@ moon_phase_cos
 days_to_new_moon
 moon_full_flag
 moon_new_flag
-tavg_nyc
 prcp_flag_nyc
 sunshine_proxy_nyc
 tavg_chi
@@ -49,7 +48,6 @@ days_to_earnings_season
 pres_approval_chg_21d
 cboe_pcr_equity
 trends_spy
-trends_crash
 trends_buy_stocks
 trends_volatility
 trends_fear_index

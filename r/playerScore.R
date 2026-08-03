@@ -87,7 +87,22 @@ BATTER_POSITIONS <- list(
 message("\n>>> Pulling batter leaderboards by position...")
 top_batters <- imap_dfr(BATTER_POSITIONS, function(pos_code, fantasy_pos) {
   pull_position_leaderboard(pos_code, fantasy_pos, if (fantasy_pos == "OF") 90 else 30)
-}) %>%
+})
+
+# Defensive check: if FanGraphs blocked/rate-limited every position pull (e.g.
+# Cloudflare WAF challenge - observed intermittently, esp. outside the 5am
+# cron window), top_batters will have 0 rows and no "playerid" column at all,
+# which used to crash hard on distinct() below with a confusing error and
+# potentially leave stale/partial output. Fail loudly but gracefully instead:
+# preserve existing CSVs untouched and exit non-zero so the cron step is
+# correctly flagged as failed rather than corrupting downstream data.
+if (nrow(top_batters) == 0 || !("playerid" %in% names(top_batters))) {
+  message("FATAL: all batter leaderboard pulls failed (likely FanGraphs blocking/rate-limiting this run).")
+  message("Existing player_pool.csv / game log CSVs left untouched. Exiting without overwriting.")
+  quit(status = 1)
+}
+
+top_batters <- top_batters %>%
   distinct(playerid, .keep_all = TRUE)
 
 message("  Total unique batters: ", nrow(top_batters))

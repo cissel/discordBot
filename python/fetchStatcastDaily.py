@@ -195,8 +195,18 @@ def main():
         dates = [datetime.date.fromisoformat(args.date)]
         print(f"[fetchStatcastDaily] single date: {args.date}")
     else:
-        dates = [yesterday]
-        print(f"[fetchStatcastDaily] daily mode: {yesterday}")
+        # Daily mode: fetch yesterday PLUS re-check a rolling lookback window for
+        # any dates previously marked "ok, 0 rows" (Savant often hasn't published
+        # by 5am, or a transient error was mislabeled as a real off-day). Without
+        # this, a date that comes back empty once is silently invisible forever —
+        # this is exactly the bug that let statcast data go stale for 3-6 weeks
+        # undetected (found + fixed Aug 3 2026). Lookback is cheap: only dates NOT
+        # already confirmed with rows>0 actually trigger a fetch.
+        LOOKBACK_DAYS = 21
+        window_start = yesterday - datetime.timedelta(days=LOOKBACK_DAYS)
+        dates = sorted(set(get_missing_dates(window_start, yesterday)) | {yesterday})
+        print(f"[fetchStatcastDaily] daily mode: yesterday={yesterday}, "
+              f"re-checking {LOOKBACK_DAYS}d lookback -> {len(dates)} date(s) to fetch")
 
     total_rows = 0
     for i, date in enumerate(dates):

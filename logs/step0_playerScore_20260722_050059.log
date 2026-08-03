@@ -1,0 +1,122 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+>>> Pulling batter leaderboards by position...
+  Pulling: C
+  Pulling: 1B
+  Pulling: 2B
+  Pulling: 3B
+  Pulling: SS
+  Pulling: OF
+  Total unique batters: 220
+
+>>> Pulling pitcher leaderboard...
+  SP: 250 | RP: 50
+Saved player_pool.csv (520 total players)
+
+>>> Fetching Batters game logs for 220 players...
+  Progress: 10/220
+  Progress: 20/220
+  Progress: 30/220
+  Progress: 40/220
+  Progress: 50/220
+  Progress: 60/220
+  Progress: 70/220
+  Progress: 80/220
+  Progress: 90/220
+  Progress: 100/220
+  Progress: 110/220
+  Progress: 120/220
+  Progress: 130/220
+  Progress: 140/220
+  Progress: 150/220
+  Progress: 160/220
+  Progress: 170/220
+  Progress: 180/220
+  Progress: 190/220
+  Progress: 200/220
+  Progress: 210/220
+  Progress: 220/220
+
+>>> Fetching SP game logs for 250 players...
+  Progress: 10/250
+  Progress: 20/250
+  Progress: 30/250
+  Progress: 40/250
+  Progress: 50/250
+  Progress: 60/250
+  Progress: 70/250
+  Progress: 80/250
+  Progress: 90/250
+  Progress: 100/250
+  Progress: 110/250
+  Progress: 120/250
+  Progress: 130/250
+  Progress: 140/250
+  Progress: 150/250
+  Progress: 160/250
+  Progress: 170/250
+  Progress: 180/250
+  Progress: 190/250
+  Progress: 200/250
+  Progress: 210/250
+  Progress: 220/250
+  Progress: 230/250
+  Progress: 240/250
+  Progress: 250/250
+
+>>> Fetching RP game logs for 50 players...
+  Progress: 10/50
+  Progress: 20/50
+  Progress: 30/50
+  Progress: 40/50
+  Progress: 50/50
+
+Saved batter_game_logs.csv  (17454 rows)
+Saved pitcher_game_logs.csv (6539 rows)
+
+===== TOP 10 BATTERS BY FANTASY PTS =====
+# A tibble: 10 × 5
+   player_name     fantasy_position games fantasy_pts avg_pts_per_game
+   <chr>           <chr>            <int>       <dbl>            <dbl>
+ 1 James Wood      OF                 101         330             3.27
+ 2 Junior Caminero 3B                  99         311             3.14
+ 3 Miguel Vargas   3B                  98         302             3.08
+ 4 Ben Rice        1B                  95         299             3.15
+ 5 Jordan Walker   OF                  97         284             2.93
+ 6 Otto Lopez      SS                  97         282             2.91
+ 7 CJ Abrams       SS                  97         280             2.89
+ 8 Bryce Harper    1B                 101         277             2.74
+ 9 Juan Soto       OF                  82         276             3.37
+10 Bryan Reynolds  OF                 101         272             2.69
+
+===== TOP 10 PITCHERS BY FANTASY PTS =====
+# A tibble: 10 × 5
+   player_name        fantasy_position games fantasy_pts avg_pts_per_game
+   <chr>              <chr>            <int>       <dbl>            <dbl>
+ 1 Jacob Misiorowski  SP                  19        399.            21.0 
+ 2 Cam Schlittler     SP                  21        334.            15.9 
+ 3 Cristopher Sánchez SP                  21        321.            15.3 
+ 4 Yoshinobu Yamamoto SP                  18        298.            16.5 
+ 5 Foster Griffin     SP                  20        287.            14.4 
+ 6 Chris Sale         SP                  18        283.            15.7 
+ 7 Dylan Cease        SP                  18        282             15.7 
+ 8 Logan Gilbert      SP                  20        277.            13.8 
+ 9 Mason Miller       RP                  39        274.             7.03
+10 Max Meyer          SP                  20        274.            13.7 
+
+===== OUTPUT FILES =====
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/player_pool.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_game_logs.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_game_logs.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_season_summary.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_season_summary.csv 

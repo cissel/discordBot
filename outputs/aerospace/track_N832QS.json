@@ -1,0 +1,19 @@
+{
+  "tail_query": "N832QS",
+  "callsign": "EJA832",
+  "registration": "N832QS",
+  "hex": "ab6137",
+  "aircraft_type": "CESSNA 700 Citation Longitude",
+  "operator": "PATTERSON ANNA, COLLINS OPERATING LLC, KASAVANA DAGAN, HALFAKER ",
+  "altitude_ft": 41000,
+  "on_ground": false,
+  "ground_speed_kt": 510.0,
+  "vertical_rate_str": "level",
+  "heading_deg": 46.67,
+  "lat": 40.968796,
+  "lon": -73.393677,
+  "squawk": "2112",
+  "updated_utc": "2026-07-29 14:13 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N832QS.png"
+}

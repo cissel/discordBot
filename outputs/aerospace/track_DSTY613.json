@@ -1,0 +1,19 @@
+{
+  "tail_query": "DSTY613",
+  "callsign": "DSTY613",
+  "registration": "168549",
+  "hex": "ae4d3b",
+  "aircraft_type": "SIKORSKY UH-60 Black Hawk",
+  "operator": "",
+  "altitude_ft": 625,
+  "on_ground": false,
+  "ground_speed_kt": 75.2,
+  "vertical_rate_str": "level",
+  "heading_deg": 203.5,
+  "lat": 30.265612,
+  "lon": -81.394849,
+  "squawk": "1200",
+  "updated_utc": "2026-07-30 15:26 UTC",
+  "match_kind": "callsign",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_DSTY613.png"
+}

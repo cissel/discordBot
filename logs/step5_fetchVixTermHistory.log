@@ -1,11 +1,16 @@
-Cache exists: 2525 rows, last=2026-07-10
+Cache exists: 2540 rows, last=2026-07-31
 Fetching ^VVIX (vvix)...
-  [WARN] got 0 rows for ^VVIX
+  1 new rows
 Fetching ^VIX9D (vix9d)...
-  [WARN] got 0 rows for ^VIX9D
+  1 new rows
 Fetching ^VIX3M (vix3m)...
-  [WARN] got 0 rows for ^VIX3M
+  1 new rows
 Fetching ^VIX6M (vix6m)...
-  [WARN] got 0 rows for ^VIX6M
-No new data fetched.
-EXIT_CODE:0
+  1 new rows
+Saved 2541 rows to /home/jhcv/discordBot/outputs/markets/cache/vix_term_history.csv
+  Date range: 2016-06-23 -> 2026-08-03
+  vvix: 99.7% coverage (2533 rows)
+  vix9d: 99.9% coverage (2538 rows)
+  vix3m: 99.9% coverage (2538 rows)
+  vix6m: 99.9% coverage (2538 rows)
+EXIT_CODE=0

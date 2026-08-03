@@ -1,0 +1,121 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+>>> Pulling batter leaderboards by position...
+  Pulling: C
+  Pulling: 1B
+  Pulling: 2B
+  Pulling: 3B
+  Pulling: SS
+  Pulling: OF
+  Total unique batters: 216
+
+>>> Pulling pitcher leaderboard...
+  SP: 250 | RP: 50
+Saved player_pool.csv (516 total players)
+
+>>> Fetching Batters game logs for 216 players...
+  Progress: 10/216
+  Progress: 20/216
+  Progress: 30/216
+  Progress: 40/216
+  Progress: 50/216
+  Progress: 60/216
+  Progress: 70/216
+  Progress: 80/216
+  Progress: 90/216
+  Progress: 100/216
+  Progress: 110/216
+  Progress: 120/216
+  Progress: 130/216
+  Progress: 140/216
+  Progress: 150/216
+  Progress: 160/216
+  Progress: 170/216
+  Progress: 180/216
+  Progress: 190/216
+  Progress: 200/216
+  Progress: 210/216
+
+>>> Fetching SP game logs for 250 players...
+  Progress: 10/250
+  Progress: 20/250
+  Progress: 30/250
+  Progress: 40/250
+  Progress: 50/250
+  Progress: 60/250
+  Progress: 70/250
+  Progress: 80/250
+  Progress: 90/250
+  Progress: 100/250
+  Progress: 110/250
+  Progress: 120/250
+  Progress: 130/250
+  Progress: 140/250
+  Progress: 150/250
+  Progress: 160/250
+  Progress: 170/250
+  Progress: 180/250
+  Progress: 190/250
+  Progress: 200/250
+  Progress: 210/250
+  Progress: 220/250
+  Progress: 230/250
+  Progress: 240/250
+  Progress: 250/250
+
+>>> Fetching RP game logs for 50 players...
+  Progress: 10/50
+  Progress: 20/50
+  Progress: 30/50
+  Progress: 40/50
+  Progress: 50/50
+
+Saved batter_game_logs.csv  (18344 rows)
+Saved pitcher_game_logs.csv (7047 rows)
+
+===== TOP 10 BATTERS BY FANTASY PTS =====
+# A tibble: 10 × 5
+   player_name         fantasy_position games fantasy_pts avg_pts_per_game
+   <chr>               <chr>            <int>       <dbl>            <dbl>
+ 1 James Wood          OF                 109         356             3.27
+ 2 CJ Abrams           SS                 105         332             3.16
+ 3 Junior Caminero     3B                 107         326             3.05
+ 4 Miguel Vargas       3B                 106         315             2.97
+ 5 Ben Rice            1B                 103         310             3.01
+ 6 Pete Crow-Armstrong OF                 108         307             2.84
+ 7 Otto Lopez          SS                 105         304             2.9 
+ 8 Luis Arraez         2B                 102         294             2.88
+ 9 Matt Olson          1B                 108         293             2.71
+10 Bryce Harper        1B                 109         292             2.68
+
+===== TOP 10 PITCHERS BY FANTASY PTS =====
+# A tibble: 10 × 5
+   player_name        fantasy_position games fantasy_pts avg_pts_per_game
+   <chr>              <chr>            <int>       <dbl>            <dbl>
+ 1 Jacob Misiorowski  SP                  20        425.            21.2 
+ 2 Cam Schlittler     SP                  23        387.            16.8 
+ 3 Cristopher Sánchez SP                  22        334.            15.2 
+ 4 Chris Sale         SP                  20        329.            16.4 
+ 5 Dylan Cease        SP                  19        319             16.8 
+ 6 Gavin Williams     SP                  22        318.            14.5 
+ 7 Mason Miller       RP                  44        314.             7.14
+ 8 Yoshinobu Yamamoto SP                  19        312.            16.4 
+ 9 Chase Burns        SP                  20        298.            14.9 
+10 Foster Griffin     SP                  21        297.            14.1 
+
+===== OUTPUT FILES =====
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/player_pool.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_game_logs.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_game_logs.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_season_summary.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_season_summary.csv 

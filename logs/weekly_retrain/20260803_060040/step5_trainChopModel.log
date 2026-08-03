@@ -1,0 +1,50 @@
+[trainChopModel] loading features...
+  2658 total rows, 1673 chop rows (62.9%)
+  chop after dropna: 1615 rows, 68 features available
+  date range: 2016-02-04 to 2026-06-15
+
+========================================================
+  RFE on chop rows (RFECV, LogisticRegression, cv=3)
+========================================================
+  [RFE] 53 features selected from 68
+  Selected: ['spy_ret_r5', 'spy_consec_down', 'spy_drawdown_252', 'vix_level', 'vix_z21', 'vvix_chg_5d', 'vix_term_z21', 'gld_ret_1d', 'gld_spy_corr_21', 'gld_corr_x_era', 'gld_corr63_x_era', 'qqq_ret_1d', 'xle_spy_rs_5d', 'fedfunds_chg_21d', 'fomc_window', 'sector_risk_off_r5', 'XLF_ret', 'XLI_ret', 'XLY_ret', 'vwap_dev_r5', 'vwap_dev_am', 'open_drive_flag', 'late_reversal_flag', 'days_since_regime_change', 'vix_rv_x_chop', 'moon_phase_cos', 'days_to_new_moon', 'moon_full_flag', 'prcp_flag_nyc', 'sunshine_proxy_nyc', 'tavg_chi', 'temp_range_chi', 'sunshine_proxy_chi', 'wiki_sp500_views', 'wiki_economy_views', 'is_pre_holiday', 'days_to_next_holiday', 'mta_subway_riders', 'earnings_season_flag', 'days_to_earnings_season', 'trends_buy_stocks', 'trends_volatility', 'trends_fear_index', 'trends_fear_z21', 'gex_chg_5d', 'fear_z21_x_chop', 'crash_x_chop', 'vol_x_chop', 'aaii_neutral', 'ccsa_z52', 'gld_z21', 'skew_chg_1d', 'vix9d_z21']
+
+========================================================
+  Chop-only walk-forward CV (5 folds x 252 calendar days)
+========================================================
+  fold 1: skipped (tr=355 < min_train=500 or va=252 < 20)
+  fold 2 (2020-11-13 - 2021-11-12)  chop_tr= 607 chop_va=252  acc=0.5913  auc=0.5793  bt@0.51: Sharpe=1.077  BH=2.426  n=200
+  fold 3 (2021-11-15 - 2023-08-04)  chop_tr= 859 chop_va=252  acc=0.5437  auc=0.6073  bt@0.51: Sharpe=0.578  BH=1.079  n=174
+  fold 4 (2023-08-07 - 2025-05-16)  chop_tr=1111 chop_va=252  acc=0.5913  auc=0.6156  bt@0.51: Sharpe=2.056  BH=-0.126  n=108
+  fold 5 (2025-05-19 - 2026-06-15)  chop_tr=1363 chop_va=252  acc=0.5317  auc=0.5594  bt@0.51: Sharpe=1.289  BH=1.629  n=137
+
+  WFCV summary:  dir_acc=0.5645 +/-0.0271  auc=0.5904 +/-0.0224
+
+========================================================
+  Final model: train=1363 chop rows, val=252 chop rows
+========================================================
+  Base: dir_acc=0.5317  AUC=0.5594  Spearman=0.1021
+  Calibrated: dir_acc=0.5754  AUC=0.5594
+  t=0.51: Sharpe=2.041  ann_ret=22.0%  MaxDD=5.4%  n_signals=201
+  t=0.53: Sharpe=1.957  ann_ret=20.6%  MaxDD=6.9%  n_signals=184
+  Top features: trends_buy_stocks=0.246; moon_phase_cos=0.221; earnings_season_flag=0.218; spy_consec_down=0.217; sunshine_proxy_nyc=0.215
+
+========================================================
+  GBM chop ensemble (15 seeds, chop rows only)
+========================================================
+  GBM: dir_acc=0.5714  AUC=0.5593
+  GBM t=0.51: Sharpe=0.348  n_signals=163
+  GBM t=0.53: Sharpe=0.254  n_signals=153
+
+  Blend (50/50 log_cal + gbm_chop): dir_acc=0.5714  AUC=0.5677
+  Blend t=0.51: Sharpe=0.982  ann_ret=10.8%  MaxDD=5.6%  n_signals=184
+  Blend t=0.53: Sharpe=1.172  ann_ret=11.9%  MaxDD=8.2%  n_signals=161
+
+  Existing regime_chop model:  dir_acc=0.5635  AUC=0.5677
+  New dedicated chop model:    dir_acc=0.5754  AUC=0.5594
+  Delta: acc=+0.0119  auc=-0.0083
+
+  saved -> /home/jhcv/discordBot/models/markets/spy/spy_logistic_chop_dedicated_2026-08-03.pkl
+  logged -> /home/jhcv/discordBot/models/meta/spy_experiment_log.csv
+
+[trainChopModel] done.

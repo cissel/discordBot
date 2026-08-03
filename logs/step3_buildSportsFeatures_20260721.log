@@ -1,0 +1,37 @@
+[buildSportsFeatures] loading batter game logs...
+  Current season: 17365 rows
+  Historical (batter_game_logs_2021.csv): 26902 rows
+  Historical (batter_game_logs_2022.csv): 26559 rows
+  Historical (batter_game_logs_2023.csv): 26747 rows
+  Historical (batter_game_logs_2024.csv): 27471 rows
+  Historical (batter_game_logs_2025.csv): 27250 rows
+  Combined: 152294 rows across 6 season(s): [np.int64(2021), np.int64(2022), np.int64(2023), np.int64(2024), np.int64(2025), np.int64(2026)]
+  152294 rows, 521 players, 6 season(s)
+[buildSportsFeatures] joining park factors...
+  Loaded park factors: 90 (team, season) entries
+[buildSportsFeatures] loading pitcher quality + handedness + day-of lineups...
+  Loaded pitcher quality: 291 pitchers by mlbam_id
+  Loaded handedness: 1345 players
+  SP matchup feature hit rate: 0.0% of rows
+  wrote 152294 rows ([np.int64(2021), np.int64(2022), np.int64(2023), np.int64(2024), np.int64(2025), np.int64(2026)]) -> /home/jhcv/discordBot/outputs/features/sports/batter_features.csv
+[buildSportsFeatures] loading pitcher game logs...
+  Current season: 6528 rows
+  Historical (pitcher_game_logs_2021.csv): 9580 rows
+  Historical (pitcher_game_logs_2022.csv): 9762 rows
+  Historical (pitcher_game_logs_2023.csv): 9841 rows
+  Historical (pitcher_game_logs_2024.csv): 9420 rows
+  Historical (pitcher_game_logs_2025.csv): 10055 rows
+  Combined: 55186 rows across 6 season(s): [np.int64(2021), np.int64(2022), np.int64(2023), np.int64(2024), np.int64(2025), np.int64(2026)]
+  55186 rows, 771 players, 6 season(s)
+  Loaded park factors: 90 (team, season) entries
+  Current season: 17365 rows
+  Historical (batter_game_logs_2021.csv): 26902 rows
+  Historical (batter_game_logs_2022.csv): 26559 rows
+  Historical (batter_game_logs_2023.csv): 26747 rows
+  Historical (batter_game_logs_2024.csv): 27471 rows
+  Historical (batter_game_logs_2025.csv): 27250 rows
+  Combined: 152294 rows across 6 season(s): [np.int64(2021), np.int64(2022), np.int64(2023), np.int64(2024), np.int64(2025), np.int64(2026)]
+  opp_woba_r14: 99.4% rows populated
+  wrote 55186 rows ([np.int64(2021), np.int64(2022), np.int64(2023), np.int64(2024), np.int64(2025), np.int64(2026)]) -> /home/jhcv/discordBot/outputs/features/sports/pitcher_features.csv
+[buildSportsFeatures] done.
+EXIT_CODE=0

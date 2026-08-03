@@ -16,15 +16,15 @@ Feature coverage (% non-NaN, bottom 10):
   uso_z21: 60.9%
   spy_z21: 60.9%
   gld_z21: 60.9%
-  spy_ret_5d: 61.1%
   gld_ret_5d: 61.1%
+  spy_ret_5d: 61.1%
   gld_ret_1d: 61.2%
   uso_ret_1d: 61.2%
   spy_ret_1d: 61.2%
   eth_z21: 72.7%
-  btc_eth_rs_5d: 73.0%
+  eth_ret_5d: 73.0%
 
 Date range: 2014-09-17 to 2026-06-09
 Rows with MVRV: 4284
 Done.
-EXIT_CODE:0
+EXIT_CODE=0

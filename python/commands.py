@@ -58,6 +58,7 @@
 #
 #   /usa
 #   /jaxplanes
+#   /track  <tail>
 #   /serversdown
 #   /standings            (already existed in original commands.py)
 #   /duval  /westside
@@ -356,6 +357,12 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @tree.command(name="ping", description="pong 🏓", guild=guild)
     async def ping(interaction: discord.Interaction):
         await _quick(interaction, "pong 🏓")
+
+    # ── /takemyenergy - custom recipient ────────────────────────────────────────
+    @tree.command(name="takemyenergy", description="༼ つ ◕◕ ༽つ TAKE MY ENERGY (pick who gets it)", guild=guild)
+    @app_commands.describe(recipient="who/what should receive your energy")
+    async def takemyenergy(interaction: discord.Interaction, recipient: str):
+        await _quick(interaction, f"༼ つ ◕◕ ༽つ {recipient.upper()} TAKE MY ENERGY ༼ つ ◕◕ ༽つ")
 
     # ── /duval /westside ──────────────────────────────────────────────────────
     @tree.command(name="duval", description="duval", guild=guild)
@@ -1594,6 +1601,229 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         except Exception as e:
             await _send(interaction, f"\u274c error: {e}", ephemeral=True)
 
+    # ── /nfl draftboard | draft | undraft | resetdraft ──────────────────────
+    # Phase 4: live draft-day tool sitting on top of the VORP/ADP pipeline
+    # (buildNflVorp.py -> buildNflDraftBoard.py -> nflDraftLive.py). State
+    # persists in outputs/sports/nfl/fantasy/draft_state.json so "best
+    # available" always reflects who's already off the board mid-draft.
+    from nflDraftLive import (
+        all_player_names, best_available, draft_progress, load_board,
+        mark_drafted, reset_draft, undo_draft,
+    )
+
+    DRAFT_BOARD_PNG = os.path.join(op, "sports/nfl/fantasy/draft_board_2026.png")
+
+    def _fmt_board_rows(rows_df) -> str:
+        lines = []
+        for _, r in rows_df.iterrows():
+            gap = r["value_gap"]
+            gap_str = f"+{gap:.0f}" if gap > 0 else f"{gap:.0f}"
+            rookie = " (R)" if r.get("player_type") == "rookie" else ""
+            injury = " ⚠️" if r.get("injury_shortened_2025") else ""
+            mover = " 🔀" if r.get("elite_mover_2026") else ""
+            star = "⭐ " if r.get("is_breakout") else ""
+            lines.append(
+                f"{star}**{r['full_name']}**{rookie} — {r['position']} {r['team']}  "
+                f"(ADP {r['adp_overall']:.0f}, VORP {r['vorp']:.0f}, gap {gap_str}){injury}{mover}"
+            )
+        return "\n".join(lines) if lines else "No players match."
+
+    @nfl_group.command(name="draftboard", description="Best available players by VORP (live draft tool)")
+    @app_commands.describe(position="Optional: filter to QB, RB, WR, or TE", count="How many to show (default 12)")
+    @app_commands.choices(position=[
+        app_commands.Choice(name="QB", value="QB"),
+        app_commands.Choice(name="RB", value="RB"),
+        app_commands.Choice(name="WR", value="WR"),
+        app_commands.Choice(name="TE", value="TE"),
+    ])
+    async def nfl_draftboard(interaction: discord.Interaction,
+                              position: app_commands.Choice[str] = None, count: int = 12):
+        await _defer(interaction)
+        try:
+            pos_val = position.value if position else None
+            rows = await asyncio.to_thread(best_available, pos_val, min(max(count, 1), 25))
+            progress = await asyncio.to_thread(draft_progress)
+            title = f"🏈 Best Available{' — ' + pos_val if pos_val else ''}"
+            emb = discord.Embed(title=title, description=_fmt_board_rows(rows), color=0x013369)
+            emb.set_footer(text=f"{progress['n_drafted']} players drafted so far this session "
+                                 f"| ⚠️ = missed significant 2025 time to injury, VORP may be understated "
+                                 f"| 🔀 = changed teams carrying a big (25%+) target share - model applies "
+                                 f"only a modest discount, research manually before trusting the number "
+                                 f"| ⭐ = breakout candidate (2nd/3rd-yr composite score, see /nfl cheatsheet)")
+            await _send(interaction, embed=emb)
+        except FileNotFoundError as e:
+            await _send(interaction, str(e), ephemeral=True)
+        except Exception as e:
+            await _send(interaction, f"❌ error: {e}", ephemeral=True)
+
+    @nfl_group.command(name="draft", description="Mark a player as drafted (removes from best-available)")
+    @app_commands.describe(player="Player name", drafted_by="Optional: who took them")
+    async def nfl_draft(interaction: discord.Interaction, player: str, drafted_by: str = ""):
+        try:
+            ok, msg = await asyncio.to_thread(mark_drafted, player, drafted_by)
+            await _quick(interaction, ("✅ " if ok else "❌ ") + msg)
+        except FileNotFoundError as e:
+            await _quick(interaction, str(e), ephemeral=True)
+
+    @nfl_draft.autocomplete("player")
+    async def nfl_draft_autocomplete(interaction: discord.Interaction, current: str):
+        try:
+            names = await asyncio.to_thread(all_player_names)
+        except FileNotFoundError:
+            return []
+        cur = current.lower()
+        matches = [n for n in names if cur in n.lower()][:25]
+        return [app_commands.Choice(name=n, value=n) for n in matches]
+
+    @nfl_group.command(name="undraft", description="Undo marking a player as drafted")
+    @app_commands.describe(player="Player name")
+    async def nfl_undraft(interaction: discord.Interaction, player: str):
+        try:
+            ok, msg = await asyncio.to_thread(undo_draft, player)
+            await _quick(interaction, ("✅ " if ok else "❌ ") + msg)
+        except FileNotFoundError as e:
+            await _quick(interaction, str(e), ephemeral=True)
+
+    @nfl_undraft.autocomplete("player")
+    async def nfl_undraft_autocomplete(interaction: discord.Interaction, current: str):
+        try:
+            state_names = list((await asyncio.to_thread(
+                lambda: __import__("nflDraftLive").load_state()))["drafted"].keys())
+        except FileNotFoundError:
+            return []
+        cur = current.lower()
+        matches = [n for n in state_names if cur in n.lower()][:25]
+        return [app_commands.Choice(name=n, value=n) for n in matches]
+
+    @nfl_group.command(name="resetdraft", description="Clear all drafted-player state (start a fresh draft)")
+    async def nfl_resetdraft(interaction: discord.Interaction):
+        await asyncio.to_thread(reset_draft)
+        await _quick(interaction, "🔄 Draft state reset — everyone's available again.")
+
+    @nfl_group.command(name="cheatsheet", description="Printable tiered draft board (pre-draft prep)")
+    async def nfl_cheatsheet(interaction: discord.Interaction):
+        await _defer(interaction)
+        if not os.path.exists(DRAFT_BOARD_PNG):
+            await _send(interaction, "Cheat sheet not found — run buildNflDraftBoard.py first.", ephemeral=True)
+            return
+        await _send(interaction, "**Room 40 - 2026 Draft Board (Tiered by VORP)**",
+                    file=discord.File(DRAFT_BOARD_PNG))
+
+    BIG_BOARD_PNG = os.path.join(op, "sports/nfl/fantasy/big_board_2026.png")
+
+    @nfl_group.command(name="bigboard", description="Flat overall draft order across all positions (no position columns)")
+    async def nfl_bigboard(interaction: discord.Interaction):
+        await _defer(interaction)
+        if not os.path.exists(BIG_BOARD_PNG):
+            await _send(interaction, "Big board not found — run buildNflBigBoard.py first.", ephemeral=True)
+            return
+        await _send(interaction, "**Room 40 - 2026 Big Board (Overall Draft Order, Cross-Position)**",
+                    file=discord.File(BIG_BOARD_PNG))
+
+    STRATEGY_GUIDE_PNG = os.path.join(op, "sports/nfl/fantasy/strategy_guide.png")
+
+    @nfl_group.command(name="strategyguide", description="Round-by-round position priority for each named draft strategy")
+    async def nfl_strategyguide(interaction: discord.Interaction):
+        await _defer(interaction)
+        if not os.path.exists(STRATEGY_GUIDE_PNG):
+            await _send(interaction, "Strategy guide not found — run buildNflStrategyGuide.py first.", ephemeral=True)
+            return
+        await _send(interaction, "**Room 40 - Draft Strategy Guide** (which position to prioritize each round, per strategy)",
+                    file=discord.File(STRATEGY_GUIDE_PNG))
+
+    # ── /nfl mockdraft <subcommand> ──────────────────────────────────────────
+    # Phase 4, step 5: pull + grade a completed Sleeper mock draft against the
+    # VORP board, log it, and let the user compare mock drafts over time to
+    # see which strategies/decisions yielded the best theoretical result.
+    mockdraft_group = app_commands.Group(
+        name="mockdraft", description="Log and grade Sleeper mock drafts", parent=nfl_group
+    )
+
+    def _extract_draft_id(raw: str) -> str:
+        """Accepts a bare draft_id or a full Sleeper draft URL (with or
+        without query params / fragments, e.g. '?ftue=commish' appended by
+        Discord/Sleeper share links) and returns just the numeric ID."""
+        raw = raw.strip()
+        raw = raw.split("?")[0].split("#")[0]  # strip query string / fragment
+        raw = raw.rstrip("/")
+        return raw.split("/")[-1]
+
+    @mockdraft_group.command(name="grade", description="Grade a completed Sleeper mock draft against the VORP board")
+    @app_commands.describe(
+        draft_id="Sleeper draft ID or full draft URL",
+        my_slot="Optional: your DRAFT ORDER position for round 1 (e.g. 'I have pick 10' -> enter 10), to flag your team in the summary",
+        label="Optional: a short label to remember this mock by (e.g. 'zero RB test')",
+    )
+    async def nfl_mockdraft_grade(interaction: discord.Interaction, draft_id: str,
+                                   my_slot: int = None, label: str = ""):
+        await _defer(interaction)
+        try:
+            from nflMockDraftLog import MockDraftError, append_to_log, grade_draft
+            clean_id = await asyncio.to_thread(_extract_draft_id, draft_id)
+            result = await asyncio.to_thread(grade_draft, clean_id, my_slot)
+            row_id = await asyncio.to_thread(append_to_log, result, label)
+
+            lines = [f"**Mock Draft Graded** (log id `{row_id}`{f' — {label}' if label else ''})",
+                     f"Teams: {result['n_teams']} | Unmatched picks: {result['n_unmatched']}", ""]
+            lines.append("**Ranking by starting-lineup VORP (theoretical best outcome):**")
+            for i, r in enumerate(result["ranking"], 1):
+                you_flag = "  ⬅️ you" if my_slot is not None and r["draft_slot"] == my_slot else ""
+                lines.append(f"{i}. Pick slot {r['draft_slot']}: {r['starting_lineup_vorp']:.1f} VORP "
+                             f"(mean value gap {r['mean_value_gap']}){you_flag}")
+            if result["n_unmatched"]:
+                lines.append(f"\n⚠️ {result['n_unmatched']} picks (mostly K/DEF, out of VORP board scope) "
+                             f"couldn't be matched — see `/nfl mockdraft show {row_id}` for detail.")
+            await _send(interaction, "\n".join(lines))
+        except MockDraftError as e:
+            await _send(interaction, f"❌ {e}", ephemeral=True)
+        except Exception as e:
+            await _send(interaction, f"❌ error grading draft: {e}", ephemeral=True)
+
+    @mockdraft_group.command(name="list", description="List all logged mock drafts, most recent first")
+    async def nfl_mockdraft_list(interaction: discord.Interaction):
+        await _defer(interaction)
+        try:
+            from nflMockDraftLog import list_log
+            log_df = await asyncio.to_thread(list_log)
+            if log_df.empty:
+                await _send(interaction, "No mock drafts logged yet — use `/nfl mockdraft grade` first.")
+                return
+            lines = ["**Logged Mock Drafts**"]
+            for _, r in log_df.iterrows():
+                label_str = f" — {r['label']}" if isinstance(r.get("label"), str) and r["label"] else ""
+                my_str = (f" | your team: {r['my_starting_lineup_vorp']:.1f} VORP "
+                          f"(rank {int(r['my_rank_out_of_field'])}/{int(r['n_teams'])})"
+                          if pd.notna(r.get("my_starting_lineup_vorp")) else "")
+                lines.append(f"`id {int(r['id'])}`{label_str} — field best {r['field_best_vorp']:.1f}, "
+                             f"field avg {r['field_mean_vorp']:.1f}{my_str} "
+                             f"({str(r['graded_at'])[:10]})")
+            await _send(interaction, "\n".join(lines))
+        except Exception as e:
+            await _send(interaction, f"❌ error: {e}", ephemeral=True)
+
+    @mockdraft_group.command(name="show", description="Show full pick-by-pick detail for one logged mock draft")
+    @app_commands.describe(log_id="The id number from /nfl mockdraft list")
+    async def nfl_mockdraft_show(interaction: discord.Interaction, log_id: int):
+        await _defer(interaction)
+        try:
+            from nflMockDraftLog import MockDraftError, load_detail
+            detail = await asyncio.to_thread(load_detail, log_id)
+            my_slot = detail.get("my_draft_slot")
+            target_slot = my_slot if my_slot is not None else detail["ranking"][0]["draft_slot"]
+            picks = detail["team_scores"].get(str(target_slot), detail["team_scores"].get(target_slot, {})).get("picks", [])
+            lines = [f"**Mock Draft `{log_id}` — Pick Slot {target_slot}"
+                     f"{' (yours)' if my_slot is not None else ' (top team shown, no my_slot given)'}**"]
+            for p in picks:
+                gap = p["value_gap"]
+                gap_str = f"+{gap:.0f}" if isinstance(gap, (int, float)) and gap > 0 else f"{gap}"
+                lines.append(f"R{p['round']} (#{p['pick_no']}): {p['full_name']} ({p['position']}) "
+                             f"— ADP {p['adp_overall']}, VORP {p['vorp']:.1f}, gap {gap_str}")
+            await _send(interaction, "\n".join(lines)[:1900])
+        except MockDraftError as e:
+            await _send(interaction, f"❌ {e}", ephemeral=True)
+        except Exception as e:
+            await _send(interaction, f"❌ error: {e}", ephemeral=True)
+
     tree.add_command(nfl_group)
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -2143,6 +2373,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     description=f"*{status_line}*" if status_line else "",
                     color=0x2E7D32,
                 )
+                emb.set_thumbnail(url="attachment://pga.png")
                 # only show leaderboard if there are real scores
                 real_scores = lb[lb["score"].notna() & (lb["score"].astype(str) != "-") & (lb["score"].astype(str) != "–")] if not lb.empty else pd.DataFrame()
                 if not real_scores.empty:
@@ -2162,7 +2393,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 else:
                     # pre-tournament or no scores yet
                     emb.add_field(name="📅 Tee times", value="Tournament starts soon - no scores yet", inline=False)
-                embeds.append(emb)
+                pga_logo = os.path.expanduser("~/discordBot/stickers/pga.png")
+                await _send(interaction, embed=emb, file=discord.File(pga_logo, filename="pga.png"))
 
         # ── NFL ──────────────────────────────────────────────────────────────
         nfl_csv = os.path.join(op, "sports/nfl/nextGame.csv")
@@ -4540,14 +4772,34 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         await _send(interaction, embed=embed)
 
-    @mlb_group.command(name="fantasymap", description="World Sillies PF vs PA scatter map - luck vs skill")
-    async def mlb_fantasymap(interaction: discord.Interaction):
+    @mlb_group.command(name="fantasymap", description="World Sillies fantasy analysis")
+    @app_commands.describe(mode="Select visualization mode")
+    @app_commands.choices(mode=[
+        app_commands.Choice(name="Points Map (PF vs PA)", value="points"),
+        app_commands.Choice(name="Risk Analysis (Mean vs Volatility)", value="risk"),
+    ])
+    async def mlb_fantasymap(
+        interaction: discord.Interaction,
+        mode: app_commands.Choice[str],
+    ):
         await _defer(interaction)
-        await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesMap.py"))
-        await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "worldSilliesMap.R"))
-        img = os.path.join(op, "sports/mlb/fantasy/fantasyMap.png")
+        
+        mode_value = mode.value
+        
+        if mode_value.lower() == "points":
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesMap.py"))
+            await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "worldSilliesMap.R"))
+            img = os.path.join(op, "sports/mlb/fantasy/fantasyMap.png")
+        elif mode_value.lower() == "risk":
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesRisk.py"))
+            await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "worldSilliesRisk.R"))
+            img = os.path.join(op, "sports/mlb/fantasy/fantasyRisk.png")
+        else:
+            await _send(interaction, f"Unknown mode: {mode_value}. Use 'points' or 'risk'.", ephemeral=True)
+            return
+        
         if not os.path.exists(img):
-            await _send(interaction, "couldn't generate the map :(", ephemeral=True)
+            await _send(interaction, "couldn't generate the plot :(", ephemeral=True)
             return
         await _send(interaction, file=discord.File(img))
 
@@ -7816,6 +8068,100 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             return
         await _send(interaction, f"✈ here's what's flying over jax right now (within {radius}nm):",
                     file=discord.File(img))
+
+    # ── /track ────────────────────────────────────────────────────────────────
+    @tree.command(name="track", description="live position + recent flight track for a plane by tail number or callsign", guild=guild)
+    @app_commands.describe(tail="Tail/registration (e.g. N508KD) or callsign/flight number (e.g. EJA781, DAL123)")
+    async def track(interaction: discord.Interaction, tail: str):
+        import json as _json
+        from datetime import timezone as _tz
+        await _defer(interaction)
+        tail_clean = "".join(ch for ch in tail.strip().upper() if ch.isalnum())
+        if not tail_clean:
+            await _send(interaction, "that doesn't look like a valid tail number", ephemeral=True)
+            return
+        proc = await asyncio.to_thread(
+            _run, PYTHON, os.path.join(pp, "trackPlane.py"), "--tail", tail_clean
+        )
+        if "NOT_FOUND" in (proc.stdout or ""):
+            await _send(interaction, f"✈ couldn't find **{tail_clean}** as a tail number or callsign - it may not be airborne / broadcasting ADS-B right now", ephemeral=True)
+            return
+        img = os.path.join(op, f"aerospace/track_{tail_clean}.png")
+        stats_path = os.path.join(op, f"aerospace/track_{tail_clean}.json")
+        if not os.path.exists(img):
+            await _send(interaction, "couldn't generate the track plot :(", ephemeral=True)
+            return
+
+        stats = {}
+        if os.path.exists(stats_path):
+            try:
+                with open(stats_path) as f:
+                    stats = _json.load(f)
+            except Exception:
+                stats = {}
+
+        callsign     = stats.get("callsign") or tail_clean
+        registration = stats.get("registration") or tail_clean
+        on_ground    = stats.get("on_ground", False)
+        alt_ft       = stats.get("altitude_ft")
+        gs           = stats.get("ground_speed_kt")
+        vs_str       = stats.get("vertical_rate_str", "unknown")
+        heading      = stats.get("heading_deg")
+        actype       = stats.get("aircraft_type", "unknown type")
+        operator     = stats.get("operator", "")
+        squawk       = stats.get("squawk")
+
+        alt_str = "on ground" if on_ground else (f"{alt_ft:,} ft" if alt_ft is not None else "unknown")
+        gs_str  = f"{gs:.0f} kt" if isinstance(gs, (int, float)) else "unknown"
+        hdg_str = f"{heading:.0f}°" if isinstance(heading, (int, float)) else "unknown"
+
+        emb = discord.Embed(
+            title=f"✈ {callsign}" + (f"  ({registration})" if registration != callsign else ""),
+            description=actype,
+            color=0x00bfff,
+        )
+        emb.add_field(name="Altitude", value=alt_str, inline=True)
+        emb.add_field(name="Ground Speed", value=gs_str, inline=True)
+        emb.add_field(name="Vertical Rate", value=vs_str, inline=True)
+        emb.add_field(name="Heading", value=hdg_str, inline=True)
+        if squawk:
+            emb.add_field(name="Squawk", value=str(squawk), inline=True)
+        if operator:
+            emb.add_field(name="Operator", value=operator, inline=False)
+        emb.set_footer(text="React 🔔 to get takeoff/landing alerts for this flight")
+        emb.set_image(url=f"attachment://track_{tail_clean}.png")
+
+        msg = await interaction.followup.send(embed=emb, file=discord.File(img, filename=f"track_{tail_clean}.png"))
+
+        # register / update the flight watch entry so a background loop can
+        # detect takeoff/landing state changes, and reactors get pinged.
+        hex_id = stats.get("hex")
+        if hex_id:
+            watch_path = os.path.expanduser("~/discordBot/outputs/aerospace/flight_watches.json")
+            os.makedirs(os.path.dirname(watch_path), exist_ok=True)
+            try:
+                if os.path.exists(watch_path):
+                    with open(watch_path) as f:
+                        watch_state = _json.load(f)
+                else:
+                    watch_state = {"watches": {}}
+                watch_state.setdefault("watches", {})[str(msg.id)] = {
+                    "tail_query": tail_clean,
+                    "callsign": callsign,
+                    "registration": registration,
+                    "hex": hex_id,
+                    "channel_id": interaction.channel_id,
+                    "guild_id": interaction.guild_id,
+                    "last_on_ground": on_ground,
+                    "reactors": [],
+                    "active": True,
+                    "created_utc": datetime.now(_tz.utc).isoformat(),
+                }
+                with open(watch_path, "w") as f:
+                    _json.dump(watch_state, f, indent=2)
+                await msg.add_reaction("🔔")
+            except Exception as e:
+                print(f"[track] failed to register flight watch: {e}")
 
     # ── /jax group ────────────────────────────────────────────────────────────
     jax_group = app_commands.Group(name="jax", description="Jacksonville local data", guild_ids=[guild.id])

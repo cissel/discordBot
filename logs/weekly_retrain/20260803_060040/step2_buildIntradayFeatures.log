@@ -1,0 +1,37 @@
+============================================================
+buildIntradayFeatures.py
+============================================================
+
+Loading daily bars for prev-close reference...
+  Daily bars: 2,612 rows  (2016-01-04 to 2026-05-22)
+
+Loading intraday 1-min bars...
+  Loaded SPY_2021_1min.csv: 201,757 rows
+  Loaded SPY_2022_1min.csv: 212,907 rows
+  Loaded SPY_2023_1min.csv: 202,657 rows
+  Loaded SPY_2024_1min.csv: 197,013 rows
+  Loaded SPY_2025_1min.csv: 211,613 rows
+  Loaded SPY_2026_1min.csv: 103,327 rows
+  Total 1-min bars: 1,129,274
+  Trading days: 1367  (2021-01-04 to 2026-06-12)
+
+Computing features per day...
+
+N rows written : 1,367
+Date range     : 2021-01-04 to 2026-06-12
+
+Feature coverage (non-null %):
+  first_hour_ret           :  100.0%
+  last_hour_ret            :  100.0%
+  am_range                 :  100.0%
+  pm_range                 :  100.0%
+  gap_fill_flag            :  100.0%
+  vwap_dev_am              :  100.0%
+  open_drive_flag          :  100.0%
+  vol_am_pct               :  100.0%
+  late_reversal_flag       :  100.0%
+  premarket_ret            :  100.0%
+  premarket_vol_ratio      :  100.0%
+  overnight_gap            :   99.0%
+
+Saved -> /home/jhcv/discordBot/outputs/features/markets/spy_intraday_features.csv

@@ -1,0 +1,19 @@
+{
+  "tail_query": "EJA781",
+  "callsign": "EJA781",
+  "registration": "N781QS",
+  "hex": "aa95ac",
+  "aircraft_type": "BOMBARDIER BD-100 Challenger 350",
+  "operator": "NETJETS SALES INC, AIR TROTT LLC, BANK OF UTAH TRUSTEE, CAMBERSK",
+  "altitude_ft": null,
+  "on_ground": true,
+  "ground_speed_kt": 5.2,
+  "vertical_rate_str": "unknown",
+  "heading_deg": null,
+  "lat": 43.642351,
+  "lon": -70.308495,
+  "squawk": "1510",
+  "updated_utc": "2026-07-22 16:20 UTC",
+  "match_kind": "callsign",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_EJA781.png"
+}

@@ -1,0 +1,271 @@
+
+============================================================
+Training: BATTERS | horizon=daily | target=next_game_pts
+============================================================
+  Loaded 153805 rows, 523 players
+
+  --- RIDGE ---
+  saved  -> /home/jhcv/discordBot/models/sports/batters/batters_daily_ridge_2026-08-03.pkl
+  train rows  : 146420
+  val rows    : 2273
+  val RMSE    : 3.2305
+  val MAE     : 2.513
+  val R2      : -0.0019
+  val Spearman: 0.0624  ← ranking accuracy
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  --- GBM ---
+  saved  -> /home/jhcv/discordBot/models/sports/batters/batters_daily_gbm_2026-08-03.pkl
+  train rows  : 146420
+  val rows    : 2273
+  val RMSE    : 3.2316
+  val MAE     : 2.5072
+  val R2      : -0.0026
+  val Spearman: 0.0515  ← ranking accuracy
+
+  Top 10 feature importances:
+    BatOrder_r7                    0.1691
+    season_ppg                     0.1290
+    opp_diff_r14                   0.0832
+    fantasy_pts_r30                0.0376
+    EV_r14                         0.0354
+    SwStr_pct_r14                  0.0316
+    bat_order_trend                0.0298
+    sharpe_r14                     0.0213
+    xwOBA_r7                       0.0203
+    EV_r7                          0.0203
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  --- LGBM ---
+  saved  -> /home/jhcv/discordBot/models/sports/batters/batters_daily_lgbm_2026-08-03.pkl
+  train rows  : 146420
+  val rows    : 2273
+  val RMSE    : 3.2272
+  val MAE     : 2.4989
+  val R2      : 0.0001
+  val Spearman: 0.0479  ← ranking accuracy
+
+  Top 10 feature importances:
+    opp_diff_r14                   107.0000
+    fantasy_pts_r30                58.0000
+    BatOrder_r7                    53.0000
+    season_ppg                     48.0000
+    SwStr_pct_r14                  45.0000
+    bat_order_trend                43.0000
+    sharpe_r14                     28.0000
+    EV_r14                         28.0000
+    month                          27.0000
+    fantasy_pts_r14                23.0000
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  ──────────────────────────────────────────────────
+  COMPARISON: batters | daily
+  Model          RMSE      MAE   Spearman       R2
+  ridge        3.2305   2.5130     0.0624  -0.0019
+  gbm          3.2316   2.5072     0.0515  -0.0026
+  lgbm         3.2272   2.4989     0.0479   0.0001
+  Winner by Spearman: RIDGE
+
+============================================================
+Training: BATTERS | horizon=weekly | target=next7_pts
+============================================================
+  Loaded 153805 rows, 523 players
+
+  --- RIDGE ---
+  saved  -> /home/jhcv/discordBot/models/sports/batters/batters_weekly_ridge_2026-08-03.pkl
+  train rows  : 145631
+  val rows    : 2273
+  val RMSE    : 8.1183
+  val MAE     : 6.5779
+  val R2      : -0.1096
+  val Spearman: 0.1756  ← ranking accuracy
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  --- GBM ---
+  saved  -> /home/jhcv/discordBot/models/sports/batters/batters_weekly_gbm_2026-08-03.pkl
+  train rows  : 145631
+  val rows    : 2273
+  val RMSE    : 7.9826
+  val MAE     : 6.4504
+  val R2      : -0.0728
+  val Spearman: 0.1777  ← ranking accuracy
+
+  Top 10 feature importances:
+    BatOrder_r7                    0.3456
+    season_ppg                     0.1375
+    month                          0.0876
+    fantasy_pts_r30                0.0586
+    pos_C                          0.0471
+    bat_order_trend                0.0267
+    EV_r14                         0.0264
+    park_factor_dev                0.0205
+    SwStr_pct_r14                  0.0182
+    sharpe_r14                     0.0166
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  --- LGBM ---
+  saved  -> /home/jhcv/discordBot/models/sports/batters/batters_weekly_lgbm_2026-08-03.pkl
+  train rows  : 145631
+  val rows    : 2273
+  val RMSE    : 8.0459
+  val MAE     : 6.5679
+  val R2      : -0.0899
+  val Spearman: 0.1869  ← ranking accuracy
+
+  Top 10 feature importances:
+    month                          147.0000
+    season_ppg                     94.0000
+    BatOrder_r7                    84.0000
+    fantasy_pts_r30                62.0000
+    pos_C                          54.0000
+    bat_order_trend                51.0000
+    park_factor_dev                51.0000
+    EV_r14                         44.0000
+    SwStr_pct_r14                  37.0000
+    fantasy_pts_r14                23.0000
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  ──────────────────────────────────────────────────
+  COMPARISON: batters | weekly
+  Model          RMSE      MAE   Spearman       R2
+  ridge        8.1183   6.5779     0.1756  -0.1096
+  gbm          7.9826   6.4504     0.1777  -0.0728
+  lgbm         8.0459   6.5679     0.1869  -0.0899
+  Winner by Spearman: LGBM
+
+============================================================
+Training: PITCHERS | horizon=daily | target=next_game_pts
+============================================================
+  Loaded 55884 rows, 773 players
+
+  --- RIDGE ---
+  saved  -> /home/jhcv/discordBot/models/sports/pitchers/pitchers_daily_ridge_2026-08-03.pkl
+  train rows  : 50722
+  val rows    : 672
+  val RMSE    : 6.3394
+  val MAE     : 4.6226
+  val R2      : 0.2484
+  val Spearman: 0.4674  ← ranking accuracy
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  --- GBM ---
+  saved  -> /home/jhcv/discordBot/models/sports/pitchers/pitchers_daily_gbm_2026-08-03.pkl
+  train rows  : 50722
+  val rows    : 672
+  val RMSE    : 6.3435
+  val MAE     : 4.6324
+  val R2      : 0.2474
+  val Spearman: 0.4692  ← ranking accuracy
+
+  Top 10 feature importances:
+    IP_r3                          0.4138
+    K_r5                           0.2823
+    season_ppg                     0.0604
+    fantasy_pts_r10                0.0508
+    fantasy_pts_std_r5             0.0229
+    IP_r5                          0.0201
+    fantasy_pts_std_r10            0.0197
+    fantasy_pts_r3                 0.0186
+    opp_diff_r14                   0.0174
+    fantasy_pts_r5                 0.0161
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  --- LGBM ---
+  saved  -> /home/jhcv/discordBot/models/sports/pitchers/pitchers_daily_lgbm_2026-08-03.pkl
+  train rows  : 50722
+  val rows    : 672
+  val RMSE    : 6.3464
+  val MAE     : 4.6179
+  val R2      : 0.2467
+  val Spearman: 0.4698  ← ranking accuracy
+
+  Top 10 feature importances:
+    fantasy_pts_r10                293.0000
+    season_ppg                     273.0000
+    fantasy_pts_std_r10            233.0000
+    IP_r5                          221.0000
+    K_r5                           214.0000
+    IP_r3                          196.0000
+    fantasy_pts_std_r5             182.0000
+    opp_diff_r14                   176.0000
+    fantasy_pts_r3                 146.0000
+    K_r3                           126.0000
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  ──────────────────────────────────────────────────
+  COMPARISON: pitchers | daily
+  Model          RMSE      MAE   Spearman       R2
+  ridge        6.3394   4.6226     0.4674   0.2484
+  gbm          6.3435   4.6324     0.4692   0.2474
+  lgbm         6.3464   4.6179     0.4698   0.2467
+  Winner by Spearman: LGBM
+
+============================================================
+Training: PITCHERS | horizon=weekly | target=next7_pts
+============================================================
+  Loaded 55884 rows, 773 players
+
+  --- RIDGE ---
+  saved  -> /home/jhcv/discordBot/models/sports/pitchers/pitchers_weekly_ridge_2026-08-03.pkl
+  train rows  : 48047
+  val rows    : 668
+  val RMSE    : 7.9445
+  val MAE     : 6.2341
+  val R2      : 0.1208
+  val Spearman: 0.3778  ← ranking accuracy
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  --- GBM ---
+  saved  -> /home/jhcv/discordBot/models/sports/pitchers/pitchers_weekly_gbm_2026-08-03.pkl
+  train rows  : 48047
+  val rows    : 668
+  val RMSE    : 7.8789
+  val MAE     : 6.2022
+  val R2      : 0.1352
+  val Spearman: 0.3684  ← ranking accuracy
+
+  Top 10 feature importances:
+    fantasy_pts_r10                0.3507
+    season_ppg                     0.1280
+    IP_r5                          0.1045
+    K_r5                           0.1042
+    fantasy_pts_std_r10            0.0522
+    fantasy_pts_std_r5             0.0307
+    fantasy_pts_r5                 0.0286
+    opp_woba_r14                   0.0281
+    fantasy_pts_r3                 0.0238
+    opp_diff_r14                   0.0219
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  --- LGBM ---
+  saved  -> /home/jhcv/discordBot/models/sports/pitchers/pitchers_weekly_lgbm_2026-08-03.pkl
+  train rows  : 48047
+  val rows    : 668
+  val RMSE    : 7.9297
+  val MAE     : 6.2225
+  val R2      : 0.124
+  val Spearman: 0.3528  ← ranking accuracy
+
+  Top 10 feature importances:
+    IP_r5                          380.0000
+    fantasy_pts_std_r10            332.0000
+    season_ppg                     319.0000
+    fantasy_pts_r10                310.0000
+    K_r5                           248.0000
+    fantasy_pts_std_r5             213.0000
+    opp_diff_r14                   172.0000
+    fantasy_pts_r3                 167.0000
+    WHIP_r5                        167.0000
+    fantasy_pts_r5                 151.0000
+  logged -> /home/jhcv/discordBot/models/meta/experiment_log.csv
+
+  ──────────────────────────────────────────────────
+  COMPARISON: pitchers | weekly
+  Model          RMSE      MAE   Spearman       R2
+  ridge        7.9445   6.2341     0.3778   0.1208
+  gbm          7.8789   6.2022     0.3684   0.1352
+  lgbm         7.9297   6.2225     0.3528   0.1240
+  Winner by Spearman: RIDGE
+
+[trainFantasyModel] done.
+Experiment log: /home/jhcv/discordBot/models/meta/experiment_log.csv

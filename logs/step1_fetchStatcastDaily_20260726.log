@@ -1,0 +1,10 @@
+[fetchStatcastDaily] daily mode: 2026-07-25
+  [1/1] fetching 2026-07-25...   2026-07-25: no data (off-day or pre-season)
+0 / skipped
+
+[fetchStatcastDaily] done. Total rows appended: 0
+  statcast_2026_03.csv: 27,043 rows, 7.4MB
+  statcast_2026_04.csv: 121,863 rows, 33.1MB
+  statcast_2026_05.csv: 124,493 rows, 34.0MB
+  statcast_2026_06.csv: 91,858 rows, 25.0MB
+  statcast_2026_07.csv: 4,091 rows, 1.1MB

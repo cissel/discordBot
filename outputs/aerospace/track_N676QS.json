@@ -1,0 +1,19 @@
+{
+  "tail_query": "N676QS",
+  "callsign": "EJA676",
+  "registration": "N676QS",
+  "hex": "a8f371",
+  "aircraft_type": "CESSNA 680 Citation Latitude",
+  "operator": "NETJETS SALES INC, GREENE GROUP INC, MATHES INVESTMENTS LLC, PLA",
+  "altitude_ft": 34275,
+  "on_ground": false,
+  "ground_speed_kt": 431.4,
+  "vertical_rate_str": "descending 1,536 ft/min",
+  "heading_deg": 257.41,
+  "lat": 32.723969,
+  "lon": -81.162158,
+  "squawk": "2674",
+  "updated_utc": "2026-07-27 01:53 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N676QS.png"
+}

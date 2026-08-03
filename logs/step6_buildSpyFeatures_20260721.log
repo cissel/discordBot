@@ -1,0 +1,61 @@
+[buildSpyFeatures] loading raw series...
+  base df: 2622 rows, 2016-01-05 to 2026-06-09
+  building SPY technical features...
+  building vol regime features...
+  loading options snapshot...
+    options rows: 16
+  building cross-asset features...
+  building macro features...
+  building sector rotation features...
+    11 sector ETFs + 6 composite features added
+  building macro event flags...
+    FOMC days: 84 | CPI days: 123 | NFP days: 123
+  building VWAP features...
+    VWAP cache rows: 1371, date range: 2021-01-04 to 2026-06-23
+  building block order features...
+    Block events: 3121 | days with blocks: 930
+  building intraday aggregated features...
+    intraday features rows: 1367, date range: 2021-01-04 to 2026-06-12
+  building GEX features...
+    GEX cache rows: 3825, date range: 2011-05-02 to 2026-07-17
+    gex_b coverage in spy_features: 100.0%
+  building VIX term structure / VVIX features...
+    vix_term cache rows: 2531, range: 2016-06-23 to 2026-07-20
+    vvix coverage in spy_features: 95.2%
+    vix_term_slope coverage: 95.5%
+  building regime labels...
+    bull=737  bear=234  chop=1651
+    VIX p33=14.7  p67=19.6  p80=22.8
+  building regime-change + interaction features...
+    rate-shock regime: 147 shock days, 164 easing days
+    returns-distribution regime: ret_skew_21, ret_kurt_21, drawdown_63d, regime_age_z added
+  loading moon phase + weather features...
+    moon phase coverage: 2622/2622 rows (100%)
+    weather coverage: NYC=2622 rows, CHI=2622 rows
+  alt data 1: 18 cols, wikipedia=2622 rows
+  alt data 2: 14 cols, daylight=2622 rows
+  google trends: 17 cols, trends_spy=100% coverage (+2bd publication lag applied)
+  sentiment: aaii=100%, crypto_fear_greed=80%
+  macro sentiment: icsa=100% coverage
+  regime×sentiment interactions: added
+  [info] wsb_daily.csv not found — run fetchRedditWSB.py (optional)
+  CBOE SKEW: 9 cols, coverage=98%
+
+  feature columns: 316
+    [sparse] aqi_bad_flag: 0%
+    [sparse] aqi_pm25_nyc: 0%
+    [sparse] aqi_z21: 0%
+    [sparse] cboe_pcr_equity: 36%
+    [sparse] cboe_pcr_z21: 0%
+    [sparse] mta_bus_riders: 47%
+    [sparse] mta_riders_z21: 46%
+    [sparse] mta_subway_riders: 47%
+    [sparse] mta_total_riders: 47%
+    [sparse] opt_atm_iv_avg: 0%
+    [sparse] opt_iv_skew_otm: 0%
+    [sparse] opt_iv_term_slope: 0%
+    [sparse] opt_pcr_vol: 0%
+    [sparse] opt_vega_weighted_iv: 0%
+
+[buildSpyFeatures] wrote 2622 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv
+EXIT_CODE=0

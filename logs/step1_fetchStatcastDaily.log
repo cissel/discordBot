@@ -1,11 +1,15 @@
-[fetchStatcastDaily] daily mode: 2026-07-12
-  [1/1] fetching 2026-07-12...   2026-07-12: no data (off-day or pre-season)
+[fetchStatcastDaily] daily mode: yesterday=2026-08-02, re-checking 21d lookback -> 3 date(s) to fetch
+  [1/3] fetching 2026-07-13...   2026-07-13: no data (off-day or pre-season)
 0 / skipped
+  [2/3] fetching 2026-07-14...   2026-07-14: no data (off-day or pre-season)
+0 / skipped
+  [3/3] fetching 2026-08-02... 4321 pitches
 
-[fetchStatcastDaily] done. Total rows appended: 0
+[fetchStatcastDaily] done. Total rows appended: 4,321
   statcast_2026_03.csv: 27,043 rows, 7.4MB
   statcast_2026_04.csv: 121,863 rows, 33.1MB
   statcast_2026_05.csv: 124,493 rows, 34.0MB
-  statcast_2026_06.csv: 91,858 rows, 25.0MB
-  statcast_2026_07.csv: 4,091 rows, 1.1MB
-EXIT_CODE:0
+  statcast_2026_06.csv: 132,643 rows, 36.1MB
+  statcast_2026_07.csv: 118,178 rows, 32.3MB
+  statcast_2026_08.csv: 8,759 rows, 2.4MB
+EXIT_CODE=0

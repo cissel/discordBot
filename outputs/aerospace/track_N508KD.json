@@ -1,0 +1,19 @@
+{
+  "tail_query": "N508KD",
+  "callsign": "N508KD",
+  "registration": "N508KD",
+  "hex": "a6588d",
+  "aircraft_type": "CESSNA 560 Citation Ultra",
+  "operator": "AERO AIR CHARTER HOLDING LLC",
+  "altitude_ft": 39025,
+  "on_ground": false,
+  "ground_speed_kt": 379.9,
+  "vertical_rate_str": "level",
+  "heading_deg": 127.84,
+  "lat": 27.062393,
+  "lon": -78.457152,
+  "squawk": "1756",
+  "updated_utc": "2026-07-22 16:31 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N508KD.png"
+}
