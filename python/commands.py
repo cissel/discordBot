@@ -8037,14 +8037,14 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @tree.command(name="jaxships", description="ships in and around Jacksonville / JAXPORT right now", guild=guild)
     async def jaxships(interaction: discord.Interaction):
         await _defer(interaction)
-        mst_key = os.environ.get("MYSHIPTRACKING_KEY", "")
-        if not mst_key:
-            await _send(interaction, "⚠️ MYSHIPTRACKING_KEY env var not set - grab a free trial key at https://myshiptracking.com", ephemeral=True)
+        ais_key = os.environ.get("AISSTREAM_API_KEY", "")
+        if not ais_key:
+            await _send(interaction, "⚠️ AISSTREAM_API_KEY env var not set - grab a free key at https://aisstream.io (sign in via GitHub, then API Keys page)", ephemeral=True)
             return
-        env = {**os.environ, "MYSHIPTRACKING_KEY": mst_key}
+        env = {**os.environ, "AISSTREAM_API_KEY": ais_key}
         await asyncio.to_thread(
             lambda: subprocess.run(
-                ["PYTHON", os.path.join(pp, "jaxShips.py")],
+                [PYTHON, os.path.join(pp, "jaxShips.py")],
                 check=False, timeout=60, env=env
             )
         )

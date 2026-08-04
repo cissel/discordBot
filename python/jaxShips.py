@@ -1,17 +1,31 @@
 # jaxShips.py
-# Fetches live ship positions around Jacksonville from myshiptracking.com API
-# and renders them over a CartoDB Dark Matter basemap using Pillow.
+# Fetches live ship positions around Jacksonville from aisstream.io (free AIS
+# websocket feed, community-fed receiver network) and renders them over a
+# CartoDB Dark Matter basemap using Pillow.
 #
-# pip install requests Pillow  (no new deps beyond what jaxPlanes uses)
+# pip install requests Pillow websockets  (no new deps beyond what jaxPlanes uses)
 #
-# Get a free trial key at https://myshiptracking.com → account → API
-# Set env var: MYSHIPTRACKING_KEY=your_key_here
+# Sign up free at https://aisstream.io (GitHub OAuth), then generate a key on
+# the API Keys page. Set env var: AISSTREAM_API_KEY=your_key_here
+#
+# Note: aisstream.io is BETA and fed by volunteer AIS receiver stations, not a
+# paid satellite+terrestrial aggregator - coverage right around JAXPORT may be
+# thinner/gappier than a commercial provider. We listen for COLLECT_SECONDS and
+# render whatever came in during that window (ships only transmit AIS every
+# few seconds to a few minutes depending on type/speed, so a short window can
+# legitimately show 0 vessels even in a busy port).
 
-import os, sys, math, requests
+import os, sys, math, json, asyncio, requests
 from pathlib import Path
 from datetime import datetime, timezone
 from io import BytesIO
 from PIL import Image, ImageDraw
+
+try:
+    import websockets
+except ImportError:
+    print("[jaxShips] ERROR: 'websockets' package not installed (pip install websockets)", file=sys.stderr)
+    sys.exit(1)
 
 # ── config ─────────────────────────────────────────────────────────────────────
 JAX_LAT    = 30.3322
@@ -22,8 +36,9 @@ TILE_SIZE  = 256
 OUTPUT     = Path("~/discordBot/outputs/maritime/jaxShips.png").expanduser()
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
-API_KEY  = os.environ.get("MYSHIPTRACKING_KEY", "")
-ZONE_URL = "https://api.myshiptracking.com/api/v2/vessel/zone"
+API_KEY         = os.environ.get("AISSTREAM_API_KEY", "")
+AISSTREAM_URL   = "wss://stream.aisstream.io/v0/stream"
+COLLECT_SECONDS = 25  # how long to listen before rendering what we have
 
 # bounding box - ~40nm around JAX
 MINLAT = JAX_LAT - 0.6
@@ -35,8 +50,8 @@ TILE_URL = "https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y
 HEADERS  = {"User-Agent": "discordBot/1.0 personal project"}
 BG_COLOR = (26, 26, 46, 255)
 
-# ── vessel type codes → (label, color) ────────────────────────────────────────
-# myshiptracking vtype field uses same ITU/IMO codes as raw AIS
+# ── AIS ship type codes → (label, color) ──────────────────────────────────────
+# aisstream ShipStaticData.Type field uses standard ITU/IMO AIS ship type codes
 def ship_style(vtype):
     t = int(vtype) if vtype else 0
     if   t == 7 or (70 <= t <= 79): return "Cargo",     (68,  200, 255, 230)  # cyan
@@ -106,7 +121,7 @@ def draw_ship(draw, px, py, course, nav_status, color, size=10):
             (px - size, py),
         ], fill=color, outline=(0, 0, 0, 180))
     else:
-        h   = course if (course is not None and course != 511) else 0
+        h   = course if (course is not None and course != 360 and course != 511) else 0
         rad = math.radians(h)
         tip   = (px + size * math.sin(rad),             py - size * math.cos(rad))
         left  = (px + size * 0.55 * math.sin(rad-2.2),  py - size * 0.55 * math.cos(rad-2.2))
@@ -136,33 +151,91 @@ def draw_legend(draw, img_size):
         draw.text((x+14, y-1), label, fill=(200, 200, 200, 220))
         y += 18
 
-# ── fetch ──────────────────────────────────────────────────────────────────────
-def fetch_ships():
-    params = {
-        "minlat": MINLAT, "maxlat": MAXLAT,
-        "minlon": MINLON, "maxlon": MAXLON,
-        "response": "extended",
+# ── fetch via aisstream.io websocket ──────────────────────────────────────────
+async def _collect_ships():
+    """
+    Connects to aisstream.io, subscribes to a bounding box around JAX, and
+    listens for COLLECT_SECONDS. Merges PositionReport + ShipStaticData
+    messages per-MMSI so we get both live lat/lon and vessel name/type/dest.
+    Returns dict[mmsi] -> ship record.
+    """
+    ships = {}
+    subscribe_msg = {
+        "APIKey": API_KEY,
+        "BoundingBoxes": [[[MINLAT, MINLON], [MAXLAT, MAXLON]]],
     }
-    headers = {**HEADERS, "x-api-key": API_KEY}
     try:
-        r = requests.get(ZONE_URL, params=params, headers=headers, timeout=20)
-        r.raise_for_status()
-        data = r.json()
-        if data.get("status") != "success":
-            print(f"[jaxShips] API error: {data}", file=sys.stderr)
-            return []
-        return data.get("data", [])
+        async with websockets.connect(AISSTREAM_URL, open_timeout=15) as ws:
+            await ws.send(json.dumps(subscribe_msg))
+            loop = asyncio.get_event_loop()
+            deadline = loop.time() + COLLECT_SECONDS
+            while True:
+                remaining = deadline - loop.time()
+                if remaining <= 0:
+                    break
+                try:
+                    raw = await asyncio.wait_for(ws.recv(), timeout=remaining)
+                except asyncio.TimeoutError:
+                    break
+                try:
+                    msg = json.loads(raw)
+                except Exception:
+                    continue
+
+                mtype = msg.get("MessageType")
+                meta  = msg.get("MetaData", {}) or {}
+                mmsi  = meta.get("MMSI")
+                if mmsi is None:
+                    continue
+                rec = ships.setdefault(mmsi, {})
+                rec["name"] = (meta.get("ShipName") or rec.get("name") or "").strip()
+
+                body = msg.get("Message", {}) or {}
+                if mtype == "PositionReport":
+                    pr = body.get("PositionReport", {}) or {}
+                    rec["lat"]        = pr.get("Latitude", rec.get("lat"))
+                    rec["lon"]        = pr.get("Longitude", rec.get("lon"))
+                    rec["course"]     = pr.get("Cog", rec.get("course"))
+                    rec["speed"]      = pr.get("Sog", rec.get("speed"))
+                    rec["nav_status"] = pr.get("NavigationalStatus", rec.get("nav_status", 15))
+                elif mtype == "ShipStaticData":
+                    sd = body.get("ShipStaticData", {}) or {}
+                    rec["vtype"] = sd.get("Type", rec.get("vtype", 0))
+                    dest = (sd.get("Destination") or "").strip()
+                    if dest:
+                        rec["dest"] = dest
     except Exception as e:
-        print(f"[jaxShips] fetch error: {e}", file=sys.stderr)
+        print(f"[jaxShips] websocket error: {e}", file=sys.stderr)
+    return ships
+
+def fetch_ships():
+    if not API_KEY:
         return []
+    raw = asyncio.run(_collect_ships())
+    out = []
+    for mmsi, rec in raw.items():
+        if rec.get("lat") is None or rec.get("lon") is None:
+            continue
+        out.append({
+            "mmsi": mmsi,
+            "lat": rec.get("lat"),
+            "lng": rec.get("lon"),
+            "vessel_name": rec.get("name", ""),
+            "vtype": rec.get("vtype", 0),
+            "course": rec.get("course"),
+            "speed": rec.get("speed") or 0,
+            "nav_status": rec.get("nav_status", 15),
+            "destination": rec.get("dest", ""),
+        })
+    return out
 
 # ── main ───────────────────────────────────────────────────────────────────────
 def main():
     if not API_KEY:
-        print("[jaxShips] ERROR: MYSHIPTRACKING_KEY env var not set", file=sys.stderr)
+        print("[jaxShips] ERROR: AISSTREAM_API_KEY env var not set", file=sys.stderr)
         sys.exit(1)
 
-    print("[jaxShips] fetching ships...")
+    print(f"[jaxShips] listening on aisstream.io for {COLLECT_SECONDS}s...")
     ships = fetch_ships()
     print(f"[jaxShips] got {len(ships)} vessels")
 
@@ -184,7 +257,7 @@ def main():
 
     for ship in ships:
         lat        = ship.get("lat")
-        lon        = ship.get("lng")  # note: myshiptracking uses "lng" not "lon"
+        lon        = ship.get("lng")
         if lat is None or lon is None:
             continue
 
