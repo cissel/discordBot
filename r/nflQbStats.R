@@ -119,6 +119,13 @@ if (!is.null(pstats)) {
 df <- df %>%
   filter(!is.na(name), !is.na(cpoe_ngs), !is.na(aggressiveness))
 
+# Export underlying per-player data for the live draft dashboard (Aug 2026).
+write.csv(
+  df %>% select(name, att, cpoe_ngs, aggressiveness, avg_ttt, avg_air_sticks,
+                 avg_cay, avg_iay, pass_epa),
+  file.path(OUT_DIR, "ngs_qb_export.csv"), row.names = FALSE
+)
+
 single_mode <- !is.na(PLAYER)
 if (single_mode) {
   target_row <- df %>%

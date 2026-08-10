@@ -12,43 +12,110 @@ The following objects are masked from ‘package:base’:
 
 >>> Pulling batter leaderboards by position...
   Pulling: C
-Request failed [403]. Retrying in 1 seconds...
-Request failed [403]. Retrying in 1 seconds...
-2026-08-03 14:12:17.076506: Invalid arguments or no player batting leaders data available!
-    Error for C: object 'leaders' not found
   Pulling: 1B
-Request failed [403]. Retrying in 1 seconds...
-Request failed [403]. Retrying in 1.9 seconds...
-2026-08-03 14:12:21.1649: Invalid arguments or no player batting leaders data available!
-    Error for 1B: object 'leaders' not found
   Pulling: 2B
-Request failed [403]. Retrying in 1.2 seconds...
-Request failed [403]. Retrying in 1.6 seconds...
-2026-08-03 14:12:25.328438: Invalid arguments or no player batting leaders data available!
-    Error for 2B: object 'leaders' not found
   Pulling: 3B
-Request failed [403]. Retrying in 1 seconds...
-Request failed [403]. Retrying in 2.9 seconds...
-2026-08-03 14:12:30.392577: Invalid arguments or no player batting leaders data available!
-    Error for 3B: object 'leaders' not found
   Pulling: SS
-Request failed [403]. Retrying in 1 seconds...
-Request failed [403]. Retrying in 3.3 seconds...
-2026-08-03 14:12:35.88907: Invalid arguments or no player batting leaders data available!
-    Error for SS: object 'leaders' not found
   Pulling: OF
-Request failed [403]. Retrying in 1.4 seconds...
-Request failed [403]. Retrying in 1 seconds...
-2026-08-03 14:12:39.502465: Invalid arguments or no player batting leaders data available!
-    Error for OF: object 'leaders' not found
-Error in `distinct()`:
-! Must use existing variables.
-✖ `playerid` not found in `.data`.
-Backtrace:
-    ▆
- 1. ├─... %>% distinct(playerid, .keep_all = TRUE)
- 2. ├─dplyr::distinct(., playerid, .keep_all = TRUE)
- 3. └─dplyr:::distinct.data.frame(., playerid, .keep_all = TRUE)
- 4.   └─dplyr::distinct_prepare(...)
- 5.     └─rlang::abort(bullets, call = error_call)
-Execution halted
+  Total unique batters: 218
+
+>>> Pulling pitcher leaderboard...
+  SP: 250 | RP: 50
+Saved player_pool.csv (518 total players)
+
+>>> Fetching Batters game logs for 218 players...
+  Progress: 10/218
+  Progress: 20/218
+  Progress: 30/218
+  Progress: 40/218
+  Progress: 50/218
+  Progress: 60/218
+  Progress: 70/218
+  Progress: 80/218
+  Progress: 90/218
+  Progress: 100/218
+  Progress: 110/218
+  Progress: 120/218
+  Progress: 130/218
+  Progress: 140/218
+  Progress: 150/218
+  Progress: 160/218
+  Progress: 170/218
+  Progress: 180/218
+  Progress: 190/218
+  Progress: 200/218
+  Progress: 210/218
+
+>>> Fetching SP game logs for 250 players...
+  Progress: 10/250
+  Progress: 20/250
+  Progress: 30/250
+  Progress: 40/250
+  Progress: 50/250
+  Progress: 60/250
+  Progress: 70/250
+  Progress: 80/250
+  Progress: 90/250
+  Progress: 100/250
+  Progress: 110/250
+  Progress: 120/250
+  Progress: 130/250
+  Progress: 140/250
+  Progress: 150/250
+  Progress: 160/250
+  Progress: 170/250
+  Progress: 180/250
+  Progress: 190/250
+  Progress: 200/250
+  Progress: 210/250
+  Progress: 220/250
+  Progress: 230/250
+  Progress: 240/250
+  Progress: 250/250
+
+>>> Fetching RP game logs for 50 players...
+  Progress: 10/50
+  Progress: 20/50
+  Progress: 30/50
+  Progress: 40/50
+  Progress: 50/50
+
+Saved batter_game_logs.csv  (19954 rows)
+Saved pitcher_game_logs.csv (7663 rows)
+
+===== TOP 10 BATTERS BY FANTASY PTS =====
+# A tibble: 10 × 5
+   player_name         fantasy_position games fantasy_pts avg_pts_per_game
+   <chr>               <chr>            <int>       <dbl>            <dbl>
+ 1 James Wood          OF                 114         361             3.17
+ 2 Junior Caminero     3B                 115         357             3.1 
+ 3 Pete Crow-Armstrong OF                 117         348             2.97
+ 4 CJ Abrams           SS                 114         347             3.04
+ 5 Matt Olson          1B                 116         332             2.86
+ 6 Miguel Vargas       3B                 114         326             2.86
+ 7 Bryce Harper        1B                 117         323             2.76
+ 8 Kevin McGonigle     3B                 112         319             2.85
+ 9 Otto Lopez          SS                 113         315             2.79
+10 Alec Burleson       1B                 115         313             2.72
+
+===== TOP 10 PITCHERS BY FANTASY PTS =====
+# A tibble: 10 × 5
+   player_name        fantasy_position games fantasy_pts avg_pts_per_game
+   <chr>              <chr>            <int>       <dbl>            <dbl>
+ 1 Jacob Misiorowski  SP                  21        447.            21.3 
+ 2 Cam Schlittler     SP                  24        385.            16.0 
+ 3 Cristopher Sánchez SP                  24        369.            15.4 
+ 4 Dylan Cease        SP                  21        364             17.3 
+ 5 Gavin Williams     SP                  23        344.            14.9 
+ 6 Chris Sale         SP                  20        329.            16.4 
+ 7 Yoshinobu Yamamoto SP                  20        326.            16.3 
+ 8 Mason Miller       RP                  46        325.             7.06
+ 9 Drew Rasmussen     SP                  22        323.            14.7 
+10 Chase Burns        SP                  21        322.            15.3 
+
+===== OUTPUT FILES =====
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/player_pool.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_game_logs.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_game_logs.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/batter_season_summary.csv 
+   ~/discordBot/outputs/sports/mlb/fantasy/playerData/pitcher_season_summary.csv 

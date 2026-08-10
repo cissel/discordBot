@@ -16,6 +16,7 @@ import os
 from datetime import timezone
 from pathlib import Path
 
+import aiohttp
 import discord
 from discord import app_commands
 from dotenv import load_dotenv
@@ -527,12 +528,51 @@ class BotClient(discord.Client):
 
 
 # -- run ------------------------------------------------------------------------
-client = BotClient()
 print(f"[startup] token present: {bool(TOKEN)}, token length: {len(TOKEN)}", flush=True)
 
+# Transient network errors (DNS not ready yet, connection refused during boot,
+# brief outages) should be retried with backoff instead of killing the process.
+# Systemd's Restart=on-failure/RestartSec=60 was too coarse for this - a Pi
+# network blip during boot could exhaust retries before DNS came back, leaving
+# the bot down until a manual restart. Retry in-process first.
+_NETWORK_RETRY_ERRORS = (
+    aiohttp.ClientConnectorError,
+    aiohttp.ClientConnectorDNSError,
+    aiohttp.ClientOSError,
+    ConnectionError,
+    OSError,
+    asyncio.TimeoutError,
+)
+_MAX_CONNECT_RETRIES = 8
+_BACKOFF_BASE_SECONDS = 10
+_BACKOFF_MAX_SECONDS = 300
+
+
 async def main():
-    async with client:
-        await client.start(TOKEN)
+    for attempt in range(1, _MAX_CONNECT_RETRIES + 1):
+        client = BotClient()
+        try:
+            async with client:
+                await client.start(TOKEN)
+            return  # clean shutdown (e.g. client.close() called)
+        except _NETWORK_RETRY_ERRORS as _e:
+            if attempt >= _MAX_CONNECT_RETRIES:
+                print(
+                    f"[startup] FATAL: network error after {attempt} attempts: {_e}",
+                    flush=True,
+                )
+                raise
+            delay = min(_BACKOFF_BASE_SECONDS * (2 ** (attempt - 1)), _BACKOFF_MAX_SECONDS)
+            print(
+                f"[startup] network error on attempt {attempt}/{_MAX_CONNECT_RETRIES} "
+                f"({type(_e).__name__}: {_e}) - retrying in {delay}s",
+                flush=True,
+            )
+            await asyncio.sleep(delay)
+        finally:
+            if not client.is_closed():
+                await client.close()
+
 
 try:
     print("[startup] calling asyncio.run...", flush=True)

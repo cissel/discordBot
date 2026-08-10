@@ -1,0 +1,19 @@
+{
+  "tail_query": "N818QS",
+  "callsign": "EJA818",
+  "registration": "N818QS",
+  "hex": "ab2883",
+  "aircraft_type": "CESSNA 700 Citation Longitude",
+  "operator": "BRIDGETON CAPITAL LLC, CASTLEKEEP LLC, CMK AVIATION LLC, SCHEINM",
+  "altitude_ft": 41000,
+  "on_ground": false,
+  "ground_speed_kt": 489.8,
+  "vertical_rate_str": "level",
+  "heading_deg": 42.52,
+  "lat": 35.102482,
+  "lon": -78.700161,
+  "squawk": "1040",
+  "updated_utc": "2026-08-09 13:39 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N818QS.png"
+}

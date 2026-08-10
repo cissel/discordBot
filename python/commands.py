@@ -31,6 +31,8 @@
 #
 #   /history  server | channel | user | daily | userreport
 #
+#   /wordle   scores [option: time|distribution]
+#   /maptap   scores
 #   /cats     next | today | win | lost | hockeytoday | hockeytomorrow
 #             kodak | barkov | bobby | thuggybobby | chucky | reino
 #             ekblad | swaggy | marchand | drunkMarchand | benny | eetu
@@ -524,8 +526,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, "here ya go:",
                     file=discord.File(os.path.join(op, "weather/weatherTm.png")))
 
-    @surf_group.command(name="surf", description="surf forecast")
-    async def surf(interaction: discord.Interaction):
+    @surf_group.command(name="forecast", description="surf forecast")
+    async def surf_forecast(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "surf4castPlot.R"))
         await _send(interaction, "here's the latest surf forecast:",
@@ -941,6 +943,122 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     tree.add_command(history_group)
 
     # ─────────────────────────────────────────────────────────────────────────
+    # WORDLE GROUP  /wordle <subcommand>
+    # ─────────────────────────────────────────────────────────────────────────
+    wordle_group = app_commands.Group(name="wordle", description="Wordle score tracking", guild_ids=[guild.id])
+
+    @wordle_group.command(name="scores", description="Wordle score time series or distribution for everyone")
+    @app_commands.choices(option=[
+        app_commands.Choice(name="time", value="time"),
+        app_commands.Choice(name="distribution", value="distribution"),
+    ])
+    async def wordle_scores(interaction: discord.Interaction, option: app_commands.Choice[str] = None):
+        await _defer(interaction)
+
+        mode = option.value if option else "time"
+
+        import sys as _sys
+        if pp not in _sys.path:
+            _sys.path.insert(0, pp)
+        from wordleScores import build_wordle_scores_csv
+
+        csv_in  = os.path.expanduser("~/discordBot/outputs/metrics/server_messages.csv")
+        csv_out = os.path.expanduser("~/discordBot/outputs/games/wordle/wordle_scores.csv")
+
+        try:
+            summary = await build_wordle_scores_csv(interaction.guild, csv_in, csv_out)
+        except FileNotFoundError:
+            await _send(interaction, "❌ no message log found yet", ephemeral=True)
+            return
+        except Exception as e:
+            await _send(interaction, f"❌ failed to parse wordle scores: {e}", ephemeral=True)
+            return
+
+        if summary["rows"] == 0:
+            await _send(interaction, "📊 no Wordle scores found in the message log yet", ephemeral=True)
+            return
+
+        if mode == "distribution":
+            r_script = "wordleDistribution.R"
+            img_out  = os.path.expanduser("~/discordBot/outputs/games/wordle/wordleDistribution.png")
+            label    = "distribution"
+        else:
+            r_script = "wordleScores.R"
+            img_out  = os.path.expanduser("~/discordBot/outputs/games/wordle/wordleScores.png")
+            label    = "time series"
+
+        result = await asyncio.to_thread(
+            lambda: subprocess.run(
+                ["Rscript", os.path.join(rp, r_script), csv_out, img_out],
+                capture_output=True, text=True, timeout=60
+            )
+        )
+        if result.returncode != 0 or not os.path.exists(img_out):
+            err = result.stderr[-400:] if result.stderr else "no output"
+            await _send(interaction, f"❌ plot failed\n```{err}```", ephemeral=True)
+            return
+
+        await _send(
+            interaction,
+            f":bar_chart: {summary['rows']} Wordle games logged across {len(summary['players'])} players "
+            f"({summary['date_min']} to {summary['date_max']}) — {label}",
+            file=discord.File(img_out, filename=os.path.basename(img_out)),
+        )
+
+    tree.add_command(wordle_group)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # MAPTAP GROUP  /maptap <subcommand>
+    # ─────────────────────────────────────────────────────────────────────────
+    maptap_group = app_commands.Group(name="maptap", description="MapTap score tracking", guild_ids=[guild.id])
+
+    @maptap_group.command(name="scores", description="time series of each player's daily MapTap score")
+    async def maptap_scores(interaction: discord.Interaction):
+        await _defer(interaction)
+
+        import sys as _sys
+        if pp not in _sys.path:
+            _sys.path.insert(0, pp)
+        from maptapScores import build_maptap_scores_csv
+
+        csv_in  = os.path.expanduser("~/discordBot/outputs/metrics/server_messages.csv")
+        csv_out = os.path.expanduser("~/discordBot/outputs/games/maptap/maptap_scores.csv")
+        img_out = os.path.expanduser("~/discordBot/outputs/games/maptap/maptapScores.png")
+
+        try:
+            summary = await asyncio.to_thread(build_maptap_scores_csv, csv_in, csv_out)
+        except FileNotFoundError:
+            await _send(interaction, "❌ no message log found yet", ephemeral=True)
+            return
+        except Exception as e:
+            await _send(interaction, f"❌ failed to parse maptap scores: {e}", ephemeral=True)
+            return
+
+        if summary["rows"] == 0:
+            await _send(interaction, "📊 no MapTap scores found in the message log yet", ephemeral=True)
+            return
+
+        result = await asyncio.to_thread(
+            lambda: subprocess.run(
+                ["Rscript", os.path.join(rp, "maptapScores.R"), csv_out, img_out],
+                capture_output=True, text=True, timeout=60
+            )
+        )
+        if result.returncode != 0 or not os.path.exists(img_out):
+            err = result.stderr[-400:] if result.stderr else "no output"
+            await _send(interaction, f"❌ plot failed\n```{err}```", ephemeral=True)
+            return
+
+        await _send(
+            interaction,
+            f":bar_chart: {summary['rows']} MapTap games logged across {len(summary['players'])} players "
+            f"({summary['date_min']} to {summary['date_max']})",
+            file=discord.File(img_out, filename="maptapScores.png"),
+        )
+
+    tree.add_command(maptap_group)
+
+    # ─────────────────────────────────────────────────────────────────────────
     # CATS GROUP  /cats <subcommand>  (games, schedule, reactions only)
     # Player image commands dropped for now - add back once bot is stable
     # ─────────────────────────────────────────────────────────────────────────
@@ -1186,6 +1304,14 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     nfl_group = app_commands.Group(name="nfl", description="NFL commands", guild_ids=[guild.id])
 
     def _build_nfl_embed(df, title, color, footer):
+        # BUG FIX (Aug 4 2026): df.iloc[0] crashed with IndexError when the
+        # CSV had 0 rows (confirmed via bot.log: /jags next crashed this way -
+        # happens when the R fetcher (nextJagua.R/nextNFL.R) runs before the
+        # season schedule has a row for the team's next game, e.g. deep
+        # offseason gap between the schedule release and this being called).
+        # Degrade gracefully instead of throwing CommandInvokeError.
+        if df.empty:
+            return None
         row = df.iloc[0]
         away, home = row["away_team"], row["home_team"]
         matchup = f"{away} ({row['away_moneyline']}) @ {home} ({row['home_moneyline']})"
@@ -1212,6 +1338,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             title="🏈 {daysUntil} Days Until Next NFL Game",
             color=0x013369, footer="source: i know ball",
         )
+        if emb is None:
+            await _send(interaction, "couldn't find game info :(", ephemeral=True); return
         await _send(interaction, embed=emb)
 
     @nfl_group.command(name="wr", description="top WR targets this szn")
@@ -1843,6 +1971,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             title="🏈 {daysUntil} Days Until Next Jacksonville Jaguars Game",
             color=0x006778, footer="duval bangem westside jville",
         )
+        if emb is None:
+            await _send(interaction, "couldn't find game info 😔", ephemeral=True); return
         await _send(interaction, embed=emb)
 
     @jags_group.command(name="today", description="i just wanna party with you <3")
@@ -2715,6 +2845,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     OSRS_PLAYERS = [
         "captdeadhead", "SubieVapeski", "Pexci", "swampdog",
         "Squidlies", "Wmwhite", "TrimIsLife", "Fart Johnsun",
+        "carpetweed",
     ]
 
     async def osrs_player_autocomplete(interaction: discord.Interaction, current: str):
@@ -5196,25 +5327,32 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             )
 
         def add_fields(embed, rows, formatter, base_name, emoji):
-            """Add rows as fields, splitting into two if showing 10 to stay under Discord's 1024 char limit."""
-            if len(rows) <= 5:
-                embed.add_field(
-                    name=f"{emoji} {base_name}",
-                    value="".join(formatter(row) for _, row in rows.iterrows()).strip(),
-                    inline=False
-                )
-            else:
-                half = len(rows) // 2
-                embed.add_field(
-                    name=f"{base_name}",
-                    value="".join(formatter(row) for _, row in rows.iloc[:half].iterrows()).strip(),
-                    inline=False
-                )
-                embed.add_field(
-                    name="\u200b",
-                    value="".join(formatter(row) for _, row in rows.iloc[half:].iterrows()).strip(),
-                    inline=False
-                )
+            """Add rows as one or more fields, splitting by actual character length
+            (not row count) to stay under Discord's 1024-char field value limit.
+            BUG FIX (Aug 4 2026): the old version split strictly in half by row
+            count, which crashed with HTTPException 400 'Must be 1024 or fewer in
+            length' whenever formatted rows ran longer than average (long
+            names/stat lines) - confirmed in bot.log for /mlb ml with
+            position=all, scope=all, day=tomorrow. Splitting on rendered length
+            instead of row count fixes it for any row-length distribution."""
+            MAX_FIELD_LEN = 950  # headroom under Discord's 1024 hard cap
+            chunks = []
+            current = ""
+            for _, row in rows.iterrows():
+                piece = formatter(row)
+                if current and len(current) + len(piece) > MAX_FIELD_LEN:
+                    chunks.append(current)
+                    current = piece
+                else:
+                    current += piece
+            if current:
+                chunks.append(current)
+
+            if not chunks:
+                return
+            embed.add_field(name=f"{emoji} {base_name}", value=chunks[0].strip(), inline=False)
+            for chunk in chunks[1:]:
+                embed.add_field(name="\u200b", value=chunk.strip(), inline=False)
 
         if mode in ("both", "batters"):
             n = 5 if mode == "both" else 10

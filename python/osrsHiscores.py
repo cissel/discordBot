@@ -24,6 +24,7 @@ PLAYERS = [
     "Wmwhite",
     "swampdog",
     "Fart Johnsun",
+    "carpetweed",
 ]
 
 # Fixed order the Jagex CSV returns skills in

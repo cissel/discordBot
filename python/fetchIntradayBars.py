@@ -120,7 +120,15 @@ def fetch_bars_for_date(trade_date: datetime.date) -> list:
         r = requests.get(url, headers=HEADERS, params=params, timeout=30)
         r.raise_for_status()
         data = r.json()
-        bars = data.get("bars", [])
+        # BUG FIX (Aug 4 2026): Alpaca returns {"bars": null} (not an empty
+        # list) for a fully closed market day - confirmed on 2026-07-03, an
+        # NYSE full holiday (July 4th fell on a Saturday, so the market
+        # observed the holiday on the preceding Friday). `data.get("bars", [])`
+        # only applies the [] default when the KEY is missing, not when it's
+        # present with a None value, so `bars` came back None and
+        # `all_bars.extend(bars)` crashed with "'NoneType' object is not
+        # iterable" instead of being handled like any other no-data day.
+        bars = data.get("bars") or []
         all_bars.extend(bars)
         next_token = data.get("next_page_token")
         if next_token:

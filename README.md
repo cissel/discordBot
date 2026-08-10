@@ -27,7 +27,7 @@ Built so I could send a message from my phone and have it run scripts, pull data
 ### `/surf`
 | command | description |
 |---|---|
-| `surf` | 1-week surf forecast plot for Jax Beach, FL |
+| `forecast` | 1-week surf forecast plot for Jax Beach, FL |
 | `wavemap` | wave height forecast map GIF |
 | `windmap` | wind speed & direction forecast map GIF |
 | `buoywaves` | wave height plot from NOAA NDBC buoy #41117 off St. Augustine |

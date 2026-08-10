@@ -108,6 +108,16 @@ df <- df %>%
 df <- df %>%
   mutate(sz_targets = dplyr::coalesce(targets, ngs_tgts))
 
+# Export underlying per-player data for the live draft dashboard (Aug 2026) -
+# lets Python join this onto the VORP board by name and live-filter to
+# available players, rather than re-deriving NGS metrics in Python. Always
+# exported (even in single-player mode, df still has the full pool).
+write.csv(
+  df %>% select(name, avg_sep, avg_cushion, avg_yac_oe, avg_air_yds,
+                 air_yds_share, sz_targets, rec_epa),
+  file.path(OUT_DIR, "ngs_wr_export.csv"), row.names = FALSE
+)
+
 # Single player mode
 single_mode <- !is.na(PLAYER)
 if (single_mode) {

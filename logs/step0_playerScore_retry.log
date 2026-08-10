@@ -1,0 +1,45 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+>>> Pulling batter leaderboards by position...
+  Pulling: C
+Request failed [403]. Retrying in 1.1 seconds...
+Request failed [403]. Retrying in 1 seconds...
+2026-08-05 05:31:02.985888: Invalid arguments or no player batting leaders data available!
+    Error for C: object 'leaders' not found
+  Pulling: 1B
+Request failed [403]. Retrying in 1 seconds...
+Request failed [403]. Retrying in 3.3 seconds...
+2026-08-05 05:31:08.427223: Invalid arguments or no player batting leaders data available!
+    Error for 1B: object 'leaders' not found
+  Pulling: 2B
+Request failed [403]. Retrying in 2 seconds...
+Request failed [403]. Retrying in 1.9 seconds...
+2026-08-05 05:31:13.676457: Invalid arguments or no player batting leaders data available!
+    Error for 2B: object 'leaders' not found
+  Pulling: 3B
+Request failed [403]. Retrying in 1 seconds...
+Request failed [403]. Retrying in 3.7 seconds...
+2026-08-05 05:31:19.491818: Invalid arguments or no player batting leaders data available!
+    Error for 3B: object 'leaders' not found
+  Pulling: SS
+Request failed [403]. Retrying in 1.2 seconds...
+Request failed [403]. Retrying in 1 seconds...
+2026-08-05 05:31:22.874493: Invalid arguments or no player batting leaders data available!
+    Error for SS: object 'leaders' not found
+  Pulling: OF
+Request failed [403]. Retrying in 1.1 seconds...
+Request failed [403]. Retrying in 3.6 seconds...
+2026-08-05 05:31:28.681591: Invalid arguments or no player batting leaders data available!
+    Error for OF: object 'leaders' not found
+FATAL: all batter leaderboard pulls failed (likely FanGraphs blocking/rate-limiting this run).
+Existing player_pool.csv / game log CSVs left untouched. Exiting without overwriting.
