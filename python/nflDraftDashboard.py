@@ -56,7 +56,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-from dash import Dash, dcc, html, dash_table, Input, Output, State, ctx
+from dash import Dash, dcc, html, dash_table, Input, Output, State, ctx, no_update
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from nflMockDraftLog import (
@@ -360,7 +360,7 @@ def df_to_table_records(df, cols):
     return out.to_dict("records")
 
 
-def build_app(draft_id, my_slot, poll_seconds):
+def build_app(draft_id=None, my_slot=None, poll_seconds=8):
     vorp_df_base = load_vorp_board()
     vorp_df_base = vorp_df_base[vorp_df_base["adp_overall"] <= ADP_CAP].copy()
     vorp_df_base = load_draft_context(vorp_df_base)
@@ -373,20 +373,55 @@ def build_app(draft_id, my_slot, poll_seconds):
     age_lookup = load_player_ages()
     aging_fig_static = build_aging_curve_figure(aging_curves, aging_summary)
 
-    meta = fetch_sleeper_draft(draft_id)
-    settings = meta.get("settings", {})
-    n_teams = settings.get("teams", 12)
-    n_rounds = settings.get("rounds", 15)
-    total_picks_expected = n_teams * n_rounds
+    # draft_id/my_slot are now OPTIONAL at process startup - the app can be
+    # left running across multiple mock/real drafts, with each new draft
+    # loaded live via the URL input bar (see load_draft() callback below)
+    # instead of restarting the process. Still support passing them as CLI
+    # args for backward-compat / auto-load-on-start convenience.
+    initial_config = None
+    if draft_id and my_slot:
+        try:
+            resolved_id = _extract_draft_id(draft_id)
+            meta = fetch_sleeper_draft(resolved_id)
+            settings = meta.get("settings", {})
+            n_teams = settings.get("teams", 12)
+            n_rounds = settings.get("rounds", 15)
+            initial_config = {
+                "draft_id": resolved_id, "my_slot": int(my_slot),
+                "n_teams": n_teams, "n_rounds": n_rounds,
+                "total_picks_expected": n_teams * n_rounds,
+            }
+        except Exception as e:
+            print(f"NOTE: could not preload draft {draft_id}: {e} \u2014 "
+                  f"paste a URL into the dashboard's input bar instead.")
 
     app = Dash(__name__, title="Room 40 Live Draft Dashboard")
     app.layout = html.Div(style={"backgroundColor": BG, "minHeight": "100vh", "padding": "16px",
                                   "fontFamily": "Segoe UI, Arial, sans-serif", "color": TXT}, children=[
         dcc.Interval(id="poll-interval", interval=poll_seconds * 1000, n_intervals=0),
         dcc.Store(id="draft-state"),
+        dcc.Store(id="draft-config", data=initial_config),
 
-        html.H2(f"Room 40 Live Draft Dashboard \u2014 {n_teams}-team, slot {my_slot}",
-                 style={"color": TXT, "marginBottom": "4px"}),
+        html.H2(id="app-title", style={"color": TXT, "marginBottom": "4px"}),
+
+        html.Div(style={"display": "flex", "gap": "8px", "marginBottom": "12px",
+                         "flexWrap": "wrap", "alignItems": "center"}, children=[
+            dcc.Input(id="draft-url-input", type="text",
+                      placeholder="Paste Sleeper draft URL or ID",
+                      style={"flex": "2", "minWidth": "320px", "padding": "7px 10px",
+                             "backgroundColor": PANEL, "color": TXT,
+                             "border": f"1px solid {GRID}", "borderRadius": "4px"}),
+            dcc.Input(id="my-slot-input", type="number", placeholder="Your slot #",
+                      min=1, max=20,
+                      style={"width": "110px", "padding": "7px 10px", "backgroundColor": PANEL,
+                             "color": TXT, "border": f"1px solid {GRID}", "borderRadius": "4px"}),
+            html.Button("Load Draft", id="load-draft-btn", n_clicks=0,
+                        style={"padding": "7px 18px", "backgroundColor": GOLD, "color": BG,
+                               "border": "none", "borderRadius": "4px", "fontWeight": "bold",
+                               "cursor": "pointer"}),
+            html.Div(id="load-status", style={"color": TXT_MUTED, "fontSize": "12px", "flex": "1"}),
+        ]),
+
         html.Div(id="status-banner", style={"fontSize": "16px", "marginBottom": "16px",
                                              "padding": "10px", "backgroundColor": PANEL,
                                              "borderRadius": "6px", "border": f"1px solid {GRID}"}),
@@ -463,13 +498,67 @@ def build_app(draft_id, my_slot, poll_seconds):
         html.Div(id="last-update", style={"color": TXT_MUTED, "fontSize": "11px", "marginTop": "20px"}),
     ])
 
+    # ── Load Draft callback: lets the user paste a new draft URL/ID + slot
+    # into the input bar and swap the active draft WITHOUT restarting the
+    # process. This is what makes the app reusable across every mock draft -
+    # host it once, paste a new URL each time. ──────────────────────────────
+    @app.callback(
+        Output("draft-config", "data"),
+        Output("load-status", "children"),
+        Output("poll-interval", "n_intervals"),
+        Input("load-draft-btn", "n_clicks"),
+        State("draft-url-input", "value"),
+        State("my-slot-input", "value"),
+        prevent_initial_call=True,
+    )
+    def load_draft(n_clicks, url_value, slot_value):
+        if not url_value or not slot_value:
+            return no_update, html.Span("Enter both a draft URL/ID and your slot number.",
+                                         style={"color": ACCENT_WARN}), no_update
+        try:
+            resolved_id = _extract_draft_id(url_value)
+            meta = fetch_sleeper_draft(resolved_id)
+        except Exception as e:
+            return no_update, html.Span(f"Could not load draft: {e}", style={"color": ACCENT_BAD}), no_update
+
+        settings = meta.get("settings", {})
+        n_teams = settings.get("teams", 12)
+        n_rounds = settings.get("rounds", 15)
+        new_config = {
+            "draft_id": resolved_id, "my_slot": int(slot_value),
+            "n_teams": n_teams, "n_rounds": n_rounds,
+            "total_picks_expected": n_teams * n_rounds,
+        }
+        # Reset n_intervals to 0 so the very next tick polls the NEW draft
+        # immediately rather than waiting out whatever was left of the old
+        # interval countdown.
+        return new_config, html.Span(
+            f"Loaded draft {resolved_id} \u2014 {n_teams}-team, slot {slot_value}. Polling...",
+            style={"color": ACCENT_GOOD}), 0
+
+    @app.callback(Output("app-title", "children"), Input("draft-config", "data"))
+    def update_title(config):
+        if not config:
+            return "Room 40 Live Draft Dashboard \u2014 paste a draft URL above to begin"
+        return (f"Room 40 Live Draft Dashboard \u2014 {config['n_teams']}-team, "
+                f"slot {config['my_slot']}")
+
     # ── Poll callback: fetch Sleeper picks, compute drafted/roster state ────
     @app.callback(
         Output("draft-state", "data"),
         Output("last-update", "children"),
         Input("poll-interval", "n_intervals"),
+        State("draft-config", "data"),
     )
-    def poll(_n):
+    def poll(_n, config):
+        if not config or not config.get("draft_id"):
+            return {"no_config": True}, "Paste a draft URL above and click Load Draft to begin."
+
+        draft_id = config["draft_id"]
+        my_slot = config["my_slot"]
+        n_teams = config["n_teams"]
+        total_picks_expected = config["total_picks_expected"]
+
         try:
             picks = fetch_picks_tolerant(draft_id)
         except Exception as e:
@@ -516,6 +605,9 @@ def build_app(draft_id, my_slot, poll_seconds):
     def update_banner(state):
         if not state:
             return "Waiting for first poll..."
+        if state.get("no_config"):
+            return html.Span("No draft loaded \u2014 paste a Sleeper draft URL/ID and your slot above, then click Load Draft.",
+                              style={"color": TXT_MUTED})
         if state.get("error"):
             return html.Span(f"\u26a0 poll error: {state['error']}", style={"color": ACCENT_BAD})
         if state.get("waiting"):
@@ -542,7 +634,7 @@ def build_app(draft_id, my_slot, poll_seconds):
     )
     def update_roster_table(state):
         roster_cols = [{"name": c, "id": c} for c in ["full_name", "position", "team", "adp_overall", "vorp"]]
-        if not state or state.get("error") or state.get("waiting"):
+        if not state or state.get("error") or state.get("waiting") or state.get("no_config"):
             return [], roster_cols
 
         my_rows = state.get("my_rows", [])
@@ -559,7 +651,7 @@ def build_app(draft_id, my_slot, poll_seconds):
         best_cols = [{"name": c, "id": c, "type": "numeric" if c not in ("full_name", "position", "team", "mover") else "text"}
                      for c in ["full_name", "position", "team", "adp_overall", "vorp", "value_gap",
                                "marginal_gain", "pts_mean_2025", "pts_sd_2025", "mover"]]
-        if not state or state.get("error") or state.get("waiting"):
+        if not state or state.get("error") or state.get("waiting") or state.get("no_config"):
             return [], best_cols
 
         drafted_names = set(state.get("drafted_names", []))
@@ -587,7 +679,7 @@ def build_app(draft_id, my_slot, poll_seconds):
         Input("draft-state", "data"), Input("position-filter", "value"),
     )
     def update_volatility(state, selected_positions):
-        if not state or state.get("error") or state.get("waiting"):
+        if not state or state.get("error") or state.get("waiting") or state.get("no_config"):
             fig = go.Figure()
             navy_fig_layout(fig, "2025 Weekly Scoring: Mean vs Volatility", "waiting for draft data...")
             return fig
@@ -606,7 +698,7 @@ def build_app(draft_id, my_slot, poll_seconds):
         Input("draft-state", "data"), Input("ngs-tabs", "value"),
     )
     def update_ngs(state, pos):
-        if not state or state.get("error") or state.get("waiting"):
+        if not state or state.get("error") or state.get("waiting") or state.get("no_config"):
             fig = go.Figure()
             navy_fig_layout(fig, f"{pos} Advanced Stats (NGS)", "waiting for draft data...")
             return fig
@@ -617,7 +709,7 @@ def build_app(draft_id, my_slot, poll_seconds):
     @app.callback(Output("breakout-table", "data"), Output("breakout-table", "columns"), Input("draft-state", "data"))
     def update_breakout(state):
         cols = [{"name": c, "id": c} for c in ["full_name", "position", "team", "adp_overall", "vorp", "breakout_z"]]
-        if not state or state.get("error") or state.get("waiting") or breakout_df.empty:
+        if not state or state.get("error") or state.get("waiting") or state.get("no_config") or breakout_df.empty:
             return [], cols
         drafted_names = set(state.get("drafted_names", []))
         available = vorp_df_base[~vorp_df_base["full_name"].isin(drafted_names)].copy()
@@ -632,7 +724,7 @@ def build_app(draft_id, my_slot, poll_seconds):
     )
     def update_aging(state, selected_positions):
         positions = selected_positions or list(AGING_POSITIONS)
-        if not state or state.get("error") or state.get("waiting"):
+        if not state or state.get("error") or state.get("waiting") or state.get("no_config"):
             return build_aging_curve_figure(aging_curves, aging_summary, None, age_lookup, positions=positions)
         drafted_names = set(state.get("drafted_names", []))
         available = vorp_df_base[~vorp_df_base["full_name"].isin(drafted_names)].copy()
@@ -642,17 +734,31 @@ def build_app(draft_id, my_slot, poll_seconds):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Live Sleeper draft dashboard - visual UI.")
-    ap.add_argument("draft_id")
-    ap.add_argument("my_slot", type=int)
+    ap = argparse.ArgumentParser(description="Live Sleeper draft dashboard - visual UI. "
+                                               "draft_id/my_slot are now OPTIONAL - if omitted, "
+                                               "start the app blank and load/switch drafts live "
+                                               "from the URL input bar in the browser (no restart "
+                                               "needed between mock drafts).")
+    ap.add_argument("draft_id", nargs="?", default=None,
+                     help="optional: bare Sleeper draft ID or full URL to auto-load on start")
+    ap.add_argument("my_slot", type=int, nargs="?", default=None,
+                     help="optional: your draft-order slot, required if draft_id is given")
     ap.add_argument("--poll", type=int, default=8, help="seconds between polls (default 8)")
     ap.add_argument("--port", type=int, default=8877)
     ap.add_argument("--host", default="127.0.0.1")
     args = ap.parse_args()
 
-    draft_id = _extract_draft_id(args.draft_id)
-    app = build_app(draft_id, args.my_slot, args.poll)
-    print(f"\nOpen http://{args.host}:{args.port} in your browser.\n")
+    if args.draft_id and args.my_slot is None:
+        ap.error("my_slot is required when draft_id is given")
+
+    app = build_app(args.draft_id, args.my_slot, args.poll)
+    print(f"\nOpen http://{args.host}:{args.port} in your browser.")
+    if not args.draft_id:
+        print("No draft preloaded - paste a Sleeper draft URL/ID and your slot into the "
+              "dashboard's input bar, then click 'Load Draft'. The app stays running across "
+              "mock drafts - just paste a new URL to switch.\n")
+    else:
+        print()
     app.run(host=args.host, port=args.port, debug=False)
 
 

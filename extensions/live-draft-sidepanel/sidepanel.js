@@ -1,4 +1,4 @@
-const DEFAULT_URL = "http://10.0.0.252:8877";
+const DEFAULT_URL = "http://127.0.0.1:8877";
 const STORAGE_KEY = "draftDashboardUrl";
 
 const urlInput = document.getElementById("urlInput");
