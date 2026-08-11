@@ -1,0 +1,47 @@
+Command: venv/bin/python3 python/buildRegimePredModel.py
+Start: Mon 10 Aug 06:34:35 EDT 2026
+[buildRegimePredModel] loading features...
+  1192 rows after prep | features: 39
+  Regime distribution: {'chop': np.int64(799), 'bull': np.int64(246), 'bear': np.int64(147)}
+
+  Train: 953 rows | Val: 239 rows
+  Val regime dist: {'chop': np.int64(216), 'bear': np.int64(18), 'bull': np.int64(5)}
+
+  Logistic accuracy: 0.9205
+              precision    recall  f1-score   support
+
+        bear       0.75      0.67      0.71        18
+        bull       0.00      0.00      0.00         5
+        chop       0.95      0.96      0.96       216
+
+    accuracy                           0.92       239
+   macro avg       0.57      0.54      0.55       239
+weighted avg       0.91      0.92      0.92       239
+
+  GBM accuracy: 0.9372
+              precision    recall  f1-score   support
+
+        bear       0.83      0.83      0.83        18
+        bull       0.00      0.00      0.00         5
+        chop       0.96      0.97      0.97       216
+
+    accuracy                           0.94       239
+   macro avg       0.60      0.60      0.60       239
+weighted avg       0.93      0.94      0.94       239
+
+  Naive baseline (always 'chop'): 0.9038
+  Persistence baseline (same as today):    0.9414  <-- real bar to beat
+
+  Saved gbm model -> /home/jhcv/discordBot/models/markets/spy/spy_regime_pred_2026-08-10.pkl
+  Val accuracy:        0.9372
+  Persistence baseline:0.9414  (must beat this to be useful for routing)
+  Naive baseline:      0.9038
+  Lift over persistence: -0.4pp
+
+  Today's actual regime: chop
+  Model prediction for tomorrow: chop
+    P(bear) = 0.000
+    P(bull) = 0.085
+    P(chop) = 0.915
+End: Mon 10 Aug 06:34:46 EDT 2026
+Exit code: 0

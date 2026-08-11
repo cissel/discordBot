@@ -1,0 +1,20 @@
+Pipeline started at Mon 10 Aug 06:00:44 EDT 2026
+=== Step 1: trainFantasyModel ===
+Step 1 (trainFantasyModel): SUCCESS (1444s)
+=== Step 2: buildIntradayFeatures ===
+Step 2 (buildIntradayFeatures): SUCCESS (305s)
+=== Step 3: buildSpyFeatures ===
+Step 3 (buildSpyFeatures): SUCCESS (7s)
+=== Step 4: trainSpyModel ===
+Step 4 (trainSpyModel): SUCCESS (193s)
+=== Step 5: trainChopModel ===
+Step 5 (trainChopModel): SUCCESS (77s)
+=== Step 6: buildOvernightModel ===
+Step 6 (buildOvernightModel): SUCCESS (5s)
+=== Step 7: buildRegimePredModel ===
+Step 7 (buildRegimePredModel): SUCCESS (11s)
+=== Step 8: buildBtcFeatures ===
+Step 8 (buildBtcFeatures): SUCCESS (6s)
+=== Step 9: trainBtcModel ===
+Step 9 (trainBtcModel): SUCCESS (50s)
+Pipeline finished at Mon 10 Aug 06:35:42 EDT 2026

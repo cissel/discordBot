@@ -1,10 +1,8 @@
 spy_ret_r5
 spy_consec_down
-spy_drawdown_252
 vix_level
 vix_z21
 vvix_chg_5d
-vix_term_z21
 gld_ret_1d
 gld_spy_corr_21
 gld_corr_x_era
@@ -24,18 +22,13 @@ vwap_dev_am
 vol_vwap_corr_5d
 open_drive_flag
 late_reversal_flag
-days_since_regime_change
 regime_transition_flag
-vix_rv_x_bear
-vix_rv_x_chop
 dix_chg_x_bear
 moon_phase_cos
 days_to_new_moon
 moon_full_flag
-moon_new_flag
 prcp_flag_nyc
 sunshine_proxy_nyc
-tavg_chi
 temp_range_chi
 sunshine_proxy_chi
 wiki_sp500_views
@@ -45,7 +38,6 @@ days_to_next_holiday
 mta_subway_riders
 earnings_season_flag
 days_to_earnings_season
-pres_approval_chg_21d
 cboe_pcr_equity
 trends_spy
 trends_buy_stocks

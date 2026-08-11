@@ -1,0 +1,48 @@
+{
+  "alerted": {
+    "2026-perseids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2027-quadrantids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2027-lyrids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2027-eta_aquariids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2027-delta_aquariids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2026-draconids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2026-orionids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2026-taurids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2026-leonids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2026-geminids": {
+      "headsup": false,
+      "peak": false
+    },
+    "2026-ursids": {
+      "headsup": false,
+      "peak": false
+    }
+  }
+}

@@ -1,9 +1,9 @@
 [buildSpyFeatures] loading raw series...
-  base df: 2663 rows, 2016-01-05 to 2026-08-07
+  base df: 2664 rows, 2016-01-05 to 2026-08-10
   building SPY technical features...
   building vol regime features...
   loading options snapshot...
-    options rows: 29
+    options rows: 30
   building cross-asset features...
   building macro features...
   building sector rotation features...
@@ -17,20 +17,20 @@
   building intraday aggregated features...
     intraday features rows: 1401, date range: 2021-01-04 to 2026-08-03
   building GEX features...
-    GEX cache rows: 3838, date range: 2011-05-02 to 2026-08-05
-    gex_b coverage in spy_features: 99.9%
+    GEX cache rows: 3840, date range: 2011-05-02 to 2026-08-07
+    gex_b coverage in spy_features: 100.0%
   building VIX term structure / VVIX features...
-    vix_term cache rows: 2545, range: 2016-06-23 to 2026-08-07
+    vix_term cache rows: 2546, range: 2016-06-23 to 2026-08-10
     vvix coverage in spy_features: 95.3%
     vix_term_slope coverage: 95.5%
   building regime labels...
-    bull=747  bear=238  chop=1678
+    bull=747  bear=238  chop=1679
     VIX p33=14.8  p67=19.5  p80=22.7
   building regime-change + interaction features...
     rate-shock regime: 166 shock days, 166 easing days
     returns-distribution regime: ret_skew_21, ret_kurt_21, drawdown_63d, regime_age_z added
   loading moon phase + weather features...
-    moon phase coverage: 2663/2663 rows (100%)
+    moon phase coverage: 2664/2664 rows (100%)
     weather coverage: NYC=2660 rows, CHI=2660 rows
   alt data 1: 18 cols, wikipedia=2632 rows
   alt data 2: 14 cols, daylight=2632 rows
@@ -57,4 +57,4 @@
     [sparse] opt_pcr_vol: 2%
     [sparse] opt_vega_weighted_iv: 2%
 
-[buildSpyFeatures] wrote 2663 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv
+[buildSpyFeatures] wrote 2664 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv

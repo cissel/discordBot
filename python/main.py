@@ -121,6 +121,7 @@ class BotClient(discord.Client):
         asyncio.create_task(self._snapshot_invites())
         asyncio.create_task(self._launch_alert_loop())
         asyncio.create_task(self._flight_watch_loop())
+        asyncio.create_task(self._meteor_shower_alert_loop())
 
     async def _snapshot_invites(self):
         """Cache current use-count for every invite in the guild."""
@@ -511,6 +512,112 @@ class BotClient(discord.Client):
                 parts  = line.split(":")
                 action = parts[1]
                 lid    = parts[2] if len(parts) > 2 else None
+                fields = {}
+            elif line.startswith("  ") and ":" in line:
+                k, _, v = line.strip().partition(": ")
+                fields[k] = v
+
+        await parse_block()
+
+    async def _meteor_shower_alert_loop(self):
+        """Background loop - checks the annual meteor shower calendar.
+        Runs every 6 hours (no live API, static calendar - no need to poll fast)."""
+        await asyncio.sleep(90)  # wait after startup before first check
+        while not self.is_closed():
+            try:
+                asyncio.create_task(self.run_meteor_shower_alerts())
+            except Exception as e:
+                print(f"[meteorShower] loop error: {e}")
+            await asyncio.sleep(6 * 60 * 60)
+
+    async def run_meteor_shower_alerts(self):
+        """Runs meteorShowerAlert.py, parses its output, posts messages.
+        Hard 30s timeout - this is just local date math, should never hang."""
+        try:
+            await asyncio.wait_for(self._run_meteor_shower_alerts_inner(), timeout=30)
+        except asyncio.TimeoutError:
+            print("[meteorShower] timed out after 30s - skipping this check")
+        except Exception as e:
+            print(f"[meteorShower] error: {e}")
+
+    async def _run_meteor_shower_alerts_inner(self):
+        import subprocess as _sp
+
+        PYTHON_PATH = os.path.expanduser("~/discordBot/venv/bin/python3")
+        SCRIPT      = os.path.expanduser("~/discordBot/python/meteorShowerAlert.py")
+
+        try:
+            result = await asyncio.to_thread(
+                lambda: _sp.run([PYTHON_PATH, SCRIPT],
+                                capture_output=True, text=True, timeout=30)
+            )
+            output = result.stdout.strip()
+            if result.stderr:
+                print(f"[meteorShower] stderr: {result.stderr.strip()}")
+        except Exception as e:
+            print(f"[meteorShower] script error: {e}")
+            return
+
+        if not output:
+            return
+
+        lines  = output.splitlines()
+        action = None
+        fields = {}
+        sid    = None
+
+        async def parse_block():
+            nonlocal action, fields, sid
+            if not action or not sid:
+                return
+
+            try:
+                channel = self.get_channel(int(fields.get("channel", 0)))
+                if not channel:
+                    print("[meteorShower] channel not found")
+                    return
+
+                name       = fields.get("name", "Meteor shower")
+                peak_date  = fields.get("peak_date", "")
+                zhr        = fields.get("zhr", "")
+                radiant    = fields.get("radiant", "")
+                notes      = fields.get("notes", "")
+
+                if action == "HEADSUP":
+                    emb = discord.Embed(
+                        title=f"🌠 Meteor Shower Coming Up - {name}",
+                        description=f"Peaks **{peak_date}** - mark your calendar for clear skies that night.",
+                        color=0x5865F2,
+                    )
+                    emb.add_field(name="Peak Rate (ZHR)", value=f"~{zhr}/hr", inline=True)
+                    emb.add_field(name="Radiant",         value=radiant,      inline=True)
+                    if notes:
+                        emb.add_field(name="Notes", value=notes, inline=False)
+                    await channel.send(embed=emb)
+                    print(f"[meteorShower] heads-up alert sent for {name}")
+
+                elif action == "PEAK":
+                    emb = discord.Embed(
+                        title=f"🌠 {name} Peaks Tonight!",
+                        description=f"**{peak_date}** - best viewing is after midnight, away from city lights.",
+                        color=0xFF6600,
+                    )
+                    emb.add_field(name="Peak Rate (ZHR)", value=f"~{zhr}/hr", inline=True)
+                    emb.add_field(name="Radiant",         value=radiant,      inline=True)
+                    if notes:
+                        emb.add_field(name="Notes", value=notes, inline=False)
+                    await channel.send(embed=emb)
+                    print(f"[meteorShower] peak alert sent for {name}")
+
+            except Exception as e:
+                print(f"[meteorShower] parse_block error: {e}")
+
+        for line in lines:
+            if line.startswith("ACTION:"):
+                await parse_block()
+                parts  = line.split(":")
+                action = parts[1]
+                sid    = parts[2] if len(parts) > 2 else None
                 fields = {}
             elif line.startswith("  ") and ":" in line:
                 k, _, v = line.strip().partition(": ")

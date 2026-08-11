@@ -4,23 +4,21 @@
   loaded statcast_2026_05.csv: 124,493 rows
   loaded statcast_2026_06.csv: 132,643 rows
   loaded statcast_2026_07.csv: 118,178 rows
-  loaded statcast_2026_08.csv: 27,543 rows
-  total statcast rows: 551,763
+  loaded statcast_2026_08.csv: 36,621 rows
+  total statcast rows: 560,841
 [buildPitchFeatures] loading batter features...
-/home/jhcv/discordBot/python/buildPitchFeatures.py:259: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  feats[col] = np.nan
 [buildPitchFeatures] indexing statcast by batter...
-  625 unique batters in statcast data
-  built name->mlbam crosswalk: 1248 entries
-  eligible feature rows (within statcast window): 19,954
-  statcast window: 2026-03-25 to 2026-08-07
-  progress: 50/218 players, 4,672 rows patched
-  progress: 100/218 players, 9,110 rows patched
-  progress: 150/218 players, 13,686 rows patched
-  progress: 200/218 players, 18,136 rows patched
+  627 unique batters in statcast data
+  built name->mlbam crosswalk: 1252 entries
+  eligible feature rows (within statcast window): 20,522
+  statcast window: 2026-03-25 to 2026-08-09
+  progress: 50/220 players, 4,801 rows patched
+  progress: 100/220 players, 9,233 rows patched
+  progress: 150/220 players, 13,898 rows patched
+  progress: 200/220 players, 18,441 rows patched
 
 [buildPitchFeatures] done.
-  rows patched with pitch features: 19,642 / 19,954
+  rows patched with pitch features: 20,208 / 20,522
   players skipped (no statcast match): 0
   feature columns added: ['bat_speed_r14', 'swing_length_r14', 'attack_angle_r14', 'sweet_spot_pct_r14', 'fastball_pct_r14', 'breaking_pct_r14', 'offspeed_pct_r14', 'chase_rate_r14', 'zone_contact_r14', 'whiff_rate_r14', 'first_pitch_strike_r14', 'xba_r14', 'xwoba_pitch_r14', 'hard_contact_r14', 'barrel_rate_r14', 'times_thru_order_r14', 'count_leverage_r14']
-  wrote 154,883 rows -> /home/jhcv/discordBot/outputs/features/sports/batter_features.csv
+  wrote 155,451 rows -> /home/jhcv/discordBot/outputs/features/sports/batter_features.csv
