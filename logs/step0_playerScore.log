@@ -81,23 +81,23 @@ Saved player_pool.csv (520 total players)
   Progress: 40/50
   Progress: 50/50
 
-Saved batter_game_logs.csv  (20522 rows)
-Saved pitcher_game_logs.csv (7799 rows)
+Saved batter_game_logs.csv  (20574 rows)
+Saved pitcher_game_logs.csv (7847 rows)
 
 ===== TOP 10 BATTERS BY FANTASY PTS =====
 # A tibble: 10 × 5
    player_name         fantasy_position games fantasy_pts avg_pts_per_game
    <chr>               <chr>            <int>       <dbl>            <dbl>
- 1 James Wood          OF                 114         361             3.17
- 2 Junior Caminero     3B                 117         355             3.03
+ 1 Junior Caminero     3B                 118         363             3.08
+ 2 James Wood          OF                 114         361             3.17
  3 CJ Abrams           SS                 116         352             3.03
- 4 Pete Crow-Armstrong OF                 119         351             2.95
- 5 Matt Olson          1B                 118         333             2.82
- 6 Miguel Vargas       3B                 116         332             2.86
- 7 Bryce Harper        1B                 119         331             2.78
- 8 Otto Lopez          SS                 115         323             2.81
- 9 Kevin McGonigle     3B                 114         322             2.82
-10 Alec Burleson       1B                 117         320             2.74
+ 4 Pete Crow-Armstrong OF                 119         352             2.96
+ 5 Bryce Harper        1B                 120         332             2.77
+ 6 Matt Olson          1B                 119         332             2.79
+ 7 Miguel Vargas       3B                 116         332             2.86
+ 8 Alec Burleson       1B                 118         327             2.77
+ 9 Otto Lopez          SS                 115         323             2.81
+10 Kevin McGonigle     3B                 114         322             2.82
 
 ===== TOP 10 PITCHERS BY FANTASY PTS =====
 # A tibble: 10 × 5
@@ -110,8 +110,8 @@ Saved pitcher_game_logs.csv (7799 rows)
  5 Gavin Williams     SP                  24        357.            14.9 
  6 Yoshinobu Yamamoto SP                  21        342.            16.3 
  7 Chris Sale         SP                  21        340.            16.2 
- 8 Jesús Luzardo      SP                  24        337.            14.0 
- 9 Mason Miller       RP                  47        331.             7.04
+ 8 Mason Miller       RP                  48        339.             7.06
+ 9 Jesús Luzardo      SP                  24        337.            14.0 
 10 Drew Rasmussen     SP                  22        323.            14.7 
 
 ===== OUTPUT FILES =====

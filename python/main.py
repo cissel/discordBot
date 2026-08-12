@@ -122,6 +122,7 @@ class BotClient(discord.Client):
         asyncio.create_task(self._launch_alert_loop())
         asyncio.create_task(self._flight_watch_loop())
         asyncio.create_task(self._meteor_shower_alert_loop())
+        asyncio.create_task(self._hurricane_alert_loop())
 
     async def _snapshot_invites(self):
         """Cache current use-count for every invite in the guild."""
@@ -618,6 +619,161 @@ class BotClient(discord.Client):
                 parts  = line.split(":")
                 action = parts[1]
                 sid    = parts[2] if len(parts) > 2 else None
+                fields = {}
+            elif line.startswith("  ") and ":" in line:
+                k, _, v = line.strip().partition(": ")
+                fields[k] = v
+
+        await parse_block()
+
+    async def _hurricane_alert_loop(self):
+        """Background loop - checks NHC Atlantic tropical weather outlook and
+        active storms. Runs every 30 minutes (matches the TWO's own 6-hourly
+        cadence with headroom, and CurrentStorms.json's 5-min cache window)."""
+        await asyncio.sleep(75)  # wait after startup before first check
+        while not self.is_closed():
+            try:
+                asyncio.create_task(self.run_hurricane_alerts())
+            except Exception as e:
+                print(f"[hurricaneAlert] loop error: {e}")
+            await asyncio.sleep(30 * 60)
+
+    async def run_hurricane_alerts(self):
+        """Runs hurricaneAlert.py, parses its output, posts messages.
+        Hard 60s timeout - scrapes NHC's outlook feed, CurrentStorms.json, and
+        (for named storms) a cone-image page fetch + download, so give it a
+        bit more room than the launch/meteor checks."""
+        try:
+            await asyncio.wait_for(self._run_hurricane_alerts_inner(), timeout=60)
+        except asyncio.TimeoutError:
+            print("[hurricaneAlert] timed out after 60s - skipping this check")
+        except Exception as e:
+            print(f"[hurricaneAlert] error: {e}")
+
+    async def _run_hurricane_alerts_inner(self):
+        import subprocess as _sp
+
+        PYTHON_PATH = os.path.expanduser("~/discordBot/venv/bin/python3")
+        SCRIPT      = os.path.expanduser("~/discordBot/python/hurricaneAlert.py")
+
+        try:
+            result = await asyncio.to_thread(
+                lambda: _sp.run([PYTHON_PATH, SCRIPT],
+                                capture_output=True, text=True, timeout=55)
+            )
+            output = result.stdout.strip()
+            if result.stderr:
+                print(f"[hurricaneAlert] stderr: {result.stderr.strip()}")
+        except Exception as e:
+            print(f"[hurricaneAlert] script error: {e}")
+            return
+
+        if not output:
+            return
+
+        lines  = output.splitlines()
+        action = None
+        fields = {}
+        oid    = None
+
+        DISTURBANCE_CAT_COLOR = {"low": 0x3399FF, "medium": 0xFFCC00, "high": 0xFF6600}
+
+        async def parse_block():
+            nonlocal action, fields, oid
+            if not action or not oid:
+                return
+
+            try:
+                channel = self.get_channel(int(fields.get("channel", 0)))
+                if not channel:
+                    print("[hurricaneAlert] channel not found")
+                    return
+
+                name = fields.get("name", "System")
+
+                if action in ("NEW_DISTURBANCE", "DISTURBANCE_UPGRADE"):
+                    cat_7d   = fields.get("cat_7d", "low")
+                    pct_7d   = fields.get("pct_7d", "?")
+                    cat_48h  = fields.get("cat_48h", "low")
+                    pct_48h  = fields.get("pct_48h", "?")
+                    snippet  = fields.get("snippet", "")
+                    outlook_image = fields.get("outlook_image", "")
+                    color = DISTURBANCE_CAT_COLOR.get(cat_7d, 0x888888)
+
+                    title = (f"🌴 New Tropical Disturbance - {oid}" if action == "NEW_DISTURBANCE"
+                             else f"🌴 Disturbance Upgrade - {oid}")
+                    emb = discord.Embed(title=title, description=f"**{name}**", color=color)
+                    emb.add_field(name="Formation Chance (48h)", value=f"{cat_48h.title()} ({pct_48h}%)", inline=True)
+                    emb.add_field(name="Formation Chance (7-day)", value=f"{cat_7d.title()} ({pct_7d}%)", inline=True)
+                    if snippet:
+                        emb.add_field(name="Details", value=snippet, inline=False)
+                    emb.set_footer(text="Source: NHC / Atlantic Tropical Weather Outlook")
+
+                    if outlook_image and os.path.exists(outlook_image):
+                        file = discord.File(outlook_image, filename="outlook.png")
+                        emb.set_image(url="attachment://outlook.png")
+                        await channel.send(embed=emb, file=file)
+                    else:
+                        await channel.send(embed=emb)
+                    print(f"[hurricaneAlert] {action} alert sent for {oid} ({name})")
+
+                elif action in ("NEW_STORM", "CATEGORY_CHANGE"):
+                    category_label = fields.get("category_label", "System")
+                    classification = fields.get("classification", "")
+                    intensity_kt   = fields.get("intensity_kt", "?")
+                    pressure_mb    = fields.get("pressure_mb", "?")
+                    lat            = fields.get("lat", "?")
+                    lon            = fields.get("lon", "?")
+                    move_dir       = fields.get("movement_dir", "?")
+                    move_speed     = fields.get("movement_speed", "?")
+                    adv_num        = fields.get("adv_num", "?")
+                    cone_image     = fields.get("cone_image", "")
+                    color          = int(fields.get("color", "0x888888"), 16) if fields.get("color") else 0x888888
+                    emoji          = fields.get("emoji", "🌀")
+                    previous_label = fields.get("previous_label", "")
+
+                    if action == "NEW_STORM":
+                        title = f"{emoji} New Named Storm - {name}"
+                        desc  = f"**{category_label}**"
+                    else:
+                        title = f"{emoji} {name} Now a {category_label}"
+                        desc  = f"Upgraded from {previous_label}" if previous_label else f"**{category_label}**"
+
+                    emb = discord.Embed(title=title, description=desc, color=color)
+                    emb.add_field(name="Position", value=f"{lat}, {lon}", inline=True)
+                    emb.add_field(name="Max Sustained Winds", value=f"{intensity_kt} kt", inline=True)
+                    emb.add_field(name="Pressure", value=f"{pressure_mb} mb", inline=True)
+                    emb.add_field(name="Movement", value=f"{move_dir} at {move_speed} mph", inline=True)
+                    emb.add_field(name="Advisory #", value=adv_num, inline=True)
+                    emb.set_footer(text="Source: NHC / National Hurricane Center")
+
+                    if cone_image and os.path.exists(cone_image):
+                        file = discord.File(cone_image, filename="cone.png")
+                        emb.set_image(url="attachment://cone.png")
+                        await channel.send(embed=emb, file=file)
+                    else:
+                        await channel.send(embed=emb)
+                    print(f"[hurricaneAlert] {action} alert sent for {name}")
+
+                elif action == "STORM_DISSIPATED":
+                    emb = discord.Embed(
+                        title=f"✅ {name} No Longer Tracked",
+                        description="This system has dissipated, gone post-tropical, or moved out of NHC's active list.",
+                        color=0x00CC00,
+                    )
+                    emb.set_footer(text="Source: NHC / National Hurricane Center")
+                    await channel.send(embed=emb)
+                    print(f"[hurricaneAlert] dissipation notice sent for {name}")
+
+            except Exception as e:
+                print(f"[hurricaneAlert] parse_block error: {e}")
+
+        for line in lines:
+            if line.startswith("ACTION:"):
+                await parse_block()
+                parts  = line.split(":")
+                action = parts[1]
+                oid    = parts[2] if len(parts) > 2 else None
                 fields = {}
             elif line.startswith("  ") and ":" in line:
                 k, _, v = line.strip().partition(": ")

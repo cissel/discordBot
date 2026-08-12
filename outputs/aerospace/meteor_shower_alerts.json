@@ -2,7 +2,7 @@
   "alerted": {
     "2026-perseids": {
       "headsup": false,
-      "peak": false
+      "peak": true
     },
     "2027-quadrantids": {
       "headsup": false,
