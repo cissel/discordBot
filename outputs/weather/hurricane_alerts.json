@@ -1,15 +1,4 @@
 {
-  "outlook": {
-    "AL92": {
-      "name": "Central Tropical Atlantic",
-      "last_7d_cat": "high",
-      "last_48h_cat": "high"
-    },
-    "AL93": {
-      "name": "Central Subtropical Atlantic",
-      "last_7d_cat": "medium",
-      "last_48h_cat": "medium"
-    }
-  },
+  "outlook": {},
   "storms": {}
 }

@@ -77,10 +77,23 @@ pstats <- tryCatch(
 )
 
 # Season-aggregate NGS (WR only)
+# NOTE (Aug 2026 bugfix): nflverse's raw weekly NGS feed sometimes uses an
+# inconsistent player_display_name for the SAME player_gsis_id across weeks
+# within a season (e.g. "Chris Godwin" some weeks, "Chris Godwin Jr." other
+# weeks - same story for DJ/D.J. Moore, Marvin Harrison/Jr., Brian Thomas/Jr.).
+# Grouping by player_gsis_id + player_display_name together (the old code)
+# silently split these into two separate summary rows per player, and BOTH
+# survived into ngs_wr_export.csv - showing up as duplicate points on the
+# live-draft NGS scatter plot. Fix: group by player_gsis_id (+ position) ONLY
+# so stats aggregate across ALL weeks for that id regardless of name spelling,
+# then resolve one canonical display name (mode within NGS, preferring
+# player_stats' name below since that source is consistently single-spelling
+# per id and used everywhere else in the pipeline).
 ngs_szn <- ngs %>%
   filter(season_type == "REG", player_position == "WR") %>%
-  group_by(player_gsis_id, player_display_name, player_position) %>%
+  group_by(player_gsis_id, player_position) %>%
   summarise(
+    player_display_name = names(sort(table(player_display_name), decreasing = TRUE))[1],
     ngs_tgts        = sum(targets, na.rm = TRUE),
     avg_sep         = mean(avg_separation, na.rm = TRUE),
     avg_cushion     = mean(avg_cushion, na.rm = TRUE),
@@ -91,12 +104,13 @@ ngs_szn <- ngs %>%
   ) %>%
   filter(ngs_tgts >= 30)
 
-# Join player_stats
+# Join player_stats - prefer pstats' name (single canonical spelling per
+# player_id, confirmed via diagnostic) over the NGS mode-name fallback.
 if (!is.null(pstats)) {
   df <- ngs_szn %>%
     left_join(pstats, by = c("player_gsis_id" = "player_id"))
   df <- df %>%
-    mutate(name = dplyr::coalesce(player_display_name.x, player_display_name.y))
+    mutate(name = dplyr::coalesce(player_display_name.y, player_display_name.x))
 } else {
   df <- ngs_szn %>% rename(name = player_display_name)
 }

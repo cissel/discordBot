@@ -601,8 +601,54 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     async def hurricane(interaction: discord.Interaction):
         await _defer(interaction)
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "hurricane.R"))
-        await _send(interaction, "here's the 7 day tropical weather outlook",
-                    file=discord.File(os.path.join(op, "weather/two7d.png")))
+        outlook_path = os.path.join(op, "weather/two7d.png")
+        if not os.path.exists(outlook_path):
+            await _send(interaction, "couldn't fetch the tropical weather outlook :(", ephemeral=True)
+            return
+
+        # reuse the same TWO text parser the hurricane alert loop uses, so the
+        # per-system breakdown here matches what /would/ trigger an alert
+        try:
+            from hurricaneAlert import fetch_outlook_disturbances
+            disturbances = await asyncio.to_thread(fetch_outlook_disturbances)
+        except Exception as e:
+            print(f"[/weather hurricane] outlook text parse failed: {e}")
+            disturbances = {}
+
+        emb = discord.Embed(
+            title="🌴 Atlantic Tropical Weather Outlook",
+            description="NHC's 7-day formation outlook for the Atlantic basin.",
+            color=0x3399FF,
+        )
+
+        if disturbances:
+            for did, info in disturbances.items():
+                val = f"{info['snippet']}\n"
+                val += f"**Formation chance (48h):** {info['cat_48h'].title()} ({info['pct_48h']}%)\n"
+                val += f"**Formation chance (7-day):** {info['cat_7d'].title()} ({info['pct_7d']}%)"
+                if len(val) > 1024:
+                    val = val[:1021] + "..."
+                emb.add_field(name=f"{info['name']} ({did})", value=val, inline=False)
+        else:
+            emb.add_field(name="Active Systems", value="No named disturbances in the current outlook.", inline=False)
+
+        emb.add_field(
+            name="Forecast",
+            value="[NHC Tropical Weather Outlook](https://www.nhc.noaa.gov/gtwo.php?basin=atlc)",
+            inline=False,
+        )
+        emb.set_footer(text="Source: NHC / Atlantic Tropical Weather Outlook")
+
+        noaa_logo = os.path.expanduser("~/discordBot/stickers/noaa_logo.png")
+        if os.path.exists(noaa_logo):
+            emb.set_thumbnail(url="attachment://noaa_logo.png")
+            await _send(interaction, embed=emb, file=discord.File(noaa_logo, filename="noaa_logo.png"))
+        else:
+            await _send(interaction, embed=emb)
+
+        # forecast image sent full-size as its own message - embedding it alongside
+        # the logo squashes it down to thumbnail-sized in Discord's renderer.
+        await interaction.channel.send(file=discord.File(outlook_path, filename="outlook.png"))
 
     @weather_group.command(name="alerts", description="Active NWS weather alerts for Duval County")
     async def weather_alerts(interaction: discord.Interaction):
@@ -1253,7 +1299,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         import aiohttp
         try:
-            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+            async with aiohttp.ClientSession() as s:
                 async with s.get("https://site.api.espn.com/apis/v2/sports/hockey/nhl/standings",
                                   timeout=aiohttp.ClientTimeout(total=10)) as r:
                     if r.status != 200:
@@ -1341,6 +1387,112 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         if emb is None:
             await _send(interaction, "couldn't find game info :(", ephemeral=True); return
         await _send(interaction, embed=emb)
+
+    _NFL_SEASON_LABEL = {1: "Preseason", 2: "Regular Season", 3: "Postseason"}
+
+    async def _fetch_nfl_scoreboard(date_str: str):
+        """Return list of ESPN event dicts for the given YYYYMMDD date, or []."""
+        import aiohttp
+        url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+        try:
+            async with aiohttp.ClientSession() as s:
+                async with s.get(url, params={"dates": date_str}, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                    if r.status != 200:
+                        return []
+                    data = await r.json()
+            return data.get("events", [])
+        except Exception:
+            return []
+
+    def _build_nfl_scoreboard_embed(events, title):
+        emb = discord.Embed(title=title, color=0x013369)
+        emb.set_thumbnail(url="attachment://nfl.png")
+        for ev in events:
+            comp = ev.get("competitions", [{}])[0]
+            competitors = comp.get("competitors", [])
+            away = next((c for c in competitors if c.get("homeAway") == "away"), {})
+            home = next((c for c in competitors if c.get("homeAway") == "home"), {})
+            away_name = away.get("team", {}).get("abbreviation", "?")
+            home_name = home.get("team", {}).get("abbreviation", "?")
+
+            status = comp.get("status", {}).get("type", {})
+            state  = status.get("state", "pre")
+            season_type = ev.get("season", {}).get("type")
+            season_label = _NFL_SEASON_LABEL.get(season_type, "")
+
+            venue = comp.get("venue", {}).get("fullName", "")
+
+            if state == "post":
+                a_score = away.get("score", "?")
+                h_score = home.get("score", "?")
+                a_win = " 🏆" if away.get("winner") else ""
+                h_win = " 🏆" if home.get("winner") else ""
+                value = f"**{away_name} {a_score}{a_win} - {home_name} {h_score}{h_win}**\n*Final"
+                if venue:
+                    value += f" • {venue}"
+                value += "*"
+            elif state == "in":
+                a_score = away.get("score", "0")
+                h_score = home.get("score", "0")
+                clock = status.get("shortDetail", "")
+                value = f"🔴 **{away_name} {a_score} - {home_name} {h_score}**\n*{clock}*"
+            else:
+                detail = status.get("shortDetail", "")
+                odds_list = comp.get("odds", [])
+                odds_str = ""
+                if odds_list:
+                    o = odds_list[0]
+                    parts = []
+                    if o.get("details"):
+                        parts.append(o["details"])
+                    if o.get("overUnder"):
+                        parts.append(f"O/U {o['overUnder']}")
+                    if parts:
+                        odds_str = "  •  " + "  ".join(parts)
+                value = f"*{detail}*"
+                if venue:
+                    value += f" • {venue}"
+                value += odds_str
+
+            name = f"{away_name} @ {home_name}"
+            if season_label and season_label != "Regular Season":
+                name += f"  [{season_label}]"
+            emb.add_field(name=name, value=value, inline=False)
+        return emb
+
+    @nfl_group.command(name="today", description="NFL games today (incl. preseason)")
+    async def nfl_today(interaction: discord.Interaction):
+        await _defer(interaction)
+        import datetime as _dt, pytz
+        eastern = pytz.timezone("America/New_York")
+        now_et  = _dt.datetime.now(_dt.timezone.utc).astimezone(eastern)
+        date_str = now_et.strftime("%Y%m%d")
+        events = await _fetch_nfl_scoreboard(date_str)
+        if not events:
+            await _send(interaction, "no NFL games today :(")
+            return
+        today_str = now_et.strftime("%B %d, %Y")
+        emb = _build_nfl_scoreboard_embed(events, f"🏈 NFL Games - {today_str}")
+        emb.set_footer(text="source: i know ball")
+        logo_path = os.path.expanduser("~/discordBot/stickers/nfl.png")
+        await interaction.followup.send(embed=emb, file=discord.File(logo_path, filename="nfl.png"))
+
+    @nfl_group.command(name="tomorrow", description="NFL games tomorrow (incl. preseason)")
+    async def nfl_tomorrow(interaction: discord.Interaction):
+        await _defer(interaction)
+        import datetime as _dt, pytz
+        eastern = pytz.timezone("America/New_York")
+        tomorrow_et = _dt.datetime.now(_dt.timezone.utc).astimezone(eastern) + _dt.timedelta(days=1)
+        date_str = tomorrow_et.strftime("%Y%m%d")
+        events = await _fetch_nfl_scoreboard(date_str)
+        if not events:
+            await _send(interaction, "no NFL games tomorrow :(")
+            return
+        tomorrow_str = tomorrow_et.strftime("%B %d, %Y")
+        emb = _build_nfl_scoreboard_embed(events, f"🏈 NFL Games - {tomorrow_str}")
+        emb.set_footer(text="source: i know ball")
+        logo_path = os.path.expanduser("~/discordBot/stickers/nfl.png")
+        await interaction.followup.send(embed=emb, file=discord.File(logo_path, filename="nfl.png"))
 
     @nfl_group.command(name="wr", description="top WR targets this szn")
     async def nfl_wr(interaction: discord.Interaction):
@@ -1492,7 +1644,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         import aiohttp
         try:
-            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+            async with aiohttp.ClientSession() as s:
                 async with s.get("https://site.api.espn.com/apis/v2/sports/football/nfl/standings",
                                   timeout=aiohttp.ClientTimeout(total=10)) as r:
                     if r.status != 200:
@@ -2049,7 +2201,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         import aiohttp
         try:
-            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+            async with aiohttp.ClientSession() as s:
                 async with s.get("https://site.api.espn.com/apis/v2/sports/basketball/nba/standings",
                                   timeout=aiohttp.ClientTimeout(total=10)) as r:
                     if r.status != 200:
@@ -2268,7 +2420,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             last_err = None
             for attempt in range(2):  # one retry - concurrent /ball load can cause transient timeouts
                 try:
-                    async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                    async with aiohttp.ClientSession() as s:
                         async with s.get(url, timeout=aiohttp.ClientTimeout(total=15)) as r:
                             if r.status != 200:
                                 last_err = f"HTTP {r.status}"
@@ -2289,7 +2441,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             """Return list of WC match dicts for the given YYYYMMDD date, or []."""
             url = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard"
             try:
-                async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+                async with aiohttp.ClientSession() as s:
                     async with s.get(url, params={"dates": date_str}, timeout=aiohttp.ClientTimeout(total=10)) as r:
                         if r.status != 200:
                             return []
@@ -4934,6 +5086,64 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             return
         await _send(interaction, file=discord.File(img))
 
+    @mlb_group.command(name="sharpe", description="Sharpe-ratio style consistency stats: ERA/WHIP (pitching) or OBP/OPS (hitting)")
+    @app_commands.describe(stat="Select stat", scope="All players, or free agents only")
+    @app_commands.choices(
+        stat=[
+            app_commands.Choice(name="ERA Sharpe (pitching)", value="era"),
+            app_commands.Choice(name="WHIP Sharpe (pitching)", value="whip"),
+            app_commands.Choice(name="OBP Sharpe (hitting)", value="obp"),
+            app_commands.Choice(name="OPS Sharpe (hitting)", value="ops"),
+        ],
+        scope=[
+            app_commands.Choice(name="All Players", value="all"),
+            app_commands.Choice(name="Free Agents Only", value="fa"),
+        ],
+    )
+    async def mlb_sharpe(
+        interaction: discord.Interaction,
+        stat: app_commands.Choice[str],
+        scope: str = "all",
+    ):
+        await _defer(interaction)
+
+        stat_value = stat.value
+        fa_csv = os.path.join(op, "sports/mlb/fantasy/freeagents.csv")
+        fa_names_arg = "ALL"
+
+        if scope == "fa":
+            import csv as _csv
+            is_pitching = stat_value in ("era", "whip")
+            positions = ["SP", "RP"] if is_pitching else ["C", "1B", "2B", "3B", "SS", "OF"]
+            all_fa_names = []
+            for pos in positions:
+                await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), pos, "50")
+                if os.path.exists(fa_csv):
+                    with open(fa_csv, newline="") as f:
+                        pos_names = [r["player_name"] for r in _csv.DictReader(f) if r.get("player_name")]
+                    all_fa_names.extend(pos_names)
+            seen = set()
+            all_fa_names = [n for n in all_fa_names if not (n in seen or seen.add(n))]
+            if not all_fa_names:
+                await _send(interaction, "no free agents found.", ephemeral=True)
+                return
+            fa_names_arg = "|".join(all_fa_names)
+
+        if stat_value == "era":
+            img = os.path.join(op, "sports/mlb/fantasy/eraSharpe.png")
+            await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "mlbERASharpe.R"), img, "8", "12", fa_names_arg)
+        elif stat_value == "whip":
+            img = os.path.join(op, "sports/mlb/fantasy/whipSharpe.png")
+            await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "mlbWHIPSharpe.R"), img, "8", "12", fa_names_arg)
+        else:  # obp or ops
+            img = os.path.join(op, f"sports/mlb/fantasy/{stat_value}Sharpe.png")
+            await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "mlbOBPSharpe.R"), img, stat_value, "20", fa_names_arg)
+
+        if not os.path.exists(img):
+            await _send(interaction, "couldn't generate the sharpe plot :(", ephemeral=True)
+            return
+        await _send(interaction, file=discord.File(img))
+
     @mlb_group.command(name="fantasyscoreboard", description="World Sillies live fantasy baseball scoreboard")
     async def mlb_fantasyscoreboard(interaction: discord.Interaction):
         await _defer(interaction)
@@ -6787,7 +6997,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         import aiohttp
         try:
-            async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as s:
+            async with aiohttp.ClientSession() as s:
                 async with s.get("https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings",
                                   timeout=aiohttp.ClientTimeout(total=10)) as r:
                     if r.status != 200:

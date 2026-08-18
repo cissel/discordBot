@@ -1,16 +1,16 @@
 [fetchCrossAssetData] Alpaca daily-return tickers:
-  [SPY] existing: 2663 rows to 2026-08-07, fetching 2026-08-08 to 2026-08-10
-  [SPY] wrote 2664 rows -> /home/jhcv/discordBot/outputs/markets/cache/SPY.csv (last: 2026-08-10)
-  [QQQ] existing: 2663 rows to 2026-08-07, fetching 2026-08-08 to 2026-08-10
-  [QQQ] wrote 2664 rows -> /home/jhcv/discordBot/outputs/markets/cache/QQQ.csv (last: 2026-08-10)
-  [GLD] existing: 2663 rows to 2026-08-07, fetching 2026-08-08 to 2026-08-10
-  [GLD] wrote 2664 rows -> /home/jhcv/discordBot/outputs/markets/cache/GLD.csv (last: 2026-08-10)
-  [USO] existing: 2663 rows to 2026-08-07, fetching 2026-08-08 to 2026-08-10
-  [USO] wrote 2664 rows -> /home/jhcv/discordBot/outputs/markets/cache/USO.csv (last: 2026-08-10)
+  [SPY] existing: 2668 rows to 2026-08-14, fetching 2026-08-15 to 2026-08-17
+  [SPY] wrote 2669 rows -> /home/jhcv/discordBot/outputs/markets/cache/SPY.csv (last: 2026-08-17)
+  [QQQ] existing: 2668 rows to 2026-08-14, fetching 2026-08-15 to 2026-08-17
+  [QQQ] wrote 2669 rows -> /home/jhcv/discordBot/outputs/markets/cache/QQQ.csv (last: 2026-08-17)
+  [GLD] existing: 2668 rows to 2026-08-14, fetching 2026-08-15 to 2026-08-17
+  [GLD] wrote 2669 rows -> /home/jhcv/discordBot/outputs/markets/cache/GLD.csv (last: 2026-08-17)
+  [USO] existing: 2668 rows to 2026-08-14, fetching 2026-08-15 to 2026-08-17
+  [USO] wrote 2669 rows -> /home/jhcv/discordBot/outputs/markets/cache/USO.csv (last: 2026-08-17)
 [fetchCrossAssetData] FRED level series:
-  [VIX.csv] wrote 9549 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-08-07, 4d behind, expected <=3d) [WARN]
+  [VIX.csv] wrote 9554 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-08-14, 4d behind, expected <=3d) [WARN]
     [WARN] VIX.csv is MORE stale than its known publication lag allows - this may be a genuine fetch problem, not just normal lag.
-  [DXY.csv] wrote 5375 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-08-07, 4d behind, expected <=14d) [OK]
-  [T10Y2Y.csv] wrote 13095 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-08-10, 1d behind, expected <=3d) [OK]
-  [FEDFUNDS.csv] wrote 865 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-07-01, 41d behind, expected <=65d) [OK]
+  [DXY.csv] wrote 5380 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-08-14, 4d behind, expected <=14d) [OK]
+  [T10Y2Y.csv] wrote 13100 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-08-17, 1d behind, expected <=3d) [OK]
+  [FEDFUNDS.csv] wrote 865 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-07-01, 48d behind, expected <=65d) [OK]
 [fetchCrossAssetData] done.

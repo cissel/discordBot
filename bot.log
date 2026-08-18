@@ -47268,3 +47268,3649 @@ Online as several bots#0340
 [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (1d out)
 [meteorShower] peak alert sent for Perseids
 Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb erasharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb erasharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb erasharpe
+    /mlb whipsharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+[startup] FATAL: maximum number of child commands exceeded
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/python/main.py", line 864, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/jhcv/discordBot/python/main.py", line 841, in main
+    await client.start(TOKEN)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 850, in start
+    await self.login(token)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 693, in login
+    await self.setup_hook()
+  File "/home/jhcv/discordBot/python/main.py", line 88, in setup_hook
+    register_commands(self.tree, GUILD,
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+                      R_PATH=R_PATH,
+                      ^^^^^^^^^^^^^^
+                      PYTHON_PATH=PYTHON_PATH,
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+                      OUTPUT_PATH=OUTPUT_PATH)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/python/commands.py", line 6978, in register_commands
+    @mlb_group.command(
+     ~~~~~~~~~~~~~~~~~^
+        name="fantasycumulative",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+        description="World Sillies cumulative fantasy points per player over the season (default: your team)"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 2013, in decorator
+    self.add_command(command)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 1924, in add_command
+    raise ValueError('maximum number of child commands exceeded')
+ValueError: maximum number of child commands exceeded
+Traceback (most recent call last):
+  File "/home/jhcv/discordBot/python/main.py", line 864, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/jhcv/discordBot/python/main.py", line 841, in main
+    await client.start(TOKEN)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 850, in start
+    await self.login(token)
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/client.py", line 693, in login
+    await self.setup_hook()
+  File "/home/jhcv/discordBot/python/main.py", line 88, in setup_hook
+    register_commands(self.tree, GUILD,
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+                      R_PATH=R_PATH,
+                      ^^^^^^^^^^^^^^
+                      PYTHON_PATH=PYTHON_PATH,
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+                      OUTPUT_PATH=OUTPUT_PATH)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jhcv/discordBot/python/commands.py", line 6978, in register_commands
+    @mlb_group.command(
+     ~~~~~~~~~~~~~~~~~^
+        name="fantasycumulative",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+        description="World Sillies cumulative fantasy points per player over the season (default: your team)"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 2013, in decorator
+    self.add_command(command)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/jhcv/discordBot/venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 1924, in add_command
+    raise ValueError('maximum number of child commands exceeded')
+ValueError: maximum number of child commands exceeded
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl today
+    /nfl tomorrow
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl today
+    /nfl tomorrow
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl today
+    /nfl tomorrow
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl today
+    /nfl tomorrow
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl today
+    /nfl tomorrow
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl today
+    /nfl tomorrow
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl fantasywrapped
+    /nfl alltimewrapped
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl draftboard
+    /nfl draft
+    /nfl undraft
+    /nfl resetdraft
+    /nfl cheatsheet
+    /nfl bigboard
+    /nfl strategyguide
+    /nfl mockdraft
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 50 commands registered
+Synced 50 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[invites] cached 6 invites
+[DJ] indexes ready - 415 tracks · 21 genres · 340 artists
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[launchAlert] 24h alert sent for Falcon 9 Block 5 | Globalstar 2-R Mission 1 (x 9) (msg 1537973401107570721)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Perseids on Aug 12 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[launchAlert] 1h alert sent for Falcon 9 Block 5 | Globalstar 2-R Mission 1 (x 9) (msg 1538332017966719110)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[launchAlert] user 818644716962447430 opted into 5m alert for Falcon 9 Block 5 | Globalstar 2-R Mission 1 (x 9)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[launchAlert] 5m alert sent for Falcon 9 Block 5 | Globalstar 2-R Mission 1 (x 9)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (54d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (53d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (52d out)

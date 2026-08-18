@@ -153,6 +153,35 @@ def load_breakout_candidates():
     return cand[["norm_name", "position", "player_display_name", "breakout_z"]]
 
 
+def load_kdst_volatility():
+    """K and DEF/ST are out of scope for the VORP/ADP moneyball pipeline
+    (see buildNflVorp.py docstring - skill positions only), so there's no
+    live-draft roster tracking for them here. This loads the standalone 2025
+    season volatility CSVs (fetchNflKickerVolatility.R / fetchNflDstVolatility.R)
+    for the mean-vs-volatility chart only - season-long, not filtered by
+    who's still on the board (no VORP board join available to know that)."""
+    out = {}
+    k_path = os.path.join(OUT_DIR, "weekly_volatility_kickers_2025.csv")
+    if os.path.exists(k_path):
+        df = pd.read_csv(k_path)
+        df = df.rename(columns={"player_display_name": "full_name"})
+        df["position"] = "K"
+        out["K"] = df
+    else:
+        out["K"] = None
+        print("NOTE: weekly_volatility_kickers_2025.csv not found - run r/fetchNflKickerVolatility.R first.")
+    dst_path = os.path.join(OUT_DIR, "weekly_volatility_dst_2025.csv")
+    if os.path.exists(dst_path):
+        df = pd.read_csv(dst_path)
+        df = df.rename(columns={"team": "full_name"})
+        df["position"] = "DEF"
+        out["DEF"] = df
+    else:
+        out["DEF"] = None
+        print("NOTE: weekly_volatility_dst_2025.csv not found - run r/fetchNflDstVolatility.R first.")
+    return out
+
+
 def load_aging_curves():
     curves_path = os.path.join(OUT_DIR, "aging_curves.csv")
     summary_path = os.path.join(OUT_DIR, "aging_curve_summary.csv")
@@ -352,6 +381,55 @@ def build_volatility_figure(avail_df, positions):
     return fig
 
 
+def build_kdst_volatility_figure(pos, kdst_df):
+    """Standalone mean-vs-volatility chart for K or DEF - season-long 2025
+    data only, no live-draft drafted-player filtering (no VORP board exists
+    for these positions to know who's still available). Same visual language
+    (Sharpe color, bubble = games played) as build_volatility_figure."""
+    fig = go.Figure()
+    if kdst_df is None or kdst_df.empty:
+        script = "fetchNflKickerVolatility.R" if pos == "K" else "fetchNflDstVolatility.R"
+        navy_fig_layout(fig, f"2025 Season Scoring: {pos} Volatility vs Mean",
+                         f"no data - run r/{script} first")
+        return fig
+    df = kdst_df.copy()
+    sd_safe = df["sd_pts"].replace(0, pd.NA)
+    df["sharpe_calc"] = pd.to_numeric(df["mean_pts"], errors="coerce") / pd.to_numeric(sd_safe, errors="coerce")
+    sharpe_min, sharpe_max = df["sharpe_calc"].min(skipna=True), df["sharpe_calc"].max(skipna=True)
+    size_max = df["games_played"].max()
+
+    fig.add_trace(go.Scatter(
+        x=df["sd_pts"], y=df["mean_pts"], mode="markers+text",
+        name=pos, text=df["full_name"].str.split().str[-1], textposition="top center",
+        textfont=dict(size=9, color=TXT_MUTED),
+        marker=dict(
+            size=df["games_played"], sizemode="area",
+            sizeref=2. * max(size_max, 1) / (40. ** 2), sizemin=6,
+            symbol="diamond" if pos == "K" else "square",
+            color=df["sharpe_calc"], coloraxis="coloraxis",
+            line=dict(width=1, color=GRID), opacity=0.9,
+        ),
+        customdata=df[["full_name", "games_played", "mean_pts", "sd_pts", "sharpe_calc"]],
+        hovertemplate="<b>%{customdata[0]}</b><br>Games: %{customdata[1]}<br>"
+                      "Mean pts/wk: %{customdata[2]:.1f} | SD: %{customdata[3]:.1f}<br>"
+                      "Sharpe: %{customdata[4]:.2f}<extra></extra>",
+    ))
+    fig.update_layout(coloraxis=dict(
+        colorscale=[[0, ACCENT_BAD], [0.5, TXT], [1, ACCENT_GOOD]],
+        cmin=sharpe_min if pd.notna(sharpe_min) else 0, cmax=sharpe_max if pd.notna(sharpe_max) else 1,
+        colorbar=dict(title=dict(text="Sharpe (mean/sd)", font=dict(color=TXT_MUTED)), tickfont=dict(color=TXT_MUTED)),
+    ))
+    label = "Kicker" if pos == "K" else "DEF/Special Teams"
+    navy_fig_layout(
+        fig, f"2025 Season Scoring: {label} Volatility vs Mean",
+        "x = stdev of weekly Room40 pts (2025, lower=steadier) | y = mean weekly pts | "
+        "bubble size = games played | color = Sharpe (mean/sd) | out of VORP/live-draft "
+        "scope (season-long only, not drafted-player filtered)",
+        x_title="Std Dev of Weekly Points (2025)", y_title="Mean Weekly Points (2025)",
+    )
+    return fig
+
+
 def df_to_table_records(df, cols):
     out = df[cols].copy()
     for c in out.columns:
@@ -372,6 +450,7 @@ def build_app(draft_id=None, my_slot=None, poll_seconds=8):
     aging_curves, aging_summary = load_aging_curves()
     age_lookup = load_player_ages()
     aging_fig_static = build_aging_curve_figure(aging_curves, aging_summary)
+    kdst_volatility = load_kdst_volatility()
 
     # draft_id/my_slot are now OPTIONAL at process startup - the app can be
     # left running across multiple mock/real drafts, with each new draft
@@ -433,14 +512,6 @@ def build_app(draft_id=None, my_slot=None, poll_seconds=8):
             ]),
             html.Div(style={"flex": "1.4", "minWidth": "500px"}, children=[
                 html.H4("Best Available (marginal-VORP ranked)", style={"color": TXT}),
-                dcc.Checklist(
-                    id="best-available-position-filter",
-                    options=[{"label": f"  {p}", "value": p} for p in ["QB", "RB", "WR", "TE", "FLEX"]],
-                    value=["QB", "RB", "WR", "TE"],
-                    inline=True,
-                    style={"color": TXT, "marginBottom": "8px"},
-                    labelStyle={"marginRight": "16px"},
-                ),
                 dash_table.DataTable(
                     id="best-available-table", **DARK_TABLE_STYLE, page_size=15,
                     sort_action="native", sort_mode="single",
@@ -450,40 +521,35 @@ def build_app(draft_id=None, my_slot=None, poll_seconds=8):
             ]),
         ]),
 
+        # ── Single global position toggle - drives every chart/graph/table
+        # below (Best Available, Volatility, NGS, Aging, Breakout). Replaces
+        # the four separate per-panel position checklists/tabs that used to
+        # live here - one selection now, everything downstream follows it.
+        html.Div(style={"marginBottom": "20px"}, children=[
+            html.Span("Position: ", style={"color": TXT_MUTED, "fontSize": "13px", "marginRight": "8px"}),
+            dcc.Tabs(id="global-position-toggle", value="QB", children=[
+                dcc.Tab(label=pos, value=pos,
+                        style={"backgroundColor": PANEL, "color": TXT_MUTED, "border": f"1px solid {GRID}",
+                               "padding": "8px 6px"},
+                        selected_style={"backgroundColor": BG, "color": TXT, "border": f"1px solid {GRID}",
+                                        "borderTop": f"3px solid {POS_COLORS.get(pos, GOLD)}", "padding": "8px 6px"})
+                for pos in ["QB", "RB", "WR", "TE", "FLEX", "K", "DEF"]
+            ], style={"display": "inline-block", "width": "640px", "verticalAlign": "middle"}),
+        ]),
+
         html.Div(style={"display": "flex", "gap": "16px", "flexWrap": "wrap", "alignItems": "flex-start"}, children=[
             html.Div(style={"flex": "1", "minWidth": "460px"}, children=[
                 html.H4("2025 Scoring Volatility", style={"color": TXT}),
-                dcc.Checklist(
-                    id="position-filter",
-                    options=[{"label": f"  {p}", "value": p} for p in ["QB", "RB", "WR", "TE", "FLEX"]],
-                    value=["QB", "RB", "WR", "TE"],
-                    inline=True,
-                    style={"color": TXT, "marginBottom": "8px"},
-                    labelStyle={"marginRight": "18px"},
-                ),
                 dcc.Graph(id="volatility-graph", style={"height": "520px"}),
             ]),
             html.Div(style={"flex": "1", "minWidth": "460px"}, children=[
                 html.H4("Advanced Stats (Next Gen Stats)", style={"color": TXT}),
-                dcc.Tabs(id="ngs-tabs", value="WR", children=[
-                    dcc.Tab(label=pos, value=pos, style={"backgroundColor": PANEL, "color": TXT_MUTED, "border": f"1px solid {GRID}"},
-                            selected_style={"backgroundColor": BG, "color": TXT, "border": f"1px solid {GRID}", "borderTop": f"3px solid {POS_COLORS[pos]}"})
-                    for pos in ["WR", "RB", "QB", "TE"]
-                ], style={"marginBottom": "8px"}),
                 dcc.Graph(id="ngs-graph", style={"height": "520px"}),
             ]),
         ]),
 
         html.Div(style={"display": "flex", "gap": "16px", "marginTop": "24px", "flexWrap": "wrap"}, children=[
             html.Div(style={"flex": "1", "minWidth": "460px"}, children=[
-                dcc.Checklist(
-                    id="aging-position-filter",
-                    options=[{"label": f"  {p}", "value": p} for p in AGING_POSITIONS],
-                    value=list(AGING_POSITIONS),
-                    inline=True,
-                    style={"color": TXT, "marginBottom": "8px"},
-                    labelStyle={"marginRight": "16px"},
-                ),
                 dcc.Graph(id="aging-graph", figure=aging_fig_static, style={"height": "650px"}),
             ]),
             html.Div(style={"flex": "1", "minWidth": "380px"}, children=[
@@ -643,26 +709,40 @@ def build_app(draft_id=None, my_slot=None, poll_seconds=8):
                                                        ["full_name", "position", "team", "adp_overall", "vorp"]]) if not roster_df.empty else []
         return roster_data, roster_cols
 
+    def positions_for_toggle(selected_pos):
+        """Global position toggle is single-select (QB/RB/WR/TE/FLEX). FLEX
+        expands to its eligible positions (RB/WR/TE); a specific position
+        resolves to just itself. Falls back to all four if unset.
+        Defensive: a stale browser tab still holding the old multi-select
+        checklist widgets can send a list here (e.g. after a server restart,
+        before the page is refreshed) - unwrap to the first value in that case."""
+        if isinstance(selected_pos, (list, tuple, set)):
+            selected_pos = next(iter(selected_pos), None)
+        if not selected_pos:
+            return {"QB", "RB", "WR", "TE"}
+        if selected_pos == "FLEX":
+            return set(FLEX_ELIGIBLE)
+        return {selected_pos}
+
     @app.callback(
         Output("best-available-table", "data"), Output("best-available-table", "columns"),
-        Input("draft-state", "data"), Input("best-available-position-filter", "value"),
+        Input("draft-state", "data"), Input("global-position-toggle", "value"),
     )
-    def update_best_available_table(state, selected_positions):
+    def update_best_available_table(state, selected_pos):
         best_cols = [{"name": c, "id": c, "type": "numeric" if c not in ("full_name", "position", "team", "mover") else "text"}
                      for c in ["full_name", "position", "team", "adp_overall", "vorp", "value_gap",
                                "marginal_gain", "pts_mean_2025", "pts_sd_2025", "mover"]]
+        if selected_pos in ("K", "DEF"):
+            # No VORP/ADP board for K/DEF (out of moneyball-pipeline scope,
+            # see load_kdst_volatility docstring) - nothing to recommend here.
+            return [], best_cols
         if not state or state.get("error") or state.get("waiting") or state.get("no_config"):
             return [], best_cols
 
         drafted_names = set(state.get("drafted_names", []))
         available = vorp_df_base[~vorp_df_base["full_name"].isin(drafted_names)].copy()
 
-        positions = set(selected_positions or [])
-        if "FLEX" in positions:
-            positions = positions.union(FLEX_ELIGIBLE)
-        positions.discard("FLEX")
-        if not positions:
-            positions = {"QB", "RB", "WR", "TE"}
+        positions = positions_for_toggle(selected_pos)
 
         # Pull a larger candidate pool from recommend() before filtering by
         # position, so filtering down to e.g. "WR only" doesn't starve the
@@ -676,28 +756,42 @@ def build_app(draft_id=None, my_slot=None, poll_seconds=8):
 
     @app.callback(
         Output("volatility-graph", "figure"),
-        Input("draft-state", "data"), Input("position-filter", "value"),
+        Input("draft-state", "data"), Input("global-position-toggle", "value"),
     )
-    def update_volatility(state, selected_positions):
+    def update_volatility(state, selected_pos):
+        if selected_pos in ("K", "DEF"):
+            return build_kdst_volatility_figure(selected_pos, kdst_volatility.get(selected_pos))
         if not state or state.get("error") or state.get("waiting") or state.get("no_config"):
             fig = go.Figure()
             navy_fig_layout(fig, "2025 Weekly Scoring: Mean vs Volatility", "waiting for draft data...")
             return fig
         drafted_names = set(state.get("drafted_names", []))
         available = vorp_df_base[~vorp_df_base["full_name"].isin(drafted_names)].copy()
-        positions = set(selected_positions or [])
-        if "FLEX" in positions:
-            positions = positions.union(FLEX_ELIGIBLE)
-        positions.discard("FLEX")
-        if not positions:
-            positions = {"QB", "RB", "WR", "TE"}
+        positions = positions_for_toggle(selected_pos)
         return build_volatility_figure(available, positions)
 
     @app.callback(
         Output("ngs-graph", "figure"),
-        Input("draft-state", "data"), Input("ngs-tabs", "value"),
+        Input("draft-state", "data"), Input("global-position-toggle", "value"),
     )
-    def update_ngs(state, pos):
+    def update_ngs(state, selected_pos):
+        # NGS metrics (x/y axes) are position-specific and don't share a
+        # common scale (e.g. RB efficiency/RYOE vs WR separation/YAC) - FLEX
+        # can't be flattened into one chart without conflating unrelated
+        # metrics, so it shows a prompt to pick a specific position instead.
+        # K/DEF have no NGS export at all (not in scope, see docstrings above).
+        if selected_pos in ("K", "DEF"):
+            fig = go.Figure()
+            navy_fig_layout(fig, "Advanced Stats (NGS)",
+                             f"not applicable for {selected_pos} \u2014 no Next Gen Stats export for this position")
+            return fig
+        if selected_pos == "FLEX" or not selected_pos:
+            fig = go.Figure()
+            navy_fig_layout(fig, "Advanced Stats (NGS)",
+                             "select a specific position (QB/RB/WR/TE) \u2014 "
+                             "NGS metrics differ per position and can't combine under FLEX")
+            return fig
+        pos = selected_pos
         if not state or state.get("error") or state.get("waiting") or state.get("no_config"):
             fig = go.Figure()
             navy_fig_layout(fig, f"{pos} Advanced Stats (NGS)", "waiting for draft data...")
@@ -706,8 +800,11 @@ def build_app(draft_id=None, my_slot=None, poll_seconds=8):
         available_norm = set(vorp_df_base[~vorp_df_base["full_name"].isin(drafted_names)]["norm_name"])
         return build_ngs_figure(pos, ngs_exports.get(pos), available_norm)
 
-    @app.callback(Output("breakout-table", "data"), Output("breakout-table", "columns"), Input("draft-state", "data"))
-    def update_breakout(state):
+    @app.callback(
+        Output("breakout-table", "data"), Output("breakout-table", "columns"),
+        Input("draft-state", "data"), Input("global-position-toggle", "value"),
+    )
+    def update_breakout(state, selected_pos):
         cols = [{"name": c, "id": c} for c in ["full_name", "position", "team", "adp_overall", "vorp", "breakout_z"]]
         if not state or state.get("error") or state.get("waiting") or state.get("no_config") or breakout_df.empty:
             return [], cols
@@ -715,15 +812,17 @@ def build_app(draft_id=None, my_slot=None, poll_seconds=8):
         available = vorp_df_base[~vorp_df_base["full_name"].isin(drafted_names)].copy()
         merged = available.merge(breakout_df[["norm_name", "position", "breakout_z"]],
                                   on=["norm_name", "position"], how="inner")
+        positions = positions_for_toggle(selected_pos)
+        merged = merged[merged["position"].isin(positions)]
         merged = merged.sort_values("breakout_z", ascending=False)
         return df_to_table_records(merged, [c["id"] for c in cols]), cols
 
     @app.callback(
         Output("aging-graph", "figure"),
-        Input("draft-state", "data"), Input("aging-position-filter", "value"),
+        Input("draft-state", "data"), Input("global-position-toggle", "value"),
     )
-    def update_aging(state, selected_positions):
-        positions = selected_positions or list(AGING_POSITIONS)
+    def update_aging(state, selected_pos):
+        positions = list(positions_for_toggle(selected_pos))
         if not state or state.get("error") or state.get("waiting") or state.get("no_config"):
             return build_aging_curve_figure(aging_curves, aging_summary, None, age_lookup, positions=positions)
         drafted_names = set(state.get("drafted_names", []))

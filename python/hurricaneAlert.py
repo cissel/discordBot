@@ -59,6 +59,16 @@ OUTLOOK_RSS_URL     = "https://www.nhc.noaa.gov/index-at.xml"
 GRAPHICS_PAGE_TMPL  = "https://www.nhc.noaa.gov/graphics_at{n}.shtml"
 OUTLOOK_IMAGE_URL   = "https://www.nhc.noaa.gov/xgtwo/two_atl_7d0.png"
 
+# Human-facing forecast links (embedded so a click lands on the live NHC page,
+# not just the static image we scraped).
+OUTLOOK_FORECAST_URL = "https://www.nhc.noaa.gov/gtwo.php?basin=atlc"  # Atlantic 7-day Tropical Weather Outlook
+STORM_FORECAST_TMPL  = "https://www.nhc.noaa.gov/graphics_at{n}.shtml"  # storm-specific forecast/graphics page
+
+# NOAA logo (rendered locally from NHC's own hosted SVG via cairosvg - Wikimedia's
+# thumbnail endpoint 400s on non-whitelisted sizes, so we keep a static copy instead
+# of refetching it every run). Used as embed thumbnail on every hurricane alert.
+NOAA_LOGO_PATH = BASE / "stickers/noaa_logo.png"
+
 # NHC's CloudFront edge 403s on custom/bot-looking User-Agent strings (confirmed
 # via curl testing) but allows browser-like ones - matches the workaround already
 # used for the /billboard iTunes fetch in commands.py.
@@ -231,7 +241,14 @@ def fetch_active_storms() -> list:
 def fetch_cone_image(storm: dict) -> str:
     """Scrape the storm's graphics_atN.shtml page for the current 5-day cone
     (with track line + wind radii) PNG and download it locally. Returns the
-    local file path, or '' on failure."""
+    local file path, or '' on failure.
+
+    graphics_atN.shtml itself only links the 60x48 thumbnail version of the
+    cone (src contains "5day_cone_sm") - that thumbnail's <a> wraps a link to
+    a secondary "refresh" detail page which is where the actual full-size
+    (~900x736) PNG lives, in an <img id="coneimage">. We follow that link to
+    get real resolution instead of downloading the thumbnail directly (which
+    is what caused the tiny image Discord was posting)."""
     bin_number = str(storm.get("binNumber", ""))
     m = re.match(r"AT(\d+)", bin_number, re.IGNORECASE)
     if not m:
@@ -247,18 +264,59 @@ def fetch_cone_image(storm: dict) -> str:
         return ""
 
     soup = BeautifulSoup(r.text, "html.parser")
-    candidates = []
+
+    # Find the thumbnail <img> for the (non-experimental) 5-day cone and follow
+    # its wrapping <a> to the detail page that hosts the full-size graphic.
+    detail_href = None
     for img in soup.find_all("img"):
         src = img.get("src", "")
-        if "storm_graphics" in src and "cone" in src.lower():
-            candidates.append(src)
+        alt = img.get("alt", "")
+        if "5day_cone_sm" in src or alt == "Warnings and 5-Day Cone":
+            parent_a = img.find_parent("a")
+            if parent_a and parent_a.get("href"):
+                detail_href = parent_a["href"]
+                break
 
-    if not candidates:
-        return ""
+    chosen = ""
+    if detail_href:
+        if detail_href.startswith("//"):
+            detail_url = "https:" + detail_href
+        elif detail_href.startswith("/"):
+            detail_url = "https://www.nhc.noaa.gov" + detail_href
+        elif not detail_href.startswith("http"):
+            detail_url = "https://www.nhc.noaa.gov/" + detail_href
+        else:
+            detail_url = detail_href
 
-    # Prefer the version with track line + wind radii over the bare cone
-    preferred = [c for c in candidates if "with_line_and_wind" in c]
-    chosen = preferred[0] if preferred else candidates[0]
+        try:
+            r2 = requests.get(detail_url, headers=HEADERS, timeout=15)
+            r2.raise_for_status()
+            detail_soup = BeautifulSoup(r2.text, "html.parser")
+            full_img = detail_soup.find("img", id="coneimage")
+            if full_img and full_img.get("src"):
+                chosen = full_img["src"]
+            else:
+                m2 = re.search(
+                    r"/storm_graphics/AT\d+/refresh/AL\d+_5day_cone\+png/\d+_5day_cone\.png",
+                    r2.text,
+                )
+                if m2:
+                    chosen = m2.group(0)
+        except Exception as e:
+            print(f"[hurricaneAlert] cone detail page fetch failed ({detail_url}): {e}", file=sys.stderr)
+
+    if not chosen:
+        # Fallback to the old thumbnail-scrape behavior (still better than nothing,
+        # though it will produce a small image) if the page layout changed on us.
+        candidates = []
+        for img in soup.find_all("img"):
+            src = img.get("src", "")
+            if "storm_graphics" in src and "cone" in src.lower():
+                candidates.append(src)
+        if not candidates:
+            return ""
+        preferred = [c for c in candidates if "with_line_and_wind" in c]
+        chosen = preferred[0] if preferred else candidates[0]
 
     if chosen.startswith("//"):
         chosen = "https:" + chosen
@@ -277,6 +335,16 @@ def fetch_cone_image(storm: dict) -> str:
     out_path = CONE_DIR / f"hurricane_cone_{bin_number}.png"
     out_path.write_bytes(img_resp.content)
     return str(out_path)
+
+def storm_forecast_link(storm: dict) -> str:
+    """Human-facing NHC forecast/graphics page for this storm (same bin number
+    fetch_cone_image scrapes the cone PNG from). Falls back to the NHC Atlantic
+    outlook page if the storm has no parseable bin number yet."""
+    bin_number = str(storm.get("binNumber", ""))
+    m = re.match(r"AT(\d+)", bin_number, re.IGNORECASE)
+    if m:
+        return STORM_FORECAST_TMPL.format(n=m.group(1))
+    return OUTLOOK_FORECAST_URL
 
 # ---------------------------------------------------------------------------
 # main
@@ -308,6 +376,7 @@ def main():
                 print(f"  pct_7d: {info['pct_7d']}")
                 print(f"  snippet: {info['snippet']}")
                 print(f"  outlook_image: {outlook_image_path}")
+                print(f"  forecast_link: {OUTLOOK_FORECAST_URL}")
             outlook_state[did] = {
                 "name": info["name"], "last_7d_cat": cat7d, "last_48h_cat": info["cat_48h"],
             }
@@ -325,6 +394,7 @@ def main():
                 print(f"  pct_7d: {info['pct_7d']}")
                 print(f"  snippet: {info['snippet']}")
                 print(f"  outlook_image: {outlook_image_path}")
+                print(f"  forecast_link: {OUTLOOK_FORECAST_URL}")
             prior["last_7d_cat"]  = cat7d
             prior["last_48h_cat"] = info["cat_48h"]
 
@@ -354,6 +424,7 @@ def main():
 
         if prior is None:
             cone_path = fetch_cone_image(storm)
+            fcst_link = storm_forecast_link(storm)
             print(f"ACTION:NEW_STORM:{sid}")
             print(f"  channel: {HURRICANE_CHANNEL}")
             print(f"  name: {name}")
@@ -369,12 +440,14 @@ def main():
             print(f"  cone_image: {cone_path}")
             print(f"  color: {color:#08x}")
             print(f"  emoji: {emoji}")
+            print(f"  forecast_link: {fcst_link}")
             storms_state[sid] = {
                 "name": name, "last_classification": classification,
                 "last_category_label": label, "last_adv_num": adv_num,
             }
         elif label != prior.get("last_category_label"):
             cone_path = fetch_cone_image(storm)
+            fcst_link = storm_forecast_link(storm)
             print(f"ACTION:CATEGORY_CHANGE:{sid}")
             print(f"  channel: {HURRICANE_CHANNEL}")
             print(f"  name: {name}")
@@ -391,6 +464,7 @@ def main():
             print(f"  cone_image: {cone_path}")
             print(f"  color: {color:#08x}")
             print(f"  emoji: {emoji}")
+            print(f"  forecast_link: {fcst_link}")
             prior["last_classification"]  = classification
             prior["last_category_label"]  = label
             prior["last_adv_num"]         = adv_num

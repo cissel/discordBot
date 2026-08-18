@@ -58,10 +58,30 @@ max_date <- max(df$date)
 min_date_str <- format(min_date, "%Y-%m-%d")
 max_date_str <- format(max_date, "%Y-%m-%d")
 
+# One label per player, at their single highest final_score (ties -> earliest date).
+# Label sits directly above the peak point on the same date, offset up by 3.5%.
+highs <- df %>%
+  group_by(player) %>%
+  filter(final_score == max(final_score)) %>%
+  slice_min(date, n = 1) %>%
+  ungroup() %>%
+  mutate(label_y = final_score * 1.035)
+
+# Axis needs to accommodate labels that may push above 1000 (near-perfect scores)
+y_upper <- max(1000, max(highs$label_y, na.rm = TRUE) * 1.02)
+
 p <- ggplot(df, aes(x = date, y = final_score, color = player)) +
   geom_line(linewidth = 0.8, alpha = 0.85) +
   geom_point(size = 1.8) +
-  scale_y_continuous(limits = c(0, 1000)) +
+  geom_text(
+    data = highs,
+    aes(x = date, y = label_y, label = final_score),
+    color = "white",
+    fontface = "bold",
+    size = 3.2,
+    show.legend = FALSE
+  ) +
+  scale_y_continuous(limits = c(0, y_upper)) +
   scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
   labs(
     x = NULL,

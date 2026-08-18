@@ -26,7 +26,7 @@ Prints lines prefixed with ACTION: for the bot to act on.
 """
 
 import sys, os, json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time as dtime
 from zoneinfo import ZoneInfo
 from pathlib import Path
 
@@ -37,6 +37,18 @@ STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
 SPACE_CENTER_CHANNEL = 1476278139167571968
 
 ET = ZoneInfo("America/New_York")
+
+# Only actually post alerts when local ET time falls in this window, so the
+# server doesn't get woken up at 2am by a loop check that happened to land
+# overnight. The loop in main.py runs every 15 min so it reliably catches
+# this 30-min window each day. (Fixed Aug 2026 - first alert landed at 2am.)
+TARGET_WINDOW_START = dtime(9, 30)
+TARGET_WINDOW_END   = dtime(10, 0)
+
+
+def in_target_window(now_et: datetime) -> bool:
+    t = now_et.time()
+    return TARGET_WINDOW_START <= t <= TARGET_WINDOW_END
 
 # Major annual meteor showers visible from mid-northern latitudes.
 # peak_month/peak_day: typical peak night (date the peak *night* begins - the
@@ -103,6 +115,7 @@ def main():
         del alerted[k]
 
     fired_any = False
+    window_ok = in_target_window(now_et)
 
     for shower in SHOWERS:
         peak_dt   = next_peak_date(shower, now_et)
@@ -112,8 +125,10 @@ def main():
 
         days_until = (peak_dt.date() - now_et.date()).days
 
-        # ── heads-up (3 days out) ────────────────────────────────────────
-        if not entry["headsup"] and days_until == HEADSUP_DAYS_OUT:
+        # ── heads-up (up to 3 days out) ──────────────────────────────────
+        # Range (not just ==3) so a missed window one morning still fires
+        # the next morning instead of silently skipping the shower.
+        if not entry["headsup"] and 0 < days_until <= HEADSUP_DAYS_OUT and window_ok:
             print(f"ACTION:HEADSUP:{shower['id']}")
             print(f"  channel: {SPACE_CENTER_CHANNEL}")
             print(f"  name: {shower['name']}")
@@ -125,7 +140,9 @@ def main():
             fired_any = True
 
         # ── peak night ("tonight") ───────────────────────────────────────
-        if not entry["peak"] and days_until == 0:
+        # Also allow days_until == -1 as a one-day catch-up if the morning
+        # window was missed (e.g. bot was down), so the shower isn't skipped.
+        if not entry["peak"] and -1 <= days_until <= 0 and window_ok:
             print(f"ACTION:PEAK:{shower['id']}")
             print(f"  channel: {SPACE_CENTER_CHANNEL}")
             print(f"  name: {shower['name']}")

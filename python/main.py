@@ -28,6 +28,10 @@ try:
 except Exception as _e:
     print(f"[opus] load failed: {_e}")
 
+# -- NOAA/NHC assets & links (used by hurricane alert embeds) -------------------
+NOAA_LOGO_PATH = Path(os.path.expanduser("~/discordBot/stickers/noaa_logo.png"))
+OUTLOOK_FORECAST_URL_MAIN = "https://www.nhc.noaa.gov/gtwo.php?basin=atlc"
+
 # -- env ------------------------------------------------------------------------
 load_dotenv()
 TOKEN               = os.getenv("DISCORD_TOKEN", "").strip()
@@ -230,6 +234,34 @@ class BotClient(discord.Client):
         # -- live CSV append ---------------------------------------------------
         if hasattr(message.channel, "id") and message.channel.id in ALLOWED_CHANNELS:
             _append_message(message)
+            await self._maptap_high_score_check(message)
+
+    async def _maptap_high_score_check(self, message: discord.Message):
+        """If this message is a MapTap score share and beats the poster's prior
+        personal best, reply with a congrats message. Silent for non-MapTap
+        messages, non-improving scores, and a player's very first logged game
+        (no baseline to compare against yet)."""
+        try:
+            import sys as _sys
+            if PYTHON_PATH not in _sys.path:
+                _sys.path.insert(0, PYTHON_PATH)
+            from maptapScores import check_new_high
+
+            result = await asyncio.to_thread(
+                check_new_high,
+                str(MESSAGES_CSV),
+                message.author.display_name,
+                message.content,
+                message.created_at,
+            )
+            if result is None or result["is_first_game"] or not result["is_new_high"]:
+                return
+
+            await message.reply(
+                f"🎉 NEW HIGH SCORE FOR {result['player']}: {result['score']}"
+            )
+        except Exception as e:
+            print(f"[maptap] high score check failed: {e}")
 
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """Track reactions to launch alert messages for 1h/5m opt-in,
@@ -522,14 +554,16 @@ class BotClient(discord.Client):
 
     async def _meteor_shower_alert_loop(self):
         """Background loop - checks the annual meteor shower calendar.
-        Runs every 6 hours (no live API, static calendar - no need to poll fast)."""
+        Runs every 15 min so it reliably lands inside the script's 9:30-10am ET
+        posting window (fixed Aug 2026 - a 6h cadence let the first alert land
+        at 2am since it just fired whenever the loop happened to tick over)."""
         await asyncio.sleep(90)  # wait after startup before first check
         while not self.is_closed():
             try:
                 asyncio.create_task(self.run_meteor_shower_alerts())
             except Exception as e:
                 print(f"[meteorShower] loop error: {e}")
-            await asyncio.sleep(6 * 60 * 60)
+            await asyncio.sleep(15 * 60)
 
     async def run_meteor_shower_alerts(self):
         """Runs meteorShowerAlert.py, parses its output, posts messages.
@@ -698,6 +732,7 @@ class BotClient(discord.Client):
                     pct_48h  = fields.get("pct_48h", "?")
                     snippet  = fields.get("snippet", "")
                     outlook_image = fields.get("outlook_image", "")
+                    forecast_link = fields.get("forecast_link", "")
                     color = DISTURBANCE_CAT_COLOR.get(cat_7d, 0x888888)
 
                     title = (f"🌴 New Tropical Disturbance - {oid}" if action == "NEW_DISTURBANCE"
@@ -707,14 +742,19 @@ class BotClient(discord.Client):
                     emb.add_field(name="Formation Chance (7-day)", value=f"{cat_7d.title()} ({pct_7d}%)", inline=True)
                     if snippet:
                         emb.add_field(name="Details", value=snippet, inline=False)
+                    if forecast_link:
+                        emb.add_field(name="Forecast", value=f"[NHC Tropical Weather Outlook]({forecast_link})", inline=False)
                     emb.set_footer(text="Source: NHC / Atlantic Tropical Weather Outlook")
-
-                    if outlook_image and os.path.exists(outlook_image):
-                        file = discord.File(outlook_image, filename="outlook.png")
-                        emb.set_image(url="attachment://outlook.png")
-                        await channel.send(embed=emb, file=file)
+                    if NOAA_LOGO_PATH.exists():
+                        emb.set_thumbnail(url="attachment://noaa_logo.png")
+                        await channel.send(embed=emb, file=discord.File(str(NOAA_LOGO_PATH), filename="noaa_logo.png"))
                     else:
                         await channel.send(embed=emb)
+                    # forecast image sent full-size as its own message - embedding it
+                    # alongside the logo squashes it down to thumbnail-sized in Discord's
+                    # renderer, so keep the embed logo-only and post the image separately.
+                    if outlook_image and os.path.exists(outlook_image):
+                        await channel.send(file=discord.File(outlook_image, filename="outlook.png"))
                     print(f"[hurricaneAlert] {action} alert sent for {oid} ({name})")
 
                 elif action in ("NEW_STORM", "CATEGORY_CHANGE"):
@@ -728,6 +768,7 @@ class BotClient(discord.Client):
                     move_speed     = fields.get("movement_speed", "?")
                     adv_num        = fields.get("adv_num", "?")
                     cone_image     = fields.get("cone_image", "")
+                    forecast_link  = fields.get("forecast_link", "")
                     color          = int(fields.get("color", "0x888888"), 16) if fields.get("color") else 0x888888
                     emoji          = fields.get("emoji", "🌀")
                     previous_label = fields.get("previous_label", "")
@@ -745,14 +786,18 @@ class BotClient(discord.Client):
                     emb.add_field(name="Pressure", value=f"{pressure_mb} mb", inline=True)
                     emb.add_field(name="Movement", value=f"{move_dir} at {move_speed} mph", inline=True)
                     emb.add_field(name="Advisory #", value=adv_num, inline=True)
+                    if forecast_link:
+                        emb.add_field(name="Forecast", value=f"[NHC Forecast & Graphics]({forecast_link})", inline=False)
                     emb.set_footer(text="Source: NHC / National Hurricane Center")
-
-                    if cone_image and os.path.exists(cone_image):
-                        file = discord.File(cone_image, filename="cone.png")
-                        emb.set_image(url="attachment://cone.png")
-                        await channel.send(embed=emb, file=file)
+                    if NOAA_LOGO_PATH.exists():
+                        emb.set_thumbnail(url="attachment://noaa_logo.png")
+                        await channel.send(embed=emb, file=discord.File(str(NOAA_LOGO_PATH), filename="noaa_logo.png"))
                     else:
                         await channel.send(embed=emb)
+                    # forecast/cone image sent full-size as its own message - see note
+                    # above on why it's not embedded alongside the logo.
+                    if cone_image and os.path.exists(cone_image):
+                        await channel.send(file=discord.File(cone_image, filename="cone.png"))
                     print(f"[hurricaneAlert] {action} alert sent for {name}")
 
                 elif action == "STORM_DISSIPATED":
@@ -761,8 +806,13 @@ class BotClient(discord.Client):
                         description="This system has dissipated, gone post-tropical, or moved out of NHC's active list.",
                         color=0x00CC00,
                     )
+                    emb.add_field(name="Forecast", value=f"[NHC Atlantic Outlook]({OUTLOOK_FORECAST_URL_MAIN})", inline=False)
                     emb.set_footer(text="Source: NHC / National Hurricane Center")
-                    await channel.send(embed=emb)
+                    if NOAA_LOGO_PATH.exists():
+                        emb.set_thumbnail(url="attachment://noaa_logo.png")
+                        await channel.send(embed=emb, file=discord.File(str(NOAA_LOGO_PATH), filename="noaa_logo.png"))
+                    else:
+                        await channel.send(embed=emb)
                     print(f"[hurricaneAlert] dissipation notice sent for {name}")
 
             except Exception as e:

@@ -71,10 +71,20 @@ pstats <- tryCatch(
 )
 
 # Season-aggregate NGS rushing
+# NOTE (Aug 2026 bugfix): see nflWrStats.R for full explanation - nflverse's
+# NGS feed can use inconsistent player_display_name spellings for the SAME
+# player_gsis_id across weeks (e.g. "Chris Rodriguez"/"Chris Rodriguez Jr.",
+# "Devon Achane"/"De'Von Achane", "Tyrone Tracy"/"Tyrone Tracy Jr.",
+# "RJ Harvey"/"R.J. Harvey"). Grouping by player_gsis_id + player_display_name
+# together split these into duplicate rows that both survived into
+# ngs_rb_export.csv, showing up as duplicate points on the live-draft NGS
+# scatter. Fix: group by player_gsis_id only, then prefer player_stats' name
+# (single canonical spelling per id) below.
 ngs_szn <- ngs %>%
   filter(season_type == "REG", player_position == "RB") %>%
-  group_by(player_gsis_id, player_display_name, player_position) %>%
+  group_by(player_gsis_id, player_position) %>%
   summarise(
+    player_display_name = names(sort(table(player_display_name), decreasing = TRUE))[1],
     att             = sum(rush_attempts, na.rm = TRUE),
     rush_yds_oe     = sum(rush_yards_over_expected, na.rm = TRUE),
     ryoe_per_att    = mean(rush_yards_over_expected_per_att, na.rm = TRUE),
@@ -86,12 +96,13 @@ ngs_szn <- ngs %>%
   ) %>%
   filter(att >= 50)
 
-# Join player stats
+# Join player stats - prefer pstats' name (single canonical spelling per
+# player_id) over the NGS mode-name fallback.
 if (!is.null(pstats)) {
   df <- ngs_szn %>%
     left_join(pstats, by = c("player_gsis_id" = "player_id"))
   df <- df %>%
-    mutate(name = dplyr::coalesce(player_display_name.x, player_display_name.y))
+    mutate(name = dplyr::coalesce(player_display_name.y, player_display_name.x))
 } else {
   df <- ngs_szn %>% rename(name = player_display_name)
 }
