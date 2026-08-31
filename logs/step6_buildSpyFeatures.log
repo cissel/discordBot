@@ -1,9 +1,9 @@
 [buildSpyFeatures] loading raw series...
-  base df: 2669 rows, 2016-01-05 to 2026-08-17
+  base df: 2678 rows, 2016-01-05 to 2026-08-28
   building SPY technical features...
   building vol regime features...
   loading options snapshot...
-    options rows: 35
+    options rows: 44
   building cross-asset features...
   building macro features...
   building sector rotation features...
@@ -13,30 +13,30 @@
   building VWAP features...
     VWAP cache rows: 1371, date range: 2021-01-04 to 2026-06-23
   building block order features...
-    Block events: 3155 | days with blocks: 941
+    Block events: 3162 | days with blocks: 945
   building intraday aggregated features...
     intraday features rows: 1401, date range: 2021-01-04 to 2026-08-03
   building GEX features...
-    GEX cache rows: 3845, date range: 2011-05-02 to 2026-08-14
-    gex_b coverage in spy_features: 100.0%
+    GEX cache rows: 3853, date range: 2011-05-02 to 2026-08-26
+    gex_b coverage in spy_features: 99.9%
   building VIX term structure / VVIX features...
-    vix_term cache rows: 2551, range: 2016-06-23 to 2026-08-17
+    vix_term cache rows: 2560, range: 2016-06-23 to 2026-08-28
     vvix coverage in spy_features: 95.3%
     vix_term_slope coverage: 95.5%
   building regime labels...
-    bull=751  bear=238  chop=1680
+    bull=752  bear=238  chop=1688
     VIX p33=14.8  p67=19.5  p80=22.7
   building regime-change + interaction features...
     rate-shock regime: 166 shock days, 166 easing days
     returns-distribution regime: ret_skew_21, ret_kurt_21, drawdown_63d, regime_age_z added
   loading moon phase + weather features...
-    moon phase coverage: 2669/2669 rows (100%)
-    weather coverage: NYC=2668 rows, CHI=2668 rows
+    moon phase coverage: 2678/2678 rows (100%)
+    weather coverage: NYC=2674 rows, CHI=2674 rows
   alt data 1: 18 cols, wikipedia=2632 rows
   alt data 2: 14 cols, daylight=2632 rows
-  google trends: 17 cols, trends_spy=99% coverage (+2bd publication lag applied)
-  sentiment: aaii=99%, crypto_fear_greed=79%
-  macro sentiment: icsa=99% coverage
+  google trends: 17 cols, trends_spy=98% coverage (+2bd publication lag applied)
+  sentiment: aaii=98%, crypto_fear_greed=78%
+  macro sentiment: icsa=98% coverage
   regime×sentiment interactions: added
   [info] wsb_daily.csv not found — run fetchRedditWSB.py (optional)
   CBOE SKEW: 9 cols, coverage=98%
@@ -56,5 +56,8 @@
     [sparse] opt_iv_term_slope: 2%
     [sparse] opt_pcr_vol: 2%
     [sparse] opt_vega_weighted_iv: 2%
+    [sparse] vix9d: 0%
+    [sparse] vix9d_vix30_ratio: 0%
+    [sparse] vix9d_z21: 0%
 
-[buildSpyFeatures] wrote 2669 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv
+[buildSpyFeatures] wrote 2678 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv

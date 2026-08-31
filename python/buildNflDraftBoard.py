@@ -47,6 +47,13 @@ BREAKOUT_WATCH_TIER = 99  # sentinel tier for breakout candidates beyond ADP_CAP
 POSITIONS = ["QB", "RB", "WR", "TE"]
 POS_COLORS = {"QB": "#7B4CE0", "RB": "#2E9E4E", "WR": "#2E7BE0", "TE": "#E0A02E"}
 
+# Navy house theme (matches nflWrStats.R / nflQbStats.R / nflRbStats.R /
+# nflTeStats.R / nflDraftDashboard.py) - BG=#02233F, TXT=white for ALL text
+# including captions (never dim gray - it's unreadable on navy).
+BG = "#02233F"
+GRID = "#274066"
+TXT = "white"
+
 N_TIERS_TARGET = {"QB": 6, "RB": 8, "WR": 8, "TE": 6}  # upper bound; shrinks if too few players
 
 SUFFIX_RE = re.compile(r"\b(jr|sr|ii|iii|iv|v)\.?\s*$", re.IGNORECASE)
@@ -156,14 +163,18 @@ def main():
     print(f"\nWrote: {out_csv} ({len(board)} rows)")
 
     # ---- printable cheat sheet: one column per position, grouped by tier ----
+    # Navy house theme: BG=#02233F, TXT=white for ALL text incl. captions
+    # (never dim gray - unreadable against navy).
     fig, axes = plt.subplots(1, len(POSITIONS), figsize=(22, 30))
+    fig.patch.set_facecolor(BG)
     fig.suptitle("Room 40 - 2026 Draft Board (Tiered by VORP)\n"
                   "Rookies flagged (R) | \u2605 = breakout candidate (2nd/3rd-yr, see /nfl cheatsheet caveat) | "
                   "value_gap: + = ADP undervalues, - = ADP overvalues",
-                  fontsize=15, fontweight="bold", y=0.995)
+                  fontsize=15, fontweight="bold", y=0.995, color=TXT)
 
     for ax, pos in zip(axes, POSITIONS):
         pos_df = board[board["position"] == pos]
+        ax.set_facecolor(BG)
         ax.set_title(pos, fontsize=18, fontweight="bold", color=POS_COLORS[pos])
         ax.axis("off")
         y = 1.0
@@ -175,14 +186,14 @@ def main():
                 tier_label = "Breakout Watch (beyond ADP cap)" if row["tier"] == BREAKOUT_WATCH_TIER \
                     else f"Tier {int(row['tier'])}"
                 ax.text(0.0, y, f"\u2014 {tier_label} \u2014", fontsize=10,
-                        fontweight="bold", color="gray", transform=ax.transAxes)
+                        fontweight="bold", color=TXT, transform=ax.transAxes)
                 y -= line_h
                 prev_tier = row["tier"]
             rookie_flag = " (R)" if row.get("player_type") == "rookie" else ""
             star = "\u2605 " if row.get("is_breakout") else ""
             gap = row["value_gap"]
             gap_str = f"+{gap:.0f}" if gap > 0 else f"{gap:.0f}"
-            gap_color = "green" if gap > 15 else ("red" if gap < -15 else "black")
+            gap_color = "#3DDC84" if gap > 15 else ("#FF6B6B" if gap < -15 else TXT)
             label = f"{star}{row['full_name']}{rookie_flag}  (ADP {row['adp_overall']:.0f}, {gap_str})"
             ax.text(0.02, y, label, fontsize=9, transform=ax.transAxes, color=gap_color,
                     fontweight="bold" if star else "normal")
@@ -194,11 +205,11 @@ def main():
               "injury_shortened_2025 flag in draft_board_2026.csv before trusting those. "
               "\u2605 breakout candidates are a composite score (efficiency/usage-trend/situation/draft-capital/"
               "aging-slope, shrunk for small samples) - see breakout_scored_pool_2026.csv for the full breakdown.",
-              ha="center", fontsize=8.5, style="italic", color="dimgray")
+              ha="center", fontsize=8.5, style="italic", color=TXT)
 
     plt.tight_layout(rect=[0, 0.01, 1, 0.97])
     out_png = os.path.join(OUT_DIR, "draft_board_2026.png")
-    plt.savefig(out_png, dpi=130, bbox_inches="tight")
+    plt.savefig(out_png, dpi=130, bbox_inches="tight", facecolor=BG)
     plt.close()
     print(f"Wrote: {out_png}")
 

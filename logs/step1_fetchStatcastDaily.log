@@ -1,10 +1,11 @@
-[fetchStatcastDaily] daily mode: yesterday=2026-08-17, re-checking 21d lookback -> 1 date(s) to fetch
-  [1/1] fetching 2026-08-17... 3384 pitches
+[fetchStatcastDaily] daily mode: yesterday=2026-08-30, re-checking 21d lookback -> 2 date(s) to fetch
+  [1/2] fetching 2026-08-29... 9152 pitches
+  [2/2] fetching 2026-08-30... 4191 pitches
 
-[fetchStatcastDaily] done. Total rows appended: 3,384
+[fetchStatcastDaily] done. Total rows appended: 13,343
   statcast_2026_03.csv: 27,043 rows, 7.4MB
   statcast_2026_04.csv: 121,863 rows, 33.1MB
   statcast_2026_05.csv: 124,493 rows, 34.0MB
   statcast_2026_06.csv: 132,643 rows, 36.1MB
   statcast_2026_07.csv: 118,178 rows, 32.3MB
-  statcast_2026_08.csv: 67,137 rows, 18.3MB
+  statcast_2026_08.csv: 119,840 rows, 32.7MB

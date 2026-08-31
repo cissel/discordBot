@@ -217,13 +217,44 @@ def main():
         print(f"{position}: {len(idx)} players scored using {bundle['model_type']} "
               f"(val_spearman={bundle['metrics']['val_spearman']:.3f})")
 
-    merged["projected_room40_pts"] = predictions
+    merged["projected_room40_pts_raw"] = predictions
     merged["model_used"] = model_used
+
+    # ---- AGE-INFORMED INJURY-RECOVERY ADJUSTMENT (added 2026-08-18) ----
+    # See r/computeInjuryRecoveryFactors.R for full methodology: derives an
+    # adj_factor for any 2025-injury-shortened player (lag1_games < 12) who
+    # has a real pre-injury healthy 2024 season (10+ games) to anchor a
+    # baseline off of, using age-at-injury's historical recovery ratio
+    # (nflreadr::load_injuries() 2009-2025 study, n=185 player-seasons: age
+    # is the one dimension that reliably predicts recovery - severity/type
+    # were not). This is a bounded [0.75, 1.30] multiplicative nudge on the
+    # model's existing projection, NOT a standalone re-projection - most
+    # injury-shortened players still have no baseline to anchor on and keep
+    # projected_room40_pts_raw unchanged (adj_factor defaults to 1.0).
+    recovery_path = os.path.join(OUT_DIR, "injury_recovery_factors_2026.csv")
+    if os.path.exists(recovery_path):
+        recovery = pd.read_csv(recovery_path)[["norm_name", "position", "adj_factor", "age_bucket", "injury_class"]]
+        merged = merged.merge(recovery, on=["norm_name", "position"], how="left")
+        merged["injury_recovery_adj_factor"] = merged["adj_factor"].fillna(1.0)
+        merged = merged.drop(columns=["adj_factor"])
+        n_adj = (merged["injury_recovery_adj_factor"] != 1.0).sum()
+        print(f"Applied injury-recovery adjustment factor to {n_adj} players "
+              f"(source: {recovery_path})")
+    else:
+        print(f"WARNING: {recovery_path} not found - run r/computeInjuryRecoveryFactors.R first. "
+              f"Skipping recovery adjustment, all factors default to 1.0.")
+        merged["injury_recovery_adj_factor"] = 1.0
+        merged["age_bucket"] = np.nan
+        merged["injury_class"] = np.nan
+
+    merged["projected_room40_pts"] = merged["projected_room40_pts_raw"] * merged["injury_recovery_adj_factor"]
 
     out_cols = [
         "full_name", "position", "team", "adp_overall", "adp_position",
         "sleeper_proj_pts_week1", "lag1_room40_pts", "lag1_pts_per_game", "lag1_games",
-        "lag1_target_share", "lag1_snap_share_avg", "projected_room40_pts", "model_used",
+        "lag1_target_share", "lag1_snap_share_avg",
+        "projected_room40_pts_raw", "injury_recovery_adj_factor", "age_bucket", "injury_class",
+        "projected_room40_pts", "model_used",
         "new_oc", "coach_proe_signature", "team_changed",
     ]
     out = merged[out_cols].sort_values("adp_overall")

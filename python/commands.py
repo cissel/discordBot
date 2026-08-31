@@ -2450,6 +2450,19 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             except Exception:
                 return []
 
+        async def _fetch_epl_today(date_str: str):
+            """Return list of Premier League match dicts for the given YYYYMMDD date, or []."""
+            url = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard"
+            try:
+                async with aiohttp.ClientSession() as s:
+                    async with s.get(url, params={"dates": date_str}, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                        if r.status != 200:
+                            return []
+                        data = await r.json()
+                return data.get("events", [])
+            except Exception:
+                return []
+
         async def _fetch_f1_event():
             """Return next upcoming F1 race dict from jolpica, or None."""
             try:
@@ -2540,6 +2553,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 _fetch_f1_event(),
                 _fetch_nascar_next(),
                 _fetch_mlb_asg(),
+                _fetch_epl_today(date_str),
                 return_exceptions=True,
             )
         else:
@@ -2554,6 +2568,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 _fetch_f1_event(),
                 _fetch_nascar_next(),
                 _fetch_mlb_asg(),
+                _fetch_epl_today(date_str),
                 return_exceptions=True,
             )
 
@@ -2562,6 +2577,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         f1_race      = results[7] if not isinstance(results[7], Exception) else None
         nascar_event = results[8] if not isinstance(results[8], Exception) else None
         mlb_asg      = results[9] if not isinstance(results[9], Exception) else None
+        epl_events   = results[10] if not isinstance(results[10], Exception) else []
 
         embeds = []
 
@@ -2748,6 +2764,88 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     val = status_detail or "TBD"
 
                     # Betting lines from odds[0]
+                    odds_list = c.get("odds", [])
+                    if odds_list:
+                        o = odds_list[0]
+                        ml  = o.get("moneyline", {})
+                        ps  = o.get("pointSpread", {})
+                        tot = o.get("total", {})
+
+                        away_ml  = ml.get("away",  {}).get("close", {}).get("odds", "")
+                        home_ml  = ml.get("home",  {}).get("close", {}).get("odds", "")
+                        draw_ml  = ml.get("draw",  {}).get("close", {}).get("odds", "") or str(o.get("drawOdds", {}).get("moneyLine", ""))
+
+                        away_spread = ps.get("away", {}).get("close", {}).get("line", "")
+                        away_sp_odds = ps.get("away", {}).get("close", {}).get("odds", "")
+                        home_spread = ps.get("home", {}).get("close", {}).get("line", "")
+                        home_sp_odds = ps.get("home", {}).get("close", {}).get("odds", "")
+
+                        ou_line  = tot.get("over", {}).get("close", {}).get("line", "")
+                        ou_over  = tot.get("over", {}).get("close", {}).get("odds", "")
+                        ou_under = tot.get("under", {}).get("close", {}).get("odds", "")
+
+                        lines = []
+                        if away_ml and home_ml:
+                            draw_str = f"  Draw {draw_ml}" if draw_ml else ""
+                            lines.append(f"ML: {away_name_s} {away_ml} / {home_name_s} {home_ml}{draw_str}")
+                        if away_spread and home_spread:
+                            lines.append(f"Spread: {away_name_s} {away_spread} ({away_sp_odds}) / {home_name_s} {home_spread} ({home_sp_odds})")
+                        if ou_line and ou_over:
+                            lines.append(f"O/U: {ou_line} (o {ou_over} / u {ou_under})")
+
+                        if lines:
+                            val += "\n" + "\n".join(lines)
+
+                venue_str = c.get("venue", {}).get("fullName", "")
+                if venue_str:
+                    val += f"\n📍 {venue_str}"
+
+                emb.add_field(name=matchup, value=val, inline=False)
+            embeds.append(emb)
+
+        # ── Premier League ────────────────────────────────────────────────────
+        if epl_events:
+            emb = discord.Embed(title=f"⚽ Premier League - {day_label}", color=0x3d195b)
+            emb.set_thumbnail(url="https://a.espncdn.com/i/leaguelogos/soccer/500/23.png")
+            for ev in epl_events:
+                comps = ev.get("competitions", [])
+                if not comps:
+                    continue
+                c = comps[0]
+                competitors = c.get("competitors", [])
+                status_type = ev.get("status", {}).get("type", {})
+                status_name = status_type.get("name", "")
+                status_detail = status_type.get("detail", status_type.get("shortDetail", ""))
+                clock = ev.get("status", {}).get("displayClock", "")
+
+                away_comp, home_comp = None, None
+                for comp in competitors:
+                    if comp.get("homeAway") == "away":
+                        away_comp = comp
+                    else:
+                        home_comp = comp
+                if not away_comp or not home_comp:
+                    teams  = [comp.get("team", {}).get("shortDisplayName", "?") for comp in competitors]
+                    scores = [comp.get("score", "") for comp in competitors]
+                    away_name_s = teams[0] if teams else "?"
+                    home_name_s = teams[1] if len(teams) > 1 else "?"
+                else:
+                    away_name_s = away_comp.get("team", {}).get("shortDisplayName", "?")
+                    home_name_s = home_comp.get("team", {}).get("shortDisplayName", "?")
+                    scores = [away_comp.get("score", ""), home_comp.get("score", "")]
+
+                matchup = f"{away_name_s} @ {home_name_s}"
+
+                is_live  = status_name in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME")
+                is_final = status_name in ("STATUS_FINAL", "STATUS_FULL_TIME", "STATUS_POSTPONED")
+
+                if is_live or is_final:
+                    score_str = f"{scores[0]} - {scores[1]}" if all(str(s) != "" for s in scores) else "? - ?"
+                    suffix = f"  ({clock})" if is_live and clock and clock != "0'" else ("  (FT)" if is_final else "")
+                    val = f"🔴 {score_str}{suffix}" if is_live else f"✅ {score_str}  (FT)"
+                else:
+                    val = status_detail or "TBD"
+
                     odds_list = c.get("odds", [])
                     if odds_list:
                         o = odds_list[0]

@@ -101,6 +101,14 @@ def main():
         rookies["new_oc"] = 0
         rookies["coach_proe_signature"] = np.nan
         rookies["team_changed"] = 0  # rookies have no prior-season team to compare against
+        # injury-recovery adjustment fields (added 2026-08-18): rookies never
+        # get an adjustment (no prior-season injury by construction) - keep
+        # these columns present with neutral defaults so they survive the
+        # column-intersection concat below instead of silently vanishing.
+        rookies["projected_room40_pts_raw"] = rookies["projected_room40_pts"]
+        rookies["injury_recovery_adj_factor"] = 1.0
+        rookies["age_bucket"] = np.nan
+        rookies["injury_class"] = np.nan
         common_cols = [c for c in proj.columns if c in rookies.columns]
         proj = pd.concat([proj[common_cols], rookies[common_cols]], ignore_index=True)
         print(f"Merged {len(rookies)} rookie projections into VORP pool "
