@@ -6222,8 +6222,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         elif scope in ("today_sp", "tomorrow_sp"):
             which = "today" if scope == "today_sp" else "tomorrow"
-            # refresh FA list for SP
-            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), "SP")
+            # refresh FA list for SP - use a large pool so low-ownership streamers/
+            # deep-waiver starters aren't truncated out before the starter filter runs
+            await asyncio.to_thread(_run, PYTHON, os.path.join(pp, "worldSilliesFA.py"), "SP", "300")
             if not os.path.exists(fa_csv):
                 await _send(interaction, "❌ couldn't fetch free agent data.", ephemeral=True)
                 return

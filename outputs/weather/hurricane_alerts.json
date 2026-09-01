@@ -3,9 +3,9 @@
   "storms": {
     "al052026": {
       "name": "Five",
-      "last_classification": "TD",
-      "last_category_label": "Tropical Depression",
-      "last_adv_num": "001a"
+      "last_classification": "TS",
+      "last_category_label": "Tropical Storm",
+      "last_adv_num": "004a"
     }
   }
 }
