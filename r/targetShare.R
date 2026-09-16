@@ -6,13 +6,11 @@ library(tidyverse)
 library(lubridate)
 library(plotly)
 library(timetk)
-library(fflr)
 library(ggimage)
 library(ggthemes)
 library(nflfastR)
 library(httr)
 library(rvest)
-library(wdman)
 library(tidytext)
 
 #####
@@ -46,11 +44,12 @@ myLegend <- theme(legend.position = "right",
 
 #####
 
-# Load play by play for entire NFL szn
-nfl25 <- load_pbp(2025)
+# Load play by play for the current NFL season (auto-detected)
+current_season <- nflreadr::most_recent_season()
+nfl_cur <- load_pbp(current_season)
 
 # Filter for passing plays and plays that have a target (pass attempts)
-passing_plays <- nfl25 |>
+passing_plays <- nfl_cur |>
   filter(play_type == "pass" & !is.na(receiver_player_name))
 
 # Create a new dataframe that summarizes target share for each receiver
@@ -98,8 +97,10 @@ tgtShrPlot <- ggplot(top_5_receivers_df,
             color = "white",
             size = 1.25) +
   facet_wrap(~ Team, scales = "free_y", nrow = 4) +  # Free y-axis scale for different team distributions
-  scale_fill_gradient("low" = "red",
-                      "high" = "green") +
+  scale_fill_gradient2(low = "red",
+                       mid = "white",
+                       high = "green",
+                       midpoint = median(top_5_receivers_df$Target_Share, na.rm = TRUE)) +
   scale_y_continuous(labels = scales::percent) +
   myTheme +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels for readability

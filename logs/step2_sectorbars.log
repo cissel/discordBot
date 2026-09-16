@@ -1,14 +1,14 @@
-[fetchSectorBars] existing: 2676 rows to 2026-08-26, fetching 2026-08-12 to 2026-08-27 (includes overlap for pct_change seed)
-  fetching XLB... 11 bars (+1 seed row dropped)
-  fetching XLC... 11 bars (+1 seed row dropped)
-  fetching XLE... 11 bars (+1 seed row dropped)
-  fetching XLF... 11 bars (+1 seed row dropped)
-  fetching XLI... 11 bars (+1 seed row dropped)
-  fetching XLK... 11 bars (+1 seed row dropped)
-  fetching XLP... 11 bars (+1 seed row dropped)
-  fetching XLRE... 11 bars (+1 seed row dropped)
-  fetching XLU... 11 bars (+1 seed row dropped)
-  fetching XLV... 11 bars (+1 seed row dropped)
-  fetching XLY... 11 bars (+1 seed row dropped)
-[fetchSectorBars] wrote 2677 rows -> /home/jhcv/discordBot/outputs/markets/cache/sector_bars_historical.csv
-  [OK] most recent row (2026-08-27 00:00:00) has valid _ret data (11/11 sectors).
+[fetchSectorBars] existing: 2685 rows to 2026-09-09, fetching 2026-08-26 to 2026-09-10 (includes overlap for pct_change seed)
+  fetching XLB... 10 bars (+1 seed row dropped)
+  fetching XLC... 10 bars (+1 seed row dropped)
+  fetching XLE... 10 bars (+1 seed row dropped)
+  fetching XLF... 10 bars (+1 seed row dropped)
+  fetching XLI... 10 bars (+1 seed row dropped)
+  fetching XLK... 10 bars (+1 seed row dropped)
+  fetching XLP... 10 bars (+1 seed row dropped)
+  fetching XLRE... 10 bars (+1 seed row dropped)
+  fetching XLU... 10 bars (+1 seed row dropped)
+  fetching XLV... 10 bars (+1 seed row dropped)
+  fetching XLY... 10 bars (+1 seed row dropped)
+[fetchSectorBars] wrote 2686 rows -> /home/jhcv/discordBot/outputs/markets/cache/sector_bars_historical.csv
+  [OK] most recent row (2026-09-10 00:00:00) has valid _ret data (11/11 sectors).

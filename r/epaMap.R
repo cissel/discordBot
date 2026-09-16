@@ -62,6 +62,8 @@ epa25 <- o25 |>
 
 epa25 <- epa25 |> dplyr::rename(team = posteam)
 
+epa25 <- epa25 |> filter(!is.na(team))
+
 epa25 <- epa25 |> left_join(teams_colors_logos,
                             by = c("team" = "team_abbr"))
 
@@ -88,7 +90,7 @@ ep <- ggplot(epa25,
               color = "white",
               alpha = .5) +
   
-  geom_image(aes(image = team_logo_wikipedia),
+  geom_image(aes(image = team_logo_espn),
              stat = "identity") +
   
   #geom_text(aes(label = team),

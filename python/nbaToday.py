@@ -4,12 +4,21 @@
 import requests
 import pandas as pd
 import os
+from datetime import date
 
 OUT = os.path.expanduser("~/discordBot/outputs/sports/nba/gamesToday.csv")
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 
+# NOTE (Sep 2026): must pass an explicit dates= param. With no date param at
+# all, ESPN's scoreboard endpoint falls back to returning the NEXT upcoming
+# event (even weeks out, e.g. preseason) instead of an empty list when
+# nothing is scheduled today - this silently mislabeled a future game as
+# "today's" game during the off-season for months.
+date_str = date.today().strftime("%Y%m%d")
+
 resp = requests.get(
     "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+    params={"dates": date_str},
     timeout=15
 )
 resp.raise_for_status()

@@ -10,12 +10,15 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(readr)
   library(scales)
+  library(patchwork)
 })
 
 ##### Config #####
 BG        <- "#02233F"
 GRID      <- "#274066"
 ACCENT    <- "#00bfff"
+ADD_COLOR <- "#00e676"  # weekly build (barrels added to SPR)
+LOSS_COLOR<- "#ff1744"  # weekly draw (barrels released from SPR)
 EIA_KEY   <- "2XNFWuCjMhOoRkLQKxtFdwORdSXdKemmTtW9rnqT"
 CACHE     <- path.expand("~/discordBot/outputs/markets/cache/spr_history.csv")
 CACHE_TTL <- 21600  # 6 hours - EIA petroleum stocks update weekly
@@ -95,6 +98,18 @@ if (nrow(df) < 2) {
   stop("Not enough SPR data points to plot.")
 }
 
+##### Weekly volume change (barrels added/withdrawn) #####
+df <- df %>%
+  mutate(
+    weekly_chg_kb  = barrels_mb - lag(barrels_mb),   # thousand barrels, +build/-draw
+    weekly_chg_bbl = weekly_chg_kb * 1000,            # raw barrels
+    chg_dir        = case_when(
+      is.na(weekly_chg_kb)       ~ NA_character_,
+      weekly_chg_kb >= 0         ~ "add",
+      TRUE                        ~ "loss"
+    )
+  )
+
 MIN_LEVEL_MMB <- 252  # statutory minimum SPR level, 42 U.S.C. Sec 6241(h)(2)(D) (as of May 2026 per GAO-26-106918)
 SEPT11_DATE   <- as.Date("2001-09-11")
 
@@ -115,7 +130,7 @@ subtitle_str <- paste0(
 )
 
 ##### Plot #####
-p <- ggplot(df, aes(x = date, y = barrels_mmb)) +
+p_top <- ggplot(df, aes(x = date, y = barrels_mmb)) +
   geom_area(fill = ACCENT, alpha = 0.15) +
   geom_line(color = ACCENT, linewidth = 0.9) +
   geom_vline(xintercept = SEPT11_DATE, color = "white", linewidth = 0.6, alpha = 0.5) +
@@ -135,9 +150,29 @@ p <- ggplot(df, aes(x = date, y = barrels_mmb)) +
     title    = "U.S. Strategic Petroleum Reserve - Full History",
     subtitle = subtitle_str,
     x        = NULL,
-    caption  = "Source: U.S. EIA (series WCSSTUS1) | Min level per 42 U.S.C. Sec 6241(h)(2)(D) | JHCV"
+    y        = "Million Barrels"
   ) +
-  navy_theme
+  navy_theme +
+  theme(
+    axis.text.x        = element_blank(),
+    axis.ticks.x        = element_blank(),
+    plot.margin         = margin(t = 10, r = 12, b = 2, l = 12)
+  )
 
-ggsave(OUTPUT, plot = p, width = 1300 / 150, height = 650 / 150, dpi = 150, bg = BG)
+p_bot <- ggplot(df, aes(x = date, y = weekly_chg_kb, fill = chg_dir)) +
+  geom_col(width = 5.5, na.rm = TRUE) +
+  geom_hline(yintercept = 0, color = "white", linewidth = 0.3, alpha = 0.6) +
+  scale_fill_manual(values = c("add" = ADD_COLOR, "loss" = LOSS_COLOR), na.value = GRID) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  scale_y_continuous(labels = comma) +
+  labs(x = NULL, y = "Weekly Chg\n(Thous. Bbl)",
+       caption = "Source: U.S. EIA (series WCSSTUS1) | Min level per 42 U.S.C. Sec 6241(h)(2)(D) | green=added to SPR, red=released from SPR | JHCV") +
+  navy_theme +
+  theme(
+    plot.margin = margin(t = 2, r = 12, b = 10, l = 12)
+  )
+
+p <- p_top / p_bot + plot_layout(heights = c(3, 1))
+
+ggsave(OUTPUT, plot = p, width = 1300 / 150, height = 800 / 150, dpi = 150, bg = BG)
 cat("Saved:", OUTPUT, "\n")

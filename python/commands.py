@@ -42,7 +42,8 @@
 #
 #   /nfl      nextgame | standings | jags | jagsgame | jagswin | howboutthemjags
 #             wr | fantasyscoreboard | epamap | room40points | amonra
-#             wrstats | rbstats | qbstats | testats | olstats
+#             wrstats | rbstats | qbstats | testats | olstats | runradars
+#             bets (HardRock +EV monitor)
 #
 #   /nba      scoreboard | today | tomorrow | standings
 #
@@ -72,6 +73,7 @@ import subprocess
 import time
 from pathlib import Path
 from datetime import datetime, timedelta
+import aiohttp
 import discord
 from discord import app_commands
 import pandas as pd
@@ -89,13 +91,63 @@ def _run(*args, **kwargs):
 async def _defer(interaction: discord.Interaction, ephemeral=False):
     await interaction.response.defer(thinking=True, ephemeral=ephemeral)
 
-async def _send(interaction: discord.Interaction, content=None, **kwargs):
-    """Send a followup after defer."""
-    await interaction.followup.send(content, **kwargs)
+_TRANSIENT_NET_ERRORS = (
+    aiohttp.ClientOSError,
+    aiohttp.ClientConnectionError,
+    aiohttp.ServerDisconnectedError,
+    ConnectionResetError,
+    asyncio.TimeoutError,
+)
 
-async def _quick(interaction: discord.Interaction, content=None, **kwargs):
-    """Instant (no defer) response."""
-    await interaction.response.send_message(content, **kwargs)
+def _reset_files(kwargs: dict) -> None:
+    """Rewind any discord.File attachments so a retried send re-reads from byte 0."""
+    files = kwargs.get("files")
+    if files:
+        for f in files:
+            try:
+                f.reset(seek=True)
+            except Exception:
+                pass
+    f = kwargs.get("file")
+    if f is not None:
+        try:
+            f.reset(seek=True)
+        except Exception:
+            pass
+
+async def _send(interaction: discord.Interaction, content=None, *, _retries: int = 2, **kwargs):
+    """Send a followup after defer. Retries on transient network drops
+    (e.g. ClientOSError: Connection reset by peer) so a flaky upload doesn't
+    kill the whole command - seen on /spy performance's image upload."""
+    last_err = None
+    for attempt in range(_retries + 1):
+        if attempt > 0:
+            _reset_files(kwargs)
+            await asyncio.sleep(1.5 * attempt)
+        try:
+            await interaction.followup.send(content, **kwargs)
+            return
+        except _TRANSIENT_NET_ERRORS as ex:
+            last_err = ex
+            print(f"[_send] transient error on attempt {attempt + 1}/{_retries + 1}: {ex!r}", flush=True)
+            continue
+    raise last_err
+
+async def _quick(interaction: discord.Interaction, content=None, *, _retries: int = 2, **kwargs):
+    """Instant (no defer) response. Same transient-network retry as _send."""
+    last_err = None
+    for attempt in range(_retries + 1):
+        if attempt > 0:
+            _reset_files(kwargs)
+            await asyncio.sleep(1.5 * attempt)
+        try:
+            await interaction.response.send_message(content, **kwargs)
+            return
+        except _TRANSIENT_NET_ERRORS as ex:
+            last_err = ex
+            print(f"[_quick] transient error on attempt {attempt + 1}/{_retries + 1}: {ex!r}", flush=True)
+            continue
+    raise last_err
 
 
 # ── DJ voice state ────────────────────────────────────────────────────────────
@@ -1881,6 +1933,29 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         except Exception as e:
             await _send(interaction, f"\u274c error: {e}", ephemeral=True)
 
+    @nfl_group.command(name="runradars", description="Run-direction sonar/radar charts per team (volume + avg yards)")
+    @app_commands.describe(season="Season year (default: latest)")
+    async def nfl_runradars(interaction: discord.Interaction, season: int = None):
+        await _defer(interaction)
+        try:
+            yr = str(season) if season else ""
+            cmd_args = [os.path.join(rp, "nflRunRadars.R")]
+            if yr:
+                cmd_args.append(yr)
+            result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript"] + cmd_args,
+                    capture_output=True, text=True, timeout=240
+                )
+            )
+            out_png = os.path.join(op, "sports/nfl/nflRunRadars.png")
+            if result.returncode != 0 or not os.path.exists(out_png):
+                err = result.stderr[-400:] if result.stderr else "no output"
+                await _send(interaction, f"\u274c Run radars failed\n```{err}```", ephemeral=True); return
+            await _send(interaction, file=discord.File(out_png))
+        except Exception as e:
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
+
     # ── /nfl draftboard | draft | undraft | resetdraft ──────────────────────
     # Phase 4: live draft-day tool sitting on top of the VORP/ADP pipeline
     # (buildNflVorp.py -> buildNflDraftBoard.py -> nflDraftLive.py). State
@@ -2011,96 +2086,64 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, "**Room 40 - Draft Strategy Guide** (which position to prioritize each round, per strategy)",
                     file=discord.File(STRATEGY_GUIDE_PNG))
 
-    # ── /nfl mockdraft <subcommand> ──────────────────────────────────────────
-    # Phase 4, step 5: pull + grade a completed Sleeper mock draft against the
-    # VORP board, log it, and let the user compare mock drafts over time to
-    # see which strategies/decisions yielded the best theoretical result.
-    mockdraft_group = app_commands.Group(
-        name="mockdraft", description="Log and grade Sleeper mock drafts", parent=nfl_group
-    )
-
-    def _extract_draft_id(raw: str) -> str:
-        """Accepts a bare draft_id or a full Sleeper draft URL (with or
-        without query params / fragments, e.g. '?ftue=commish' appended by
-        Discord/Sleeper share links) and returns just the numeric ID."""
-        raw = raw.strip()
-        raw = raw.split("?")[0].split("#")[0]  # strip query string / fragment
-        raw = raw.rstrip("/")
-        return raw.split("/")[-1]
-
-    @mockdraft_group.command(name="grade", description="Grade a completed Sleeper mock draft against the VORP board")
-    @app_commands.describe(
-        draft_id="Sleeper draft ID or full draft URL",
-        my_slot="Optional: your DRAFT ORDER position for round 1 (e.g. 'I have pick 10' -> enter 10), to flag your team in the summary",
-        label="Optional: a short label to remember this mock by (e.g. 'zero RB test')",
-    )
-    async def nfl_mockdraft_grade(interaction: discord.Interaction, draft_id: str,
-                                   my_slot: int = None, label: str = ""):
+    # ── /nfl bets ─────────────────────────────────────────────────────────────
+    # HardRock Bet +EV monitor (read-only, no wagers placed). Runs
+    # hardrockEV.py fresh each call, picks the highest-EV rows from whichever
+    # market has a real fair-probability model (espn_bpi / draftkings_devig /
+    # sleeper_poisson -- see that script's docstring for what each means and
+    # what's deliberately left unmodeled), and posts them as an embed.
+    @nfl_group.command(name="bets", description="Top +EV bets on HardRock Bet's current NFL slate (research only, no wagers placed)")
+    @app_commands.describe(count="How many bets to show (default 5, max 10)")
+    async def nfl_bets(interaction: discord.Interaction, count: int = 5):
         await _defer(interaction)
+        count = min(max(count, 1), 10)
         try:
-            from nflMockDraftLog import MockDraftError, append_to_log, grade_draft
-            clean_id = await asyncio.to_thread(_extract_draft_id, draft_id)
-            result = await asyncio.to_thread(grade_draft, clean_id, my_slot)
-            row_id = await asyncio.to_thread(append_to_log, result, label)
+            proc = await asyncio.create_subprocess_exec(
+                PYTHON, os.path.join(pp, "hardrockEV.py"),
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
+            except asyncio.TimeoutError:
+                proc.kill()
+                await _send(interaction, "HardRock scrape timed out.", ephemeral=True); return
+            if proc.returncode != 0:
+                await _send(interaction, f"❌ scrape failed:\n```{stderr.decode()[-500:]}```", ephemeral=True); return
 
-            lines = [f"**Mock Draft Graded** (log id `{row_id}`{f' — {label}' if label else ''})",
-                     f"Teams: {result['n_teams']} | Unmatched picks: {result['n_unmatched']}", ""]
-            lines.append("**Ranking by starting-lineup VORP (theoretical best outcome):**")
-            for i, r in enumerate(result["ranking"], 1):
-                you_flag = "  ⬅️ you" if my_slot is not None and r["draft_slot"] == my_slot else ""
-                lines.append(f"{i}. Pick slot {r['draft_slot']}: {r['starting_lineup_vorp']:.1f} VORP "
-                             f"(mean value gap {r['mean_value_gap']}){you_flag}")
-            if result["n_unmatched"]:
-                lines.append(f"\n⚠️ {result['n_unmatched']} picks (mostly K/DEF, out of VORP board scope) "
-                             f"couldn't be matched — see `/nfl mockdraft show {row_id}` for detail.")
-            await _send(interaction, "\n".join(lines))
-        except MockDraftError as e:
-            await _send(interaction, f"❌ {e}", ephemeral=True)
-        except Exception as e:
-            await _send(interaction, f"❌ error grading draft: {e}", ephemeral=True)
+            betting_dir = os.path.join(op, "sports/nfl/betting")
+            csvs = sorted(
+                (f for f in os.listdir(betting_dir) if f.startswith("hardrock_ev_") and f.endswith(".csv")),
+                reverse=True,
+            )
+            if not csvs:
+                await _send(interaction, "No hardrock_ev CSV was produced.", ephemeral=True); return
+            df = pd.read_csv(os.path.join(betting_dir, csvs[0]))
 
-    @mockdraft_group.command(name="list", description="List all logged mock drafts, most recent first")
-    async def nfl_mockdraft_list(interaction: discord.Interaction):
-        await _defer(interaction)
-        try:
-            from nflMockDraftLog import list_log
-            log_df = await asyncio.to_thread(list_log)
-            if log_df.empty:
-                await _send(interaction, "No mock drafts logged yet — use `/nfl mockdraft grade` first.")
+            pos_ev = df[df["expectedValue"] > 0].sort_values("expectedValue", ascending=False).head(count)
+            if pos_ev.empty:
+                await _send(interaction, "No +EV bets found on the current HardRock slate.")
                 return
-            lines = ["**Logged Mock Drafts**"]
-            for _, r in log_df.iterrows():
-                label_str = f" — {r['label']}" if isinstance(r.get("label"), str) and r["label"] else ""
-                my_str = (f" | your team: {r['my_starting_lineup_vorp']:.1f} VORP "
-                          f"(rank {int(r['my_rank_out_of_field'])}/{int(r['n_teams'])})"
-                          if pd.notna(r.get("my_starting_lineup_vorp")) else "")
-                lines.append(f"`id {int(r['id'])}`{label_str} — field best {r['field_best_vorp']:.1f}, "
-                             f"field avg {r['field_mean_vorp']:.1f}{my_str} "
-                             f"({str(r['graded_at'])[:10]})")
-            await _send(interaction, "\n".join(lines))
-        except Exception as e:
-            await _send(interaction, f"❌ error: {e}", ephemeral=True)
 
-    @mockdraft_group.command(name="show", description="Show full pick-by-pick detail for one logged mock draft")
-    @app_commands.describe(log_id="The id number from /nfl mockdraft list")
-    async def nfl_mockdraft_show(interaction: discord.Interaction, log_id: int):
-        await _defer(interaction)
-        try:
-            from nflMockDraftLog import MockDraftError, load_detail
-            detail = await asyncio.to_thread(load_detail, log_id)
-            my_slot = detail.get("my_draft_slot")
-            target_slot = my_slot if my_slot is not None else detail["ranking"][0]["draft_slot"]
-            picks = detail["team_scores"].get(str(target_slot), detail["team_scores"].get(target_slot, {})).get("picks", [])
-            lines = [f"**Mock Draft `{log_id}` — Pick Slot {target_slot}"
-                     f"{' (yours)' if my_slot is not None else ' (top team shown, no my_slot given)'}**"]
-            for p in picks:
-                gap = p["value_gap"]
-                gap_str = f"+{gap:.0f}" if isinstance(gap, (int, float)) and gap > 0 else f"{gap}"
-                lines.append(f"R{p['round']} (#{p['pick_no']}): {p['full_name']} ({p['position']}) "
-                             f"— ADP {p['adp_overall']}, VORP {p['vorp']:.1f}, gap {gap_str}")
-            await _send(interaction, "\n".join(lines)[:1900])
-        except MockDraftError as e:
-            await _send(interaction, f"❌ {e}", ephemeral=True)
+            model_labels = {
+                "espn_bpi": "ESPN BPI model",
+                "draftkings_devig": "vs. DraftKings",
+                "sleeper_poisson": "Sleeper proj (Poisson)",
+            }
+            emb = discord.Embed(
+                title=f"🏈 Top {len(pos_ev)} +EV Bets — HardRock Bet NFL",
+                description="Research snapshot only — no wagers placed. EV = modeled profit per $1 staked.",
+                color=0x013369,
+            )
+            for i, (_, r) in enumerate(pos_ev.iterrows(), 1):
+                model_tag = model_labels.get(r["modelStatus"], r["modelStatus"])
+                emb.add_field(
+                    name=f"{i}. {r['betDescription']}  ({int(r['payout']):+d})",
+                    value=(f"{r['nflGame']}\n"
+                           f"Confidence: {r['confidence']:.1f}% | EV: +${r['expectedValue']:.2f} per $1 | {model_tag}"),
+                    inline=False,
+                )
+            emb.set_footer(text="Not proven edges -- log CLV/outcomes over multiple weeks before trusting any single bet.")
+            await _send(interaction, embed=emb)
         except Exception as e:
             await _send(interaction, f"❌ error: {e}", ephemeral=True)
 
@@ -2142,6 +2185,15 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         await _send(interaction, "how do the jags taste with my balls on your face")
         await _send(interaction, file=discord.File(os.path.join(op, "sports/nfl/catnip.mov")))
+        await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "jagsOpponent.R"))
+        csv = os.path.join(op, "sports/nfl/jagsOpponent.csv")
+        opponent_nick = None
+        if os.path.exists(csv):
+            odf = pd.read_csv(csv)
+            if not odf.empty and pd.notna(odf.iloc[0]["opponent_nick"]):
+                opponent_nick = odf.iloc[0]["opponent_nick"]
+        if opponent_nick:
+            await _send(interaction, f"smoking big {opponent_nick} pack")
 
     @jags_group.command(name="howbout", description="how bout them jags")
     async def jags_howbout(interaction: discord.Interaction):
@@ -2451,8 +2503,34 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 return []
 
         async def _fetch_epl_today(date_str: str):
-            """Return list of Premier League match dicts for the given YYYYMMDD date, or []."""
+            """Return list of Premier League match dicts for the given YYYYMMDD date, or [].""" 
             url = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard"
+            try:
+                async with aiohttp.ClientSession() as s:
+                    async with s.get(url, params={"dates": date_str}, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                        if r.status != 200:
+                            return []
+                        data = await r.json()
+                return data.get("events", [])
+            except Exception:
+                return []
+
+        async def _fetch_mls_today(date_str: str):
+            """Return list of MLS match dicts for the given YYYYMMDD date, or [].""" 
+            url = "https://site.api.espn.com/apis/site/v2/sports/soccer/usa.1/scoreboard"
+            try:
+                async with aiohttp.ClientSession() as s:
+                    async with s.get(url, params={"dates": date_str}, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                        if r.status != 200:
+                            return []
+                        data = await r.json()
+                return data.get("events", [])
+            except Exception:
+                return []
+
+        async def _fetch_ucl_today(date_str: str):
+            """Return list of UEFA Champions League match dicts for the given YYYYMMDD date, or [].""" 
+            url = "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard"
             try:
                 async with aiohttp.ClientSession() as s:
                     async with s.get(url, params={"dates": date_str}, timeout=aiohttp.ClientTimeout(total=10)) as r:
@@ -2537,6 +2615,90 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 pass
             return None
 
+        def _build_soccer_embed(events, title, color, thumb_url, sep=" @ "):
+            """Build a discord.Embed for a list of ESPN soccer scoreboard events, or None if empty."""
+            if not events:
+                return None
+            emb = discord.Embed(title=title, color=color)
+            emb.set_thumbnail(url=thumb_url)
+            for ev in events:
+                comps = ev.get("competitions", [])
+                if not comps:
+                    continue
+                c = comps[0]
+                competitors = c.get("competitors", [])
+                status_type = ev.get("status", {}).get("type", {})
+                status_name = status_type.get("name", "")
+                status_detail = status_type.get("detail", status_type.get("shortDetail", ""))
+                clock = ev.get("status", {}).get("displayClock", "")
+
+                away_comp, home_comp = None, None
+                for comp in competitors:
+                    if comp.get("homeAway") == "away":
+                        away_comp = comp
+                    else:
+                        home_comp = comp
+                if not away_comp or not home_comp:
+                    teams  = [comp.get("team", {}).get("shortDisplayName", "?") for comp in competitors]
+                    scores = [comp.get("score", "") for comp in competitors]
+                    away_name_s = teams[0] if teams else "?"
+                    home_name_s = teams[1] if len(teams) > 1 else "?"
+                else:
+                    away_name_s = away_comp.get("team", {}).get("shortDisplayName", "?")
+                    home_name_s = home_comp.get("team", {}).get("shortDisplayName", "?")
+                    scores = [away_comp.get("score", ""), home_comp.get("score", "")]
+
+                matchup = f"{away_name_s}{sep}{home_name_s}"
+
+                is_live  = status_name in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME")
+                is_final = status_name in ("STATUS_FINAL", "STATUS_FULL_TIME", "STATUS_POSTPONED")
+
+                if is_live or is_final:
+                    score_str = f"{scores[0]} - {scores[1]}" if all(str(s) != "" for s in scores) else "? - ?"
+                    suffix = f"  ({clock})" if is_live and clock and clock != "0'" else ("  (FT)" if is_final else "")
+                    val = f"🔴 {score_str}{suffix}" if is_live else f"✅ {score_str}  (FT)"
+                else:
+                    val = status_detail or "TBD"
+
+                    odds_list = c.get("odds", [])
+                    if odds_list:
+                        o = odds_list[0]
+                        ml  = o.get("moneyline", {})
+                        ps  = o.get("pointSpread", {})
+                        tot = o.get("total", {})
+
+                        away_ml  = ml.get("away",  {}).get("close", {}).get("odds", "")
+                        home_ml  = ml.get("home",  {}).get("close", {}).get("odds", "")
+                        draw_ml  = ml.get("draw",  {}).get("close", {}).get("odds", "") or str(o.get("drawOdds", {}).get("moneyLine", ""))
+
+                        away_spread = ps.get("away", {}).get("close", {}).get("line", "")
+                        away_sp_odds = ps.get("away", {}).get("close", {}).get("odds", "")
+                        home_spread = ps.get("home", {}).get("close", {}).get("line", "")
+                        home_sp_odds = ps.get("home", {}).get("close", {}).get("odds", "")
+
+                        ou_line  = tot.get("over", {}).get("close", {}).get("line", "")
+                        ou_over  = tot.get("over", {}).get("close", {}).get("odds", "")
+                        ou_under = tot.get("under", {}).get("close", {}).get("odds", "")
+
+                        lines = []
+                        if away_ml and home_ml:
+                            draw_str = f"  Draw {draw_ml}" if draw_ml else ""
+                            lines.append(f"ML: {away_name_s} {away_ml} / {home_name_s} {home_ml}{draw_str}")
+                        if away_spread and home_spread:
+                            lines.append(f"Spread: {away_name_s} {away_spread} ({away_sp_odds}) / {home_name_s} {home_spread} ({home_sp_odds})")
+                        if ou_line and ou_over:
+                            lines.append(f"O/U: {ou_line} (o {ou_over} / u {ou_under})")
+
+                        if lines:
+                            val += "\n" + "\n".join(lines)
+
+                venue_str = c.get("venue", {}).get("fullName", "")
+                if venue_str:
+                    val += f"\n📍 {venue_str}"
+
+                emb.add_field(name=matchup, value=val, inline=False)
+            return emb
+
         # ── run all fetches concurrently ─────────────────────────────────────
         target_date = _dt.date.today() + _dt.timedelta(days=1 if is_tomorrow else 0)
         date_str    = target_date.strftime("%Y%m%d")
@@ -2554,6 +2716,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 _fetch_nascar_next(),
                 _fetch_mlb_asg(),
                 _fetch_epl_today(date_str),
+                _fetch_mls_today(date_str),
+                _fetch_ucl_today(date_str),
                 return_exceptions=True,
             )
         else:
@@ -2569,6 +2733,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 _fetch_nascar_next(),
                 _fetch_mlb_asg(),
                 _fetch_epl_today(date_str),
+                _fetch_mls_today(date_str),
+                _fetch_ucl_today(date_str),
                 return_exceptions=True,
             )
 
@@ -2578,6 +2744,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         nascar_event = results[8] if not isinstance(results[8], Exception) else None
         mlb_asg      = results[9] if not isinstance(results[9], Exception) else None
         epl_events   = results[10] if not isinstance(results[10], Exception) else []
+        mls_events   = results[11] if not isinstance(results[11], Exception) else []
+        ucl_events   = results[12] if not isinstance(results[12], Exception) else []
 
         embeds = []
 
@@ -2717,173 +2885,36 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     embeds.append(emb)
 
         # ── World Cup ─────────────────────────────────────────────────────────
-        if wc_events:
-            emb = discord.Embed(title=f"🏆 2026 FIFA World Cup - {day_label}", color=0x1a6b3a)
-            emb.set_thumbnail(url="https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png")
-            for ev in wc_events:
-                comps = ev.get("competitions", [])
-                if not comps:
-                    continue
-                c = comps[0]
-                competitors = c.get("competitors", [])
-                teams, scores = [], []
-                status_type = ev.get("status", {}).get("type", {})
-                status_name = status_type.get("name", "")
-                status_detail = status_type.get("detail", status_type.get("shortDetail", ""))
-                clock = ev.get("status", {}).get("displayClock", "")
-
-                away_comp, home_comp = None, None
-                for comp in competitors:
-                    if comp.get("homeAway") == "away":
-                        away_comp = comp
-                    else:
-                        home_comp = comp
-                if not away_comp or not home_comp:
-                    for comp in competitors:
-                        teams.append(comp.get("team", {}).get("shortDisplayName", "?"))
-                        scores.append(comp.get("score", ""))
-                    away_name_s = teams[0] if teams else "?"
-                    home_name_s = teams[1] if len(teams) > 1 else "?"
-                else:
-                    away_name_s = away_comp.get("team", {}).get("shortDisplayName", "?")
-                    home_name_s = home_comp.get("team", {}).get("shortDisplayName", "?")
-                    scores = [away_comp.get("score", ""), home_comp.get("score", "")]
-
-                matchup = f"{away_name_s} vs {home_name_s}"
-
-                # Build value line based on game state
-                is_live  = status_name in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME")
-                is_final = status_name in ("STATUS_FINAL", "STATUS_FULL_TIME", "STATUS_POSTPONED")
-
-                if is_live or is_final:
-                    score_str = f"{scores[0]} - {scores[1]}" if all(scores) else "? - ?"
-                    suffix = f"  ({clock})" if is_live and clock and clock != "0'" else (f"  (FT)" if is_final else "")
-                    val = f"🔴 {score_str}{suffix}" if is_live else f"✅ {score_str}  (FT)"
-                else:
-                    # Scheduled - show time then betting lines
-                    val = status_detail or "TBD"
-
-                    # Betting lines from odds[0]
-                    odds_list = c.get("odds", [])
-                    if odds_list:
-                        o = odds_list[0]
-                        ml  = o.get("moneyline", {})
-                        ps  = o.get("pointSpread", {})
-                        tot = o.get("total", {})
-
-                        away_ml  = ml.get("away",  {}).get("close", {}).get("odds", "")
-                        home_ml  = ml.get("home",  {}).get("close", {}).get("odds", "")
-                        draw_ml  = ml.get("draw",  {}).get("close", {}).get("odds", "") or str(o.get("drawOdds", {}).get("moneyLine", ""))
-
-                        away_spread = ps.get("away", {}).get("close", {}).get("line", "")
-                        away_sp_odds = ps.get("away", {}).get("close", {}).get("odds", "")
-                        home_spread = ps.get("home", {}).get("close", {}).get("line", "")
-                        home_sp_odds = ps.get("home", {}).get("close", {}).get("odds", "")
-
-                        ou_line  = tot.get("over", {}).get("close", {}).get("line", "")
-                        ou_over  = tot.get("over", {}).get("close", {}).get("odds", "")
-                        ou_under = tot.get("under", {}).get("close", {}).get("odds", "")
-
-                        lines = []
-                        if away_ml and home_ml:
-                            draw_str = f"  Draw {draw_ml}" if draw_ml else ""
-                            lines.append(f"ML: {away_name_s} {away_ml} / {home_name_s} {home_ml}{draw_str}")
-                        if away_spread and home_spread:
-                            lines.append(f"Spread: {away_name_s} {away_spread} ({away_sp_odds}) / {home_name_s} {home_spread} ({home_sp_odds})")
-                        if ou_line and ou_over:
-                            lines.append(f"O/U: {ou_line} (o {ou_over} / u {ou_under})")
-
-                        if lines:
-                            val += "\n" + "\n".join(lines)
-
-                venue_str = c.get("venue", {}).get("fullName", "")
-                if venue_str:
-                    val += f"\n📍 {venue_str}"
-
-                emb.add_field(name=matchup, value=val, inline=False)
-            embeds.append(emb)
+        wc_emb = _build_soccer_embed(
+            wc_events, f"🏆 2026 FIFA World Cup - {day_label}", 0x1a6b3a,
+            "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png", sep=" vs "
+        )
+        if wc_emb:
+            embeds.append(wc_emb)
 
         # ── Premier League ────────────────────────────────────────────────────
-        if epl_events:
-            emb = discord.Embed(title=f"⚽ Premier League - {day_label}", color=0x3d195b)
-            emb.set_thumbnail(url="https://a.espncdn.com/i/leaguelogos/soccer/500/23.png")
-            for ev in epl_events:
-                comps = ev.get("competitions", [])
-                if not comps:
-                    continue
-                c = comps[0]
-                competitors = c.get("competitors", [])
-                status_type = ev.get("status", {}).get("type", {})
-                status_name = status_type.get("name", "")
-                status_detail = status_type.get("detail", status_type.get("shortDetail", ""))
-                clock = ev.get("status", {}).get("displayClock", "")
+        epl_emb = _build_soccer_embed(
+            epl_events, f"⚽ Premier League - {day_label}", 0x3d195b,
+            "https://a.espncdn.com/i/leaguelogos/soccer/500/23.png"
+        )
+        if epl_emb:
+            embeds.append(epl_emb)
 
-                away_comp, home_comp = None, None
-                for comp in competitors:
-                    if comp.get("homeAway") == "away":
-                        away_comp = comp
-                    else:
-                        home_comp = comp
-                if not away_comp or not home_comp:
-                    teams  = [comp.get("team", {}).get("shortDisplayName", "?") for comp in competitors]
-                    scores = [comp.get("score", "") for comp in competitors]
-                    away_name_s = teams[0] if teams else "?"
-                    home_name_s = teams[1] if len(teams) > 1 else "?"
-                else:
-                    away_name_s = away_comp.get("team", {}).get("shortDisplayName", "?")
-                    home_name_s = home_comp.get("team", {}).get("shortDisplayName", "?")
-                    scores = [away_comp.get("score", ""), home_comp.get("score", "")]
+        # ── MLS ───────────────────────────────────────────────────────────────
+        mls_emb = _build_soccer_embed(
+            mls_events, f"⚽ MLS - {day_label}", 0x000000,
+            "https://a.espncdn.com/i/leaguelogos/soccer/500/19.png"
+        )
+        if mls_emb:
+            embeds.append(mls_emb)
 
-                matchup = f"{away_name_s} @ {home_name_s}"
-
-                is_live  = status_name in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME")
-                is_final = status_name in ("STATUS_FINAL", "STATUS_FULL_TIME", "STATUS_POSTPONED")
-
-                if is_live or is_final:
-                    score_str = f"{scores[0]} - {scores[1]}" if all(str(s) != "" for s in scores) else "? - ?"
-                    suffix = f"  ({clock})" if is_live and clock and clock != "0'" else ("  (FT)" if is_final else "")
-                    val = f"🔴 {score_str}{suffix}" if is_live else f"✅ {score_str}  (FT)"
-                else:
-                    val = status_detail or "TBD"
-
-                    odds_list = c.get("odds", [])
-                    if odds_list:
-                        o = odds_list[0]
-                        ml  = o.get("moneyline", {})
-                        ps  = o.get("pointSpread", {})
-                        tot = o.get("total", {})
-
-                        away_ml  = ml.get("away",  {}).get("close", {}).get("odds", "")
-                        home_ml  = ml.get("home",  {}).get("close", {}).get("odds", "")
-                        draw_ml  = ml.get("draw",  {}).get("close", {}).get("odds", "") or str(o.get("drawOdds", {}).get("moneyLine", ""))
-
-                        away_spread = ps.get("away", {}).get("close", {}).get("line", "")
-                        away_sp_odds = ps.get("away", {}).get("close", {}).get("odds", "")
-                        home_spread = ps.get("home", {}).get("close", {}).get("line", "")
-                        home_sp_odds = ps.get("home", {}).get("close", {}).get("odds", "")
-
-                        ou_line  = tot.get("over", {}).get("close", {}).get("line", "")
-                        ou_over  = tot.get("over", {}).get("close", {}).get("odds", "")
-                        ou_under = tot.get("under", {}).get("close", {}).get("odds", "")
-
-                        lines = []
-                        if away_ml and home_ml:
-                            draw_str = f"  Draw {draw_ml}" if draw_ml else ""
-                            lines.append(f"ML: {away_name_s} {away_ml} / {home_name_s} {home_ml}{draw_str}")
-                        if away_spread and home_spread:
-                            lines.append(f"Spread: {away_name_s} {away_spread} ({away_sp_odds}) / {home_name_s} {home_spread} ({home_sp_odds})")
-                        if ou_line and ou_over:
-                            lines.append(f"O/U: {ou_line} (o {ou_over} / u {ou_under})")
-
-                        if lines:
-                            val += "\n" + "\n".join(lines)
-
-                venue_str = c.get("venue", {}).get("fullName", "")
-                if venue_str:
-                    val += f"\n📍 {venue_str}"
-
-                emb.add_field(name=matchup, value=val, inline=False)
-            embeds.append(emb)
+        # ── UEFA Champions League ────────────────────────────────────────────
+        ucl_emb = _build_soccer_embed(
+            ucl_events, f"⚽ Champions League - {day_label}", 0x0e1e5b,
+            "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png", sep=" vs "
+        )
+        if ucl_emb:
+            embeds.append(ucl_emb)
 
         # ── UFC ───────────────────────────────────────────────────────────────
         if ufc_event:
@@ -3007,6 +3038,13 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         if not embeds:
             await _send(interaction, f"nothing going on in the sports world {day_label.lower()} 😔")
             return
+
+        # Discord hard-caps a single message at 10 embeds. With NBA/NHL/MLB/PGA/
+        # NFL/World Cup/EPL/MLS/UCL/UFC/F1/NASCAR/HR-Derby all possible in one
+        # /ball call, a busy day can exceed that and would otherwise raise.
+        if len(embeds) > 10:
+            print(f"[ball] {len(embeds)} embeds built, truncating to 10", flush=True)
+            embeds = embeds[:10]
 
         await _send(interaction, embeds=embeds)
 

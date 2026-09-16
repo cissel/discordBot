@@ -1,0 +1,19 @@
+{
+  "tail_query": "N834QS",
+  "callsign": "EJA834",
+  "registration": "N834QS",
+  "hex": "ab68a5",
+  "aircraft_type": "CESSNA 700 Citation Longitude",
+  "operator": "",
+  "altitude_ft": 25975,
+  "on_ground": false,
+  "ground_speed_kt": 489.0,
+  "vertical_rate_str": "descending 2,112 ft/min",
+  "heading_deg": 195.17,
+  "lat": 31.990814,
+  "lon": -80.969678,
+  "squawk": "1456",
+  "updated_utc": "2026-09-08 18:17 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N834QS.png"
+}

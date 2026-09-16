@@ -20,10 +20,12 @@ OUT_TOURN  = OUT_DIR / "tournament.csv"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 SCOREBOARD_URL = "http://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard"
-HEADERS        = {"User-Agent": "discordBot/1.0"}
+# NOTE (Sep 2026): ESPN's edge WAF started 403-ing requests carrying a custom
+# "discordBot/1.0" (or generic browser-looking) User-Agent. Sending no custom
+# UA at all reliably returns 200 - do not add one back without testing live.
 
 def fetch():
-    req = urllib.request.Request(SCOREBOARD_URL, headers=HEADERS)
+    req = urllib.request.Request(SCOREBOARD_URL)
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
             return json.loads(r.read())

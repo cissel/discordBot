@@ -15,10 +15,11 @@ OUT_CSV = OUT_DIR / "season_standings.csv"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 URL     = "http://site.api.espn.com/apis/site/v2/sports/golf/pga/statistics?season=2026&category=FedExCupPoints"
-HEADERS = {"User-Agent": "discordBot/1.0"}
+# NOTE (Sep 2026): ESPN's edge WAF 403s requests carrying a custom
+# "discordBot/1.0" User-Agent - sending no custom UA reliably returns 200.
 
 def fetch():
-    req = urllib.request.Request(URL, headers=HEADERS)
+    req = urllib.request.Request(URL)
     try:
         with urllib.request.urlopen(req, timeout=12) as r:
             return json.loads(r.read())
