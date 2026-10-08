@@ -1,0 +1,204 @@
+scrapedAt,betNumber,nflGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-06T08:27:31-04:00,1,Buccaneers @ Cowboys,Buccaneers +8.0 spread,-105,,,upcoming_games_odds,line_moved_no_compare,0.4892,-105,2026-10-09 11:15:00,401872980,6091649111558324637
+2026-10-06T08:27:31-04:00,2,Buccaneers @ Cowboys,Cowboys -8.0 spread,-115,,,upcoming_games_odds,line_moved_no_compare,0.5108,-115,2026-10-09 11:15:00,401872980,5333918474253238685
+2026-10-06T08:27:31-04:00,3,Buccaneers @ Cowboys,O 47.0,-115,51.1,-0.045,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-09 11:15:00,401872980,2930447980773376411
+2026-10-06T08:27:31-04:00,4,Buccaneers @ Cowboys,U 47.0,-105,51.1,-0.0027,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-09 11:15:00,401872980,2016217256417165723
+2026-10-06T08:27:31-04:00,5,Buccaneers @ Cowboys,Buccaneers ML,+350,13.8,-0.3811,upcoming_games_odds,espn_bpi,0.2105,+350,2026-10-09 11:15:00,401872980,7113940740635492761
+2026-10-06T08:27:31-04:00,6,Buccaneers @ Cowboys,Cowboys ML,-500,86.1,0.0336,upcoming_games_odds,espn_bpi,0.7895,-500,2026-10-09 11:15:00,401872980,5986914933886026137
+2026-10-06T08:27:31-04:00,7,Eagles vs* Jaguars,None +6.5 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-12 00:30:00,,8868290634306421132
+2026-10-06T08:27:31-04:00,8,Eagles vs* Jaguars,None -6.5 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-12 00:30:00,,5802465187973955980
+2026-10-06T08:27:31-04:00,9,Eagles vs* Jaguars,O 42.5,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-12 00:30:00,,6368625823796298155
+2026-10-06T08:27:31-04:00,10,Eagles vs* Jaguars,U 42.5,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-12 00:30:00,,6776201590073328043
+2026-10-06T08:27:31-04:00,11,Eagles vs* Jaguars,None ML,+230,,,upcoming_games_odds,no_model,0.2878,+230,2026-10-12 00:30:00,,291053311031902619
+2026-10-06T08:27:31-04:00,12,Eagles vs* Jaguars,None ML,-300,,,upcoming_games_odds,no_model,0.7122,-300,2026-10-12 00:30:00,,5934063644127134107
+2026-10-06T08:27:31-04:00,13,Vikings @ Saints,Vikings -2.0 spread,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872987,807311558286901639
+2026-10-06T08:27:31-04:00,14,Vikings @ Saints,Saints +2.0 spread,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872987,4141101182447911303
+2026-10-06T08:27:31-04:00,15,Vikings @ Saints,O 42.0,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872987,3734554559054479756
+2026-10-06T08:27:31-04:00,16,Vikings @ Saints,U 42.0,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872987,1452355447884480908
+2026-10-06T08:27:31-04:00,17,Vikings @ Saints,Vikings ML,-130,55.1,-0.0257,upcoming_games_odds,espn_bpi,0.5427,-130,2026-10-12 04:00:00,401872987,6384619474552750474
+2026-10-06T08:27:31-04:00,18,Vikings @ Saints,Saints ML,+110,44.6,-0.064,upcoming_games_odds,espn_bpi,0.4573,+110,2026-10-12 04:00:00,401872987,1833732051094864266
+2026-10-06T08:27:31-04:00,19,Texans @ Titans,Texans -7.0 spread,-105,48.9,-0.045,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-12 04:00:00,401872984,7044404803232989572
+2026-10-06T08:27:31-04:00,20,Texans @ Titans,Titans +7.0 spread,-115,51.1,-0.045,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-12 04:00:00,401872984,6407708405913485700
+2026-10-06T08:27:31-04:00,21,Texans @ Titans,O 39.5,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872984,1020488457904062856
+2026-10-06T08:27:31-04:00,22,Texans @ Titans,U 39.5,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872984,8189093164771049864
+2026-10-06T08:27:31-04:00,23,Texans @ Titans,Texans ML,-325,66.4,-0.1317,upcoming_games_odds,espn_bpi,0.7335,-325,2026-10-12 04:00:00,401872984,2401383516236546453
+2026-10-06T08:27:31-04:00,24,Texans @ Titans,Titans ML,+260,33.3,0.2,upcoming_games_odds,espn_bpi,0.2665,+260,2026-10-12 04:00:00,401872984,3243556646554829205
+2026-10-06T08:27:31-04:00,25,Bears @ Packers,Bears -3.0 spread,-105,48.9,-0.045,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-12 04:00:00,401872990,6069151996357771659
+2026-10-06T08:27:31-04:00,26,Bears @ Packers,Packers +3.0 spread,-115,51.1,-0.045,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-12 04:00:00,401872990,3479582210619736459
+2026-10-06T08:27:31-04:00,27,Bears @ Packers,O 44.5,-110,48.3,-0.0786,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872990,9177999133661856135
+2026-10-06T08:27:31-04:00,28,Bears @ Packers,U 44.5,-110,48.3,-0.0786,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872990,6913532946024628615
+2026-10-06T08:27:31-04:00,29,Bears @ Packers,Bears ML,-150,57.6,-0.04,upcoming_games_odds,espn_bpi,0.5798,-150,2026-10-12 04:00:00,401872990,4949544987132291
+2026-10-06T08:27:31-04:00,30,Bears @ Packers,Packers ML,+130,42.1,-0.0325,upcoming_games_odds,espn_bpi,0.4202,+130,2026-10-12 04:00:00,401872990,4773417125442355587
+2026-10-06T08:27:31-04:00,31,Browns @ Jets,Browns +2.5 spread,-110,50.4,-0.0372,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872983,4443451223856775564
+2026-10-06T08:27:31-04:00,32,Browns @ Jets,Jets -2.5 spread,-110,49.6,-0.0537,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872983,7011628911364800908
+2026-10-06T08:27:31-04:00,33,Browns @ Jets,O 40.0,-110,51.7,-0.0123,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872983,3058611930626392481
+2026-10-06T08:27:31-04:00,34,Browns @ Jets,U 40.0,-110,51.7,-0.0123,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872983,8844611551890637217
+2026-10-06T08:27:31-04:00,35,Browns @ Jets,Browns ML,+110,44.2,-0.0719,upcoming_games_odds,espn_bpi,0.4573,+110,2026-10-12 04:00:00,401872983,4393107323388821896
+2026-10-06T08:27:31-04:00,36,Browns @ Jets,Jets ML,-130,55.4,-0.019,upcoming_games_odds,espn_bpi,0.5427,-130,2026-10-12 04:00:00,401872983,2783070456603869576
+2026-10-06T08:27:31-04:00,37,Bengals @ Dolphins,Bengals -7.5 spread,-105,50.4,-0.0154,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-12 04:00:00,401872982,5941088303657910663
+2026-10-06T08:27:31-04:00,38,Bengals @ Dolphins,Dolphins +7.5 spread,-115,49.6,-0.0733,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-12 04:00:00,401872982,2072496223746654599
+2026-10-06T08:27:31-04:00,39,Bengals @ Dolphins,O 42.5,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872982,519264525699121546
+2026-10-06T08:27:31-04:00,40,Bengals @ Dolphins,U 42.5,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872982,2917431327273910666
+2026-10-06T08:27:31-04:00,41,Bengals @ Dolphins,Bengals ML,-375,80.3,0.0172,upcoming_games_odds,espn_bpi,0.7475,-375,2026-10-12 04:00:00,401872982,526830540087755152
+2026-10-06T08:27:31-04:00,42,Bengals @ Dolphins,Dolphins ML,+275,19.5,-0.2673,upcoming_games_odds,espn_bpi,0.2525,+275,2026-10-12 04:00:00,401872982,1848637030720995728
+2026-10-06T08:27:31-04:00,43,Raiders @ Patriots,Raiders +4.0 spread,-115,50.0,-0.0652,upcoming_games_odds,draftkings_devig,0.5052,-115,2026-10-12 04:00:00,401872986,1881745524856586651
+2026-10-06T08:27:31-04:00,44,Raiders @ Patriots,Patriots -4.0 spread,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.4948,-110,2026-10-12 04:00:00,401872986,1820383979933663643
+2026-10-06T08:27:31-04:00,45,Raiders @ Patriots,O 45.0,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872986,3387608887589994902
+2026-10-06T08:27:31-04:00,46,Raiders @ Patriots,U 45.0,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872986,4094674029087162774
+2026-10-06T08:27:31-04:00,47,Raiders @ Patriots,Raiders ML,+165,35.9,-0.0496,upcoming_games_odds,espn_bpi,0.3614,+165,2026-10-12 04:00:00,401872986,580178844267446698
+2026-10-06T08:27:31-04:00,48,Raiders @ Patriots,Patriots ML,-200,63.8,-0.0423,upcoming_games_odds,espn_bpi,0.6386,-200,2026-10-12 04:00:00,401872986,1467387970859434410
+2026-10-06T08:27:31-04:00,49,Giants @ Commanders,Giants +3.5 spread,-115,48.9,-0.0855,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-12 04:00:00,401872988,3060758177323811250
+2026-10-06T08:27:31-04:00,50,Giants @ Commanders,Commanders -3.5 spread,-105,51.1,-0.0027,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-12 04:00:00,401872988,3209376965027037618
+2026-10-06T08:27:31-04:00,51,Giants @ Commanders,O 43.5,-110,51.1,-0.0248,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872988,2730357395267125680
+2026-10-06T08:27:31-04:00,52,Giants @ Commanders,U 43.5,-110,51.1,-0.0248,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872988,7746804430204436912
+2026-10-06T08:27:31-04:00,53,Giants @ Commanders,Giants ML,+150,36.8,-0.0806,upcoming_games_odds,espn_bpi,0.3836,+150,2026-10-12 04:00:00,401872988,9175852886964437399
+2026-10-06T08:27:31-04:00,54,Giants @ Commanders,Commanders ML,-180,62.9,-0.0211,upcoming_games_odds,espn_bpi,0.6164,-180,2026-10-12 04:00:00,401872988,6898157375421809047
+2026-10-06T08:27:31-04:00,55,Colts @ Steelers,Colts +2.5 spread,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872985,1645915410794676629
+2026-10-06T08:27:31-04:00,56,Colts @ Steelers,Steelers -2.5 spread,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872985,2848376511302599061
+2026-10-06T08:27:31-04:00,57,Colts @ Steelers,O 44.0,-110,49.6,-0.0537,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872985,8074021026587083170
+2026-10-06T08:27:31-04:00,58,Colts @ Steelers,U 44.0,-110,49.6,-0.0537,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 04:00:00,401872985,2572311131800600994
+2026-10-06T08:27:31-04:00,59,Colts @ Steelers,Colts ML,+115,49.9,0.0738,upcoming_games_odds,espn_bpi,0.4474,+115,2026-10-12 04:00:00,401872985,3620023105713471880
+2026-10-06T08:27:31-04:00,60,Colts @ Steelers,Steelers ML,-135,49.7,-0.1356,upcoming_games_odds,espn_bpi,0.5526,-135,2026-10-12 04:00:00,401872985,1985216440977981832
+2026-10-06T08:27:31-04:00,61,Broncos @ Chargers,Broncos -3.5 spread,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 07:05:00,401872989,3191624513351713164
+2026-10-06T08:27:31-04:00,62,Broncos @ Chargers,Chargers +3.5 spread,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 07:05:00,401872989,1649141640977318284
+2026-10-06T08:27:31-04:00,63,Broncos @ Chargers,O 42.5,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 07:05:00,401872989,3024920958394827140
+2026-10-06T08:27:31-04:00,64,Broncos @ Chargers,U 42.5,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 07:05:00,401872989,8619517595495825796
+2026-10-06T08:27:31-04:00,65,Broncos @ Chargers,Broncos ML,-185,50.0,-0.2296,upcoming_games_odds,espn_bpi,0.6234,-185,2026-10-12 07:05:00,401872989,3792432851140608391
+2026-10-06T08:27:31-04:00,66,Broncos @ Chargers,Chargers ML,+155,49.6,0.2646,upcoming_games_odds,espn_bpi,0.3766,+155,2026-10-12 07:05:00,401872989,1377659025939890567
+2026-10-06T08:27:31-04:00,67,Lions @ Cardinals,Lions -4.5 spread,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 07:25:00,401872991,1594324389262918061
+2026-10-06T08:27:31-04:00,68,Lions @ Cardinals,Cardinals +4.5 spread,-110,51.1,-0.0248,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 07:25:00,401872991,3798836406860775853
+2026-10-06T08:27:31-04:00,69,Lions @ Cardinals,O 54.0,-115,50.0,-0.0652,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-12 07:25:00,401872991,6266413178473808266
+2026-10-06T08:27:31-04:00,70,Lions @ Cardinals,U 54.0,-105,50.0,-0.0238,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-12 07:25:00,401872991,3575512401119936906
+2026-10-06T08:27:31-04:00,71,Lions @ Cardinals,Lions ML,-240,69.3,-0.0186,upcoming_games_odds,espn_bpi,0.6756,-240,2026-10-12 07:25:00,401872991,3402123815466172849
+2026-10-06T08:27:31-04:00,72,Lions @ Cardinals,Cardinals ML,+195,30.5,-0.1009,upcoming_games_odds,espn_bpi,0.3244,+195,2026-10-12 07:25:00,401872991,4548289920631964081
+2026-10-06T08:27:31-04:00,73,49ers @ Seahawks,49ers +3.0 spread,-115,47.8,-0.1059,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-12 07:25:00,401872992,8527947710555357600
+2026-10-06T08:27:31-04:00,74,49ers @ Seahawks,Seahawks -3.0 spread,-105,52.2,0.0186,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-12 07:25:00,401872992,2676645894694240672
+2026-10-06T08:27:31-04:00,75,49ers @ Seahawks,O 47.0,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 07:25:00,401872992,3125952662730834332
+2026-10-06T08:27:31-04:00,76,49ers @ Seahawks,U 47.0,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 07:25:00,401872992,5028723505294868892
+2026-10-06T08:27:31-04:00,77,49ers @ Seahawks,49ers ML,+130,55.7,0.2807,upcoming_games_odds,espn_bpi,0.417,+130,2026-10-12 07:25:00,401872992,155578981901533598
+2026-10-06T08:27:31-04:00,78,49ers @ Seahawks,Seahawks ML,-155,44.0,-0.2767,upcoming_games_odds,espn_bpi,0.583,-155,2026-10-12 07:25:00,401872992,4285379840200278430
+2026-10-06T08:27:31-04:00,79,Ravens @ Falcons,Ravens -2.5 spread,-110,49.6,-0.0537,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 11:20:00,401872993,600095134826234244
+2026-10-06T08:27:31-04:00,80,Ravens @ Falcons,Falcons +2.5 spread,-110,50.4,-0.0372,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 11:20:00,401872993,5214032953067307396
+2026-10-06T08:27:31-04:00,81,Ravens @ Falcons,O 45.5,-110,51.1,-0.0248,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 11:20:00,401872993,7636679281522901380
+2026-10-06T08:27:31-04:00,82,Ravens @ Falcons,U 45.5,-110,51.1,-0.0248,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-12 11:20:00,401872993,3756546727566508420
+2026-10-06T08:27:31-04:00,83,Ravens @ Falcons,Ravens ML,-135,51.8,-0.0989,upcoming_games_odds,espn_bpi,0.5526,-135,2026-10-12 11:20:00,401872993,1910350419364807089
+2026-10-06T08:27:31-04:00,84,Ravens @ Falcons,Falcons ML,+115,47.9,0.0288,upcoming_games_odds,espn_bpi,0.4474,+115,2026-10-12 11:20:00,401872993,7184065583015657905
+2026-10-06T08:27:31-04:00,85,Bills @ Rams,Bills +3.0 spread,-115,48.3,-0.0977,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-13 11:15:00,401872994,7992726486954148274
+2026-10-06T08:27:31-04:00,86,Bills @ Rams,Rams -3.0 spread,-105,51.7,0.0101,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-13 11:15:00,401872994,2758417820042789298
+2026-10-06T08:27:31-04:00,87,Bills @ Rams,O 54.5,-110,51.1,-0.0248,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-13 11:15:00,401872994,7859406716356657557
+2026-10-06T08:27:31-04:00,88,Bills @ Rams,U 54.5,-110,51.1,-0.0248,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-13 11:15:00,401872994,5145987940865933717
+2026-10-06T08:27:31-04:00,89,Bills @ Rams,Bills ML,+135,40.7,-0.0433,upcoming_games_odds,espn_bpi,0.4118,+135,2026-10-13 11:15:00,401872994,2867623926253617555
+2026-10-06T08:27:31-04:00,90,Bills @ Rams,Rams ML,-155,59.0,-0.03,upcoming_games_odds,espn_bpi,0.5882,-155,2026-10-13 11:15:00,401872994,2881134725135729043
+2026-10-06T08:27:31-04:00,91,Tampa Bay Buccaneers @ Dallas Cowboys,Emeka Egbuka - First TD (Yes),+2000,,,props_odds,no_model,,+2000,2026-10-09 11:15:00,,2742818653442539939
+2026-10-06T08:27:31-04:00,92,Tampa Bay Buccaneers @ Dallas Cowboys,Jake Ferguson - To Score 2+ TDs (O 1.5),+1750,5.9,0.0895,props_odds,sleeper_poisson,,+1750,2026-10-09 11:15:00,,165563803810005405
+2026-10-06T08:27:31-04:00,93,Tampa Bay Buccaneers @ Dallas Cowboys,Kenneth Gainwell - Last TD (Yes),+1750,,,props_odds,no_model,,+1750,2026-10-09 11:15:00,,486498962203869611
+2026-10-06T08:27:31-04:00,94,Tampa Bay Buccaneers @ Dallas Cowboys,CeeDee Lamb - Last TD (Yes),+600,,,props_odds,no_model,,+600,2026-10-09 11:15:00,,4983985743010595248
+2026-10-06T08:27:31-04:00,95,Tampa Bay Buccaneers @ Dallas Cowboys,Javonte Williams - To Score 3+ TDs (O 2.5),+850,10.6,0.0041,props_odds,sleeper_poisson,,+850,2026-10-09 11:15:00,,6996904966808011182
+2026-10-06T08:27:31-04:00,96,Tampa Bay Buccaneers @ Dallas Cowboys,Ted Hurst - Longest Reception (O 15.5),-110,,,props_odds,no_model,,-110,2026-10-09 11:15:00,,7478280540341272985
+2026-10-06T08:27:31-04:00,97,Tampa Bay Buccaneers @ Dallas Cowboys,KaVontae Turpin - Anytime TD (O 0.5),+650,9.5,-0.2863,props_odds,sleeper_poisson,,+650,2026-10-09 11:15:00,,3009097907010929064
+2026-10-06T08:27:31-04:00,98,Tampa Bay Buccaneers @ Dallas Cowboys,CeeDee Lamb - First TD (Yes),+575,,,props_odds,no_model,,+575,2026-10-09 11:15:00,,1796077569276248464
+2026-10-06T08:27:31-04:00,99,Tampa Bay Buccaneers @ Dallas Cowboys,Jake Ferguson - Anytime TD (O 0.5),+230,32.3,0.0657,props_odds,sleeper_poisson,,+230,2026-10-09 11:15:00,,2723608392156447150
+2026-10-06T08:27:31-04:00,100,Tampa Bay Buccaneers @ Dallas Cowboys,Javonte Williams - To Score 2+ TDs (O 1.5),+225,31.2,0.0138,props_odds,sleeper_poisson,,+225,2026-10-09 11:15:00,,3344485669010538925
+2026-10-06T08:27:31-04:00,101,Tampa Bay Buccaneers @ Dallas Cowboys,Dak Prescott - Pass Completions (O 23.5),+100,38.2,-0.2357,props_odds,sleeper_poisson,,+100,2026-10-09 11:15:00,,6834788958761779622
+2026-10-06T08:27:31-04:00,102,Tampa Bay Buccaneers @ Dallas Cowboys,CeeDee Lamb - To Score 2+ TDs (O 1.5),+500,11.9,-0.2883,props_odds,sleeper_poisson,,+500,2026-10-09 11:15:00,,3434557661557948836
+2026-10-06T08:27:31-04:00,103,Tampa Bay Buccaneers @ Dallas Cowboys,Sean Tucker - Anytime TD (O 0.5),+350,6.8,-0.6958,props_odds,sleeper_poisson,,+350,2026-10-09 11:15:00,,5028628912985473447
+2026-10-06T08:27:31-04:00,104,Tampa Bay Buccaneers @ Dallas Cowboys,Bucky Irving - Longest Reception (U 8.5),-110,,,props_odds,no_model,,-110,2026-10-09 11:15:00,,6047082919527317908
+2026-10-06T08:27:31-04:00,105,Tampa Bay Buccaneers @ Dallas Cowboys,CeeDee Lamb - Anytime TD (O 0.5),-110,44.6,-0.1492,props_odds,sleeper_poisson,,-110,2026-10-09 11:15:00,,4294745190385713584
+2026-10-06T08:27:31-04:00,106,Tampa Bay Buccaneers @ Dallas Cowboys,Cade Otton - Longest Reception (U 14.5),-115,,,props_odds,no_model,,-115,2026-10-09 11:15:00,,5175053269290058131
+2026-10-06T08:27:31-04:00,107,Tampa Bay Buccaneers @ Dallas Cowboys,George Pickens - Longest Reception (U 23.5),-115,,,props_odds,no_model,,-115,2026-10-09 11:15:00,,2776976252932850053
+2026-10-06T08:27:31-04:00,108,Tampa Bay Buccaneers @ Dallas Cowboys,Ted Hurst - Anytime TD (O 0.5),+450,16.5,-0.094,props_odds,sleeper_poisson,,+450,2026-10-09 11:15:00,,4401155219199754657
+2026-10-06T08:27:31-04:00,109,Tampa Bay Buccaneers @ Dallas Cowboys,Kenneth Gainwell - Anytime TD (O 0.5),+400,,,props_odds,player_not_matched,,+400,2026-10-09 11:15:00,,1220835428043719076
+2026-10-06T08:27:31-04:00,110,Tampa Bay Buccaneers @ Dallas Cowboys,Javonte Williams - Last TD (Yes),+375,,,props_odds,no_model,,+375,2026-10-09 11:15:00,,2753692376764645791
+2026-10-06T08:27:31-04:00,111,Tampa Bay Buccaneers @ Dallas Cowboys,Javonte Williams - Anytime TD (O 0.5),-230,67.7,-0.0287,props_odds,sleeper_poisson,,-230,2026-10-09 11:15:00,,7925772389953175966
+2026-10-06T08:27:31-04:00,112,Tampa Bay Buccaneers @ Dallas Cowboys,Javonte Williams - First TD (Yes),+325,,,props_odds,no_model,,+325,2026-10-09 11:15:00,,1462811196850831755
+2026-10-06T08:27:31-04:00,113,Philadelphia Eagles vs* Jacksonville Jaguars,Josh Cameron - First TD (Yes),+3000,,,props_odds,no_model,,+3000,2026-10-12 00:30:00,,7131978323697205661
+2026-10-06T08:27:31-04:00,114,Philadelphia Eagles vs* Jacksonville Jaguars,Darius Cooper - To Score 2+ TDs (O 1.5),+2500,,,props_odds,no_espn_match,,+2500,2026-10-12 00:30:00,,8707989566746919313
+2026-10-06T08:27:31-04:00,115,Philadelphia Eagles vs* Jacksonville Jaguars,Brian Thomas - First TD (Yes),+1500,,,props_odds,no_model,,+1500,2026-10-12 00:30:00,,2864712123647394205
+2026-10-06T08:27:31-04:00,116,Philadelphia Eagles vs* Jacksonville Jaguars,Josh Cameron - Anytime TD (O 0.5),+600,,,props_odds,no_espn_match,,+600,2026-10-12 00:30:00,,4602597024771211691
+2026-10-06T08:27:31-04:00,117,Philadelphia Eagles vs* Jacksonville Jaguars,Darius Cooper - Anytime TD (O 0.5),+375,,,props_odds,no_espn_match,,+375,2026-10-12 00:30:00,,2069683716002808219
+2026-10-06T08:27:31-04:00,118,Philadelphia Eagles vs* Jacksonville Jaguars,Parker Washington - First TD (Yes),+700,,,props_odds,no_model,,+700,2026-10-12 00:30:00,,1500121436554133914
+2026-10-06T08:27:31-04:00,119,Philadelphia Eagles vs* Jacksonville Jaguars,Chris Rodriguez - Anytime TD (O 0.5),+275,,,props_odds,no_espn_match,,+275,2026-10-12 00:30:00,,8896865881779470767
+2026-10-06T08:27:31-04:00,120,Philadelphia Eagles vs* Jacksonville Jaguars,Jakobi Meyers - Anytime TD (O 0.5),+275,,,props_odds,no_espn_match,,+275,2026-10-12 00:30:00,,1754045942354542986
+2026-10-06T08:27:31-04:00,121,Philadelphia Eagles vs* Jacksonville Jaguars,Trevor Lawrence - Pass Completions (U 19.5),-125,,,props_odds,no_espn_match,,-125,2026-10-12 00:30:00,,8331605158643499402
+2026-10-06T08:27:31-04:00,122,Philadelphia Eagles vs* Jacksonville Jaguars,Bhayshul Tuten - Last TD (Yes),+525,,,props_odds,no_model,,+525,2026-10-12 00:30:00,,3771276812416582053
+2026-10-06T08:27:31-04:00,123,Philadelphia Eagles vs* Jacksonville Jaguars,Bhayshul Tuten - First TD (Yes),+450,,,props_odds,no_model,,+450,2026-10-12 00:30:00,,6867339069031055776
+2026-10-06T08:27:31-04:00,124,Philadelphia Eagles vs* Jacksonville Jaguars,Jalen Hurts - Pass Completions (U 19.5),-125,,,props_odds,no_espn_match,,-125,2026-10-12 00:30:00,,8564907594794271135
+2026-10-06T08:27:31-04:00,125,Philadelphia Eagles vs* Jacksonville Jaguars,Parker Washington - Anytime TD (O 0.5),+155,,,props_odds,no_espn_match,,+155,2026-10-12 00:30:00,,5223252397844988335
+2026-10-06T08:27:31-04:00,126,Philadelphia Eagles vs* Jacksonville Jaguars,Brian Thomas - Anytime TD (O 0.5),+325,,,props_odds,no_espn_match,,+325,2026-10-12 00:30:00,,4719642786327036325
+2026-10-06T08:27:31-04:00,127,Philadelphia Eagles vs* Jacksonville Jaguars,Brenton Strange - Anytime TD (O 0.5),+300,,,props_odds,no_espn_match,,+300,2026-10-12 00:30:00,,4453901142405022107
+2026-10-06T08:27:31-04:00,128,Cleveland Browns @ New York Jets,Blake Whiteheart - Last TD (Yes),+3000,,,props_odds,no_model,,+3000,2026-10-12 04:00:00,,8975346249905602992
+2026-10-06T08:27:31-04:00,129,Cleveland Browns @ New York Jets,Jaleel McLaughlin - Anytime TD (O 0.5),+1750,6.8,0.2507,props_odds,sleeper_poisson,,+1750,2026-10-12 04:00:00,,6247186322021286281
+2026-10-06T08:27:31-04:00,130,Cleveland Browns @ New York Jets,Harold Fannin Jr. - To Score 2+ TDs (O 1.5),+1300,8.4,0.1788,props_odds,sleeper_poisson,,+1300,2026-10-12 04:00:00,,3486330216861794736
+2026-10-06T08:27:31-04:00,131,Cleveland Browns @ New York Jets,Harold Fannin Jr. - Last TD (Yes),+850,,,props_odds,no_model,,+850,2026-10-12 04:00:00,,4871027673092194707
+2026-10-06T08:27:31-04:00,132,Cleveland Browns @ New York Jets,Blake Whiteheart - Anytime TD (O 0.5),+700,10.4,-0.1667,props_odds,sleeper_poisson,,+700,2026-10-12 04:00:00,,7553080680377352620
+2026-10-06T08:27:31-04:00,133,Cleveland Browns @ New York Jets,Jeremy Ruckert - Anytime TD (O 0.5),+600,3.0,-0.7931,props_odds,sleeper_poisson,,+600,2026-10-12 04:00:00,,8863672152407277960
+2026-10-06T08:27:31-04:00,134,Cleveland Browns @ New York Jets,Harold Fannin Jr. - Anytime TD (O 0.5),+220,38.1,0.2199,props_odds,sleeper_poisson,,+220,2026-10-12 04:00:00,,3643956203819762064
+2026-10-06T08:27:31-04:00,135,Cleveland Browns @ New York Jets,Kenyon Sadiq - Anytime TD (O 0.5),+210,24.4,-0.2429,props_odds,sleeper_poisson,,+210,2026-10-12 04:00:00,,1721784478583619977
+2026-10-06T08:27:31-04:00,136,Cleveland Browns @ New York Jets,Denzel Boston - Anytime TD (O 0.5),+200,33.0,-0.011,props_odds,sleeper_poisson,,+200,2026-10-12 04:00:00,,6506350008781111694
+2026-10-06T08:27:31-04:00,137,Cleveland Browns @ New York Jets,Garrett Wilson - Anytime TD (O 0.5),+140,40.5,-0.0268,props_odds,sleeper_poisson,,+140,2026-10-12 04:00:00,,5781294658030272940
+2026-10-06T08:27:31-04:00,138,Cleveland Browns @ New York Jets,Isaiah Williams - Anytime TD (O 0.5),+375,11.3,-0.4629,props_odds,sleeper_poisson,,+375,2026-10-12 04:00:00,,6431886683301609900
+2026-10-06T08:27:31-04:00,139,Chicago Bears @ Green Bay Packers,D&#039;Andre Swift - To Score 3+ TDs (O 2.5),+3000,6.0,0.8477,props_odds,sleeper_poisson,,+3000,2026-10-12 04:00:00,,6404235893229617557
+2026-10-06T08:27:31-04:00,140,Chicago Bears @ Green Bay Packers,Christian Watson - First TD (Yes),+900,,,props_odds,no_model,,+900,2026-10-12 04:00:00,,2736934496170541486
+2026-10-06T08:27:31-04:00,141,Chicago Bears @ Green Bay Packers,Matthew Golden - First TD (Yes),+1200,,,props_odds,no_model,,+1200,2026-10-12 04:00:00,,5430153044035764654
+2026-10-06T08:27:31-04:00,142,Chicago Bears @ Green Bay Packers,Christian Watson - To Score 2+ TDs (O 1.5),+1100,12.9,0.5424,props_odds,sleeper_poisson,,+1100,2026-10-12 04:00:00,,3095596243028672911
+2026-10-06T08:27:31-04:00,143,Chicago Bears @ Green Bay Packers,Luther Burden III - First TD (Yes),+1000,,,props_odds,no_model,,+1000,2026-10-12 04:00:00,,1549123288591106473
+2026-10-06T08:27:31-04:00,144,Chicago Bears @ Green Bay Packers,Christian Watson - Last TD (Yes),+850,,,props_odds,no_model,,+850,2026-10-12 04:00:00,,6336365239470260632
+2026-10-06T08:27:31-04:00,145,Chicago Bears @ Green Bay Packers,Christian Watson - Anytime TD (O 0.5),+200,46.2,0.3862,props_odds,sleeper_poisson,,+200,2026-10-12 04:00:00,,1186070001023582606
+2026-10-06T08:27:31-04:00,146,Chicago Bears @ Green Bay Packers,Kyle Monangai - To Score 2+ TDs (O 1.5),+650,7.3,-0.4556,props_odds,sleeper_poisson,,+650,2026-10-12 04:00:00,,4611803241536160166
+2026-10-06T08:27:31-04:00,147,Chicago Bears @ Green Bay Packers,Matthew Golden - Anytime TD (O 0.5),+250,25.2,-0.1189,props_odds,sleeper_poisson,,+250,2026-10-12 04:00:00,,7562553545891905969
+2026-10-06T08:27:31-04:00,148,Chicago Bears @ Green Bay Packers,Kyle Monangai - First TD (Yes),+600,,,props_odds,no_model,,+600,2026-10-12 04:00:00,,8454306999675519401
+2026-10-06T08:27:31-04:00,149,Chicago Bears @ Green Bay Packers,D&#039;Andre Swift - Last TD (Yes),+575,,,props_odds,no_model,,+575,2026-10-12 04:00:00,,1515069423835283864
+2026-10-06T08:27:31-04:00,150,Chicago Bears @ Green Bay Packers,D&#039;Andre Swift - To Score 2+ TDs (O 1.5),+550,22.0,0.4314,props_odds,sleeper_poisson,,+550,2026-10-12 04:00:00,,5172501395143786897
+2026-10-06T08:27:31-04:00,151,Chicago Bears @ Green Bay Packers,Cole Kmet - Anytime TD (O 0.5),+475,11.3,-0.3498,props_odds,sleeper_poisson,,+475,2026-10-12 04:00:00,,2883584534216049049
+2026-10-06T08:27:31-04:00,152,Chicago Bears @ Green Bay Packers,Kalif Raymond - Anytime TD (O 0.5),+400,17.3,-0.1348,props_odds,sleeper_poisson,,+400,2026-10-12 04:00:00,,8366822633655894447
+2026-10-06T08:27:31-04:00,153,Chicago Bears @ Green Bay Packers,Kyle Monangai - Anytime TD (O 0.5),+130,35.6,-0.1813,props_odds,sleeper_poisson,,+130,2026-10-12 04:00:00,,3530728224734708122
+2026-10-06T08:27:31-04:00,154,Las Vegas Raiders @ New England Patriots,Brock Bowers - Last TD (Yes),+650,,,props_odds,no_model,,+650,2026-10-12 04:00:00,,1677150086448152996
+2026-10-06T08:27:31-04:00,155,Las Vegas Raiders @ New England Patriots,Ian Thomas - Anytime TD (O 0.5),+2250,1.0,-0.7662,props_odds,sleeper_poisson,,+2250,2026-10-12 04:00:00,,8151580051264110989
+2026-10-06T08:27:31-04:00,156,Las Vegas Raiders @ New England Patriots,Cody White - Anytime TD (O 0.5),+500,30.2,0.8139,props_odds,sleeper_poisson,,+500,2026-10-12 04:00:00,,5971837831616790923
+2026-10-06T08:27:31-04:00,157,Las Vegas Raiders @ New England Patriots,Romeo Doubs - To Score 2+ TDs (O 1.5),+1000,3.7,-0.5937,props_odds,sleeper_poisson,,+1000,2026-10-12 04:00:00,,5968009897453945236
+2026-10-06T08:27:31-04:00,158,Las Vegas Raiders @ New England Patriots,Brock Bowers - Anytime TD (O 0.5),+140,38.7,-0.0703,props_odds,sleeper_poisson,,+140,2026-10-12 04:00:00,,6281464169858466203
+2026-10-06T08:27:31-04:00,159,Las Vegas Raiders @ New England Patriots,Efton Chism III - Anytime TD (O 0.5),+525,12.2,-0.2381,props_odds,sleeper_poisson,,+525,2026-10-12 04:00:00,,4806267545244008874
+2026-10-06T08:27:31-04:00,160,Las Vegas Raiders @ New England Patriots,Ashton Jeanty - Last TD (Yes),+500,,,props_odds,no_model,,+500,2026-10-12 04:00:00,,289510453065941402
+2026-10-06T08:27:31-04:00,161,Las Vegas Raiders @ New England Patriots,Mike Washington - Anytime TD (O 0.5),+425,23.7,0.2423,props_odds,sleeper_poisson,,+425,2026-10-12 04:00:00,,4732433140415594920
+2026-10-06T08:27:31-04:00,162,Las Vegas Raiders @ New England Patriots,Ashton Jeanty - To Score 2+ TDs (O 1.5),+400,11.2,-0.4394,props_odds,sleeper_poisson,,+400,2026-10-12 04:00:00,,4209913894384304531
+2026-10-06T08:27:31-04:00,163,Las Vegas Raiders @ New England Patriots,Michael Mayer - Anytime TD (O 0.5),+350,12.2,-0.4514,props_odds,sleeper_poisson,,+350,2026-10-12 04:00:00,,2615802888202617261
+2026-10-06T08:27:31-04:00,164,Las Vegas Raiders @ New England Patriots,Tre Tucker - Anytime TD (O 0.5),+325,18.1,-0.2296,props_odds,sleeper_poisson,,+325,2026-10-12 04:00:00,,881270793705750926
+2026-10-06T08:27:31-04:00,165,New York Giants @ Washington Commanders,Isaiah Likely - To Score 2+ TDs (O 1.5),+1600,7.5,0.2825,props_odds,sleeper_poisson,,+1600,2026-10-12 04:00:00,,2774283761020436895
+2026-10-06T08:27:31-04:00,166,Houston Texans @ Tennessee Titans,David Montgomery - To Score 3+ TDs (O 2.5),+1500,5.8,-0.0719,props_odds,sleeper_poisson,,+1500,2026-10-12 04:00:00,,9063296757852668303
+2026-10-06T08:27:31-04:00,167,Houston Texans @ Tennessee Titans,Nico Collins - To Score 2+ TDs (O 1.5),+575,10.9,-0.2648,props_odds,sleeper_poisson,,+575,2026-10-12 04:00:00,,7409939132933341597
+2026-10-06T08:27:31-04:00,168,Houston Texans @ Tennessee Titans,Nico Collins - Anytime TD (O 0.5),+110,42.9,-0.0995,props_odds,sleeper_poisson,,+110,2026-10-12 04:00:00,,483402906037518735
+2026-10-06T08:27:31-04:00,169,Houston Texans @ Tennessee Titans,Woody Marks - Anytime TD (O 0.5),+140,34.3,-0.1769,props_odds,sleeper_poisson,,+140,2026-10-12 04:00:00,,7329410901315027357
+2026-10-06T08:27:31-04:00,170,Houston Texans @ Tennessee Titans,David Montgomery - To Score 2+ TDs (O 1.5),+375,21.7,0.0287,props_odds,sleeper_poisson,,+375,2026-10-12 04:00:00,,3478833219913253280
+2026-10-06T08:27:31-04:00,171,Indianapolis Colts @ Pittsburgh Steelers,Jonathan Taylor - To Score 2+ TDs (O 1.5),+170,26.4,-0.2865,props_odds,sleeper_poisson,,+170,2026-10-12 04:00:00,,4939714737320624550
+2026-10-06T08:27:31-04:00,172,Indianapolis Colts @ Pittsburgh Steelers,Tyler Warren - Anytime TD (O 0.5),+150,29.5,-0.2617,props_odds,sleeper_poisson,,+150,2026-10-12 04:00:00,,7283943896483234206
+2026-10-06T08:27:31-04:00,173,Indianapolis Colts @ Pittsburgh Steelers,Jonathan Taylor - Anytime TD (O 0.5),-275,63.2,-0.138,props_odds,sleeper_poisson,,-275,2026-10-12 04:00:00,,3822822029732741546
+2026-10-06T08:27:31-04:00,174,Cincinnati Bengals @ Miami Dolphins,Ollie Gordon II - Anytime TD (O 0.5),+130,45.7,0.0503,props_odds,sleeper_poisson,,+130,2026-10-12 04:00:00,,6009425201937383823
+2026-10-06T08:27:31-04:00,175,San Francisco 49ers @ Seattle Seahawks,Jaxon Smith-Njigba - To Score 3+ TDs (O 2.5),+2250,8.8,1.0634,props_odds,sleeper_poisson,,+2250,2026-10-12 07:25:00,,4308575516581036465
+2026-10-06T08:27:31-04:00,176,San Francisco 49ers @ Seattle Seahawks,Jaxon Smith-Njigba - To Score 2+ TDs (O 1.5),+450,27.9,0.5342,props_odds,sleeper_poisson,,+450,2026-10-12 07:25:00,,2732315647001362842
+2026-10-06T08:27:31-04:00,177,San Francisco 49ers @ Seattle Seahawks,George Kittle - To Score 2+ TDs (O 1.5),+1000,7.0,-0.2325,props_odds,sleeper_poisson,,+1000,2026-10-12 07:25:00,,6425935844514857358
+2026-10-06T08:27:31-04:00,178,San Francisco 49ers @ Seattle Seahawks,Deebo Samuel - Anytime TD (O 0.5),+220,22.1,-0.2922,props_odds,sleeper_poisson,,+220,2026-10-12 07:25:00,,9100616626335777166
+2026-10-06T08:27:31-04:00,179,San Francisco 49ers @ Seattle Seahawks,George Kittle - Anytime TD (O 0.5),+165,34.9,-0.0738,props_odds,sleeper_poisson,,+165,2026-10-12 07:25:00,,301040351290982833
+2026-10-06T08:27:31-04:00,180,San Francisco 49ers @ Seattle Seahawks,Tory Horton - Anytime TD (O 0.5),+475,13.1,-0.2488,props_odds,sleeper_poisson,,+475,2026-10-12 07:25:00,,7227513695570624914
+2026-10-06T08:27:31-04:00,181,San Francisco 49ers @ Seattle Seahawks,Mike Evans - Anytime TD (O 0.5),+190,37.5,0.0875,props_odds,sleeper_poisson,,+190,2026-10-12 07:25:00,,8869237598409851290
+2026-10-06T08:27:31-04:00,182,San Francisco 49ers @ Seattle Seahawks,Brock Purdy - Anytime TD (O 0.5),+475,13.9,-0.1991,props_odds,sleeper_poisson,,+475,2026-10-12 07:25:00,,3889515106538750383
+2026-10-06T08:27:31-04:00,183,San Francisco 49ers @ Seattle Seahawks,Jaxon Smith-Njigba - Anytime TD (O 0.5),-125,64.7,0.1638,props_odds,sleeper_poisson,,-125,2026-10-12 07:25:00,,2146847695443198366
+2026-10-06T08:27:31-04:00,184,San Francisco 49ers @ Seattle Seahawks,Christian McCaffrey - Anytime TD (O 0.5),-160,54.2,-0.1199,props_odds,sleeper_poisson,,-160,2026-10-12 07:25:00,,6992151347470664080
+2026-10-06T08:27:31-04:00,185,San Francisco 49ers @ Seattle Seahawks,Emanuel Wilson - To Score 2+ TDs (O 1.5),+350,13.5,-0.3914,props_odds,sleeper_poisson,,+350,2026-10-12 07:25:00,,8986225635605217678
+2026-10-06T08:27:31-04:00,186,San Francisco 49ers @ Seattle Seahawks,Christian McCaffrey - To Score 2+ TDs (O 1.5),+325,18.4,-0.2178,props_odds,sleeper_poisson,,+325,2026-10-12 07:25:00,,1191515027417465242
+2026-10-06T08:27:31-04:00,187,San Francisco 49ers @ Seattle Seahawks,Cooper Kupp - Anytime TD (O 0.5),+325,17.3,-0.2646,props_odds,sleeper_poisson,,+325,2026-10-12 07:25:00,,1691758488381948317
+2026-10-06T08:27:31-04:00,188,San Francisco 49ers @ Seattle Seahawks,Rashid Shaheed - Anytime TD (O 0.5),+325,17.3,-0.2646,props_odds,sleeper_poisson,,+325,2026-10-12 07:25:00,,1082444328640577950
+2026-10-06T08:27:31-04:00,189,Detroit Lions @ Arizona Cardinals,Amon-Ra St. Brown - To Score 2+ TDs (O 1.5),+325,22.8,-0.0331,props_odds,sleeper_poisson,,+325,2026-10-12 07:25:00,,1244319275204870556
+2026-10-06T08:27:31-04:00,190,Detroit Lions @ Arizona Cardinals,Jahmyr Gibbs - To Score 3+ TDs (O 2.5),+425,11.6,-0.3899,props_odds,sleeper_poisson,,+425,2026-10-12 07:25:00,,4221198628896768407
+2026-10-06T08:27:31-04:00,191,Detroit Lions @ Arizona Cardinals,Jahmyr Gibbs - Anytime TD (O 0.5),-350,69.3,-0.1094,props_odds,sleeper_poisson,,-350,2026-10-12 07:25:00,,966784948168163740
+2026-10-06T08:27:31-04:00,192,Detroit Lions @ Arizona Cardinals,Amon-Ra St. Brown - Anytime TD (O 0.5),-145,59.3,0.0027,props_odds,sleeper_poisson,,-145,2026-10-12 07:25:00,,6450480444445163926
+2026-10-06T08:27:31-04:00,193,Detroit Lions @ Arizona Cardinals,Sam LaPorta - Anytime TD (O 0.5),+145,34.9,-0.1437,props_odds,sleeper_poisson,,+145,2026-10-12 07:25:00,,3480937032333787549
+2026-10-06T08:27:31-04:00,194,Detroit Lions @ Arizona Cardinals,Jahmyr Gibbs - To Score 2+ TDs (O 1.5),+135,33.0,-0.2242,props_odds,sleeper_poisson,,+135,2026-10-12 07:25:00,,1073182489364791709
+2026-10-06T08:27:31-04:00,195,Detroit Lions @ Arizona Cardinals,Trey McBride - Anytime TD (O 0.5),+125,49.3,0.1101,props_odds,sleeper_poisson,,+125,2026-10-12 07:25:00,,7010839536154575252
+2026-10-06T08:27:31-04:00,196,Buffalo Bills @ Los Angeles Rams,Josh Allen - To Score 2+ TDs (O 1.5),+425,20.2,0.0607,props_odds,sleeper_poisson,,+425,2026-10-13 11:15:00,,7405825859933831597
+2026-10-06T08:27:31-04:00,197,Buffalo Bills @ Los Angeles Rams,Josh Palmer - Anytime TD (O 0.5),+450,9.5,-0.4766,props_odds,sleeper_poisson,,+450,2026-10-13 11:15:00,,1364164762732200329
+2026-10-06T08:27:31-04:00,198,Buffalo Bills @ Los Angeles Rams,Josh Allen - Anytime TD (O 0.5),-130,56.4,-0.0022,props_odds,sleeper_poisson,,-130,2026-10-13 11:15:00,,8883006537711354271
+2026-10-06T08:27:31-04:00,199,Buffalo Bills @ Los Angeles Rams,Konata Mumpfield - Anytime TD (O 0.5),+600,7.7,-0.4618,props_odds,sleeper_poisson,,+600,2026-10-13 11:15:00,,7061165514797744518
+2026-10-06T08:27:31-04:00,200,Buffalo Bills @ Los Angeles Rams,Davante Adams - To Score 2+ TDs (O 1.5),+525,10.6,-0.3392,props_odds,sleeper_poisson,,+525,2026-10-13 11:15:00,,7008087973946327460
+2026-10-06T08:27:31-04:00,201,Buffalo Bills @ Los Angeles Rams,Dawson Knox - Anytime TD (O 0.5),+525,13.1,-0.1835,props_odds,sleeper_poisson,,+525,2026-10-13 11:15:00,,911605776739598727
+2026-10-06T08:27:31-04:00,202,Buffalo Bills @ Los Angeles Rams,James Cook - Anytime TD (O 0.5),-125,49.3,-0.1119,props_odds,sleeper_poisson,,-125,2026-10-13 11:15:00,,2740779992454660527
+2026-10-06T08:27:31-04:00,203,Buffalo Bills @ Los Angeles Rams,Kyren Williams - Anytime TD (O 0.5),-185,60.9,-0.0612,props_odds,sleeper_poisson,,-185,2026-10-13 11:15:00,,5141304146959401375

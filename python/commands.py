@@ -42,7 +42,7 @@
 #
 #   /nfl      nextgame | standings | jags | jagsgame | jagswin | howboutthemjags
 #             wr | fantasyscoreboard | epamap | room40points | amonra
-#             wrstats | rbstats | qbstats | testats | olstats | runradars
+#             wrstats | rbstats | qbstats | testats | olstats | runradars | playcall
 #             bets (HardRock +EV monitor)
 #
 #   /nba      scoreboard | today | tomorrow | standings
@@ -1049,6 +1049,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     @app_commands.choices(option=[
         app_commands.Choice(name="time", value="time"),
         app_commands.Choice(name="distribution", value="distribution"),
+        app_commands.Choice(name="sharpe", value="sharpe"),
     ])
     async def wordle_scores(interaction: discord.Interaction, option: app_commands.Choice[str] = None):
         await _defer(interaction)
@@ -1080,6 +1081,10 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             r_script = "wordleDistribution.R"
             img_out  = os.path.expanduser("~/discordBot/outputs/games/wordle/wordleDistribution.png")
             label    = "distribution"
+        elif mode == "sharpe":
+            r_script = "wordleSharpe.R"
+            img_out  = os.path.expanduser("~/discordBot/outputs/games/wordle/wordleSharpe.png")
+            label    = "risk/reward"
         else:
             r_script = "wordleScores.R"
             img_out  = os.path.expanduser("~/discordBot/outputs/games/wordle/wordleScores.png")
@@ -1110,9 +1115,17 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     # ─────────────────────────────────────────────────────────────────────────
     maptap_group = app_commands.Group(name="maptap", description="MapTap score tracking", guild_ids=[guild.id])
 
-    @maptap_group.command(name="scores", description="time series of each player's daily MapTap score")
-    async def maptap_scores(interaction: discord.Interaction):
+    @maptap_group.command(name="scores", description="time series, or risk/reward sharpe plot, of MapTap scores")
+    @app_commands.describe(player="show only this player's history (default: all players; ignored for sharpe)")
+    @app_commands.choices(option=[
+        app_commands.Choice(name="time", value="time"),
+        app_commands.Choice(name="sharpe", value="sharpe"),
+    ])
+    async def maptap_scores(interaction: discord.Interaction, player: str = None,
+                             option: app_commands.Choice[str] = None):
         await _defer(interaction)
+
+        mode = option.value if option else "time"
 
         import sys as _sys
         if pp not in _sys.path:
@@ -1121,10 +1134,11 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
         csv_in  = os.path.expanduser("~/discordBot/outputs/metrics/server_messages.csv")
         csv_out = os.path.expanduser("~/discordBot/outputs/games/maptap/maptap_scores.csv")
-        img_out = os.path.expanduser("~/discordBot/outputs/games/maptap/maptapScores.png")
+
+        player_arg = None if mode == "sharpe" else player
 
         try:
-            summary = await asyncio.to_thread(build_maptap_scores_csv, csv_in, csv_out)
+            summary = await asyncio.to_thread(build_maptap_scores_csv, csv_in, csv_out, player_arg)
         except FileNotFoundError:
             await _send(interaction, "❌ no message log found yet", ephemeral=True)
             return
@@ -1133,12 +1147,25 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             return
 
         if summary["rows"] == 0:
-            await _send(interaction, "📊 no MapTap scores found in the message log yet", ephemeral=True)
+            msg = (f"📊 no MapTap scores found for **{player_arg}**" if player_arg
+                   else "📊 no MapTap scores found in the message log yet")
+            await _send(interaction, msg, ephemeral=True)
             return
+
+        if mode == "sharpe":
+            r_script = "maptapSharpe.R"
+            img_out  = os.path.expanduser("~/discordBot/outputs/games/maptap/maptapSharpe.png")
+            r_args   = ["Rscript", os.path.join(rp, r_script), csv_out, img_out]
+        else:
+            r_script = "maptapScores.R"
+            img_out  = os.path.expanduser("~/discordBot/outputs/games/maptap/maptapScores.png")
+            r_args   = ["Rscript", os.path.join(rp, r_script), csv_out, img_out]
+            if player_arg:
+                r_args.append(summary["players"][0])
 
         result = await asyncio.to_thread(
             lambda: subprocess.run(
-                ["Rscript", os.path.join(rp, "maptapScores.R"), csv_out, img_out],
+                r_args,
                 capture_output=True, text=True, timeout=60
             )
         )
@@ -1147,12 +1174,35 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, f"❌ plot failed\n```{err}```", ephemeral=True)
             return
 
+        if mode == "sharpe":
+            label = (f":bar_chart: {summary['rows']} MapTap games logged across "
+                     f"{len(summary['players'])} players ({summary['date_min']} to {summary['date_max']}) — risk/reward")
+        elif player_arg:
+            label = (f":bar_chart: {summary['rows']} MapTap games logged for "
+                     f"**{summary['players'][0]}** ({summary['date_min']} to {summary['date_max']})")
+        else:
+            label = (f":bar_chart: {summary['rows']} MapTap games logged across "
+                     f"{len(summary['players'])} players ({summary['date_min']} to {summary['date_max']})")
+
         await _send(
             interaction,
-            f":bar_chart: {summary['rows']} MapTap games logged across {len(summary['players'])} players "
-            f"({summary['date_min']} to {summary['date_max']})",
-            file=discord.File(img_out, filename="maptapScores.png"),
+            label,
+            file=discord.File(img_out, filename=os.path.basename(img_out)),
         )
+
+    @maptap_scores.autocomplete("player")
+    async def maptap_scores_player_autocomplete(interaction: discord.Interaction, current: str):
+        import sys as _sys
+        if pp not in _sys.path:
+            _sys.path.insert(0, pp)
+        from maptapScores import list_players
+        csv_in = os.path.expanduser("~/discordBot/outputs/metrics/server_messages.csv")
+        try:
+            players = list_players(csv_in)
+        except Exception:
+            players = []
+        filtered = [p for p in players if current.lower() in p.lower()][:25]
+        return [app_commands.Choice(name=p, value=p) for p in filtered]
 
     tree.add_command(maptap_group)
 
@@ -1456,9 +1506,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         except Exception:
             return []
 
-    def _build_nfl_scoreboard_embed(events, title):
+    def _build_nfl_scoreboard_embed(events, title, thumb_url="attachment://nfl.png"):
         emb = discord.Embed(title=title, color=0x013369)
-        emb.set_thumbnail(url="attachment://nfl.png")
+        emb.set_thumbnail(url=thumb_url)
         for ev in events:
             comp = ev.get("competitions", [{}])[0]
             competitors = comp.get("competitors", [])
@@ -1578,118 +1628,6 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         await _send(interaction, "I RUN THIS SHIT")
         await _send(interaction, file=discord.File(os.path.join(op, "sports/nfl/amonRa.mov")))
-
-    @nfl_group.command(name="fantasywrapped", description="Room 40 2025 fantasy season full statistical breakdown")
-    async def nfl_fantasywrapped(interaction: discord.Interaction):
-        await _defer(interaction)
-        try:
-            data_path = "/tmp/sleeper_data.json"
-            html_path = os.path.join(op, "sports/nfl/fantasyWrapped.html")
-            pdf_path  = os.path.join(op, "sports/nfl/fantasyWrapped.pdf")
-            rmd_path  = os.path.join(rp, "fantasyWrapped.Rmd")
-
-            # Step 1: refresh Sleeper data
-            fetch_script = os.path.join(pp, "fetchSleeperData.py")
-            proc = await asyncio.create_subprocess_exec(
-                "python3", fetch_script,
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-            try:
-                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=180)
-            except asyncio.TimeoutError:
-                await _send(interaction, "Sleeper data fetch timed out.", ephemeral=True); return
-            if proc.returncode != 0:
-                await _send(interaction, f"Data fetch failed: {stderr.decode()[:500]}", ephemeral=True); return
-
-            # Step 2: render Rmd to self-contained HTML
-            r_cmd = (
-                f"rmarkdown::render('{rmd_path}', "
-                f"output_file='{html_path}', "
-                f"params=list(data_path='{data_path}'), quiet=TRUE)"
-            )
-            proc2 = await asyncio.create_subprocess_exec(
-                "Rscript", "-e", r_cmd,
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-            try:
-                stdout2, stderr2 = await asyncio.wait_for(proc2.communicate(), timeout=300)
-            except asyncio.TimeoutError:
-                await _send(interaction, "R render timed out.", ephemeral=True); return
-            if proc2.returncode != 0:
-                await _send(interaction, f"Render failed: {stderr2.decode()[-500:]}", ephemeral=True); return
-
-            if not os.path.exists(html_path):
-                await _send(interaction, "HTML output not found.", ephemeral=True); return
-
-            # Step 3: convert HTML to PDF via headless Chromium
-            proc3 = await asyncio.create_subprocess_exec(
-                "chromium", "--headless=new", "--no-sandbox", "--disable-gpu",
-                f"--print-to-pdf={pdf_path}",
-                "--print-to-pdf-no-header",
-                f"file://{html_path}",
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-            try:
-                stdout3, stderr3 = await asyncio.wait_for(proc3.communicate(), timeout=120)
-            except asyncio.TimeoutError:
-                await _send(interaction, "PDF conversion timed out.", ephemeral=True); return
-
-            if os.path.exists(pdf_path) and os.path.getsize(pdf_path) > 1000:
-                await _send(interaction, "**Room 40 - 2025 Fantasy Football Season Wrapped**",
-                            file=discord.File(pdf_path, filename="Room40_FantasyWrapped_2025.pdf"))
-            else:
-                # Fall back to HTML if PDF failed
-                await _send(interaction, "**Room 40 - 2025 Fantasy Football Season Wrapped** *(PDF conversion failed, sending HTML)*",
-                            file=discord.File(html_path, filename="Room40_FantasyWrapped_2025.html"))
-        except Exception as e:
-            await _send(interaction, f"Error: {e}", ephemeral=True)
-
-    @nfl_group.command(name="alltimewrapped", description="Room 40 all-time fantasy record book (2022-2025)")
-    async def nfl_alltimewrapped(interaction: discord.Interaction):
-        await _defer(interaction)
-        try:
-            data_path = "/tmp/room40_all_years.json"
-            html_path = os.path.join(op, "sports/nfl/allTimeWrapped.html")
-            rmd_path  = os.path.join(rp, "allTimeWrapped.Rmd")
-
-            # Step 1: fetch all-years data (ESPN + Sleeper)
-            fetch_script = os.path.join(pp, "fetchAllYearsData.py")
-            proc = await asyncio.create_subprocess_exec(
-                os.path.join(os.path.dirname(os.path.abspath(__file__)), "../venv/bin/python3"),
-                fetch_script,
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-            try:
-                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
-            except asyncio.TimeoutError:
-                await _send(interaction, "Data fetch timed out.", ephemeral=True); return
-            if proc.returncode != 0:
-                await _send(interaction, f"Data fetch failed: {stderr.decode()[:500]}", ephemeral=True); return
-
-            # Step 2: render Rmd to self-contained HTML
-            r_cmd = (
-                f"rmarkdown::render('{rmd_path}', "
-                f"output_file='{html_path}', "
-                f"params=list(data_path='{data_path}'), quiet=TRUE)"
-            )
-            proc2 = await asyncio.create_subprocess_exec(
-                "Rscript", "-e", r_cmd,
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-            try:
-                stdout2, stderr2 = await asyncio.wait_for(proc2.communicate(), timeout=240)
-            except asyncio.TimeoutError:
-                await _send(interaction, "R render timed out.", ephemeral=True); return
-            if proc2.returncode != 0:
-                await _send(interaction, f"Render failed: {stderr2.decode()[-500:]}", ephemeral=True); return
-
-            if not os.path.exists(html_path):
-                await _send(interaction, "HTML output not found.", ephemeral=True); return
-
-            await _send(interaction, "**Room 40 - All-Time Fantasy Record Book (2022-2025)**",
-                        file=discord.File(html_path, filename="Room40_AllTime.html"))
-        except Exception as e:
-            await _send(interaction, f"Error: {e}", ephemeral=True)
 
     @nfl_group.command(name="standings", description="NFL standings by conference")
     async def nfl_standings(interaction: discord.Interaction):
@@ -1896,21 +1834,21 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, f"\u274c error: {e}", ephemeral=True)
 
     @nfl_group.command(name="olstats", description="Advanced OL blocking stats - pressure rate vs sack rate")
-    @app_commands.describe(season="Season year (default: latest)", player="Optional: filter to a specific player")
-    async def nfl_olstats(interaction: discord.Interaction, season: int = None, player: str = None):
+    @app_commands.describe(season="Season year (default: latest)",
+                            scope="Individual OL players (default) or whole teams",
+                            player="Optional: filter to a specific player (scope=player) or team abbr e.g. JAX (scope=team)")
+    @app_commands.choices(scope=[
+        app_commands.Choice(name="Players", value="player"),
+        app_commands.Choice(name="Teams", value="team"),
+    ])
+    async def nfl_olstats(interaction: discord.Interaction, season: int = None, scope: str = "player", player: str = None):
         await _defer(interaction)
         try:
             yr = str(season) if season else ""
             plr = player.strip() if player else ""
-            cmd_args = [os.path.join(rp, "nflOlStats.R")]
-            if yr:
-                cmd_args.append(yr)
+            team_mode = scope == "team"
+            cmd_args = [os.path.join(rp, "nflOlStats.R"), yr, scope]
             if plr:
-                if not yr:
-                    import subprocess as _sp
-                    latest = _sp.run(["Rscript", "-e", "suppressPackageStartupMessages({library(nflreadr)}); cat(get_latest_season())"],
-                                     capture_output=True, text=True, timeout=15).stdout.strip()
-                    cmd_args.append(latest if latest else "2025")
                 cmd_args.append(plr)
             result = await asyncio.to_thread(
                 lambda: __import__("subprocess").run(
@@ -1918,17 +1856,20 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     capture_output=True, text=True, timeout=120
                 )
             )
-            out_png = os.path.join(op, "sports/nfl/nflOlStats.png")
+            out_png = os.path.join(op, f"sports/nfl/nflOlStats{'Team' if team_mode else ''}.png")
             if result.returncode == 2:
-                err_line = next((l for l in result.stderr.splitlines() if "not found" in l.lower()), "Player not found.")
+                err_line = next((l for l in result.stderr.splitlines() if "not found" in l.lower()), "Player/team not found.")
                 await _send(interaction, f"\u274c {err_line}", ephemeral=True); return
             if result.returncode != 0 or not os.path.exists(out_png):
                 err = result.stderr[-400:] if result.stderr else "no output"
                 await _send(interaction, f"\u274c OL stats failed\n```{err}```", ephemeral=True); return
             label = season or "latest"
-            subtitle = f" - {player}" if player else ""
+            subtitle = f" - {plr}" if plr else ""
+            entity = "Team" if team_mode else "OL"
+            min_note = "min 150 pass snaps" if team_mode else "min 150 pass snaps"
+            bubble_note = "bubble = team pass snaps" if team_mode else "bubble = pass snaps"
             await _send(interaction,
-                        f"**{label} NFL Advanced Blocking - OL{subtitle}**\nPressure Rate vs Sack Rate | axes inverted (top-right = elite) | bubble = pass snaps | min 150 pass snaps",
+                        f"**{label} NFL Advanced Blocking - {entity}{subtitle}**\nPressure Rate vs Sack Rate | axes inverted (top-right = elite) | {bubble_note} | {min_note}",
                         file=discord.File(out_png))
         except Exception as e:
             await _send(interaction, f"\u274c error: {e}", ephemeral=True)
@@ -1956,135 +1897,28 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         except Exception as e:
             await _send(interaction, f"\u274c error: {e}", ephemeral=True)
 
-    # ── /nfl draftboard | draft | undraft | resetdraft ──────────────────────
-    # Phase 4: live draft-day tool sitting on top of the VORP/ADP pipeline
-    # (buildNflVorp.py -> buildNflDraftBoard.py -> nflDraftLive.py). State
-    # persists in outputs/sports/nfl/fantasy/draft_state.json so "best
-    # available" always reflects who's already off the board mid-draft.
-    from nflDraftLive import (
-        all_player_names, best_available, draft_progress, load_board,
-        mark_drafted, reset_draft, undo_draft,
-    )
-
-    DRAFT_BOARD_PNG = os.path.join(op, "sports/nfl/fantasy/draft_board_2026.png")
-
-    def _fmt_board_rows(rows_df) -> str:
-        lines = []
-        for _, r in rows_df.iterrows():
-            gap = r["value_gap"]
-            gap_str = f"+{gap:.0f}" if gap > 0 else f"{gap:.0f}"
-            rookie = " (R)" if r.get("player_type") == "rookie" else ""
-            injury = " ⚠️" if r.get("injury_shortened_2025") else ""
-            mover = " 🔀" if r.get("elite_mover_2026") else ""
-            star = "⭐ " if r.get("is_breakout") else ""
-            lines.append(
-                f"{star}**{r['full_name']}**{rookie} — {r['position']} {r['team']}  "
-                f"(ADP {r['adp_overall']:.0f}, VORP {r['vorp']:.0f}, gap {gap_str}){injury}{mover}"
+    @nfl_group.command(name="playcall", description="Play-by-play scatter: yards to end zone vs point diff, run/pass, sized by yards gained")
+    @app_commands.describe(season="Season year (default: latest)")
+    async def nfl_playcall(interaction: discord.Interaction, season: int = None):
+        await _defer(interaction)
+        try:
+            yr = str(season) if season else ""
+            cmd_args = [os.path.join(rp, "nflPbpScatter.R")]
+            if yr:
+                cmd_args.append(yr)
+            result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript"] + cmd_args,
+                    capture_output=True, text=True, timeout=240
+                )
             )
-        return "\n".join(lines) if lines else "No players match."
-
-    @nfl_group.command(name="draftboard", description="Best available players by VORP (live draft tool)")
-    @app_commands.describe(position="Optional: filter to QB, RB, WR, or TE", count="How many to show (default 12)")
-    @app_commands.choices(position=[
-        app_commands.Choice(name="QB", value="QB"),
-        app_commands.Choice(name="RB", value="RB"),
-        app_commands.Choice(name="WR", value="WR"),
-        app_commands.Choice(name="TE", value="TE"),
-    ])
-    async def nfl_draftboard(interaction: discord.Interaction,
-                              position: app_commands.Choice[str] = None, count: int = 12):
-        await _defer(interaction)
-        try:
-            pos_val = position.value if position else None
-            rows = await asyncio.to_thread(best_available, pos_val, min(max(count, 1), 25))
-            progress = await asyncio.to_thread(draft_progress)
-            title = f"🏈 Best Available{' — ' + pos_val if pos_val else ''}"
-            emb = discord.Embed(title=title, description=_fmt_board_rows(rows), color=0x013369)
-            emb.set_footer(text=f"{progress['n_drafted']} players drafted so far this session "
-                                 f"| ⚠️ = missed significant 2025 time to injury, VORP may be understated "
-                                 f"| 🔀 = changed teams carrying a big (25%+) target share - model applies "
-                                 f"only a modest discount, research manually before trusting the number "
-                                 f"| ⭐ = breakout candidate (2nd/3rd-yr composite score, see /nfl cheatsheet)")
-            await _send(interaction, embed=emb)
-        except FileNotFoundError as e:
-            await _send(interaction, str(e), ephemeral=True)
+            out_png = os.path.join(op, "sports/nfl/nflPbpScatter.png")
+            if result.returncode != 0 or not os.path.exists(out_png):
+                err = result.stderr[-400:] if result.stderr else "no output"
+                await _send(interaction, f"\u274c Play call scatter failed\n```{err}```", ephemeral=True); return
+            await _send(interaction, file=discord.File(out_png))
         except Exception as e:
-            await _send(interaction, f"❌ error: {e}", ephemeral=True)
-
-    @nfl_group.command(name="draft", description="Mark a player as drafted (removes from best-available)")
-    @app_commands.describe(player="Player name", drafted_by="Optional: who took them")
-    async def nfl_draft(interaction: discord.Interaction, player: str, drafted_by: str = ""):
-        try:
-            ok, msg = await asyncio.to_thread(mark_drafted, player, drafted_by)
-            await _quick(interaction, ("✅ " if ok else "❌ ") + msg)
-        except FileNotFoundError as e:
-            await _quick(interaction, str(e), ephemeral=True)
-
-    @nfl_draft.autocomplete("player")
-    async def nfl_draft_autocomplete(interaction: discord.Interaction, current: str):
-        try:
-            names = await asyncio.to_thread(all_player_names)
-        except FileNotFoundError:
-            return []
-        cur = current.lower()
-        matches = [n for n in names if cur in n.lower()][:25]
-        return [app_commands.Choice(name=n, value=n) for n in matches]
-
-    @nfl_group.command(name="undraft", description="Undo marking a player as drafted")
-    @app_commands.describe(player="Player name")
-    async def nfl_undraft(interaction: discord.Interaction, player: str):
-        try:
-            ok, msg = await asyncio.to_thread(undo_draft, player)
-            await _quick(interaction, ("✅ " if ok else "❌ ") + msg)
-        except FileNotFoundError as e:
-            await _quick(interaction, str(e), ephemeral=True)
-
-    @nfl_undraft.autocomplete("player")
-    async def nfl_undraft_autocomplete(interaction: discord.Interaction, current: str):
-        try:
-            state_names = list((await asyncio.to_thread(
-                lambda: __import__("nflDraftLive").load_state()))["drafted"].keys())
-        except FileNotFoundError:
-            return []
-        cur = current.lower()
-        matches = [n for n in state_names if cur in n.lower()][:25]
-        return [app_commands.Choice(name=n, value=n) for n in matches]
-
-    @nfl_group.command(name="resetdraft", description="Clear all drafted-player state (start a fresh draft)")
-    async def nfl_resetdraft(interaction: discord.Interaction):
-        await asyncio.to_thread(reset_draft)
-        await _quick(interaction, "🔄 Draft state reset — everyone's available again.")
-
-    @nfl_group.command(name="cheatsheet", description="Printable tiered draft board (pre-draft prep)")
-    async def nfl_cheatsheet(interaction: discord.Interaction):
-        await _defer(interaction)
-        if not os.path.exists(DRAFT_BOARD_PNG):
-            await _send(interaction, "Cheat sheet not found — run buildNflDraftBoard.py first.", ephemeral=True)
-            return
-        await _send(interaction, "**Room 40 - 2026 Draft Board (Tiered by VORP)**",
-                    file=discord.File(DRAFT_BOARD_PNG))
-
-    BIG_BOARD_PNG = os.path.join(op, "sports/nfl/fantasy/big_board_2026.png")
-
-    @nfl_group.command(name="bigboard", description="Flat overall draft order across all positions (no position columns)")
-    async def nfl_bigboard(interaction: discord.Interaction):
-        await _defer(interaction)
-        if not os.path.exists(BIG_BOARD_PNG):
-            await _send(interaction, "Big board not found — run buildNflBigBoard.py first.", ephemeral=True)
-            return
-        await _send(interaction, "**Room 40 - 2026 Big Board (Overall Draft Order, Cross-Position)**",
-                    file=discord.File(BIG_BOARD_PNG))
-
-    STRATEGY_GUIDE_PNG = os.path.join(op, "sports/nfl/fantasy/strategy_guide.png")
-
-    @nfl_group.command(name="strategyguide", description="Round-by-round position priority for each named draft strategy")
-    async def nfl_strategyguide(interaction: discord.Interaction):
-        await _defer(interaction)
-        if not os.path.exists(STRATEGY_GUIDE_PNG):
-            await _send(interaction, "Strategy guide not found — run buildNflStrategyGuide.py first.", ephemeral=True)
-            return
-        await _send(interaction, "**Room 40 - Draft Strategy Guide** (which position to prioritize each round, per strategy)",
-                    file=discord.File(STRATEGY_GUIDE_PNG))
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
 
     # ── /nfl bets ─────────────────────────────────────────────────────────────
     # HardRock Bet +EV monitor (read-only, no wagers placed). Runs
@@ -2092,9 +1926,19 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     # market has a real fair-probability model (espn_bpi / draftkings_devig /
     # sleeper_poisson -- see that script's docstring for what each means and
     # what's deliberately left unmodeled), and posts them as an embed.
+    # scope="today" filters to games kicking off on the current ET calendar
+    # day (hardrockEV.py's matchTime column is UTC+10 -- isportgenius's own
+    # server tz -- so it's converted to UTC then to America/New_York before
+    # comparing dates); scope="week" (default) keeps the prior no-filter
+    # behavior, i.e. every game in whatever week hardrockEV.py scraped.
     @nfl_group.command(name="bets", description="Top +EV bets on HardRock Bet's current NFL slate (research only, no wagers placed)")
-    @app_commands.describe(count="How many bets to show (default 5, max 10)")
-    async def nfl_bets(interaction: discord.Interaction, count: int = 5):
+    @app_commands.describe(count="How many bets to show (default 5, max 10)",
+                            scope="today's games only, or the whole current NFL week (default)")
+    @app_commands.choices(scope=[
+        app_commands.Choice(name="Today", value="today"),
+        app_commands.Choice(name="This Week", value="week"),
+    ])
+    async def nfl_bets(interaction: discord.Interaction, count: int = 5, scope: str = "week"):
         await _defer(interaction)
         count = min(max(count, 1), 10)
         try:
@@ -2119,9 +1963,30 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 await _send(interaction, "No hardrock_ev CSV was produced.", ephemeral=True); return
             df = pd.read_csv(os.path.join(betting_dir, csvs[0]))
 
+            scope_label = "Today"
+            if scope == "today":
+                import pytz
+                eastern = pytz.timezone("America/New_York")
+                today_et = datetime.now(pytz.utc).astimezone(eastern).date()
+
+                def _kicks_off_today(match_time_str):
+                    try:
+                        naive = datetime.strptime(str(match_time_str), "%Y-%m-%d %H:%M:%S")
+                        utc_dt = (naive - timedelta(hours=10)).replace(tzinfo=pytz.utc)
+                        return utc_dt.astimezone(eastern).date() == today_et
+                    except (ValueError, TypeError):
+                        return False
+
+                df = df[df["matchTime"].apply(_kicks_off_today)]
+                if df.empty:
+                    await _send(interaction, "No NFL games today on HardRock's slate.")
+                    return
+            else:
+                scope_label = "This Week"
+
             pos_ev = df[df["expectedValue"] > 0].sort_values("expectedValue", ascending=False).head(count)
             if pos_ev.empty:
-                await _send(interaction, "No +EV bets found on the current HardRock slate.")
+                await _send(interaction, f"No +EV bets found for {scope_label.lower()} on the current HardRock slate.")
                 return
 
             model_labels = {
@@ -2130,7 +1995,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 "sleeper_poisson": "Sleeper proj (Poisson)",
             }
             emb = discord.Embed(
-                title=f"🏈 Top {len(pos_ev)} +EV Bets — HardRock Bet NFL",
+                title=f"🏈 Top {len(pos_ev)} +EV Bets — HardRock Bet NFL ({scope_label})",
                 description="Research snapshot only — no wagers placed. EV = modeled profit per $1 staked.",
                 color=0x013369,
             )
@@ -2445,18 +2310,17 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     # ─────────────────────────────────────────────────────────────────────────
     # /ball  -  all sports today in one message
     # ─────────────────────────────────────────────────────────────────────────
-    @tree.command(name="ball", description="sports happening today or tomorrow", guild=guild)
-    @app_commands.describe(day="today (default) or tomorrow")
-    @app_commands.choices(day=[
-        app_commands.Choice(name="Today",    value="today"),
-        app_commands.Choice(name="Tomorrow", value="tomorrow"),
-    ])
-    async def ball(interaction: discord.Interaction, day: str = "today"):
-        await _defer(interaction)
+    async def _post_ball(send_func, is_tomorrow: bool):
+        """Build and post the /ball multi-sport digest.
+
+        send_func(content=None, **kwargs) must behave like _send/channel.send
+        (accepts embed=, embeds=, file=). Used both by the /ball slash command
+        (wraps _send(interaction, ...)) and the scheduled 9am ET morning post
+        (wraps channel.send) so the two paths share one implementation.
+        """
         import aiohttp, datetime as _dt, pytz
         from bs4 import BeautifulSoup
 
-        is_tomorrow = day == "tomorrow"
         day_label   = "Tomorrow" if is_tomorrow else "Today"
         eastern     = pytz.timezone("America/New_York")
 
@@ -2538,6 +2402,37 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                             return []
                         data = await r.json()
                 return data.get("events", [])
+            except Exception:
+                return []
+
+        async def _fetch_cfb_today(date_str: str):
+            """Return list of Top-25 (AP curated rank) FBS college football game
+            dicts for the given YYYYMMDD date, or []. groups=80 restricts to FBS
+            so garbage/exhibition games from lower divisions don't leak in."""
+            url = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
+            try:
+                async with aiohttp.ClientSession() as s:
+                    async with s.get(
+                        url,
+                        params={"dates": date_str, "groups": "80", "limit": "200"},
+                        timeout=aiohttp.ClientTimeout(total=10),
+                    ) as r:
+                        if r.status != 200:
+                            return []
+                        data = await r.json()
+                events = data.get("events", [])
+                ranked = []
+                for ev in events:
+                    comps = ev.get("competitions", [])
+                    if not comps:
+                        continue
+                    competitors = comps[0].get("competitors", [])
+                    if any(
+                        int(c.get("curatedRank", {}).get("current", 99) or 99) <= 25
+                        for c in competitors
+                    ):
+                        ranked.append(ev)
+                return ranked
             except Exception:
                 return []
 
@@ -2699,6 +2594,66 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 emb.add_field(name=matchup, value=val, inline=False)
             return emb
 
+        def _build_cfb_embed(events, title):
+            """Build a single compact discord.Embed listing Top-25 CFB games
+            (one line per game, not one embed per game - CFB has way too many
+            games on a Saturday to give each its own embed like soccer)."""
+            if not events:
+                return None
+
+            def _rank(c):
+                rk = c.get("curatedRank", {}).get("current", 99) or 99
+                try:
+                    return int(rk)
+                except (ValueError, TypeError):
+                    return 99
+
+            def _start_time(ev):
+                return ev.get("date", "")
+
+            lines = []
+            for ev in sorted(events, key=_start_time):
+                comp = ev.get("competitions", [{}])[0]
+                competitors = comp.get("competitors", [])
+                away_comp, home_comp = None, None
+                for c in competitors:
+                    if c.get("homeAway") == "away":
+                        away_comp = c
+                    else:
+                        home_comp = c
+                if not away_comp or not home_comp:
+                    continue
+
+                def _label(c):
+                    rk = _rank(c)
+                    name = c.get("team", {}).get("shortDisplayName", "?")
+                    return f"#{rk} {name}" if rk <= 25 else name
+
+                away_name = _label(away_comp)
+                home_name = _label(home_comp)
+
+                status_type = ev.get("status", {}).get("type", {})
+                status_name = status_type.get("name", "")
+                status_detail = status_type.get("shortDetail", status_type.get("detail", "TBD"))
+                is_live = status_name in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME", "STATUS_END_PERIOD")
+                is_final = status_name == "STATUS_FINAL"
+
+                if is_live or is_final:
+                    scores = [away_comp.get("score", ""), home_comp.get("score", "")]
+                    score_str = f"{scores[0]}-{scores[1]}" if all(str(s) != "" for s in scores) else "?-?"
+                    clock = ev.get("status", {}).get("displayClock", "")
+                    suffix = f" ({clock})" if is_live and clock else (" (Final)" if is_final else "")
+                    emoji = "🔴" if is_live else "✅"
+                    lines.append(f"{emoji} **{away_name} @ {home_name}**  {score_str}{suffix}")
+                else:
+                    lines.append(f"**{away_name} @ {home_name}**  {status_detail}")
+
+            if not lines:
+                return None
+            emb = discord.Embed(title=title, description="\n".join(lines)[:4096], color=0x8B0000)
+            emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/ncaa.png")
+            return emb
+
         # ── run all fetches concurrently ─────────────────────────────────────
         target_date = _dt.date.today() + _dt.timedelta(days=1 if is_tomorrow else 0)
         date_str    = target_date.strftime("%Y%m%d")
@@ -2709,7 +2664,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "mlbTomorrow.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "pgaLeaderboard.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "nbaTomorrow.py")),
-                asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nextNFL.R")),
+                _fetch_nfl_scoreboard(date_str),
                 _fetch_ufc_event(),
                 _fetch_wc_today(date_str),
                 _fetch_f1_event(),
@@ -2718,6 +2673,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 _fetch_epl_today(date_str),
                 _fetch_mls_today(date_str),
                 _fetch_ucl_today(date_str),
+                _fetch_cfb_today(date_str),
                 return_exceptions=True,
             )
         else:
@@ -2726,7 +2682,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "mlbToday.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "pgaLeaderboard.py")),
                 asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "nbaToday.py")),
-                asyncio.to_thread(_run, "Rscript", os.path.join(rp, "nextNFL.R")),
+                _fetch_nfl_scoreboard(date_str),
                 _fetch_ufc_event(),
                 _fetch_wc_today(date_str),
                 _fetch_f1_event(),
@@ -2735,9 +2691,11 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 _fetch_epl_today(date_str),
                 _fetch_mls_today(date_str),
                 _fetch_ucl_today(date_str),
+                _fetch_cfb_today(date_str),
                 return_exceptions=True,
             )
 
+        nfl_events   = results[4] if not isinstance(results[4], Exception) else []
         ufc_event    = results[5] if not isinstance(results[5], Exception) else None
         wc_events    = results[6] if not isinstance(results[6], Exception) else []
         f1_race      = results[7] if not isinstance(results[7], Exception) else None
@@ -2746,6 +2704,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         epl_events   = results[10] if not isinstance(results[10], Exception) else []
         mls_events   = results[11] if not isinstance(results[11], Exception) else []
         ucl_events   = results[12] if not isinstance(results[12], Exception) else []
+        cfb_events   = results[13] if not isinstance(results[13], Exception) else []
 
         embeds = []
 
@@ -2860,29 +2819,25 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     # pre-tournament or no scores yet
                     emb.add_field(name="📅 Tee times", value="Tournament starts soon - no scores yet", inline=False)
                 pga_logo = os.path.expanduser("~/discordBot/stickers/pga.png")
-                await _send(interaction, embed=emb, file=discord.File(pga_logo, filename="pga.png"))
+                await send_func(embed=emb, file=discord.File(pga_logo, filename="pga.png"))
 
         # ── NFL ──────────────────────────────────────────────────────────────
-        nfl_csv = os.path.join(op, "sports/nfl/nextGame.csv")
-        if os.path.exists(nfl_csv):
-            nfl_df = pd.read_csv(nfl_csv)
-            if not nfl_df.empty:
-                row = nfl_df.iloc[0]
-                try:
-                    days_until = int(row["daysUntil"])
-                except (ValueError, KeyError):
-                    days_until = 99
-                target_days = 1 if is_tomorrow else 0
-                if days_until == target_days:
-                    away, home = row["away_team"], row["home_team"]
-                    emb = discord.Embed(title=f"🏈 NFL - {day_label}", color=0x013369)
-                    emb.set_thumbnail(url="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png")
-                    emb.add_field(
-                        name=f"{away} @ {home}",
-                        value=f"{row['gametime']}  -  {row['stadium']}",
-                        inline=False,
-                    )
-                    embeds.append(emb)
+        # Uses the ESPN scoreboard for the full day's slate (same fetch as
+        # /nfl today|tomorrow). Previously this read nextGame.csv, which
+        # nextNFL.R populates with only the single next chronological game
+        # league-wide (head(1)) - so /ball showed at most one NFL game even
+        # on a full Sunday slate. (fixed Sep 2026)
+        if nfl_events:
+            nfl_emb = _build_nfl_scoreboard_embed(
+                nfl_events, f"🏈 NFL - {day_label}",
+                thumb_url="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png",
+            )
+            embeds.append(nfl_emb)
+
+        # ── College Football (Top 25) ────────────────────────────────────────
+        cfb_emb = _build_cfb_embed(cfb_events, f"🏈 College Football (Top 25) - {day_label}")
+        if cfb_emb:
+            embeds.append(cfb_emb)
 
         # ── World Cup ─────────────────────────────────────────────────────────
         wc_emb = _build_soccer_embed(
@@ -2955,7 +2910,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     if card_lines:
                         emb.add_field(name="🥋 Main Card", value="\n".join(card_lines), inline=False)
                 ufc_logo = os.path.expanduser("~/discordBot/stickers/ufc.png")
-                await _send(interaction, embed=emb, file=discord.File(ufc_logo, filename="ufc.png"))
+                await send_func(embed=emb, file=discord.File(ufc_logo, filename="ufc.png"))
 
         # ── F1 ────────────────────────────────────────────────────────────────
         if f1_race:
@@ -3003,7 +2958,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     emb.add_field(name="📅 Days away", value=str(days_away), inline=True)
                 emb.set_thumbnail(url="attachment://f1.png")
                 f1_logo = os.path.expanduser("~/discordBot/stickers/f1.png")
-                await _send(interaction, embed=emb, file=discord.File(f1_logo, filename="f1.png"))
+                await send_func(embed=emb, file=discord.File(f1_logo, filename="f1.png"))
 
         # ── NASCAR ────────────────────────────────────────────────────────────
         if nascar_event:
@@ -3033,10 +2988,10 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     emb.add_field(name="📺 Broadcast", value=ev_tv, inline=True)
                 emb.set_thumbnail(url="attachment://nascar.png")
                 nascar_logo = os.path.expanduser("~/discordBot/stickers/nascar.png")
-                await _send(interaction, embed=emb, file=discord.File(nascar_logo, filename="nascar.png"))
+                await send_func(embed=emb, file=discord.File(nascar_logo, filename="nascar.png"))
 
         if not embeds:
-            await _send(interaction, f"nothing going on in the sports world {day_label.lower()} 😔")
+            await send_func(f"nothing going on in the sports world {day_label.lower()} 😔")
             return
 
         # Discord hard-caps a single message at 10 embeds. With NBA/NHL/MLB/PGA/
@@ -3046,7 +3001,24 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             print(f"[ball] {len(embeds)} embeds built, truncating to 10", flush=True)
             embeds = embeds[:10]
 
-        await _send(interaction, embeds=embeds)
+        await send_func(embeds=embeds)
+
+    @tree.command(name="ball", description="sports happening today or tomorrow", guild=guild)
+    @app_commands.describe(day="today (default) or tomorrow")
+    @app_commands.choices(day=[
+        app_commands.Choice(name="Today",    value="today"),
+        app_commands.Choice(name="Tomorrow", value="tomorrow"),
+    ])
+    async def ball(interaction: discord.Interaction, day: str = "today"):
+        await _defer(interaction)
+
+        async def _send_func(content=None, **kwargs):
+            await _send(interaction, content, **kwargs)
+
+        await _post_ball(_send_func, is_tomorrow=(day == "tomorrow"))
+
+    # exposed for main.py's scheduled 9am /ball post in the #ball channel
+    tree._ball_post_func = _post_ball
 
     # ─────────────────────────────────────────────────────────────────────────
     # OSRS GROUP  /osrs <subcommand>
@@ -3248,6 +3220,69 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         else:
             await _send(interaction, embed=emb)
 
+    OSRS_HISTORY_SKILL_CHOICES = ["allskills"] + OSRS_SKILLS
+
+    async def osrs_history_skill_autocomplete(interaction: discord.Interaction, current: str):
+        return [
+            app_commands.Choice(name=s, value=s)
+            for s in OSRS_HISTORY_SKILL_CHOICES if current.lower() in s.lower()
+        ][:25]
+
+    @osrs_group.command(name="history", description="plot XP history over time - one player or the whole crew")
+    @app_commands.describe(
+        player="RSN to plot, or leave blank for the whole crew",
+        skill="skill to plot (default: total), or 'allskills' for every skill on one chart (needs a player)",
+    )
+    @app_commands.autocomplete(player=osrs_player_autocomplete, skill=osrs_history_skill_autocomplete)
+    async def osrs_history(interaction: discord.Interaction, player: str = "", skill: str = "total"):
+        await _defer(interaction)
+
+        rsn = player.strip() if player.strip() else "all"
+        skill = skill.lower().strip()
+        allskills = skill in ("allskills", "all_skills", "all-skills", "skills")
+        if not allskills and skill not in OSRS_SKILLS:
+            await _send(interaction, f"❓ `{skill}` isn't a valid OSRS skill. Try: total, attack, magic, slayer, allskills…", ephemeral=True)
+            return
+        if allskills and rsn.lower() == "all":
+            await _send(interaction, "❓ `allskills` needs a specific `player` (23 skills x the whole crew would be unreadable)", ephemeral=True)
+            return
+
+        result = await asyncio.to_thread(
+            lambda: subprocess.run(
+                [PYTHON, os.path.join(pp, "osrsXpHistory.py"), rsn, skill],
+                check=False, capture_output=True, text=True, timeout=60
+            )
+        )
+
+        if result.returncode != 0:
+            msg = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else "no data yet"
+            await _send(interaction, f"😔 couldn't build history plot: {msg}", ephemeral=True)
+            return
+
+        safe_player = rsn.lower().replace(" ", "_") if rsn.lower() != "all" else "all"
+        img_skill_tag = "allskills" if allskills else skill
+        img_path = os.path.join(op, "osrs", f"xp_history_{safe_player}_{img_skill_tag}.png")
+        if not os.path.exists(img_path):
+            await _send(interaction, "😔 history plot didn't get written", ephemeral=True)
+            return
+
+        title_scope = "Crew" if rsn.lower() == "all" else rsn
+        if allskills:
+            emoji = "📊"
+            title = f"{emoji} OSRS Skill Levels Over Time - {title_scope}"
+        else:
+            emoji = OSRS_EMOJI.get(skill, "📊")
+            skill_label = "Total Level" if skill == "total" else skill.title()
+            title = f"{emoji} OSRS {skill_label} XP History - {title_scope}"
+        emb = discord.Embed(
+            title=title,
+            color=0x8B4513,
+        )
+        emb.set_image(url="attachment://xp_history.png")
+        emb.set_footer(text="source: daily crew hiscores snapshot (not auto-posted)")
+
+        await _send(interaction, embed=emb, file=discord.File(img_path, filename="xp_history.png"))
+
     tree.add_command(osrs_group)
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -3403,13 +3438,27 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     file=discord.File(os.path.join(op, "markets/yield_spread.png")))
 
 
-    @markets_group.command(name="crudeoil", description="west texas intermediate price, or U.S. Strategic Petroleum Reserve barrels held")
-    @app_commands.describe(view="price history (WTI @ Cushing) or SPR barrels held (default: price)")
+    CRUDE_TIMEFRAME_CHOICES = [
+        app_commands.Choice(name="Intraday - today 5min bars",  value="intraday"),
+        app_commands.Choice(name="1 Week - 15min bars",         value="1w"),
+        app_commands.Choice(name="1 Month - 1hr bars",          value="1mo"),
+        app_commands.Choice(name="3 Months",                    value="3mo"),
+        app_commands.Choice(name="6 Months",                    value="6mo"),
+        app_commands.Choice(name="1 Year",                      value="1y"),
+        app_commands.Choice(name="2 Years",                     value="2y"),
+        app_commands.Choice(name="5 Years",                     value="5y"),
+        app_commands.Choice(name="10 Years",                    value="10y"),
+        app_commands.Choice(name="Max",                         value="max"),
+    ]
+
+    @markets_group.command(name="crudeoil", description="WTI crude oil futures price, or U.S. Strategic Petroleum Reserve barrels held")
+    @app_commands.describe(view="price history (WTI futures) or SPR barrels held (default: price)",
+                            timeframe="time window for price view only (default: 6mo)")
     @app_commands.choices(view=[
-        app_commands.Choice(name="Price - WTI @ Cushing, Oklahoma", value="price"),
+        app_commands.Choice(name="Price - WTI Futures (CL=F)", value="price"),
         app_commands.Choice(name="SPR - Strategic Petroleum Reserve barrels (full history)", value="spr"),
-    ])
-    async def crudeoil(interaction: discord.Interaction, view: str = "price"):
+    ], timeframe=CRUDE_TIMEFRAME_CHOICES)
+    async def crudeoil(interaction: discord.Interaction, view: str = "price", timeframe: app_commands.Choice[str] = None):
         await _defer(interaction)
         if view == "spr":
             result = await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "sprChart.R"))
@@ -3420,9 +3469,15 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, "full history of U.S. Strategic Petroleum Reserve barrels:",
                         file=discord.File(img_path))
             return
-        await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "crude.R"))
-        await _send(interaction, "full price history for crude oil wti @ cushing, oklahoma:",
-                    file=discord.File(os.path.join(op, "markets/crudewti.png")))
+        tf = timeframe.value if timeframe else "6mo"
+        result = await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "crude.R"),
+                                          os.path.join(op, "markets/crudewti.png"), tf)
+        img_path = os.path.join(op, "markets/crudewti.png")
+        if result.returncode != 0 or not os.path.exists(img_path):
+            await _send(interaction, f"couldn't build crude oil chart :(\n```{result.stderr[-1500:]}```", ephemeral=True)
+            return
+        await _send(interaction, f"WTI crude oil futures (CL=F) - {timeframe.name if timeframe else '6 Months'}:",
+                    file=discord.File(img_path))
         
     CHART_TIMEFRAME_CHOICES = [
     app_commands.Choice(name="Intraday - today 1min bars",  value="intraday"),
@@ -7307,7 +7362,70 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             file=discord.File(plot_path, filename=f"cumfp_t{team}.png"),
         )
 
+    # ── /mlb bets ─────────────────────────────────────────────────────────
+    # HardRock Bet +EV monitor (read-only, no wagers placed). Runs
+    # hardrockMlbEV.py fresh each call, picks the highest-EV rows from
+    # whichever market has a real fair-probability model (espn_bpi /
+    # draftkings_devig / mlbapi_poisson -- see that script's docstring for
+    # what each means and what's deliberately left unmodeled/insufficient
+    # sample), and posts them as an embed.
+    @mlb_group.command(name="bets", description="Top +EV bets on HardRock Bet's current MLB slate (research only, no wagers placed)")
+    @app_commands.describe(count="How many bets to show (default 5, max 10)")
+    async def mlb_bets(interaction: discord.Interaction, count: int = 5):
+        await _defer(interaction)
+        count = min(max(count, 1), 10)
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                PYTHON, os.path.join(pp, "hardrockMlbEV.py"),
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
+            except asyncio.TimeoutError:
+                proc.kill()
+                await _send(interaction, "HardRock MLB scrape timed out.", ephemeral=True); return
+            if proc.returncode != 0:
+                await _send(interaction, f"❌ scrape failed:\n```{stderr.decode()[-500:]}```", ephemeral=True); return
+
+            betting_dir = os.path.join(op, "sports/mlb/betting")
+            csvs = sorted(
+                (f for f in os.listdir(betting_dir) if f.startswith("hardrock_mlb_ev_") and f.endswith(".csv")),
+                reverse=True,
+            )
+            if not csvs:
+                await _send(interaction, "No hardrock_mlb_ev CSV was produced.", ephemeral=True); return
+            df = pd.read_csv(os.path.join(betting_dir, csvs[0]))
+
+            pos_ev = df[df["expectedValue"] > 0].sort_values("expectedValue", ascending=False).head(count)
+            if pos_ev.empty:
+                await _send(interaction, "No +EV bets found on the current HardRock MLB slate.")
+                return
+
+            model_labels = {
+                "espn_bpi": "ESPN BPI model",
+                "draftkings_devig": "vs. DraftKings",
+                "mlbapi_poisson": "MLB season rate (Poisson)",
+            }
+            emb = discord.Embed(
+                title=f"⚾ Top {len(pos_ev)} +EV Bets — HardRock Bet MLB",
+                description="Research snapshot only — no wagers placed. EV = modeled profit per $1 staked.",
+                color=0x002D72,
+            )
+            for i, (_, r) in enumerate(pos_ev.iterrows(), 1):
+                model_tag = model_labels.get(r["modelStatus"], r["modelStatus"])
+                emb.add_field(
+                    name=f"{i}. {r['betDescription']}  ({int(r['payout']):+d})",
+                    value=(f"{r['mlbGame']}\n"
+                           f"Confidence: {r['confidence']:.1f}% | EV: +${r['expectedValue']:.2f} per $1 | {model_tag}"),
+                    inline=False,
+                )
+            emb.set_footer(text="Not proven edges -- log CLV/outcomes over multiple weeks before trusting any single bet.")
+            await _send(interaction, embed=emb)
+        except Exception as e:
+            await _send(interaction, f"❌ error: {e}", ephemeral=True)
+
     tree.add_command(mlb_group)
+
 
     # ── /spy group ────────────────────────────────────────────────────────────
     spy_group = app_commands.Group(name="spy", description="SPY ML model - signal, diagnostics, block gaps", guild_ids=[guild.id])
@@ -8003,6 +8121,192 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, embed=emb)
 
     tree.add_command(spy_group)
+
+
+    # ── /mm group (market making / liquidity provision test bot) ───────────────
+    mm_group = app_commands.Group(name="mm", description="Market-making/liquidity test bot (paper) - quote, status, flatten", guild_ids=[guild.id])
+
+    MM_DISCLAIMER = ("Retail paper sim only - no rebates, no queue priority, no market impact modeled. "
+                      "Treat P&L as an optimistic upper bound, not a live forecast.")
+
+    @mm_group.command(name="quote", description="Run one MM quoting cycle - show/refresh two-sided quotes, optionally place real paper orders")
+    @app_commands.describe(symbol="Ticker to quote (default SOXL)", qty="Shares per side (default 10)",
+                            execute="Actually place/replace paper limit orders (default: dry run preview only)")
+    async def mm_quote(interaction: discord.Interaction, symbol: str = "SOXL", qty: int = 10, execute: bool = False):
+        await interaction.response.defer(thinking=True)
+        import json as _json
+        symbol = symbol.upper().strip()
+        try:
+            cmd = [PYTHON, os.path.join(pp, "marketMaker.py"), "--symbol", symbol, "--qty", str(qty)]
+            if execute:
+                cmd.append("--execute")
+            result = await asyncio.to_thread(
+                lambda: __import__('subprocess').run(cmd, capture_output=True, text=True, timeout=60)
+            )
+            if result.returncode != 0:
+                await _send(interaction, f"marketMaker error: `{result.stderr[:300]}`")
+                return
+            data = _json.loads(result.stdout)
+        except Exception as e:
+            await _send(interaction, f"mm quote error: `{e}`")
+            return
+
+        errors = data.get("errors", [])
+        if errors and "not set in .env" in " ".join(errors):
+            await _send(interaction, (
+                "**Paper trading keys not configured.**\n"
+                "1. Go to <https://app.alpaca.markets/paper-trading>\n"
+                "2. Create/open a paper account and copy the API keys\n"
+                "3. Add to `~/discordBot/.env`:\n"
+                "```\nAPCA_PAPER_API_KEY_ID=PKxxxxxx\nAPCA_PAPER_API_SECRET_KEY=xxxxxxxxx\n```"
+            ))
+            return
+
+        q = data.get("quote") or {}
+        acct = data.get("account") or {}
+        pos = data.get("position") or {}
+        oo = data.get("open_orders") or {}
+        halted = data.get("halted", False)
+        fills = data.get("new_fills", [])
+
+        title_tag = " - HALTED ⛔" if halted else (" - EXECUTE ✅" if execute else " - DRY RUN 🔍")
+        color = 0xff4444 if halted else (0x00ff99 if execute else 0x888888)
+        emb = discord.Embed(title=f"MM Quote: {symbol}{title_tag}", color=color)
+
+        if q:
+            emb.add_field(
+                name="Market",
+                value=f"Bid **${q.get('bid')}** / Ask **${q.get('ask')}**  (spread {q.get('spread_bps')} bps)",
+                inline=False,
+            )
+
+        curr_shares = pos.get("shares", 0)
+        pos_val = f"**{curr_shares} shares** @ avg ${pos.get('avg_entry', 0):,.2f}" if curr_shares else "_Flat_"
+        emb.add_field(
+            name="Inventory",
+            value=f"{pos_val}\nUnrealized: ${pos.get('unrealized_pl', 0):,.2f}",
+            inline=True,
+        )
+        emb.add_field(
+            name="Account",
+            value=f"Equity: **${acct.get('equity', 0):,.2f}**\nDaily P&L: {data.get('daily_pnl_pct', 0):.2f}%",
+            inline=True,
+        )
+
+        buy_o, sell_o = oo.get("buy"), oo.get("sell")
+        quote_lines = []
+        quote_lines.append(f"BUY  {buy_o['qty']}sh @ ${buy_o['price']}" if buy_o else "BUY  skipped (inventory cap)")
+        quote_lines.append(f"SELL {sell_o['qty']}sh @ ${sell_o['price']}" if sell_o else "SELL skipped (inventory cap)")
+        emb.add_field(name="Quotes", value="\n".join(quote_lines), inline=False)
+
+        if fills:
+            lines = [f"{f['side'].upper()} {f['qty']}sh @ ${f['filled_avg_price']}" for f in fills]
+            emb.add_field(name="🎯 New Fills", value="\n".join(lines), inline=False)
+
+        actions = data.get("actions", [])
+        if actions:
+            emb.add_field(name="Actions", value="\n".join(f"- {a}" for a in actions[:6]), inline=False)
+
+        if errors:
+            emb.add_field(name="Errors", value="\n".join(f"- {e}" for e in errors[:3]), inline=False)
+
+        footer = MM_DISCLAIMER if execute else f"{MM_DISCLAIMER} | Dry run - use execute:True to place orders"
+        emb.set_footer(text=footer)
+        await _send(interaction, embeds=[emb])
+
+    @mm_group.command(name="status", description="MM bot status - inventory, cycle log summary, recent fills")
+    @app_commands.describe(symbol="Ticker to check (default SOXL)")
+    async def mm_status(interaction: discord.Interaction, symbol: str = "SOXL"):
+        await interaction.response.defer(thinking=True)
+        import csv as _csv
+        symbol = symbol.upper().strip()
+        cycle_log = os.path.expanduser(f"~/discordBot/outputs/markets/mm_cycle_log_{symbol}.csv")
+        fills_log = os.path.expanduser(f"~/discordBot/outputs/markets/mm_fills_log_{symbol}.csv")
+        state_file = os.path.expanduser(f"~/discordBot/outputs/markets/mm_state_{symbol}.json")
+
+        if not os.path.exists(cycle_log):
+            await _send(interaction, (
+                f"**No MM cycle log yet for {symbol}.** Run `/mm quote symbol:{symbol}` at least once "
+                "(or wait for the cron cycle) to generate data."
+            ))
+            return
+
+        try:
+            with open(cycle_log) as f:
+                rows = list(_csv.DictReader(f))
+        except Exception as e:
+            await _send(interaction, f"status error reading cycle log: `{e}`")
+            return
+
+        last = rows[-1] if rows else {}
+        fills = []
+        if os.path.exists(fills_log):
+            with open(fills_log) as f:
+                fills = list(_csv.DictReader(f))
+
+        cum_fills = len(fills)
+        buy_fills = sum(1 for r in fills if r.get("side") == "buy")
+        sell_fills = sum(1 for r in fills if r.get("side") == "sell")
+
+        emb = discord.Embed(title=f"MM Bot Status: {symbol}", color=0x00ff99)
+        emb.add_field(
+            name="Last Cycle",
+            value=(f"{last.get('timestamp','?')}\n"
+                   f"Bid/Ask: ${last.get('bid','?')} / ${last.get('ask','?')} ({last.get('spread_bps','?')} bps)\n"
+                   f"Position: {last.get('position_shares','0')} shares | Halted: {last.get('halted','?')}"),
+            inline=False,
+        )
+        emb.add_field(
+            name="Fills (all-time, this symbol)",
+            value=f"Total: **{cum_fills}**  |  Buys: {buy_fills}  |  Sells: {sell_fills}",
+            inline=True,
+        )
+        emb.add_field(
+            name="Cycles Logged",
+            value=f"**{len(rows)}**",
+            inline=True,
+        )
+        if fills:
+            recent_lines = []
+            for r in fills[-5:]:
+                recent_lines.append(f"{r.get('side','').upper()} {r.get('qty','?')}sh @ ${r.get('filled_avg_price','?')} ({r.get('filled_at','')})")
+            emb.add_field(name="Recent Fills", value="\n".join(recent_lines), inline=False)
+        emb.set_footer(text=MM_DISCLAIMER)
+        await _send(interaction, embeds=[emb])
+
+    @mm_group.command(name="flatten", description="Cancel resting MM orders and market-close any open position (EOD safety)")
+    @app_commands.describe(symbol="Ticker to flatten (default SOXL)",
+                            execute="Actually cancel orders / place the flatten order (default: dry run preview)")
+    async def mm_flatten(interaction: discord.Interaction, symbol: str = "SOXL", execute: bool = False):
+        await interaction.response.defer(thinking=True)
+        import json as _json
+        symbol = symbol.upper().strip()
+        try:
+            cmd = [PYTHON, os.path.join(pp, "marketMaker.py"), "--symbol", symbol, "--flatten"]
+            if execute:
+                cmd.append("--execute")
+            result = await asyncio.to_thread(
+                lambda: __import__('subprocess').run(cmd, capture_output=True, text=True, timeout=60)
+            )
+            if result.returncode != 0:
+                await _send(interaction, f"marketMaker error: `{result.stderr[:300]}`")
+                return
+            data = _json.loads(result.stdout)
+        except Exception as e:
+            await _send(interaction, f"mm flatten error: `{e}`")
+            return
+
+        actions = data.get("actions", [])
+        errors = data.get("errors", [])
+        title_tag = " - EXECUTED ✅" if data.get("flattened") else " - DRY RUN 🔍"
+        emb = discord.Embed(title=f"MM Flatten: {symbol}{title_tag}", color=0xffaa00)
+        emb.add_field(name="Actions", value="\n".join(f"- {a}" for a in actions) if actions else "_Nothing to do_", inline=False)
+        if errors:
+            emb.add_field(name="Errors", value="\n".join(f"- {e}" for e in errors[:3]), inline=False)
+        emb.set_footer(text=MM_DISCLAIMER)
+        await _send(interaction, embeds=[emb])
+
+    tree.add_command(mm_group)
 
 
     # ── /markets gex ─────────────────────────────────────────────────────────

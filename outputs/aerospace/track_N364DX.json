@@ -1,0 +1,19 @@
+{
+  "tail_query": "N364DX",
+  "callsign": "DAL2587",
+  "registration": "N364DX",
+  "hex": "a41b89",
+  "aircraft_type": "AIRBUS A-321",
+  "operator": "DELTA AIR LINES INC",
+  "altitude_ft": 28075,
+  "on_ground": false,
+  "ground_speed_kt": 501.6,
+  "vertical_rate_str": "descending 2,688 ft/min",
+  "heading_deg": 177.14,
+  "lat": 29.652007,
+  "lon": -82.350554,
+  "squawk": "7465",
+  "updated_utc": "2026-09-24 16:08 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N364DX.png"
+}

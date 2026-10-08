@@ -1,0 +1,92 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-06T19:22:05-04:00,1,Brewers @ Padres,Brewers +1.5 run line,-190,62.3,-0.0486,upcoming_games_odds,draftkings_devig,0.6256,-190,2026-10-07 12:30:00,401908004,3166816070409519524
+2026-10-06T19:22:05-04:00,2,Brewers @ Padres,Padres -1.5 run line,+155,37.7,-0.0395,upcoming_games_odds,draftkings_devig,0.3744,+155,2026-10-07 12:30:00,401908004,4871428529369252260
+2026-10-06T19:22:05-04:00,3,Brewers @ Padres,O 7.5,-110,50.1,-0.0434,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-07 12:30:00,401908004,4466940466620924338
+2026-10-06T19:22:05-04:00,4,Brewers @ Padres,U 7.5,-110,50.1,-0.0434,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-07 12:30:00,401908004,6139464778235642290
+2026-10-06T19:22:05-04:00,5,Brewers @ Padres,Brewers ML,+115,40.8,-0.1223,upcoming_games_odds,espn_bpi,0.4436,+115,2026-10-07 12:30:00,401908004,9034806548634927532
+2026-10-06T19:22:05-04:00,6,Brewers @ Padres,Padres ML,-140,59.2,0.0145,upcoming_games_odds,espn_bpi,0.5564,-140,2026-10-07 12:30:00,401908004,7253632896009896364
+2026-10-06T19:22:05-04:00,7,Guardians @ White Sox,Guardians +1.5 run line,-230,,,upcoming_games_odds,no_model,0.6444,-230,2026-10-08 07:00:00,,4030068196378804635
+2026-10-06T19:22:05-04:00,8,Guardians @ White Sox,White Sox -1.5 run line,+160,,,upcoming_games_odds,no_model,0.3556,+160,2026-10-08 07:00:00,,4167427985013604763
+2026-10-06T19:22:05-04:00,9,Guardians @ White Sox,O 7.5,-120,,,upcoming_games_odds,no_model,0.5217,-120,2026-10-08 07:00:00,,9083615777294254487
+2026-10-06T19:22:05-04:00,10,Guardians @ White Sox,U 7.5,+100,,,upcoming_games_odds,no_model,0.4783,+100,2026-10-08 07:00:00,,936604051381027223
+2026-10-06T19:22:05-04:00,11,Guardians @ White Sox,Guardians ML,+100,,,upcoming_games_odds,no_model,0.4783,+100,2026-10-08 07:00:00,,5255047295023579539
+2026-10-06T19:22:05-04:00,12,Guardians @ White Sox,White Sox ML,-120,,,upcoming_games_odds,no_model,0.5217,-120,2026-10-08 07:00:00,,6725472573360046483
+2026-10-06T19:22:05-04:00,13,Rays @ Yankees,Rays +1.5 run line,-165,,,upcoming_games_odds,no_model,0.594,-165,2026-10-08 11:00:00,,767316648393834884
+2026-10-06T19:22:05-04:00,14,Rays @ Yankees,Yankees -1.5 run line,+135,,,upcoming_games_odds,no_model,0.406,+135,2026-10-08 11:00:00,,933949834606543236
+2026-10-06T19:22:05-04:00,15,Rays @ Yankees,O 7.5,+110,,,upcoming_games_odds,no_model,0.4532,+110,2026-10-08 11:00:00,,425620595196166531
+2026-10-06T19:22:05-04:00,16,Rays @ Yankees,U 7.5,-135,,,upcoming_games_odds,no_model,0.5468,-135,2026-10-08 11:00:00,,2252956144001745283
+2026-10-06T19:22:05-04:00,17,Rays @ Yankees,Rays ML,+135,,,upcoming_games_odds,no_model,0.4088,+135,2026-10-08 11:00:00,,4837579776682230193
+2026-10-06T19:22:05-04:00,18,Rays @ Yankees,Yankees ML,-160,,,upcoming_games_odds,no_model,0.5912,-160,2026-10-08 11:00:00,,2452923773989552561
+2026-10-06T19:22:05-04:00,19,Milwaukee Brewers @ San Diego Padres,Dustin Harris - Stolen Bases (O 0.5),+1000,19.9,1.1919,props_odds,mlbapi_poisson,,+1000,2026-10-07 12:30:00,,5196333659178795434
+2026-10-06T19:22:05-04:00,20,Milwaukee Brewers @ San Diego Padres,Jackson Merrill - Stolen Bases (O 0.5),+800,15.7,0.4137,props_odds,mlbapi_poisson,,+800,2026-10-07 12:30:00,,1395295573678096810
+2026-10-06T19:22:05-04:00,21,Milwaukee Brewers @ San Diego Padres,Dustin May - Earned Runs (O 1.5),+125,70.3,0.5809,props_odds,mlbapi_poisson,,+125,2026-10-07 12:30:00,,3333793676492145042
+2026-10-06T19:22:05-04:00,22,Milwaukee Brewers @ San Diego Padres,Dustin May - Strikeouts (O 2.5),-155,84.2,0.3854,props_odds,mlbapi_poisson,,-155,2026-10-07 12:30:00,,3350480571477393797
+2026-10-06T19:22:05-04:00,23,Milwaukee Brewers @ San Diego Padres,Nick Pivetta - Hits Allowed (O 3.5),+135,43.6,0.025,props_odds,mlbapi_poisson,,+135,2026-10-07 12:30:00,,6183913220835770765
+2026-10-06T19:22:05-04:00,24,Milwaukee Brewers @ San Diego Padres,Brice Turang - Runs (O 0.5),+150,49.1,0.2277,props_odds,mlbapi_poisson,,+150,2026-10-07 12:30:00,,790262912215286152
+2026-10-06T19:22:05-04:00,25,Milwaukee Brewers @ San Diego Padres,Brice Turang - RBIs (O 0.5),+225,48.4,0.574,props_odds,mlbapi_poisson,,+225,2026-10-07 12:30:00,,7938919207536820658
+2026-10-06T19:22:05-04:00,26,Milwaukee Brewers @ San Diego Padres,Cooper Pratt - RBIs (O 0.5),+275,36.8,0.3814,props_odds,mlbapi_poisson,,+275,2026-10-07 12:30:00,,7765095215278457266
+2026-10-06T19:22:05-04:00,27,Milwaukee Brewers @ San Diego Padres,Manny Machado - Hits (U 0.5),+180,44.5,0.2454,props_odds,mlbapi_poisson,,+180,2026-10-07 12:30:00,,7851330663864205702
+2026-10-06T19:22:05-04:00,28,Milwaukee Brewers @ San Diego Padres,Brice Turang - Hits+Runs+RBI (O 1.5),+110,68.5,0.4388,props_odds,mlbapi_poisson,,+110,2026-10-07 12:30:00,,132812157032202632
+2026-10-06T19:22:05-04:00,29,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Runs (O 0.5),+165,44.3,0.1733,props_odds,mlbapi_poisson,,+165,2026-10-07 12:30:00,,5628817761871462826
+2026-10-06T19:22:05-04:00,30,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Doubles (O 0.5),+525,17.7,0.1068,props_odds,mlbapi_poisson,,+525,2026-10-07 12:30:00,,1251926614695084462
+2026-10-06T19:22:05-04:00,31,Milwaukee Brewers @ San Diego Padres,Dustin Harris - Runs (O 0.5),+185,41.3,0.1781,props_odds,mlbapi_poisson,,+185,2026-10-07 12:30:00,,8887242461018194346
+2026-10-06T19:22:05-04:00,32,Milwaukee Brewers @ San Diego Padres,Dustin Harris - Hits+Runs+RBI (O 0.5),-160,83.8,0.3623,props_odds,mlbapi_poisson,,-160,2026-10-07 12:30:00,,2096435951671837068
+2026-10-06T19:22:05-04:00,33,Milwaukee Brewers @ San Diego Padres,Jackson Chourio - Singles (O 0.5),-110,54.5,0.0404,props_odds,mlbapi_poisson,,-110,2026-10-07 12:30:00,,6651568084865909132
+2026-10-06T19:22:05-04:00,34,Milwaukee Brewers @ San Diego Padres,Garrett Mitchell - Runs (O 0.5),+170,40.0,0.0792,props_odds,mlbapi_poisson,,+170,2026-10-07 12:30:00,,8412605281539850671
+2026-10-06T19:22:05-04:00,35,Milwaukee Brewers @ San Diego Padres,Manny Machado - Singles (U 0.5),-125,61.8,0.1127,props_odds,mlbapi_poisson,,-125,2026-10-07 12:30:00,,1602258846397628808
+2026-10-06T19:22:05-04:00,36,Milwaukee Brewers @ San Diego Padres,Jackson Chourio - Runs (O 0.5),+115,53.0,0.1404,props_odds,mlbapi_poisson,,+115,2026-10-07 12:30:00,,4998313814039593384
+2026-10-06T19:22:05-04:00,37,Milwaukee Brewers @ San Diego Padres,Xander Bogaerts - Stolen Bases (O 0.5),+800,13.4,0.2054,props_odds,mlbapi_poisson,,+800,2026-10-07 12:30:00,,6031751390056022446
+2026-10-06T19:22:05-04:00,38,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Singles (O 0.5),+150,41.4,0.0354,props_odds,mlbapi_poisson,,+150,2026-10-07 12:30:00,,549190589778887086
+2026-10-06T19:22:05-04:00,39,Milwaukee Brewers @ San Diego Padres,Jackson Chourio - RBIs (O 0.5),+180,44.6,0.2487,props_odds,mlbapi_poisson,,+180,2026-10-07 12:30:00,,5496578426804502962
+2026-10-06T19:22:05-04:00,40,Milwaukee Brewers @ San Diego Padres,Nick Pivetta - Earned Runs (U 1.5),-145,60.0,0.0146,props_odds,mlbapi_poisson,,-145,2026-10-07 12:30:00,,2597744470036447654
+2026-10-06T19:22:05-04:00,41,Milwaukee Brewers @ San Diego Padres,Jake Bauers - RBIs (O 0.5),+210,45.0,0.394,props_odds,mlbapi_poisson,,+210,2026-10-07 12:30:00,,8038178719245926834
+2026-10-06T19:22:05-04:00,42,Milwaukee Brewers @ San Diego Padres,Dustin Harris - Singles (O 0.5),+125,49.8,0.1202,props_odds,mlbapi_poisson,,+125,2026-10-07 12:30:00,,3132919769750176170
+2026-10-06T19:22:05-04:00,43,Milwaukee Brewers @ San Diego Padres,Ethan Salas - Hits+Runs+RBI (U 0.5),+125,26.9,-0.3944,props_odds,mlbapi_poisson,,+125,2026-10-07 12:30:00,,1844133440807633283
+2026-10-06T19:22:05-04:00,44,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Total Bases (O 1.5),+190,41.3,0.1989,props_odds,mlbapi_poisson,,+190,2026-10-07 12:30:00,,5743302887547732369
+2026-10-06T19:22:05-04:00,45,Milwaukee Brewers @ San Diego Padres,Cooper Pratt - Singles (O 0.5),+110,50.5,0.06,props_odds,mlbapi_poisson,,+110,2026-10-07 12:30:00,,513161792759923114
+2026-10-06T19:22:05-04:00,46,Milwaukee Brewers @ San Diego Padres,Brice Turang - Total Bases (O 1.5),+170,51.8,0.3975,props_odds,mlbapi_poisson,,+170,2026-10-07 12:30:00,,6941771386457293201
+2026-10-06T19:22:05-04:00,47,Milwaukee Brewers @ San Diego Padres,Ethan Salas - Doubles (U 0.5),-850,,,props_odds,zero_projected_rate,,-850,2026-10-07 12:30:00,,2858638558317642150
+2026-10-06T19:22:05-04:00,48,Milwaukee Brewers @ San Diego Padres,Jackson Chourio - Hits+Runs+RBI (O 1.5),-125,72.1,0.2987,props_odds,mlbapi_poisson,,-125,2026-10-07 12:30:00,,6187339661992657310
+2026-10-06T19:22:05-04:00,49,Milwaukee Brewers @ San Diego Padres,Christian Yelich - RBIs (O 0.5),+240,39.3,0.3378,props_odds,mlbapi_poisson,,+240,2026-10-07 12:30:00,,6578502266582598027
+2026-10-06T19:22:05-04:00,50,Milwaukee Brewers @ San Diego Padres,Brice Turang - Doubles (O 0.5),+425,21.7,0.1409,props_odds,mlbapi_poisson,,+425,2026-10-07 12:30:00,,4908961662305960366
+2026-10-06T19:22:05-04:00,51,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Hits+Runs+RBI (O 1.5),+125,58.5,0.3157,props_odds,mlbapi_poisson,,+125,2026-10-07 12:30:00,,4051454006239822216
+2026-10-06T19:22:05-04:00,52,Milwaukee Brewers @ San Diego Padres,Jackson Merrill - Hits (U 0.5),+180,37.3,0.0432,props_odds,mlbapi_poisson,,+180,2026-10-07 12:30:00,,585050841543737758
+2026-10-06T19:22:05-04:00,53,Milwaukee Brewers @ San Diego Padres,Jake Cronenworth - Total Bases (O 1.5),+260,30.5,0.0968,props_odds,mlbapi_poisson,,+260,2026-10-07 12:30:00,,6722195375337374116
+2026-10-06T19:22:05-04:00,54,Milwaukee Brewers @ San Diego Padres,Ethan Salas - Hits (U 0.5),-105,53.5,0.045,props_odds,mlbapi_poisson,,-105,2026-10-07 12:30:00,,5610928336172876209
+2026-10-06T19:22:05-04:00,55,Milwaukee Brewers @ San Diego Padres,Cooper Pratt - Stolen Bases (O 0.5),+350,22.6,0.019,props_odds,mlbapi_poisson,,+350,2026-10-07 12:30:00,,3169379575327228330
+2026-10-06T19:22:05-04:00,56,Milwaukee Brewers @ San Diego Padres,Joey Ortiz - Hits+Runs+RBI (O 0.5),-180,76.8,0.1953,props_odds,mlbapi_poisson,,-180,2026-10-07 12:30:00,,5936818514047402374
+2026-10-06T19:22:05-04:00,57,Milwaukee Brewers @ San Diego Padres,Garrett Mitchell - Hits+Runs+RBI (O 0.5),-175,83.4,0.3099,props_odds,mlbapi_poisson,,-175,2026-10-07 12:30:00,,7568123200425558405
+2026-10-06T19:22:05-04:00,58,Milwaukee Brewers @ San Diego Padres,Dustin Harris - Total Bases (O 1.5),+220,31.3,0.0021,props_odds,mlbapi_poisson,,+220,2026-10-07 12:30:00,,1155315227349352868
+2026-10-06T19:22:05-04:00,59,Milwaukee Brewers @ San Diego Padres,William Contreras - Hits+Runs+RBI (O 1.5),-105,65.5,0.2781,props_odds,mlbapi_poisson,,-105,2026-10-07 12:30:00,,8437317928508064142
+2026-10-06T19:22:05-04:00,60,Milwaukee Brewers @ San Diego Padres,Sal Frelick - RBIs (O 0.5),+275,30.3,0.1347,props_odds,mlbapi_poisson,,+275,2026-10-07 12:30:00,,8803825371582693768
+2026-10-06T19:22:05-04:00,61,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Runs (O 0.5),+130,47.6,0.0943,props_odds,mlbapi_poisson,,+130,2026-10-07 12:30:00,,2404803378627609000
+2026-10-06T19:22:05-04:00,62,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Hits+Runs+RBI (O 1.5),+120,62.7,0.3789,props_odds,mlbapi_poisson,,+120,2026-10-07 12:30:00,,1071707126222684558
+2026-10-06T19:22:05-04:00,63,Milwaukee Brewers @ San Diego Padres,William Contreras - RBIs (O 0.5),+185,47.2,0.3464,props_odds,mlbapi_poisson,,+185,2026-10-07 12:30:00,,6949764747944395171
+2026-10-06T19:22:05-04:00,64,Milwaukee Brewers @ San Diego Padres,Dustin Harris - Hits (O 0.5),-135,58.0,0.009,props_odds,mlbapi_poisson,,-135,2026-10-07 12:30:00,,8768362943847989640
+2026-10-06T19:22:05-04:00,65,Milwaukee Brewers @ San Diego Padres,Joey Ortiz - Runs (O 0.5),+195,30.6,-0.0965,props_odds,mlbapi_poisson,,+195,2026-10-07 12:30:00,,4309787595543544199
+2026-10-06T19:22:05-04:00,66,Milwaukee Brewers @ San Diego Padres,Nick Pivetta - Strikeouts (O 4.5),+135,60.2,0.4152,props_odds,mlbapi_poisson,,+135,2026-10-07 12:30:00,,8522578458172326280
+2026-10-06T19:22:05-04:00,67,Milwaukee Brewers @ San Diego Padres,Fernando Tatis Jr. - Singles (U 0.5),+110,46.7,-0.0189,props_odds,mlbapi_poisson,,+110,2026-10-07 12:30:00,,4457541010150523276
+2026-10-06T19:22:05-04:00,68,Milwaukee Brewers @ San Diego Padres,William Contreras - Total Bases (O 1.5),+135,47.7,0.1205,props_odds,mlbapi_poisson,,+135,2026-10-07 12:30:00,,288291450616152465
+2026-10-06T19:22:05-04:00,69,Milwaukee Brewers @ San Diego Padres,Ty France - Total Bases (O 1.5),+145,49.5,0.2121,props_odds,mlbapi_poisson,,+145,2026-10-07 12:30:00,,6568487240366948745
+2026-10-06T19:22:05-04:00,70,Milwaukee Brewers @ San Diego Padres,William Contreras - Runs (O 0.5),+145,42.8,0.0475,props_odds,mlbapi_poisson,,+145,2026-10-07 12:30:00,,8760508352754221488
+2026-10-06T19:22:05-04:00,71,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Total Bases (O 1.5),+180,47.6,0.334,props_odds,mlbapi_poisson,,+180,2026-10-07 12:30:00,,3389661908851360145
+2026-10-06T19:22:05-04:00,72,Milwaukee Brewers @ San Diego Padres,Brice Turang - Hits (O 0.5),-175,64.4,0.0122,props_odds,mlbapi_poisson,,-175,2026-10-07 12:30:00,,2200448171111481742
+2026-10-06T19:22:05-04:00,73,Milwaukee Brewers @ San Diego Padres,Jackson Merrill - Singles (U 0.5),-115,53.4,-0.0009,props_odds,mlbapi_poisson,,-115,2026-10-07 12:30:00,,8299111492297556356
+2026-10-06T19:22:05-04:00,74,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Hits (O 0.5),-145,58.6,-0.0098,props_odds,mlbapi_poisson,,-145,2026-10-07 12:30:00,,849676146156110217
+2026-10-06T19:22:05-04:00,75,Milwaukee Brewers @ San Diego Padres,Manny Machado - Runs (O 0.5),+125,40.5,-0.089,props_odds,mlbapi_poisson,,+125,2026-10-07 12:30:00,,4997258282876928430
+2026-10-06T19:22:05-04:00,76,Milwaukee Brewers @ San Diego Padres,Garrett Mitchell - Doubles (O 0.5),+500,18.7,0.1214,props_odds,mlbapi_poisson,,+500,2026-10-07 12:30:00,,5784852416201621919
+2026-10-06T19:22:05-04:00,77,Milwaukee Brewers @ San Diego Padres,Ethan Salas - Singles (U 0.5),-185,64.6,-0.0054,props_odds,mlbapi_poisson,,-185,2026-10-07 12:30:00,,6021415980754928042
+2026-10-06T19:22:05-04:00,78,Milwaukee Brewers @ San Diego Padres,Ty France - Hits (U 0.5),+170,37.6,0.0159,props_odds,mlbapi_poisson,,+170,2026-10-07 12:30:00,,5123540171886821768
+2026-10-06T19:22:05-04:00,79,Milwaukee Brewers @ San Diego Padres,Sal Frelick - Hits (U 0.5),+125,49.5,0.1143,props_odds,mlbapi_poisson,,+125,2026-10-07 12:30:00,,6879864740928160144
+2026-10-06T19:22:05-04:00,80,Milwaukee Brewers @ San Diego Padres,Cooper Pratt - Doubles (U 0.5),-800,91.0,0.0235,props_odds,mlbapi_poisson,,-800,2026-10-07 12:30:00,,1007500781793968544
+2026-10-06T19:22:05-04:00,81,Milwaukee Brewers @ San Diego Padres,Fernando Tatis Jr. - Stolen Bases (O 0.5),+375,21.3,0.0098,props_odds,mlbapi_poisson,,+375,2026-10-07 12:30:00,,2554972477725999492
+2026-10-06T19:22:05-04:00,82,Milwaukee Brewers @ San Diego Padres,Manny Machado - Total Bases (U 1.5),-170,55.1,-0.1241,props_odds,mlbapi_poisson,,-170,2026-10-07 12:30:00,,7769611334735495560
+2026-10-06T19:22:05-04:00,83,Milwaukee Brewers @ San Diego Padres,Dustin Harris - Doubles (U 0.5),-950,91.5,0.0113,props_odds,mlbapi_poisson,,-950,2026-10-07 12:30:00,,659166702021509535
+2026-10-06T19:22:05-04:00,84,Milwaukee Brewers @ San Diego Padres,Fernando Tatis Jr. - Hits (U 1.5),-230,68.5,-0.0172,props_odds,mlbapi_poisson,,-230,2026-10-07 12:30:00,,2174530139424162182
+2026-10-06T19:22:05-04:00,85,Milwaukee Brewers @ San Diego Padres,Cooper Pratt - Hits+Runs+RBI (O 1.5),+130,52.8,0.215,props_odds,mlbapi_poisson,,+130,2026-10-07 12:30:00,,9136110344517845384
+2026-10-06T19:22:05-04:00,86,Milwaukee Brewers @ San Diego Padres,Garrett Mitchell - RBIs (O 0.5),+260,36.1,0.3006,props_odds,mlbapi_poisson,,+260,2026-10-07 12:30:00,,6747334476050858410
+2026-10-06T19:22:05-04:00,87,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Hits (O 0.5),-155,58.6,-0.0363,props_odds,mlbapi_poisson,,-155,2026-10-07 12:30:00,,2979570906646577541
+2026-10-06T19:22:05-04:00,88,Milwaukee Brewers @ San Diego Padres,Manny Machado - Doubles (U 0.5),-600,87.0,0.015,props_odds,mlbapi_poisson,,-600,2026-10-07 12:30:00,,4808538867294667174
+2026-10-06T19:22:05-04:00,89,Milwaukee Brewers @ San Diego Padres,Joey Ortiz - Hits (O 0.5),-135,52.6,-0.0846,props_odds,mlbapi_poisson,,-135,2026-10-07 12:30:00,,8125187466492772740
+2026-10-06T19:22:05-04:00,90,Milwaukee Brewers @ San Diego Padres,Xander Bogaerts - Hits (U 0.5),+135,45.6,0.0726,props_odds,mlbapi_poisson,,+135,2026-10-07 12:30:00,,5436272065151893896
+2026-10-06T19:22:05-04:00,91,Milwaukee Brewers @ San Diego Padres,Brice Turang - Home Runs (O 0.5),+700,13.0,0.0387,props_odds,mlbapi_poisson,,+700,2026-10-07 12:30:00,,1048524473306841487

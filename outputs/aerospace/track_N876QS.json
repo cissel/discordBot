@@ -1,0 +1,19 @@
+{
+  "tail_query": "N876QS",
+  "callsign": "EJA876",
+  "registration": "N876QS",
+  "hex": "ac0e0f",
+  "aircraft_type": "C700",
+  "operator": "",
+  "altitude_ft": 17375,
+  "on_ground": false,
+  "ground_speed_kt": 388.2,
+  "vertical_rate_str": "climbing 3,072 ft/min",
+  "heading_deg": 196.61,
+  "lat": 43.385376,
+  "lon": -70.627527,
+  "squawk": "7353",
+  "updated_utc": "2026-10-01 15:04 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N876QS.png"
+}

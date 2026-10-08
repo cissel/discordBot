@@ -46,7 +46,12 @@ MAXLAT = JAX_LAT + 0.6
 MINLON = JAX_LON - 0.8
 MAXLON = JAX_LON + 0.8
 
-TILE_URL = "https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
+# CartoDB's free anonymous tiles now require an API key (returns an
+# "API KEY REQUIRED" watermark tile). Switched to Esri's World Dark Gray
+# Canvas - free, no key required, similar dark aesthetic. Base + Reference
+# (labels) are separate layers that get composited together.
+BASE_TILE_URL  = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+LABEL_TILE_URL = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
 HEADERS  = {"User-Agent": "discordBot/1.0 personal project"}
 BG_COLOR = (26, 26, 46, 255)
 
@@ -79,14 +84,25 @@ def nm_to_px(nm, lat):
     return int(nm * 1852 / mpp)
 
 # ── basemap ────────────────────────────────────────────────────────────────────
+def _fetch_layer(url_template, z, x, y):
+    url = url_template.format(z=z, x=x, y=y)
+    r = requests.get(url, headers=HEADERS, timeout=10)
+    r.raise_for_status()
+    return Image.open(BytesIO(r.content)).convert("RGBA")
+
 def fetch_tile(z, x, y):
-    url = TILE_URL.format(z=z, x=x, y=y)
+    """Fetch + composite the Esri dark-gray base tile with its label overlay."""
     try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
-        r.raise_for_status()
-        return Image.open(BytesIO(r.content)).convert("RGBA")
-    except:
+        base = _fetch_layer(BASE_TILE_URL, z, x, y)
+    except Exception as e:
+        print(f"[jaxShips] base tile {z}/{x}/{y} failed: {e}", file=sys.stderr)
         return Image.new("RGBA", (TILE_SIZE, TILE_SIZE), (22, 33, 62, 255))
+    try:
+        labels = _fetch_layer(LABEL_TILE_URL, z, x, y)
+        base = Image.alpha_composite(base, labels)
+    except Exception as e:
+        print(f"[jaxShips] label tile {z}/{x}/{y} failed: {e}", file=sys.stderr)
+    return base
 
 def build_basemap():
     half_px      = nm_to_px(DISPLAY_NM, JAX_LAT)

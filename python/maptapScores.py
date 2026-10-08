@@ -217,21 +217,42 @@ def check_new_high(csv_in, user_display_name: str, message_text: str, post_dt: d
     }
 
 
-def build_maptap_scores_csv(csv_in: str, csv_out: str) -> dict:
-    """Parse csv_in (server_messages.csv) and write csv_out (date,player,final_score),
-    dropping players who haven't logged enough games (MIN_GAMES) to show a trend.
+def list_players(csv_in: str) -> list:
+    """Sorted canonical display names of every player who has ever logged a MapTap
+    score. Used to populate the /maptap scores player autocomplete. Returns []
+    if csv_in doesn't exist yet rather than raising."""
+    if not os.path.exists(csv_in):
+        return []
+    records = parse_maptap_records(csv_in)
+    return sorted({r["player"] for r in records})
+
+
+def build_maptap_scores_csv(csv_in: str, csv_out: str, player: str | None = None) -> dict:
+    """Parse csv_in (server_messages.csv) and write csv_out (date,player,final_score).
+
+    If player is None (default), includes all players but drops anyone who hasn't
+    logged enough games (MIN_GAMES) to show a meaningful trend.
+
+    If player is given (a raw display name, matched via the same alias/normalization
+    rules as everywhere else), filters to just that player's full history and skips
+    the MIN_GAMES filter - an explicit request for one player's history shouldn't be
+    suppressed for having too few games.
 
     Returns a summary dict: {rows, players, date_min, date_max}.
     Raises FileNotFoundError if csv_in doesn't exist.
     """
     out_rows = parse_maptap_records(csv_in)
 
-    # Drop players who haven't logged enough games to show a meaningful trend
-    # (e.g. a single stray share) rather than cluttering the chart as lone dots.
-    game_counts = {}
-    for r in out_rows:
-        game_counts[r["player"]] = game_counts.get(r["player"], 0) + 1
-    out_rows = [r for r in out_rows if game_counts[r["player"]] >= MIN_GAMES]
+    if player is not None:
+        target_key = _canon_key_for(player)
+        out_rows = [r for r in out_rows if _norm_key(r["player"]) == target_key]
+    else:
+        # Drop players who haven't logged enough games to show a meaningful trend
+        # (e.g. a single stray share) rather than cluttering the chart as lone dots.
+        game_counts = {}
+        for r in out_rows:
+            game_counts[r["player"]] = game_counts.get(r["player"], 0) + 1
+        out_rows = [r for r in out_rows if game_counts[r["player"]] >= MIN_GAMES]
 
     os.makedirs(os.path.dirname(csv_out), exist_ok=True)
     with open(csv_out, "w", newline="", encoding="utf-8") as f:

@@ -173,10 +173,10 @@ x_lim <- range(df$efficiency, na.rm = TRUE)
 y_lim <- range(df$ryoe_per_att, na.rm = TRUE)
 
 p <- p +
-  annotate("text", x = x_lim[1] + 0.02, y = y_lim[2] - 0.05,
-           label = "Efficient + Creates Yards", color = GRN, size = 2.6, hjust = 0, fontface = "italic") +
-  annotate("text", x = x_lim[2] - 0.02, y = y_lim[1] + 0.05,
-           label = "Grinding but loses YOE", color = RED, size = 2.6, hjust = 1, fontface = "italic")
+  annotate("text", x = x_lim[2] - 0.02, y = y_lim[2] - 0.05,
+           label = "Efficient + Creates Yards", color = GRN, size = 2.6, hjust = 1, fontface = "italic") +
+  annotate("text", x = x_lim[1] + 0.02, y = y_lim[1] + 0.05,
+           label = "Grinding but loses YOE", color = RED, size = 2.6, hjust = 0, fontface = "italic")
 
 ggsave(OUT_PNG, p, width = 9, height = 6.5, dpi = 220, bg = BG)
 message("Saved: ", OUT_PNG)

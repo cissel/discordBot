@@ -1,0 +1,173 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-07T19:35:35-04:00,1,Rays @ Yankees,Rays +1.5 run line,-155,58.4,-0.0389,upcoming_games_odds,draftkings_devig,0.583,-155,2026-10-08 11:00:00,401907987,767316648393834884
+2026-10-07T19:35:35-04:00,2,Rays @ Yankees,Yankees -1.5 run line,+130,41.6,-0.0437,upcoming_games_odds,draftkings_devig,0.417,+130,2026-10-08 11:00:00,401907987,933949834606543236
+2026-10-07T19:35:35-04:00,3,Rays @ Yankees,O 7.5,+110,51.5,0.0819,upcoming_games_odds,draftkings_devig,0.4573,+110,2026-10-08 11:00:00,401907987,425620595196166531
+2026-10-07T19:35:35-04:00,4,Rays @ Yankees,U 7.5,-130,51.5,-0.0885,upcoming_games_odds,draftkings_devig,0.5427,-130,2026-10-08 11:00:00,401907987,2252956144001745283
+2026-10-07T19:35:35-04:00,5,Rays @ Yankees,Rays ML,+145,36.2,-0.1129,upcoming_games_odds,espn_bpi,0.3908,+145,2026-10-08 11:00:00,401907987,4837579776682230193
+2026-10-07T19:35:35-04:00,6,Rays @ Yankees,Yankees ML,-175,63.8,0.0024,upcoming_games_odds,espn_bpi,0.6092,-175,2026-10-08 11:00:00,401907987,2452923773989552561
+2026-10-07T19:35:35-04:00,7,Brewers @ Padres,Brewers -1.5 run line,+165,36.8,-0.0252,upcoming_games_odds,draftkings_devig,0.3614,+165,2026-10-08 13:00:00,401908005,4943737639107953040
+2026-10-07T19:35:35-04:00,8,Brewers @ Padres,Padres +1.5 run line,-200,63.2,-0.0517,upcoming_games_odds,draftkings_devig,0.6386,-200,2026-10-08 13:00:00,401908005,8703117428055474576
+2026-10-07T19:35:35-04:00,9,Brewers @ Padres,O 7.5,-115,50.9,-0.049,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-08 13:00:00,401908005,8613412122635927956
+2026-10-07T19:35:35-04:00,10,Brewers @ Padres,U 7.5,-105,50.9,-0.0069,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-08 13:00:00,401908005,6834490269824582036
+2026-10-07T19:35:35-04:00,11,Brewers @ Padres,Brewers ML,-110,56.0,0.0697,upcoming_games_odds,espn_bpi,0.5,-110,2026-10-08 13:00:00,401908005,689711758079820178
+2026-10-07T19:35:35-04:00,12,Brewers @ Padres,Padres ML,-110,44.0,-0.1606,upcoming_games_odds,espn_bpi,0.5,-110,2026-10-08 13:00:00,401908005,7262715414227059090
+2026-10-07T19:35:35-04:00,13,Tampa Bay Rays @ New York Yankees,Liam Hicks - Home Runs (O 0.5),+1500,11.9,0.9049,props_odds,mlbapi_poisson,,+1500,2026-10-08 11:00:00,,5036930841297682833
+2026-10-07T19:35:35-04:00,14,Tampa Bay Rays @ New York Yankees,Victor Mesa Jr. - Home Runs (O 0.5),+700,16.2,0.2992,props_odds,mlbapi_poisson,,+700,2026-10-08 11:00:00,,5127499813100847506
+2026-10-07T19:35:35-04:00,15,Tampa Bay Rays @ New York Yankees,Taylor Walls - Runs (O 0.5),+260,38.4,0.381,props_odds,mlbapi_poisson,,+260,2026-10-08 11:00:00,,127359080258994584
+2026-10-07T19:35:35-04:00,16,Tampa Bay Rays @ New York Yankees,Jonathan Aranda - RBIs (O 0.5),+260,44.8,0.6115,props_odds,mlbapi_poisson,,+260,2026-10-08 11:00:00,,4995803054004633999
+2026-10-07T19:35:35-04:00,17,Tampa Bay Rays @ New York Yankees,Liam Hicks - RBIs (O 0.5),+325,43.9,0.8644,props_odds,mlbapi_poisson,,+325,2026-10-08 11:00:00,,554068003227042194
+2026-10-07T19:35:35-04:00,18,Tampa Bay Rays @ New York Yankees,Jonny Deluca - Doubles (O 0.5),+550,19.3,0.2537,props_odds,mlbapi_poisson,,+550,2026-10-08 11:00:00,,3430657047958520228
+2026-10-07T19:35:35-04:00,19,Tampa Bay Rays @ New York Yankees,Yandy Diaz - RBIs (O 0.5),+260,42.4,0.527,props_odds,mlbapi_poisson,,+260,2026-10-08 11:00:00,,6769390076398010787
+2026-10-07T19:35:35-04:00,20,Tampa Bay Rays @ New York Yankees,Taylor Walls - Stolen Bases (O 0.5),+750,15.6,0.3242,props_odds,mlbapi_poisson,,+750,2026-10-08 11:00:00,,4862609710064468375
+2026-10-07T19:35:35-04:00,21,Tampa Bay Rays @ New York Yankees,Richie Palacios - RBIs (O 0.5),+325,36.9,0.5662,props_odds,mlbapi_poisson,,+325,2026-10-08 11:00:00,,4746798990245364139
+2026-10-07T19:35:35-04:00,22,Tampa Bay Rays @ New York Yankees,Liam Hicks - Total Bases (O 1.5),+230,43.0,0.4201,props_odds,mlbapi_poisson,,+230,2026-10-08 11:00:00,,1337810543024669085
+2026-10-07T19:35:35-04:00,23,Tampa Bay Rays @ New York Yankees,Liam Hicks - Runs (O 0.5),+225,37.2,0.2081,props_odds,mlbapi_poisson,,+225,2026-10-08 11:00:00,,8669396202074276245
+2026-10-07T19:35:35-04:00,24,Tampa Bay Rays @ New York Yankees,George Lombard Jr. - Home Runs (O 0.5),+700,15.4,0.2281,props_odds,mlbapi_poisson,,+700,2026-10-08 11:00:00,,683876523438113167
+2026-10-07T19:35:35-04:00,25,Tampa Bay Rays @ New York Yankees,Nick Martinez - Strikeouts (O 2.5),-175,68.2,0.0719,props_odds,mlbapi_poisson,,-175,2026-10-08 11:00:00,,3193320292655169923
+2026-10-07T19:35:35-04:00,26,Tampa Bay Rays @ New York Yankees,Taylor Walls - Hits+Runs+RBI (O 0.5),-120,76.2,0.397,props_odds,mlbapi_poisson,,-120,2026-10-08 11:00:00,,7137277870958838159
+2026-10-07T19:35:35-04:00,27,Tampa Bay Rays @ New York Yankees,Jonny Deluca - Total Bases (O 1.5),+220,38.7,0.2385,props_odds,mlbapi_poisson,,+220,2026-10-08 11:00:00,,2557989694935794098
+2026-10-07T19:35:35-04:00,28,Tampa Bay Rays @ New York Yankees,Richie Palacios - Runs (O 0.5),+230,33.7,0.1128,props_odds,mlbapi_poisson,,+230,2026-10-08 11:00:00,,2311741374535434659
+2026-10-07T19:35:35-04:00,29,Tampa Bay Rays @ New York Yankees,Taylor Walls - Hits (O 0.5),+115,48.4,0.0402,props_odds,mlbapi_poisson,,+115,2026-10-08 11:00:00,,4772992608240796069
+2026-10-07T19:35:35-04:00,30,Tampa Bay Rays @ New York Yankees,Ryan Vilade - RBIs (O 0.5),+300,36.1,0.4442,props_odds,mlbapi_poisson,,+300,2026-10-08 11:00:00,,6468440549736186278
+2026-10-07T19:35:35-04:00,31,Tampa Bay Rays @ New York Yankees,Trent Grisham - Hits (U 0.5),+125,48.3,0.0873,props_odds,mlbapi_poisson,,+125,2026-10-08 11:00:00,,1974779496015987091
+2026-10-07T19:35:35-04:00,32,Tampa Bay Rays @ New York Yankees,Junior Caminero - Hits+Runs+RBI (O 1.5),+100,66.7,0.3337,props_odds,mlbapi_poisson,,+100,2026-10-08 11:00:00,,2389305187245359515
+2026-10-07T19:35:35-04:00,33,Tampa Bay Rays @ New York Yankees,George Lombard Jr. - Runs (O 0.5),+165,42.2,0.1174,props_odds,mlbapi_poisson,,+165,2026-10-08 11:00:00,,7341967353632129444
+2026-10-07T19:35:35-04:00,34,Tampa Bay Rays @ New York Yankees,Jonathan Aranda - Hits+Runs+RBI (O 1.5),+115,61.8,0.3285,props_odds,mlbapi_poisson,,+115,2026-10-08 11:00:00,,7435025619760578968
+2026-10-07T19:35:35-04:00,35,Tampa Bay Rays @ New York Yankees,Jose Caballero - Stolen Bases (O 0.5),+400,22.1,0.106,props_odds,mlbapi_poisson,,+400,2026-10-08 11:00:00,,6744198201542312355
+2026-10-07T19:35:35-04:00,36,Tampa Bay Rays @ New York Yankees,Jonathan Aranda - Total Bases (O 1.5),+175,48.3,0.3293,props_odds,mlbapi_poisson,,+175,2026-10-08 11:00:00,,1491604153481429406
+2026-10-07T19:35:35-04:00,37,Tampa Bay Rays @ New York Yankees,Jonathan Aranda - Home Runs (O 0.5),+750,13.2,0.1247,props_odds,mlbapi_poisson,,+750,2026-10-08 11:00:00,,8242390043747025297
+2026-10-07T19:35:35-04:00,38,Tampa Bay Rays @ New York Yankees,Austin Wells - Hits (U 0.5),+100,60.2,0.2032,props_odds,mlbapi_poisson,,+100,2026-10-08 11:00:00,,1275703818323100048
+2026-10-07T19:35:35-04:00,39,Tampa Bay Rays @ New York Yankees,Junior Caminero - Runs (O 0.5),+135,46.1,0.0824,props_odds,mlbapi_poisson,,+135,2026-10-08 11:00:00,,5263194661153014155
+2026-10-07T19:35:35-04:00,40,Tampa Bay Rays @ New York Yankees,Taylor Walls - Doubles (O 0.5),+700,13.5,0.0809,props_odds,mlbapi_poisson,,+700,2026-10-08 11:00:00,,8141926779406385554
+2026-10-07T19:35:35-04:00,41,Tampa Bay Rays @ New York Yankees,Nick Martinez - Earned Runs (U 1.5),+130,40.6,-0.0662,props_odds,mlbapi_poisson,,+130,2026-10-08 11:00:00,,2251498447133868427
+2026-10-07T19:35:35-04:00,42,Tampa Bay Rays @ New York Yankees,Junior Caminero - RBIs (O 0.5),+185,46.4,0.3221,props_odds,mlbapi_poisson,,+185,2026-10-08 11:00:00,,3536021048225038747
+2026-10-07T19:35:35-04:00,43,Tampa Bay Rays @ New York Yankees,Luis Garcia - Hits (U 0.5),+170,,,props_odds,player_not_matched,,+170,2026-10-08 11:00:00,,6145616327286587782
+2026-10-07T19:35:35-04:00,44,Tampa Bay Rays @ New York Yankees,Cody Bellinger - Runs (O 0.5),+150,42.5,0.062,props_odds,mlbapi_poisson,,+150,2026-10-08 11:00:00,,1442528918706979229
+2026-10-07T19:35:35-04:00,45,Tampa Bay Rays @ New York Yankees,Junior Caminero - Home Runs (O 0.5),+375,22.8,0.0848,props_odds,mlbapi_poisson,,+375,2026-10-08 11:00:00,,4682857488264069515
+2026-10-07T19:35:35-04:00,46,Tampa Bay Rays @ New York Yankees,Cody Bellinger - Hits+Runs+RBI (O 1.5),+105,62.0,0.271,props_odds,mlbapi_poisson,,+105,2026-10-08 11:00:00,,4578709915077575076
+2026-10-07T19:35:35-04:00,47,Tampa Bay Rays @ New York Yankees,Yandy Diaz - Runs (O 0.5),+135,45.3,0.0653,props_odds,mlbapi_poisson,,+135,2026-10-08 11:00:00,,1432065966057062817
+2026-10-07T19:35:35-04:00,48,Tampa Bay Rays @ New York Yankees,Max Fried - Earned Runs (U 1.5),-130,47.8,-0.1545,props_odds,mlbapi_poisson,,-130,2026-10-08 11:00:00,,544429679197684107
+2026-10-07T19:35:35-04:00,49,Tampa Bay Rays @ New York Yankees,Victor Mesa Jr. - RBIs (O 0.5),+220,35.0,0.1192,props_odds,mlbapi_poisson,,+220,2026-10-08 11:00:00,,8471237818469974429
+2026-10-07T19:35:35-04:00,50,Tampa Bay Rays @ New York Yankees,Junior Caminero - Total Bases (O 1.5),+130,59.2,0.3623,props_odds,mlbapi_poisson,,+130,2026-10-08 11:00:00,,1086328333601472915
+2026-10-07T19:35:35-04:00,51,Tampa Bay Rays @ New York Yankees,Liam Hicks - Hits+Runs+RBI (O 0.5),-180,86.5,0.345,props_odds,mlbapi_poisson,,-180,2026-10-08 11:00:00,,5652837672759198100
+2026-10-07T19:35:35-04:00,52,Tampa Bay Rays @ New York Yankees,Jonny Deluca - RBIs (O 0.5),+260,36.0,0.2963,props_odds,mlbapi_poisson,,+260,2026-10-08 11:00:00,,903209669189829029
+2026-10-07T19:35:35-04:00,53,Tampa Bay Rays @ New York Yankees,Jonny Deluca - Runs (O 0.5),+230,32.5,0.0721,props_odds,mlbapi_poisson,,+230,2026-10-08 11:00:00,,6681018873719947658
+2026-10-07T19:35:35-04:00,54,Tampa Bay Rays @ New York Yankees,Victor Mesa Jr. - Runs (O 0.5),+175,37.4,0.0284,props_odds,mlbapi_poisson,,+175,2026-10-08 11:00:00,,2762613029475582354
+2026-10-07T19:35:35-04:00,55,Tampa Bay Rays @ New York Yankees,Yandy Diaz - Hits+Runs+RBI (O 1.5),-110,67.5,0.2882,props_odds,mlbapi_poisson,,-110,2026-10-08 11:00:00,,3351184347502870939
+2026-10-07T19:35:35-04:00,56,Tampa Bay Rays @ New York Yankees,Yandy Diaz - Home Runs (O 0.5),+700,13.3,0.065,props_odds,mlbapi_poisson,,+700,2026-10-08 11:00:00,,5138502803395838340
+2026-10-07T19:35:35-04:00,57,Tampa Bay Rays @ New York Yankees,Jose Caballero - RBIs (O 0.5),+325,31.3,0.329,props_odds,mlbapi_poisson,,+325,2026-10-08 11:00:00,,8951173125186388395
+2026-10-07T19:35:35-04:00,58,Tampa Bay Rays @ New York Yankees,Max Fried - Strikeouts (O 4.5),-115,59.4,0.1103,props_odds,mlbapi_poisson,,-115,2026-10-08 11:00:00,,4013875761650991508
+2026-10-07T19:35:35-04:00,59,Tampa Bay Rays @ New York Yankees,Ryan Vilade - Hits (U 0.5),-110,53.5,0.0219,props_odds,mlbapi_poisson,,-110,2026-10-08 11:00:00,,4730194393007522196
+2026-10-07T19:35:35-04:00,60,Tampa Bay Rays @ New York Yankees,Victor Mesa Jr. - Hits+Runs+RBI (O 1.5),+125,49.8,0.1197,props_odds,mlbapi_poisson,,+125,2026-10-08 11:00:00,,5228333825460928913
+2026-10-07T19:35:35-04:00,61,Tampa Bay Rays @ New York Yankees,Taylor Walls - Singles (O 0.5),+160,38.4,-0.0026,props_odds,mlbapi_poisson,,+160,2026-10-08 11:00:00,,2645894917284561291
+2026-10-07T19:35:35-04:00,62,Tampa Bay Rays @ New York Yankees,Trent Grisham - Total Bases (U 1.5),-200,60.4,-0.0933,props_odds,mlbapi_poisson,,-200,2026-10-08 11:00:00,,9033186534752387490
+2026-10-07T19:35:35-04:00,63,Tampa Bay Rays @ New York Yankees,Ryan Vilade - Home Runs (O 0.5),+800,10.8,-0.0256,props_odds,mlbapi_poisson,,+800,2026-10-08 11:00:00,,3376808184667832737
+2026-10-07T19:35:35-04:00,64,Tampa Bay Rays @ New York Yankees,Junior Caminero - Hits (O 0.5),-220,65.0,-0.0548,props_odds,mlbapi_poisson,,-220,2026-10-08 11:00:00,,1101918996166476197
+2026-10-07T19:35:35-04:00,65,Tampa Bay Rays @ New York Yankees,Jonathan Aranda - Hits (O 0.5),-190,64.1,-0.0209,props_odds,mlbapi_poisson,,-190,2026-10-08 11:00:00,,5454313784485216659
+2026-10-07T19:35:35-04:00,66,Tampa Bay Rays @ New York Yankees,Austin Wells - Hits+Runs+RBI (U 0.5),+120,33.6,-0.2604,props_odds,mlbapi_poisson,,+120,2026-10-08 11:00:00,,406701004411765142
+2026-10-07T19:35:35-04:00,67,Tampa Bay Rays @ New York Yankees,Jonny Deluca - Hits (O 0.5),-130,56.4,-0.002,props_odds,mlbapi_poisson,,-130,2026-10-08 11:00:00,,5670999377104208306
+2026-10-07T19:35:35-04:00,68,Tampa Bay Rays @ New York Yankees,George Lombard Jr. - Total Bases (O 1.5),+185,44.2,0.2602,props_odds,mlbapi_poisson,,+185,2026-10-08 11:00:00,,1394987867725496719
+2026-10-07T19:35:35-04:00,69,Tampa Bay Rays @ New York Yankees,George Lombard Jr. - Hits+Runs+RBI (O 1.5),+120,57.4,0.2635,props_odds,mlbapi_poisson,,+120,2026-10-08 11:00:00,,788719722412769701
+2026-10-07T19:35:35-04:00,70,Tampa Bay Rays @ New York Yankees,Jonathan Aranda - Runs (O 0.5),+150,37.6,-0.061,props_odds,mlbapi_poisson,,+150,2026-10-08 11:00:00,,5083412140505825691
+2026-10-07T19:35:35-04:00,71,Tampa Bay Rays @ New York Yankees,Ryan Vilade - Singles (U 0.5),-200,66.6,-0.0008,props_odds,mlbapi_poisson,,-200,2026-10-08 11:00:00,,4560606456126243220
+2026-10-07T19:35:35-04:00,72,Tampa Bay Rays @ New York Yankees,Yandy Diaz - Total Bases (O 1.5),+130,53.1,0.2212,props_odds,mlbapi_poisson,,+130,2026-10-08 11:00:00,,1494467049831924099
+2026-10-07T19:35:35-04:00,73,Tampa Bay Rays @ New York Yankees,Austin Wells - Total Bases (U 1.5),-300,76.9,0.0252,props_odds,mlbapi_poisson,,-300,2026-10-08 11:00:00,,936644351059165598
+2026-10-07T19:35:35-04:00,74,Tampa Bay Rays @ New York Yankees,Taylor Walls - RBIs (O 0.5),+425,25.2,0.3229,props_odds,mlbapi_poisson,,+425,2026-10-08 11:00:00,,5367297246704566692
+2026-10-07T19:35:35-04:00,75,Tampa Bay Rays @ New York Yankees,Anthony Volpe - Hits+Runs+RBI (U 1.5),-165,55.3,-0.1118,props_odds,mlbapi_poisson,,-165,2026-10-08 11:00:00,,7151238134678815147
+2026-10-07T19:35:35-04:00,76,Tampa Bay Rays @ New York Yankees,Liam Hicks - Hits (O 0.5),-150,61.6,0.0271,props_odds,mlbapi_poisson,,-150,2026-10-08 11:00:00,,2214691200982712724
+2026-10-07T19:35:35-04:00,77,Tampa Bay Rays @ New York Yankees,Anthony Volpe - Hits (U 0.5),+125,46.2,0.0403,props_odds,mlbapi_poisson,,+125,2026-10-08 11:00:00,,2055368976820732308
+2026-10-07T19:35:35-04:00,78,Tampa Bay Rays @ New York Yankees,George Lombard Jr. - Doubles (U 0.5),-800,90.9,0.0228,props_odds,mlbapi_poisson,,-800,2026-10-08 11:00:00,,9188663498316579224
+2026-10-07T19:35:35-04:00,79,Tampa Bay Rays @ New York Yankees,Cody Bellinger - Hits (O 0.5),-195,62.9,-0.0479,props_odds,mlbapi_poisson,,-195,2026-10-08 11:00:00,,3671222583581344149
+2026-10-07T19:35:35-04:00,80,Tampa Bay Rays @ New York Yankees,Victor Mesa Jr. - Doubles (U 0.5),-800,90.4,0.0167,props_odds,mlbapi_poisson,,-800,2026-10-08 11:00:00,,8578277474457223574
+2026-10-07T19:35:35-04:00,81,Tampa Bay Rays @ New York Yankees,Luis Garcia - Total Bases (U 1.5),-165,,,props_odds,player_not_matched,,-165,2026-10-08 11:00:00,,3054454147320512912
+2026-10-07T19:35:35-04:00,82,Tampa Bay Rays @ New York Yankees,Austin Wells - RBIs (U 0.5),-350,76.9,-0.0109,props_odds,mlbapi_poisson,,-350,2026-10-08 11:00:00,,1528097311627018659
+2026-10-07T19:35:35-04:00,83,Tampa Bay Rays @ New York Yankees,Richie Palacios - Total Bases (O 1.5),+260,27.9,0.0047,props_odds,mlbapi_poisson,,+260,2026-10-08 11:00:00,,8515493841703403947
+2026-10-07T19:35:35-04:00,84,Tampa Bay Rays @ New York Yankees,Luis Garcia - Singles (U 0.5),-125,,,props_odds,player_not_matched,,-125,2026-10-08 11:00:00,,2049714423936975243
+2026-10-07T19:35:35-04:00,85,Tampa Bay Rays @ New York Yankees,Trent Grisham - Hits+Runs+RBI (U 1.5),-130,47.2,-0.1645,props_odds,mlbapi_poisson,,-130,2026-10-08 11:00:00,,4272478334555914661
+2026-10-07T19:35:35-04:00,86,Tampa Bay Rays @ New York Yankees,Ryan Vilade - Hits+Runs+RBI (O 0.5),-135,74.5,0.296,props_odds,mlbapi_poisson,,-135,2026-10-08 11:00:00,,2618531371404099983
+2026-10-07T19:35:35-04:00,87,Tampa Bay Rays @ New York Yankees,Ryan Vilade - Doubles (U 0.5),-950,92.0,0.0169,props_odds,mlbapi_poisson,,-950,2026-10-08 11:00:00,,2385552399440937354
+2026-10-07T19:35:35-04:00,88,Tampa Bay Rays @ New York Yankees,Austin Wells - Singles (U 0.5),-230,71.5,0.0253,props_odds,mlbapi_poisson,,-230,2026-10-08 11:00:00,,5192390235492843928
+2026-10-07T19:35:35-04:00,89,Tampa Bay Rays @ New York Yankees,Victor Mesa Jr. - Hits (U 0.5),+125,46.2,0.0395,props_odds,mlbapi_poisson,,+125,2026-10-08 11:00:00,,3593316054492905885
+2026-10-07T19:35:35-04:00,90,Tampa Bay Rays @ New York Yankees,Jonny Deluca - Hits+Runs+RBI (O 0.5),-170,81.2,0.2891,props_odds,mlbapi_poisson,,-170,2026-10-08 11:00:00,,1429004925685334427
+2026-10-07T19:35:35-04:00,91,Tampa Bay Rays @ New York Yankees,Austin Wells - Doubles (U 0.5),-1200,94.4,0.0229,props_odds,mlbapi_poisson,,-1200,2026-10-08 11:00:00,,1075004907876123057
+2026-10-07T19:35:35-04:00,92,Tampa Bay Rays @ New York Yankees,Jose Caballero - Singles (O 0.5),+135,39.3,-0.0753,props_odds,mlbapi_poisson,,+135,2026-10-08 11:00:00,,5357089516312199595
+2026-10-07T19:35:35-04:00,93,Tampa Bay Rays @ New York Yankees,George Lombard Jr. - RBIs (O 0.5),+230,40.8,0.3455,props_odds,mlbapi_poisson,,+230,2026-10-08 11:00:00,,2693658801906778529
+2026-10-07T19:35:35-04:00,94,Tampa Bay Rays @ New York Yankees,George Lombard Jr. - Hits (O 0.5),-170,57.6,-0.0858,props_odds,mlbapi_poisson,,-170,2026-10-08 11:00:00,,241861209710789011
+2026-10-07T19:35:35-04:00,95,Tampa Bay Rays @ New York Yankees,Anthony Volpe - Total Bases (U 1.5),-250,71.5,0.0006,props_odds,mlbapi_poisson,,-250,2026-10-08 11:00:00,,8475465578117726612
+2026-10-07T19:35:35-04:00,96,Tampa Bay Rays @ New York Yankees,Cody Bellinger - Singles (O 0.5),+100,47.9,-0.0425,props_odds,mlbapi_poisson,,+100,2026-10-08 11:00:00,,4639310597954077076
+2026-10-07T19:35:35-04:00,97,Tampa Bay Rays @ New York Yankees,Junior Caminero - Singles (O 0.5),+100,46.7,-0.0656,props_odds,mlbapi_poisson,,+100,2026-10-08 11:00:00,,3899242515437584779
+2026-10-07T19:35:35-04:00,98,Milwaukee Brewers @ San Diego Padres,Walker Buehler - Earned Runs (O 1.5),+135,70.6,0.6596,props_odds,mlbapi_poisson,,+135,2026-10-08 13:00:00,,8436928646899433896
+2026-10-07T19:35:35-04:00,99,Milwaukee Brewers @ San Diego Padres,Samad Taylor - Stolen Bases (O 0.5),+475,24.2,0.3894,props_odds,mlbapi_poisson,,+475,2026-10-08 13:00:00,,3895395915615306147
+2026-10-07T19:35:35-04:00,100,Milwaukee Brewers @ San Diego Padres,Samad Taylor - Singles (O 0.5),+125,57.3,0.2893,props_odds,mlbapi_poisson,,+125,2026-10-08 13:00:00,,8526145525416853932
+2026-10-07T19:35:35-04:00,101,Milwaukee Brewers @ San Diego Padres,Walker Buehler - Strikeouts (O 2.5),-145,77.5,0.31,props_odds,mlbapi_poisson,,-145,2026-10-08 13:00:00,,4819333081376883118
+2026-10-07T19:35:35-04:00,102,Milwaukee Brewers @ San Diego Padres,Brice Turang - Home Runs (O 0.5),+1000,13.0,0.4282,props_odds,mlbapi_poisson,,+1000,2026-10-08 13:00:00,,8523657373552869785
+2026-10-07T19:35:35-04:00,103,Milwaukee Brewers @ San Diego Padres,Jackson Merrill - Stolen Bases (O 0.5),+650,15.7,0.1781,props_odds,mlbapi_poisson,,+650,2026-10-08 13:00:00,,7123356162623406499
+2026-10-07T19:35:35-04:00,104,Milwaukee Brewers @ San Diego Padres,Samad Taylor - Runs (O 0.5),+200,42.5,0.2747,props_odds,mlbapi_poisson,,+200,2026-10-08 13:00:00,,5833114341204951438
+2026-10-07T19:35:35-04:00,105,Milwaukee Brewers @ San Diego Padres,Brice Turang - RBIs (O 0.5),+220,48.4,0.5498,props_odds,mlbapi_poisson,,+220,2026-10-08 13:00:00,,5026291952828678538
+2026-10-07T19:35:35-04:00,106,Milwaukee Brewers @ San Diego Padres,Samad Taylor - Hits (O 0.5),-120,64.0,0.1731,props_odds,mlbapi_poisson,,-120,2026-10-08 13:00:00,,5030931488170967470
+2026-10-07T19:35:35-04:00,107,Milwaukee Brewers @ San Diego Padres,Luis Campusano - RBIs (O 0.5),+260,34.5,0.2406,props_odds,mlbapi_poisson,,+260,2026-10-08 13:00:00,,5424808499207078286
+2026-10-07T19:35:35-04:00,108,Milwaukee Brewers @ San Diego Padres,Brice Turang - Runs (O 0.5),+135,49.1,0.1541,props_odds,mlbapi_poisson,,+135,2026-10-08 13:00:00,,2165521027029926302
+2026-10-07T19:35:35-04:00,109,Milwaukee Brewers @ San Diego Padres,Garrett Mitchell - Runs (O 0.5),+175,40.0,0.0992,props_odds,mlbapi_poisson,,+175,2026-10-08 13:00:00,,4917783349306720661
+2026-10-07T19:35:35-04:00,110,Milwaukee Brewers @ San Diego Padres,Samad Taylor - Hits+Runs+RBI (O 0.5),-150,85.9,0.4313,props_odds,mlbapi_poisson,,-150,2026-10-08 13:00:00,,3059160853535392143
+2026-10-07T19:35:35-04:00,111,Milwaukee Brewers @ San Diego Padres,Brice Turang - Hits+Runs+RBI (O 1.5),+100,68.5,0.3703,props_odds,mlbapi_poisson,,+100,2026-10-08 13:00:00,,5709290983817085341
+2026-10-07T19:35:35-04:00,112,Milwaukee Brewers @ San Diego Padres,Cooper Pratt - RBIs (O 0.5),+250,36.8,0.2893,props_odds,mlbapi_poisson,,+250,2026-10-08 13:00:00,,8957054818220900758
+2026-10-07T19:35:35-04:00,113,Milwaukee Brewers @ San Diego Padres,Brice Turang - Doubles (O 0.5),+450,21.7,0.1953,props_odds,mlbapi_poisson,,+450,2026-10-08 13:00:00,,7136901726044553643
+2026-10-07T19:35:35-04:00,114,Milwaukee Brewers @ San Diego Padres,Xander Bogaerts - Stolen Bases (O 0.5),+800,13.4,0.2054,props_odds,mlbapi_poisson,,+800,2026-10-08 13:00:00,,7774604596336525744
+2026-10-07T19:35:35-04:00,115,Milwaukee Brewers @ San Diego Padres,Jake Cronenworth - RBIs (O 0.5),+325,31.3,0.3324,props_odds,mlbapi_poisson,,+325,2026-10-08 13:00:00,,5613449510161351051
+2026-10-07T19:35:35-04:00,116,Milwaukee Brewers @ San Diego Padres,Jackson Chourio - RBIs (O 0.5),+175,44.6,0.2264,props_odds,mlbapi_poisson,,+175,2026-10-08 13:00:00,,2191522278003573141
+2026-10-07T19:35:35-04:00,117,Milwaukee Brewers @ San Diego Padres,Jake Cronenworth - Total Bases (O 1.5),+260,30.5,0.0968,props_odds,mlbapi_poisson,,+260,2026-10-08 13:00:00,,478058003115934109
+2026-10-07T19:35:35-04:00,118,Milwaukee Brewers @ San Diego Padres,Joey Ortiz - Hits+Runs+RBI (O 0.5),-170,76.8,0.2204,props_odds,mlbapi_poisson,,-170,2026-10-08 13:00:00,,7337236695995253151
+2026-10-07T19:35:35-04:00,119,Milwaukee Brewers @ San Diego Padres,Garrett Mitchell - Doubles (O 0.5),+550,18.7,0.2148,props_odds,mlbapi_poisson,,+550,2026-10-08 13:00:00,,4824303317389803942
+2026-10-07T19:35:35-04:00,120,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Doubles (O 0.5),+475,17.7,0.0183,props_odds,mlbapi_poisson,,+475,2026-10-08 13:00:00,,8719216606158389675
+2026-10-07T19:35:35-04:00,121,Milwaukee Brewers @ San Diego Padres,Christian Yelich - RBIs (O 0.5),+230,39.3,0.2984,props_odds,mlbapi_poisson,,+230,2026-10-08 13:00:00,,4653654268035858858
+2026-10-07T19:35:35-04:00,122,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Hits+Runs+RBI (O 1.5),+130,62.7,0.4416,props_odds,mlbapi_poisson,,+130,2026-10-08 13:00:00,,542958523781349791
+2026-10-07T19:35:35-04:00,123,Milwaukee Brewers @ San Diego Padres,Manny Machado - Singles (U 0.5),-140,61.8,0.0597,props_odds,mlbapi_poisson,,-140,2026-10-08 13:00:00,,3962125535076811180
+2026-10-07T19:35:35-04:00,124,Milwaukee Brewers @ San Diego Padres,Garrett Mitchell - Hits+Runs+RBI (O 0.5),-165,83.4,0.3387,props_odds,mlbapi_poisson,,-165,2026-10-08 13:00:00,,2446996003740582293
+2026-10-07T19:35:35-04:00,125,Milwaukee Brewers @ San Diego Padres,Brice Turang - Total Bases (O 1.5),+165,51.8,0.3716,props_odds,mlbapi_poisson,,+165,2026-10-08 13:00:00,,8540719594992697752
+2026-10-07T19:35:35-04:00,126,Milwaukee Brewers @ San Diego Padres,Jackson Chourio - Runs (O 0.5),+105,53.0,0.0874,props_odds,mlbapi_poisson,,+105,2026-10-08 13:00:00,,4383878095044739484
+2026-10-07T19:35:35-04:00,127,Milwaukee Brewers @ San Diego Padres,Ty France - Home Runs (O 0.5),+700,14.6,0.1685,props_odds,mlbapi_poisson,,+700,2026-10-08 13:00:00,,284321855278547357
+2026-10-07T19:35:35-04:00,128,Milwaukee Brewers @ San Diego Padres,Manny Machado - Hits (U 0.5),+145,44.5,0.0898,props_odds,mlbapi_poisson,,+145,2026-10-08 13:00:00,,5237802401913766289
+2026-10-07T19:35:35-04:00,129,Milwaukee Brewers @ San Diego Padres,Jake Bauers - RBIs (O 0.5),+200,45.0,0.349,props_odds,mlbapi_poisson,,+200,2026-10-08 13:00:00,,7649638735771992479
+2026-10-07T19:35:35-04:00,130,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Singles (O 0.5),+140,41.4,-0.006,props_odds,mlbapi_poisson,,+140,2026-10-08 13:00:00,,2393699823283995046
+2026-10-07T19:35:35-04:00,131,Milwaukee Brewers @ San Diego Padres,Jackson Chourio - Singles (O 0.5),-130,54.5,-0.0358,props_odds,mlbapi_poisson,,-130,2026-10-08 13:00:00,,6718506318673609109
+2026-10-07T19:35:35-04:00,132,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Hits (O 0.5),-130,58.6,0.0368,props_odds,mlbapi_poisson,,-130,2026-10-08 13:00:00,,112050717035987375
+2026-10-07T19:35:35-04:00,133,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Runs (O 0.5),+135,47.6,0.1181,props_odds,mlbapi_poisson,,+135,2026-10-08 13:00:00,,3646642354481398165
+2026-10-07T19:35:35-04:00,134,Milwaukee Brewers @ San Diego Padres,Cooper Pratt - Stolen Bases (O 0.5),+350,22.6,0.019,props_odds,mlbapi_poisson,,+350,2026-10-08 13:00:00,,6214028160615448984
+2026-10-07T19:35:35-04:00,135,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Home Runs (O 0.5),+500,16.5,-0.0088,props_odds,mlbapi_poisson,,+500,2026-10-08 13:00:00,,4817194880226951585
+2026-10-07T19:35:35-04:00,136,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Total Bases (O 1.5),+170,41.3,0.1162,props_odds,mlbapi_poisson,,+170,2026-10-08 13:00:00,,5197817218460680600
+2026-10-07T19:35:35-04:00,137,Milwaukee Brewers @ San Diego Padres,Jackson Chourio - Hits+Runs+RBI (O 1.5),-140,72.1,0.2368,props_odds,mlbapi_poisson,,-140,2026-10-08 13:00:00,,2700429035896439199
+2026-10-07T19:35:35-04:00,138,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Runs (O 0.5),+130,44.3,0.0183,props_odds,mlbapi_poisson,,+130,2026-10-08 13:00:00,,7007910973243785629
+2026-10-07T19:35:35-04:00,139,Milwaukee Brewers @ San Diego Padres,Jackson Merrill - Total Bases (O 1.5),+140,51.0,0.2228,props_odds,mlbapi_poisson,,+140,2026-10-08 13:00:00,,7916331667705430432
+2026-10-07T19:35:35-04:00,140,Milwaukee Brewers @ San Diego Padres,William Contreras - Total Bases (O 1.5),+135,47.7,0.1205,props_odds,mlbapi_poisson,,+135,2026-10-08 13:00:00,,7849430246330859928
+2026-10-07T19:35:35-04:00,141,Milwaukee Brewers @ San Diego Padres,Jake Bauers - Total Bases (O 1.5),+185,47.6,0.3578,props_odds,mlbapi_poisson,,+185,2026-10-08 13:00:00,,8699524258415640989
+2026-10-07T19:35:35-04:00,142,Milwaukee Brewers @ San Diego Padres,Garrett Mitchell - RBIs (O 0.5),+275,36.1,0.3548,props_odds,mlbapi_poisson,,+275,2026-10-08 13:00:00,,4900191163262304670
+2026-10-07T19:35:35-04:00,143,Milwaukee Brewers @ San Diego Padres,William Contreras - RBIs (O 0.5),+180,47.2,0.3228,props_odds,mlbapi_poisson,,+180,2026-10-08 13:00:00,,5425054033897456029
+2026-10-07T19:35:35-04:00,144,Milwaukee Brewers @ San Diego Padres,Austin Hays - Doubles (U 0.5),-800,92.4,0.0396,props_odds,mlbapi_poisson,,-800,2026-10-08 13:00:00,,6774060552416264610
+2026-10-07T19:35:35-04:00,145,Milwaukee Brewers @ San Diego Padres,Manny Machado - Runs (O 0.5),+130,40.5,-0.0688,props_odds,mlbapi_poisson,,+130,2026-10-08 13:00:00,,7798099949715063183
+2026-10-07T19:35:35-04:00,146,Milwaukee Brewers @ San Diego Padres,William Contreras - Hits+Runs+RBI (O 1.5),-110,65.5,0.2497,props_odds,mlbapi_poisson,,-110,2026-10-08 13:00:00,,3584823412721320344
+2026-10-07T19:35:35-04:00,147,Milwaukee Brewers @ San Diego Padres,Joey Ortiz - Runs (O 0.5),+195,30.6,-0.0965,props_odds,mlbapi_poisson,,+195,2026-10-08 13:00:00,,670325950742921621
+2026-10-07T19:35:35-04:00,148,Milwaukee Brewers @ San Diego Padres,Sal Frelick - Hits+Runs+RBI (U 1.5),-160,59.6,-0.0312,props_odds,mlbapi_poisson,,-160,2026-10-08 13:00:00,,5863929981008216472
+2026-10-07T19:35:35-04:00,149,Milwaukee Brewers @ San Diego Padres,Samad Taylor - Total Bases (O 1.5),+275,38.0,0.4248,props_odds,mlbapi_poisson,,+275,2026-10-08 13:00:00,,6589535056434430356
+2026-10-07T19:35:35-04:00,150,Milwaukee Brewers @ San Diego Padres,Cooper Pratt - Doubles (U 0.5),-750,91.0,0.031,props_odds,mlbapi_poisson,,-750,2026-10-08 13:00:00,,3206652332582502817
+2026-10-07T19:35:35-04:00,151,Milwaukee Brewers @ San Diego Padres,Luis Campusano - Home Runs (O 0.5),+850,10.7,0.0123,props_odds,mlbapi_poisson,,+850,2026-10-08 13:00:00,,8903400102484378006
+2026-10-07T19:35:35-04:00,152,Milwaukee Brewers @ San Diego Padres,Brice Turang - Hits (O 0.5),-180,64.4,0.0019,props_odds,mlbapi_poisson,,-180,2026-10-08 13:00:00,,1699727915358486957
+2026-10-07T19:35:35-04:00,153,Milwaukee Brewers @ San Diego Padres,Jackson Chourio - Total Bases (U 1.5),-145,40.6,-0.314,props_odds,mlbapi_poisson,,-145,2026-10-08 13:00:00,,6858728831860212108
+2026-10-07T19:35:35-04:00,154,Milwaukee Brewers @ San Diego Padres,Luis Campusano - Singles (O 0.5),+130,40.6,-0.0659,props_odds,mlbapi_poisson,,+130,2026-10-08 13:00:00,,5088781253084316051
+2026-10-07T19:35:35-04:00,155,Milwaukee Brewers @ San Diego Padres,William Contreras - Runs (O 0.5),+140,42.8,0.0261,props_odds,mlbapi_poisson,,+140,2026-10-08 13:00:00,,1714598114339455390
+2026-10-07T19:35:35-04:00,156,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Singles (U 0.5),-120,56.7,0.0391,props_odds,mlbapi_poisson,,-120,2026-10-08 13:00:00,,8458159010619720101
+2026-10-07T19:35:35-04:00,157,Milwaukee Brewers @ San Diego Padres,Xander Bogaerts - Runs (O 0.5),+165,35.9,-0.0491,props_odds,mlbapi_poisson,,+165,2026-10-08 13:00:00,,2384773197615727009
+2026-10-07T19:35:35-04:00,158,Milwaukee Brewers @ San Diego Padres,Jackson Merrill - Runs (O 0.5),+130,42.0,-0.0346,props_odds,mlbapi_poisson,,+130,2026-10-08 13:00:00,,1156583525017846155
+2026-10-07T19:35:35-04:00,159,Milwaukee Brewers @ San Diego Padres,Jake Cronenworth - Runs (O 0.5),+195,34.4,0.0156,props_odds,mlbapi_poisson,,+195,2026-10-08 13:00:00,,1402856537453625742
+2026-10-07T19:35:35-04:00,160,Milwaukee Brewers @ San Diego Padres,Austin Hays - Total Bases (U 1.5),-300,71.6,-0.0448,props_odds,mlbapi_poisson,,-300,2026-10-08 13:00:00,,9112386476599017881
+2026-10-07T19:35:35-04:00,161,Milwaukee Brewers @ San Diego Padres,Fernando Tatis Jr. - Stolen Bases (O 0.5),+375,21.3,0.0098,props_odds,mlbapi_poisson,,+375,2026-10-08 13:00:00,,1502863827665027484
+2026-10-07T19:35:35-04:00,162,Milwaukee Brewers @ San Diego Padres,Jackson Merrill - Hits+Runs+RBI (O 1.5),-110,61.6,0.1756,props_odds,mlbapi_poisson,,-110,2026-10-08 13:00:00,,8758518958530888086
+2026-10-07T19:35:35-04:00,163,Milwaukee Brewers @ San Diego Padres,Joey Ortiz - Hits (O 0.5),-135,52.6,-0.0846,props_odds,mlbapi_poisson,,-135,2026-10-08 13:00:00,,331851887521431972
+2026-10-07T19:35:35-04:00,164,Milwaukee Brewers @ San Diego Padres,Ty France - Total Bases (O 1.5),+140,49.5,0.1874,props_odds,mlbapi_poisson,,+140,2026-10-08 13:00:00,,8474564179372671384
+2026-10-07T19:35:35-04:00,165,Milwaukee Brewers @ San Diego Padres,Cooper Pratt - Singles (O 0.5),-115,50.5,-0.0563,props_odds,mlbapi_poisson,,-115,2026-10-08 13:00:00,,9010429510679658902
+2026-10-07T19:35:35-04:00,166,Milwaukee Brewers @ San Diego Padres,Fernando Tatis Jr. - Hits+Runs+RBI (O 1.5),-135,66.1,0.1503,props_odds,mlbapi_poisson,,-135,2026-10-08 13:00:00,,5194729094025183631
+2026-10-07T19:35:35-04:00,167,Milwaukee Brewers @ San Diego Padres,Christian Yelich - Hits+Runs+RBI (O 1.5),+105,58.5,0.1987,props_odds,mlbapi_poisson,,+105,2026-10-08 13:00:00,,2983540085909225877
+2026-10-07T19:35:35-04:00,168,Milwaukee Brewers @ San Diego Padres,Fernando Tatis Jr. - RBIs (O 0.5),+175,40.7,0.1184,props_odds,mlbapi_poisson,,+175,2026-10-08 13:00:00,,3216813228772426123
+2026-10-07T19:35:35-04:00,169,Milwaukee Brewers @ San Diego Padres,Sal Frelick - Singles (U 0.5),-125,60.4,0.0868,props_odds,mlbapi_poisson,,-125,2026-10-08 13:00:00,,7459125639841448328
+2026-10-07T19:35:35-04:00,170,Milwaukee Brewers @ San Diego Padres,Joey Ortiz - Singles (O 0.5),+115,42.0,-0.0969,props_odds,mlbapi_poisson,,+115,2026-10-08 13:00:00,,9151034404804624811
+2026-10-07T19:35:35-04:00,171,Milwaukee Brewers @ San Diego Padres,Manny Machado - Total Bases (U 1.5),-180,55.1,-0.1421,props_odds,mlbapi_poisson,,-180,2026-10-08 13:00:00,,1199670027045962157
+2026-10-07T19:35:35-04:00,172,Milwaukee Brewers @ San Diego Padres,Austin Hays - Hits (U 0.5),+110,47.9,0.0051,props_odds,mlbapi_poisson,,+110,2026-10-08 13:00:00,,1204987265277886859

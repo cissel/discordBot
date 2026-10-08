@@ -67,8 +67,6 @@ Florida Panthers content - next game, scores, 2024 Stanley Cup content, rat cele
 | `epamap` | mean EPA choropleth map by NFL team |
 | `room40points` | Room 40 fantasy points map |
 | `amonra` | I RUN THIS SHIT |
-| `fantasywrapped` | Room 40 season full statistical breakdown - standings, draft, positions, trades, luck, GM score |
-| `alltimewrapped` | Room 40 all-time record book (2022-present) - cross-season stats, rankings, and GM score |
 
 ### `/jags`
 | command | description |

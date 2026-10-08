@@ -14,6 +14,7 @@ suppressPackageStartupMessages({
 args     <- commandArgs(trailingOnly = TRUE)
 csv_path <- if (length(args) >= 1) args[1] else "~/discordBot/outputs/games/maptap/maptap_scores.csv"
 out_path <- if (length(args) >= 2) args[2] else "~/discordBot/outputs/games/maptap/maptapScores.png"
+player_filter <- if (length(args) >= 3 && nzchar(args[3])) args[3] else NA
 csv_path <- path.expand(csv_path)
 out_path <- path.expand(out_path)
 
@@ -70,6 +71,8 @@ highs <- df %>%
 # Axis needs to accommodate labels that may push above 1000 (near-perfect scores)
 y_upper <- max(1000, max(highs$label_y, na.rm = TRUE) * 1.02)
 
+plot_title <- if (!is.na(player_filter)) paste0(player_filter, " MapTap Scores") else "Room 40 MapTap Scores"
+
 p <- ggplot(df, aes(x = date, y = final_score, color = player)) +
   geom_line(linewidth = 0.8, alpha = 0.85) +
   geom_point(size = 1.8) +
@@ -87,7 +90,7 @@ p <- ggplot(df, aes(x = date, y = final_score, color = player)) +
     x = NULL,
     y = "final score",
     color = "player",
-    title = "Room 40 MapTap Scores",
+    title = plot_title,
     subtitle = paste0(nrow(df), " games logged  |  ", min_date_str, " to ", max_date_str),
     caption = "Source: Discord message log | JHCV"
   ) +

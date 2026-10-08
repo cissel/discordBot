@@ -13,7 +13,7 @@
 import asyncio
 import csv
 import os
-from datetime import timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 import aiohttp
@@ -38,6 +38,7 @@ TOKEN               = os.getenv("DISCORD_TOKEN", "").strip()
 GUILD_ID            = int(os.getenv("GUILD_ID", "0"))
 TEST_ENV_CHANNEL_ID = int(os.getenv("TEST_ENV_CHANNEL_ID", "0"))
 TROLL_THIS_USER_ID  = int(os.getenv("TROLL_THIS_USER_ID", "0"))
+BALL_CHANNEL_ID     = int(os.getenv("BALL_CHANNEL_ID", "1286552034715111506"))  # #ball
 
 if not TOKEN:    raise SystemExit("Set DISCORD_TOKEN in your .env")
 if not GUILD_ID: raise SystemExit("Set GUILD_ID in your .env")
@@ -71,6 +72,43 @@ def _append_message(message: discord.Message):
 R_PATH      = os.path.expanduser("~/discordBot/r/")
 PYTHON_PATH = os.path.expanduser("~/discordBot/python/")
 OUTPUT_PATH = os.path.expanduser("~/discordBot/outputs/")
+
+# -- slash command usage logging (Sep16'26: added to get real least-used data
+# for pruning /nfl's 25-subcommand cap; previously nothing logged invocations,
+# only errors) --------------------------------------------------------------
+COMMAND_LOG_CSV    = Path(os.path.expanduser("~/discordBot/outputs/metrics/command_usage.csv"))
+COMMAND_LOG_FIELDS = ["datetime", "user_name", "user_display_name", "group", "subcommand"]
+
+def _append_command_usage(interaction: discord.Interaction):
+    """Log every slash command invocation (group + subcommand) to CSV."""
+    try:
+        if interaction.type != discord.InteractionType.application_command:
+            return
+        data = interaction.data or {}
+        name = data.get("name", "unknown")
+        subcommand = ""
+        options = data.get("options") or []
+        # subcommand groups nest one level deeper (type 2); plain subcommands are type 1
+        if options and options[0].get("type") in (1, 2):
+            subcommand = options[0].get("name", "")
+            nested = options[0].get("options") or []
+            if options[0].get("type") == 2 and nested and nested[0].get("type") == 1:
+                subcommand = f"{subcommand} {nested[0].get('name', '')}"
+        COMMAND_LOG_CSV.parent.mkdir(parents=True, exist_ok=True)
+        write_header = not COMMAND_LOG_CSV.exists() or COMMAND_LOG_CSV.stat().st_size == 0
+        with open(COMMAND_LOG_CSV, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=COMMAND_LOG_FIELDS)
+            if write_header:
+                writer.writeheader()
+            writer.writerow({
+                "datetime":          datetime.now(timezone.utc).isoformat(),
+                "user_name":         interaction.user.name,
+                "user_display_name": interaction.user.display_name,
+                "group":             name,
+                "subcommand":        subcommand,
+            })
+    except Exception as e:
+        print(f"[cmdlog] failed to append: {e}")
 
 # -- bot / tree -----------------------------------------------------------------
 intents = discord.Intents.default()
@@ -127,6 +165,10 @@ class BotClient(discord.Client):
         asyncio.create_task(self._flight_watch_loop())
         asyncio.create_task(self._meteor_shower_alert_loop())
         asyncio.create_task(self._hurricane_alert_loop())
+        asyncio.create_task(self._daily_ball_loop())
+
+    async def on_interaction(self, interaction: discord.Interaction):
+        _append_command_usage(interaction)
 
     async def _snapshot_invites(self):
         """Cache current use-count for every invite in the guild."""
@@ -830,6 +872,79 @@ class BotClient(discord.Client):
                 fields[k] = v
 
         await parse_block()
+
+    async def _daily_ball_loop(self):
+        """Background loop - posts the /ball sports digest to the #ball
+        channel every morning at 9am ET. Checks every 5 minutes and fires
+        once per calendar day, only during the 9:00-9:59 ET window, so a
+        restart later in the day can't re-trigger it. The last-posted date
+        is persisted to disk so this survives bot restarts too (fixed Sep
+        2026 - hour>=9 plus in-memory-only state caused a double post when
+        the bot was restarted at 7pm the same day)."""
+        import pytz
+        eastern    = pytz.timezone("America/New_York")
+        state_path = Path(os.path.expanduser("~/discordBot/outputs/misc/ball_last_posted.txt"))
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+
+        def _read_last_posted():
+            try:
+                return state_path.read_text().strip()
+            except Exception:
+                return ""
+
+        def _write_last_posted(date_str):
+            try:
+                state_path.write_text(date_str)
+            except Exception as e:
+                print(f"[dailyBall] failed to persist state: {e}")
+
+        await asyncio.sleep(30)  # let setup_hook finish registering commands
+
+        if os.getenv("BALL_FORCE_NOW") == "1":
+            # manual test hook: BALL_FORCE_NOW=1 in .env fires an immediate
+            # post on next startup, bypassing the 9am gate. Not part of the
+            # normal schedule - unset it after testing.
+            print("[dailyBall] BALL_FORCE_NOW=1 set - firing test post now", flush=True)
+            asyncio.create_task(self.run_daily_ball())
+
+        while not self.is_closed():
+            try:
+                now_et    = datetime.now(timezone.utc).astimezone(eastern)
+                today_str = now_et.date().isoformat()
+                if now_et.hour == 9 and _read_last_posted() != today_str:
+                    _write_last_posted(today_str)
+                    asyncio.create_task(self.run_daily_ball())
+            except Exception as e:
+                print(f"[dailyBall] loop error: {e}")
+            await asyncio.sleep(5 * 60)
+
+    async def run_daily_ball(self):
+        """Renders and posts /ball (today) to the #ball channel. Hard 90s
+        timeout - it fans out ~14 concurrent fetches/subprocesses same as
+        the slash command."""
+        try:
+            await asyncio.wait_for(self._run_daily_ball_inner(), timeout=90)
+        except asyncio.TimeoutError:
+            print("[dailyBall] timed out after 90s - skipping today's post")
+        except Exception as e:
+            print(f"[dailyBall] error: {e}")
+
+    async def _run_daily_ball_inner(self):
+        channel = self.get_channel(BALL_CHANNEL_ID)
+        if not channel:
+            print(f"[dailyBall] channel {BALL_CHANNEL_ID} not found")
+            return
+
+        post_ball = getattr(self.tree, "_ball_post_func", None)
+        if post_ball is None:
+            print("[dailyBall] _ball_post_func not registered on tree - skipping")
+            return
+
+        async def _send_func(content=None, **kwargs):
+            await channel.send(content, **kwargs)
+
+        await post_ball(_send_func, is_tomorrow=False)
+        print("[dailyBall] posted to #ball", flush=True)
 
     async def close(self):
         ch = self.get_channel(TEST_ENV_CHANNEL_ID)

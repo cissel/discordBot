@@ -1,0 +1,19 @@
+{
+  "tail_query": "N858QS",
+  "callsign": "EJA858",
+  "registration": "N858QS",
+  "hex": "abc67f",
+  "aircraft_type": "CESSNA 700 Citation Longitude",
+  "operator": "",
+  "altitude_ft": 750,
+  "on_ground": false,
+  "ground_speed_kt": 158.4,
+  "vertical_rate_str": "climbing 3,648 ft/min",
+  "heading_deg": 125.5,
+  "lat": 44.884969,
+  "lon": -63.500039,
+  "squawk": null,
+  "updated_utc": "2026-09-28 14:50 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N858QS.png"
+}

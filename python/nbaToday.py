@@ -4,7 +4,10 @@
 import requests
 import pandas as pd
 import os
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
+
+ET = ZoneInfo("America/New_York")
 
 OUT = os.path.expanduser("~/discordBot/outputs/sports/nba/gamesToday.csv")
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
@@ -58,8 +61,22 @@ for event in events:
             matchup += f" - {away_score}-{home_score}"
         except (KeyError, ValueError):
             pass
+        time_str = f"{status_desc} @ {venue}"
+    else:
+        # Scheduled game - show actual tip-off time instead of just "Scheduled"
+        game_time_utc = event.get("date") or competition.get("date")
+        if game_time_utc:
+            try:
+                dt = datetime.fromisoformat(game_time_utc.replace("Z", "+00:00"))
+                dt_et = dt.astimezone(ET)
+                tip_str = dt_et.strftime("%-I:%M %p ET")
+            except Exception:
+                tip_str = status_desc
+        else:
+            tip_str = status_desc
+        time_str = f"{tip_str} @ {venue}"
 
-    rows.append({"matchup": matchup, "time": f"{status_desc} @ {venue}"})
+    rows.append({"matchup": matchup, "time": time_str})
 
 df = pd.DataFrame(rows, columns=["matchup", "time"])
 df.to_csv(OUT, index=False)

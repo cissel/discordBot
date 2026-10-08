@@ -1,0 +1,19 @@
+{
+  "tail_query": "N807QS",
+  "callsign": "EJA807",
+  "registration": "N807QS",
+  "hex": "aafd4d",
+  "aircraft_type": "CESSNA 700 Citation Longitude",
+  "operator": "",
+  "altitude_ft": 41000,
+  "on_ground": false,
+  "ground_speed_kt": 487.6,
+  "vertical_rate_str": "level",
+  "heading_deg": 33.62,
+  "lat": 37.468964,
+  "lon": -75.901619,
+  "squawk": "3222",
+  "updated_utc": "2026-09-24 16:00 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N807QS.png"
+}

@@ -1,0 +1,19 @@
+{
+  "tail_query": "N470QS",
+  "callsign": "EJM470",
+  "registration": "N470QS",
+  "hex": "a5c289",
+  "aircraft_type": "GULFSTREAM 4",
+  "operator": "NJI SALES INC",
+  "altitude_ft": 26700,
+  "on_ground": false,
+  "ground_speed_kt": 402.5,
+  "vertical_rate_str": "descending 1,152 ft/min",
+  "heading_deg": 213.14,
+  "lat": 32.219193,
+  "lon": -80.870087,
+  "squawk": "1311",
+  "updated_utc": "2026-10-07 19:03 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N470QS.png"
+}
