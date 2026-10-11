@@ -1,21 +1,27 @@
-[fetchStatcastDaily] daily mode: yesterday=2026-10-06, re-checking 21d lookback -> 9 date(s) to fetch
-  [1/9] fetching 2026-09-28...   2026-09-28: no data (off-day or pre-season)
+[fetchStatcastDaily] daily mode: yesterday=2026-10-09, re-checking 21d lookback -> 12 date(s) to fetch
+  [1/12] fetching 2026-09-28...   2026-09-28: no data (off-day or pre-season)
 0 / skipped
-  [2/9] fetching 2026-09-29...   2026-09-29: no data (off-day or pre-season)
+  [2/12] fetching 2026-09-29...   2026-09-29: no data (off-day or pre-season)
 0 / skipped
-  [3/9] fetching 2026-09-30...   2026-09-30: no data (off-day or pre-season)
+  [3/12] fetching 2026-09-30...   2026-09-30: no data (off-day or pre-season)
 0 / skipped
-  [4/9] fetching 2026-10-01...   2026-10-01: no data (off-day or pre-season)
+  [4/12] fetching 2026-10-01...   2026-10-01: no data (off-day or pre-season)
 0 / skipped
-  [5/9] fetching 2026-10-02...   2026-10-02: no data (off-day or pre-season)
+  [5/12] fetching 2026-10-02...   2026-10-02: no data (off-day or pre-season)
 0 / skipped
-  [6/9] fetching 2026-10-03...   2026-10-03: no data (off-day or pre-season)
+  [6/12] fetching 2026-10-03...   2026-10-03: no data (off-day or pre-season)
 0 / skipped
-  [7/9] fetching 2026-10-04...   2026-10-04: no data (off-day or pre-season)
+  [7/12] fetching 2026-10-04...   2026-10-04: no data (off-day or pre-season)
 0 / skipped
-  [8/9] fetching 2026-10-05...   2026-10-05: no data (off-day or pre-season)
+  [8/12] fetching 2026-10-05...   2026-10-05: no data (off-day or pre-season)
 0 / skipped
-  [9/9] fetching 2026-10-06...   2026-10-06: no data (off-day or pre-season)
+  [9/12] fetching 2026-10-06...   2026-10-06: no data (off-day or pre-season)
+0 / skipped
+  [10/12] fetching 2026-10-07...   2026-10-07: no data (off-day or pre-season)
+0 / skipped
+  [11/12] fetching 2026-10-08...   2026-10-08: no data (off-day or pre-season)
+0 / skipped
+  [12/12] fetching 2026-10-09...   2026-10-09: no data (off-day or pre-season)
 0 / skipped
 
 [fetchStatcastDaily] done. Total rows appended: 0

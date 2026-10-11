@@ -1,0 +1,113 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-10T20:12:25-04:00,1,Dodgers @ Brewers,Dodgers -1.5 run line,+170,,,upcoming_games_odds,no_model,0.3535,+170,2026-10-12 11:00:00,,2465017614037025199
+2026-10-10T20:12:25-04:00,2,Dodgers @ Brewers,Brewers +1.5 run line,-210,,,upcoming_games_odds,no_model,0.6465,-210,2026-10-12 11:00:00,,7574351391288852911
+2026-10-10T20:12:25-04:00,3,Dodgers @ Brewers,O 5.5,-125,,,upcoming_games_odds,no_model,0.5325,-125,2026-10-12 11:00:00,,8042900006203687343
+2026-10-10T20:12:25-04:00,4,Dodgers @ Brewers,U 5.5,+105,,,upcoming_games_odds,no_model,0.4675,+105,2026-10-12 11:00:00,,1114111979494179247
+2026-10-10T20:12:25-04:00,5,Dodgers @ Brewers,Dodgers ML,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-12 11:00:00,,8185740260752359839
+2026-10-10T20:12:25-04:00,6,Dodgers @ Brewers,Brewers ML,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-12 11:00:00,,2892884798685184415
+2026-10-10T20:12:25-04:00,7,Los Angeles Dodgers @ Milwaukee Brewers,Brice Turang - Home Runs (O 0.5),+1400,,,props_odds,no_espn_match,,+1400,2026-10-12 11:00:00,,5355180782782644633
+2026-10-10T20:12:25-04:00,8,Los Angeles Dodgers @ Milwaukee Brewers,Andy Pages - Home Runs (O 0.5),+900,,,props_odds,no_espn_match,,+900,2026-10-12 11:00:00,,3582240273226400161
+2026-10-10T20:12:25-04:00,9,Los Angeles Dodgers @ Milwaukee Brewers,Brice Turang - RBIs (O 0.5),+300,,,props_odds,no_espn_match,,+300,2026-10-12 11:00:00,,5544305578853138847
+2026-10-10T20:12:25-04:00,10,Los Angeles Dodgers @ Milwaukee Brewers,Mookie Betts - Home Runs (O 0.5),+800,,,props_odds,no_espn_match,,+800,2026-10-12 11:00:00,,3640787068382216606
+2026-10-10T20:12:25-04:00,11,Los Angeles Dodgers @ Milwaukee Brewers,Garrett Mitchell - Runs (O 0.5),+225,,,props_odds,no_espn_match,,+225,2026-10-12 11:00:00,,3617015626989699486
+2026-10-10T20:12:25-04:00,12,Los Angeles Dodgers @ Milwaukee Brewers,Kyle Tucker - Runs (O 0.5),+195,,,props_odds,no_espn_match,,+195,2026-10-12 11:00:00,,8857692665249137049
+2026-10-10T20:12:25-04:00,13,Los Angeles Dodgers @ Milwaukee Brewers,Max Muncy - Total Bases (O 1.5),+240,,,props_odds,no_espn_match,,+240,2026-10-12 11:00:00,,865165999530443154
+2026-10-10T20:12:25-04:00,14,Los Angeles Dodgers @ Milwaukee Brewers,Cooper Pratt - RBIs (O 0.5),+325,,,props_odds,no_espn_match,,+325,2026-10-12 11:00:00,,3116020954770309521
+2026-10-10T20:12:25-04:00,15,Los Angeles Dodgers @ Milwaukee Brewers,Brice Turang - Runs (O 0.5),+175,,,props_odds,no_espn_match,,+175,2026-10-12 11:00:00,,3104168219422884249
+2026-10-10T20:12:25-04:00,16,Los Angeles Dodgers @ Milwaukee Brewers,Andy Pages - RBIs (O 0.5),+300,,,props_odds,no_espn_match,,+300,2026-10-12 11:00:00,,2789439613041770900
+2026-10-10T20:12:25-04:00,17,Los Angeles Dodgers @ Milwaukee Brewers,Andy Pages - Total Bases (O 1.5),+220,,,props_odds,no_espn_match,,+220,2026-10-12 11:00:00,,7094049110621290920
+2026-10-10T20:12:25-04:00,18,Los Angeles Dodgers @ Milwaukee Brewers,Shohei Ohtani - Singles (O 0.5),+170,,,props_odds,no_espn_match,,+170,2026-10-12 11:00:00,,3982959484992618910
+2026-10-10T20:12:25-04:00,19,Los Angeles Dodgers @ Milwaukee Brewers,Brice Turang - Hits+Runs+RBI (O 1.5),+130,,,props_odds,no_espn_match,,+130,2026-10-12 11:00:00,,3522257515884708246
+2026-10-10T20:12:25-04:00,20,Los Angeles Dodgers @ Milwaukee Brewers,Jackson Chourio - RBIs (O 0.5),+220,,,props_odds,no_espn_match,,+220,2026-10-12 11:00:00,,5603696798939087257
+2026-10-10T20:12:25-04:00,21,Los Angeles Dodgers @ Milwaukee Brewers,Jake Bauers - Home Runs (O 0.5),+650,,,props_odds,no_espn_match,,+650,2026-10-12 11:00:00,,1900075443659342241
+2026-10-10T20:12:25-04:00,22,Los Angeles Dodgers @ Milwaukee Brewers,Andy Pages - Runs (O 0.5),+195,,,props_odds,no_espn_match,,+195,2026-10-12 11:00:00,,6179739736823955857
+2026-10-10T20:12:25-04:00,23,Los Angeles Dodgers @ Milwaukee Brewers,Freddie Freeman - Total Bases (O 1.5),+195,,,props_odds,no_espn_match,,+195,2026-10-12 11:00:00,,4977769018502021535
+2026-10-10T20:12:25-04:00,24,Los Angeles Dodgers @ Milwaukee Brewers,Freddie Freeman - RBIs (O 0.5),+300,,,props_odds,no_espn_match,,+300,2026-10-12 11:00:00,,7048718960627417512
+2026-10-10T20:12:25-04:00,25,Los Angeles Dodgers @ Milwaukee Brewers,Kyle Tucker - RBIs (O 0.5),+325,,,props_odds,no_espn_match,,+325,2026-10-12 11:00:00,,5104289821510205866
+2026-10-10T20:12:25-04:00,26,Los Angeles Dodgers @ Milwaukee Brewers,Luis Lara - Runs (O 0.5),+220,,,props_odds,no_espn_match,,+220,2026-10-12 11:00:00,,2929832860305195441
+2026-10-10T20:12:25-04:00,27,Los Angeles Dodgers @ Milwaukee Brewers,Jake Bauers - Runs (O 0.5),+175,,,props_odds,no_espn_match,,+175,2026-10-12 11:00:00,,4555453199343026577
+2026-10-10T20:12:25-04:00,28,Los Angeles Dodgers @ Milwaukee Brewers,Shohei Ohtani - Runs (O 0.5),+165,,,props_odds,no_espn_match,,+165,2026-10-12 11:00:00,,179819133259612561
+2026-10-10T20:12:25-04:00,29,Los Angeles Dodgers @ Milwaukee Brewers,Jacob Misiorowski - Strikeouts (O 7.5),+105,,,props_odds,no_espn_match,,+105,2026-10-12 11:00:00,,4361517039173632415
+2026-10-10T20:12:25-04:00,30,Los Angeles Dodgers @ Milwaukee Brewers,Max Muncy - Home Runs (O 0.5),+600,,,props_odds,no_espn_match,,+600,2026-10-12 11:00:00,,7567925943449289105
+2026-10-10T20:12:25-04:00,31,Los Angeles Dodgers @ Milwaukee Brewers,William Contreras - Total Bases (O 1.5),+175,,,props_odds,no_espn_match,,+175,2026-10-12 11:00:00,,7615682131490111892
+2026-10-10T20:12:25-04:00,32,Los Angeles Dodgers @ Milwaukee Brewers,William Contreras - Hits+Runs+RBI (O 1.5),+125,,,props_odds,no_espn_match,,+125,2026-10-12 11:00:00,,7035839281419649425
+2026-10-10T20:12:25-04:00,33,Los Angeles Dodgers @ Milwaukee Brewers,Max Muncy - RBIs (O 0.5),+275,,,props_odds,no_espn_match,,+275,2026-10-12 11:00:00,,3770098431901696423
+2026-10-10T20:12:25-04:00,34,Los Angeles Dodgers @ Milwaukee Brewers,Max Muncy - Doubles (O 0.5),+650,,,props_odds,no_espn_match,,+650,2026-10-12 11:00:00,,5603544663144399256
+2026-10-10T20:12:25-04:00,35,Los Angeles Dodgers @ Milwaukee Brewers,Shohei Ohtani - Total Bases (O 1.5),+190,,,props_odds,no_espn_match,,+190,2026-10-12 11:00:00,,2810721038554497439
+2026-10-10T20:12:25-04:00,36,Los Angeles Dodgers @ Milwaukee Brewers,Jackson Chourio - Home Runs (O 0.5),+600,,,props_odds,no_espn_match,,+600,2026-10-12 11:00:00,,5593027138103148950
+2026-10-10T20:12:25-04:00,37,Los Angeles Dodgers @ Milwaukee Brewers,Brice Turang - Total Bases (O 1.5),+200,,,props_odds,no_espn_match,,+200,2026-10-12 11:00:00,,3693046856050409873
+2026-10-10T20:12:25-04:00,38,Los Angeles Dodgers @ Milwaukee Brewers,Andy Pages - Hits (O 0.5),-130,,,props_odds,no_espn_match,,-130,2026-10-12 11:00:00,,4945480038486245778
+2026-10-10T20:12:25-04:00,39,Los Angeles Dodgers @ Milwaukee Brewers,Shohei Ohtani - RBIs (O 0.5),+220,,,props_odds,no_espn_match,,+220,2026-10-12 11:00:00,,646852090320257425
+2026-10-10T20:12:25-04:00,40,Los Angeles Dodgers @ Milwaukee Brewers,Jake Bauers - RBIs (O 0.5),+240,,,props_odds,no_espn_match,,+240,2026-10-12 11:00:00,,4594890482408096167
+2026-10-10T20:12:25-04:00,41,Los Angeles Dodgers @ Milwaukee Brewers,Shohei Ohtani - Hits (O 0.5),-125,,,props_odds,no_espn_match,,-125,2026-10-12 11:00:00,,5304642314927473064
+2026-10-10T20:12:25-04:00,42,Los Angeles Dodgers @ Milwaukee Brewers,Teoscar Hernandez - Runs (O 0.5),+190,,,props_odds,no_espn_match,,+190,2026-10-12 11:00:00,,9042340249971327403
+2026-10-10T20:12:25-04:00,43,Los Angeles Dodgers @ Milwaukee Brewers,Jackson Chourio - Runs (O 0.5),+130,,,props_odds,no_espn_match,,+130,2026-10-12 11:00:00,,6248243709280911773
+2026-10-10T20:12:25-04:00,44,Los Angeles Dodgers @ Milwaukee Brewers,Mookie Betts - RBIs (O 0.5),+275,,,props_odds,no_espn_match,,+275,2026-10-12 11:00:00,,6470006408510308784
+2026-10-10T20:12:25-04:00,45,Los Angeles Dodgers @ Milwaukee Brewers,Shohei Ohtani - Home Runs (O 0.5),+500,,,props_odds,no_espn_match,,+500,2026-10-12 11:00:00,,6365464842941366695
+2026-10-10T20:12:25-04:00,46,Los Angeles Dodgers @ Milwaukee Brewers,Jackson Chourio - Hits+Runs+RBI (O 1.5),-105,,,props_odds,no_espn_match,,-105,2026-10-12 11:00:00,,934095105030226334
+2026-10-10T20:12:25-04:00,47,Los Angeles Dodgers @ Milwaukee Brewers,Garrett Mitchell - RBIs (O 0.5),+325,,,props_odds,no_espn_match,,+325,2026-10-12 11:00:00,,8251813379832938909
+2026-10-10T20:12:25-04:00,48,Los Angeles Dodgers @ Milwaukee Brewers,William Contreras - RBIs (O 0.5),+225,,,props_odds,no_espn_match,,+225,2026-10-12 11:00:00,,7449609696207569302
+2026-10-10T20:12:25-04:00,49,Los Angeles Dodgers @ Milwaukee Brewers,Andy Pages - Hits+Runs+RBI (O 0.5),-165,,,props_odds,no_espn_match,,-165,2026-10-12 11:00:00,,3512828104164901265
+2026-10-10T20:12:25-04:00,50,Los Angeles Dodgers @ Milwaukee Brewers,Brice Turang - Doubles (O 0.5),+475,,,props_odds,no_espn_match,,+475,2026-10-12 11:00:00,,4752900895245730200
+2026-10-10T20:12:25-04:00,51,Los Angeles Dodgers @ Milwaukee Brewers,Kyle Tucker - Hits+Runs+RBI (O 0.5),-145,,,props_odds,no_espn_match,,-145,2026-10-12 11:00:00,,6467752409673367966
+2026-10-10T20:12:25-04:00,52,Los Angeles Dodgers @ Milwaukee Brewers,Jackson Chourio - Singles (O 0.5),-105,,,props_odds,no_espn_match,,-105,2026-10-12 11:00:00,,2473268447405015449
+2026-10-10T20:12:25-04:00,53,Los Angeles Dodgers @ Milwaukee Brewers,Andy Pages - Singles (O 0.5),+130,,,props_odds,no_espn_match,,+130,2026-10-12 11:00:00,,2453705936523624874
+2026-10-10T20:12:25-04:00,54,Los Angeles Dodgers @ Milwaukee Brewers,Freddie Freeman - Singles (O 0.5),+115,,,props_odds,no_espn_match,,+115,2026-10-12 11:00:00,,7000371235330851225
+2026-10-10T20:12:25-04:00,55,Los Angeles Dodgers @ Milwaukee Brewers,Shohei Ohtani - Hits+Runs+RBI (O 0.5),-165,,,props_odds,no_espn_match,,-165,2026-10-12 11:00:00,,441373158298223001
+2026-10-10T20:12:25-04:00,56,Los Angeles Dodgers @ Milwaukee Brewers,Andy Pages - Doubles (O 0.5),+550,,,props_odds,no_espn_match,,+550,2026-10-12 11:00:00,,2799099519013355912
+2026-10-10T20:12:25-04:00,57,Los Angeles Dodgers @ Milwaukee Brewers,Garrett Mitchell - Doubles (O 0.5),+600,,,props_odds,no_espn_match,,+600,2026-10-12 11:00:00,,5467205221300175250
+2026-10-10T20:12:25-04:00,58,Los Angeles Dodgers @ Milwaukee Brewers,Teoscar Hernandez - Singles (O 0.5),+130,,,props_odds,no_espn_match,,+130,2026-10-12 11:00:00,,2352656419884499353
+2026-10-10T20:12:25-04:00,59,Los Angeles Dodgers @ Milwaukee Brewers,Garrett Mitchell - Hits+Runs+RBI (O 0.5),-140,,,props_odds,no_espn_match,,-140,2026-10-12 11:00:00,,1048936895528173985
+2026-10-10T20:12:25-04:00,60,Los Angeles Dodgers @ Milwaukee Brewers,Kyle Tucker - Singles (O 0.5),+155,,,props_odds,no_espn_match,,+155,2026-10-12 11:00:00,,4503969666884043178
+2026-10-10T20:12:25-04:00,61,Los Angeles Dodgers @ Milwaukee Brewers,Cooper Pratt - Stolen Bases (O 0.5),+400,,,props_odds,no_espn_match,,+400,2026-10-12 11:00:00,,7611675514339721624
+2026-10-10T20:12:25-04:00,62,Los Angeles Dodgers @ Milwaukee Brewers,Freddie Freeman - Hits+Runs+RBI (O 0.5),-185,,,props_odds,no_espn_match,,-185,2026-10-12 11:00:00,,4077185432469766548
+2026-10-10T20:12:25-04:00,63,Los Angeles Dodgers @ Milwaukee Brewers,Garrett Mitchell - Total Bases (O 1.5),+260,,,props_odds,no_espn_match,,+260,2026-10-12 11:00:00,,4440021349058085279
+2026-10-10T20:12:25-04:00,64,Los Angeles Dodgers @ Milwaukee Brewers,Shohei Ohtani - Doubles (O 0.5),+575,,,props_odds,no_espn_match,,+575,2026-10-12 11:00:00,,129850324633649544
+2026-10-10T20:12:25-04:00,65,Los Angeles Dodgers @ Milwaukee Brewers,Max Muncy - Runs (O 0.5),+195,,,props_odds,no_espn_match,,+195,2026-10-12 11:00:00,,98754339966943636
+2026-10-10T20:12:25-04:00,66,Los Angeles Dodgers @ Milwaukee Brewers,Cooper Pratt - Runs (O 0.5),+230,,,props_odds,no_espn_match,,+230,2026-10-12 11:00:00,,4040916941915947417
+2026-10-10T20:12:25-04:00,67,Los Angeles Dodgers @ Milwaukee Brewers,Luis Lara - Hits (O 0.5),-125,,,props_odds,no_espn_match,,-125,2026-10-12 11:00:00,,3509316362810032536
+2026-10-10T20:12:25-04:00,68,Los Angeles Dodgers @ Milwaukee Brewers,Kyle Tucker - Home Runs (O 0.5),+900,,,props_odds,no_espn_match,,+900,2026-10-12 11:00:00,,8482156667805499798
+2026-10-10T20:12:25-04:00,69,Los Angeles Dodgers @ Milwaukee Brewers,Cooper Pratt - Singles (O 0.5),+115,,,props_odds,no_espn_match,,+115,2026-10-12 11:00:00,,6681882299182743954
+2026-10-10T20:12:25-04:00,70,Los Angeles Dodgers @ Milwaukee Brewers,Teoscar Hernandez - Hits (O 0.5),-125,,,props_odds,no_espn_match,,-125,2026-10-12 11:00:00,,2554297334771089814
+2026-10-10T20:12:25-04:00,71,Los Angeles Dodgers @ Milwaukee Brewers,Joey Ortiz - Hits+Runs+RBI (O 0.5),-155,,,props_odds,no_espn_match,,-155,2026-10-12 11:00:00,,7608148277816590745
+2026-10-10T20:12:25-04:00,72,Los Angeles Dodgers @ Milwaukee Brewers,Joey Ortiz - Runs (O 0.5),+225,,,props_odds,no_espn_match,,+225,2026-10-12 11:00:00,,8531005770404331933
+2026-10-10T20:12:25-04:00,73,Los Angeles Dodgers @ Milwaukee Brewers,Max Muncy - Hits (O 0.5),+105,,,props_odds,no_espn_match,,+105,2026-10-12 11:00:00,,4424311526920421782
+2026-10-10T20:12:25-04:00,74,Los Angeles Dodgers @ Milwaukee Brewers,Jake Bauers - Singles (O 0.5),+150,,,props_odds,no_espn_match,,+150,2026-10-12 11:00:00,,6139198544084599215
+2026-10-10T20:12:25-04:00,75,Los Angeles Dodgers @ Milwaukee Brewers,Jake Bauers - Total Bases (O 1.5),+210,,,props_odds,no_espn_match,,+210,2026-10-12 11:00:00,,3035521310454317458
+2026-10-10T20:12:25-04:00,76,Los Angeles Dodgers @ Milwaukee Brewers,Freddie Freeman - Hits (O 0.5),-150,,,props_odds,no_espn_match,,-150,2026-10-12 11:00:00,,1165957196517867924
+2026-10-10T20:12:25-04:00,77,Los Angeles Dodgers @ Milwaukee Brewers,William Contreras - Runs (O 0.5),+165,,,props_odds,no_espn_match,,+165,2026-10-12 11:00:00,,4711953286394151314
+2026-10-10T20:12:25-04:00,78,Los Angeles Dodgers @ Milwaukee Brewers,Kyle Tucker - Hits (O 0.5),-110,,,props_odds,no_espn_match,,-110,2026-10-12 11:00:00,,6377747865292374423
+2026-10-10T20:12:25-04:00,79,Los Angeles Dodgers @ Milwaukee Brewers,Teoscar Hernandez - Total Bases (O 1.5),+210,,,props_odds,no_espn_match,,+210,2026-10-12 11:00:00,,271507407899853204
+2026-10-10T20:12:25-04:00,80,Los Angeles Dodgers @ Milwaukee Brewers,Jake Bauers - Hits+Runs+RBI (O 0.5),-170,,,props_odds,no_espn_match,,-170,2026-10-12 11:00:00,,6250594465141096852
+2026-10-10T20:12:25-04:00,81,Los Angeles Dodgers @ Milwaukee Brewers,Will Smith - RBIs (O 0.5),+240,,,props_odds,no_espn_match,,+240,2026-10-12 11:00:00,,6331239244991955367
+2026-10-10T20:12:25-04:00,82,Los Angeles Dodgers @ Milwaukee Brewers,Luis Lara - Singles (O 0.5),+120,,,props_odds,no_espn_match,,+120,2026-10-12 11:00:00,,1840889738295378318
+2026-10-10T20:12:25-04:00,83,Los Angeles Dodgers @ Milwaukee Brewers,Luis Lara - Hits+Runs+RBI (O 0.5),-170,,,props_odds,no_espn_match,,-170,2026-10-12 11:00:00,,3114346401782432136
+2026-10-10T20:12:25-04:00,84,Los Angeles Dodgers @ Milwaukee Brewers,Jackson Chourio - Hits (O 0.5),-210,,,props_odds,no_espn_match,,-210,2026-10-12 11:00:00,,1454870678628073880
+2026-10-10T20:12:25-04:00,85,Los Angeles Dodgers @ Milwaukee Brewers,Freddie Freeman - Runs (O 0.5),+185,,,props_odds,no_espn_match,,+185,2026-10-12 11:00:00,,2755315170162114973
+2026-10-10T20:12:25-04:00,86,Los Angeles Dodgers @ Milwaukee Brewers,Max Muncy - Hits+Runs+RBI (O 0.5),-120,,,props_odds,no_espn_match,,-120,2026-10-12 11:00:00,,5512373562159268244
+2026-10-10T20:12:25-04:00,87,Los Angeles Dodgers @ Milwaukee Brewers,Teoscar Hernandez - Hits+Runs+RBI (O 0.5),-160,,,props_odds,no_espn_match,,-160,2026-10-12 11:00:00,,8727996472659935649
+2026-10-10T20:12:25-04:00,88,Los Angeles Dodgers @ Milwaukee Brewers,Freddie Freeman - Home Runs (O 0.5),+900,,,props_odds,no_espn_match,,+900,2026-10-12 11:00:00,,443231332949164441
+2026-10-10T20:12:25-04:00,89,Los Angeles Dodgers @ Milwaukee Brewers,Mookie Betts - Runs (O 0.5),+150,,,props_odds,no_espn_match,,+150,2026-10-12 11:00:00,,8269409963923866015
+2026-10-10T20:12:25-04:00,90,Los Angeles Dodgers @ Milwaukee Brewers,Cooper Pratt - Hits (O 0.5),-130,,,props_odds,no_espn_match,,-130,2026-10-12 11:00:00,,939162341805785479
+2026-10-10T20:12:25-04:00,91,Los Angeles Dodgers @ Milwaukee Brewers,Jake Bauers - Hits (O 0.5),-130,,,props_odds,no_espn_match,,-130,2026-10-12 11:00:00,,6705856737909539217
+2026-10-10T20:12:25-04:00,92,Los Angeles Dodgers @ Milwaukee Brewers,Brice Turang - Hits (O 0.5),-165,,,props_odds,no_espn_match,,-165,2026-10-12 11:00:00,,7340862876619506065
+2026-10-10T20:12:25-04:00,93,Los Angeles Dodgers @ Milwaukee Brewers,Cooper Pratt - Hits+Runs+RBI (O 0.5),-165,,,props_odds,no_espn_match,,-165,2026-10-12 11:00:00,,3322973232373563815
+2026-10-10T20:12:25-04:00,94,Los Angeles Dodgers @ Milwaukee Brewers,Teoscar Hernandez - RBIs (O 0.5),+260,,,props_odds,no_espn_match,,+260,2026-10-12 11:00:00,,450945506529640879
+2026-10-10T20:12:25-04:00,95,Los Angeles Dodgers @ Milwaukee Brewers,William Contreras - Hits (O 0.5),-165,,,props_odds,no_espn_match,,-165,2026-10-12 11:00:00,,4039514652273672593
+2026-10-10T20:12:25-04:00,96,Los Angeles Dodgers @ Milwaukee Brewers,Joey Ortiz - Total Bases (O 1.5),+250,,,props_odds,no_espn_match,,+250,2026-10-12 11:00:00,,2197851779763405206
+2026-10-10T20:12:25-04:00,97,Los Angeles Dodgers @ Milwaukee Brewers,Tarik Skubal - Strikeouts (U 7.5),-150,,,props_odds,no_espn_match,,-150,2026-10-12 11:00:00,,2496876439522115999
+2026-10-10T20:12:25-04:00,98,Los Angeles Dodgers @ Milwaukee Brewers,Cooper Pratt - Total Bases (O 1.5),+250,,,props_odds,no_espn_match,,+250,2026-10-12 11:00:00,,5595783991711105425
+2026-10-10T20:12:25-04:00,99,Los Angeles Dodgers @ Milwaukee Brewers,William Contreras - Singles (O 0.5),+110,,,props_odds,no_espn_match,,+110,2026-10-12 11:00:00,,1434062833389273497
+2026-10-10T20:12:25-04:00,100,Los Angeles Dodgers @ Milwaukee Brewers,Joey Ortiz - Singles (O 0.5),+125,,,props_odds,no_espn_match,,+125,2026-10-12 11:00:00,,2744610324954087850
+2026-10-10T20:12:25-04:00,101,Los Angeles Dodgers @ Milwaukee Brewers,Max Muncy - Singles (O 0.5),+210,,,props_odds,no_espn_match,,+210,2026-10-12 11:00:00,,3973952285737877913
+2026-10-10T20:12:25-04:00,102,Los Angeles Dodgers @ Milwaukee Brewers,Joey Ortiz - Hits (O 0.5),-125,,,props_odds,no_espn_match,,-125,2026-10-12 11:00:00,,1862889238853452177
+2026-10-10T20:12:25-04:00,103,Los Angeles Dodgers @ Milwaukee Brewers,Will Smith - Home Runs (O 0.5),+700,,,props_odds,no_espn_match,,+700,2026-10-12 11:00:00,,8234458688300122527
+2026-10-10T20:12:25-04:00,104,Los Angeles Dodgers @ Milwaukee Brewers,Jacob Misiorowski - Earned Runs (U 1.5),-165,,,props_odds,no_espn_match,,-165,2026-10-12 11:00:00,,7576757510217007500
+2026-10-10T20:12:25-04:00,105,Los Angeles Dodgers @ Milwaukee Brewers,Will Smith - Runs (O 0.5),+175,,,props_odds,no_espn_match,,+175,2026-10-12 11:00:00,,4136231405904593310
+2026-10-10T20:12:25-04:00,106,Los Angeles Dodgers @ Milwaukee Brewers,Luis Lara - RBIs (O 0.5),+300,,,props_odds,no_espn_match,,+300,2026-10-12 11:00:00,,7914971116421120414
+2026-10-10T20:12:25-04:00,107,Los Angeles Dodgers @ Milwaukee Brewers,Luis Lara - Total Bases (O 1.5),+275,,,props_odds,no_espn_match,,+275,2026-10-12 11:00:00,,761115636486242718
+2026-10-10T20:12:25-04:00,108,Los Angeles Dodgers @ Milwaukee Brewers,Freddie Freeman - Doubles (O 0.5),+500,,,props_odds,no_espn_match,,+500,2026-10-12 11:00:00,,450195236409442719
+2026-10-10T20:12:25-04:00,109,Los Angeles Dodgers @ Milwaukee Brewers,Garrett Mitchell - Singles (O 0.5),+145,,,props_odds,no_espn_match,,+145,2026-10-12 11:00:00,,6382392923962605977
+2026-10-10T20:12:25-04:00,110,Los Angeles Dodgers @ Milwaukee Brewers,Garrett Mitchell - Hits (O 0.5),-115,,,props_odds,no_espn_match,,-115,2026-10-12 11:00:00,,4994601029694783879
+2026-10-10T20:12:25-04:00,111,Los Angeles Dodgers @ Milwaukee Brewers,Mookie Betts - Hits (U 0.5),+150,,,props_odds,no_espn_match,,+150,2026-10-12 11:00:00,,2111123780033184145
+2026-10-10T20:12:25-04:00,112,Los Angeles Dodgers @ Milwaukee Brewers,Will Smith - Doubles (U 0.5),-850,,,props_odds,no_espn_match,,-850,2026-10-12 11:00:00,,2996549817129370018

@@ -22,7 +22,7 @@
     },
     "2026-draconids": {
       "headsup": true,
-      "peak": false
+      "peak": true
     },
     "2026-orionids": {
       "headsup": false,

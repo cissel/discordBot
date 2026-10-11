@@ -297,6 +297,21 @@ def chop_wfcv(df, features, n_folds=5, fold_size=252, min_train_rows=500):
         bh_av  = bh_dr.std() * np.sqrt(ANNUAL)
         bh_sh  = bh_ar / bh_av if bh_av > 0 else 0.0
 
+        # Chop-VIX gate (Oct'26): skip trades when VIX>=22 ("elevated chop").
+        # Validated via pooled walk-forward OOS (python/chopVixSubRegimeWFCV.py):
+        # elevated-chop days have mean next-day return -0.33% vs +0.12% rest
+        # (Welch t=-4.11, p=0.0001). Reported here per-fold so every retrain
+        # keeps confirming the gate still helps as new data arrives.
+        if "vix_level" in va.columns:
+            gate = (va["vix_level"].values < 22.0).astype(float)
+            pos_g = pos * gate
+            dr_g  = pos_g * val_rets - np.abs(np.diff(np.append(0, pos_g))) * TX_COST
+            ar_g, av_g = dr_g.mean() * ANNUAL, dr_g.std() * np.sqrt(ANNUAL)
+            sharpe_g = ar_g / av_g if av_g > 0 else 0.0
+            n_gated_out = int((1 - gate).sum())
+        else:
+            sharpe_g, n_gated_out = sharpe, 0
+
         detail = {
             "fold": i + 1,
             "fold_start": str(fold_start.date()),
@@ -309,12 +324,15 @@ def chop_wfcv(df, features, n_folds=5, fold_size=252, min_train_rows=500):
             "bt_mdd":    round(mdd, 3),
             "bh_sharpe": round(bh_sh, 3),
             "n_signals": int(pos.sum()),
+            "bt_sharpe_vix_gated": round(sharpe_g, 3),
+            "n_days_vix_gated_out": n_gated_out,
         }
         fold_details.append(detail)
         print(f"  fold {i+1} ({detail['fold_start']} - {detail['fold_end']})  "
               f"chop_tr={len(tr):>4} chop_va={len(va):>3}  "
               f"acc={acc:.4f}  auc={auc:.4f}  "
-              f"bt@0.51: Sharpe={sharpe:.3f}  BH={bh_sh:.3f}  n={int(pos.sum())}")
+              f"bt@0.51: Sharpe={sharpe:.3f}  BH={bh_sh:.3f}  n={int(pos.sum())}  "
+              f"| VIX-gated Sharpe={sharpe_g:.3f} (skipped {n_gated_out})")
 
     if not fold_accs:
         return None

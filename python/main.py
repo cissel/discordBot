@@ -11,6 +11,7 @@
 #   - launch alert background loop
 
 import asyncio
+import builtins
 import csv
 import os
 from datetime import datetime, timezone
@@ -20,6 +21,24 @@ import aiohttp
 import discord
 from discord import app_commands
 from dotenv import load_dotenv
+
+# -- timestamped, unbuffered print everywhere -------------------------------------
+# bot.log is StandardOutput=append in the systemd override, which block-buffers
+# stdout (no real TTY) - print() calls could sit unflushed for hours before
+# landing in the file, and had no timestamps at all, making it impossible to
+# correlate log lines with when something actually happened (bit us Oct 2026
+# debugging a silent /ball failure - couldn't tell if "[dailyBall] posted"
+# printed at 9:01am or 2pm). Monkey-patching builtins.print here covers every
+# print() call across main.py AND commands.py (same process, same builtins
+# namespace) without needing root access to edit the systemd unit.
+_real_print = print
+
+def _timestamped_print(*args, **kwargs):
+    kwargs.setdefault("flush", True)
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    _real_print(f"[{ts}]", *args, **kwargs)
+
+builtins.print = _timestamped_print
 
 # -- load libopus for voice audio -----------------------------------------------
 try:

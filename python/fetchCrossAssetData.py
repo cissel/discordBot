@@ -51,15 +51,33 @@ HEADERS    = {"APCA-API-KEY-ID": API_KEY, "APCA-API-SECRET-KEY": API_SECRET}
 BARS_URL   = "https://data.alpaca.markets/v2/stocks/bars"
 
 # Alpaca-sourced daily-return tickers (mirrors fetchSectorBars.py exactly)
-ALPACA_TICKERS = ["SPY", "QQQ", "GLD", "USO"]
+# CPER (copper ETF) added Oct 2026 for copper/gold ratio feature (growth risk-on/off
+# proxy); liquid from 2020-07 only. MOVE (ICE BofA bond vol index ETN) added same day
+# for vix_move_ratio (stock/bond vol divergence); liquid from 2021-03 only.
+ALPACA_TICKERS = ["SPY", "QQQ", "GLD", "USO", "CPER", "MOVE"]
 ALPACA_START   = "2016-01-01"  # matches existing cache history start
 
+# Tickers where buildSpyFeatures.py needs the raw CLOSE level (not just daily return) —
+# copper/gold ratio and vix/move ratio both need levels. GLD level is reconstructed
+# from its existing _ret series (same cumprod trick as SPY_price) so it stays out of
+# this set — only CPER/MOVE need a dedicated level cache file.
+LEVEL_TICKERS = {"CPER", "MOVE"}
+
 # FRED-sourced level series (mirrors fetch_fred_claims.py pattern)
+# Net liquidity / credit / breakeven series added Oct 2026 after Spearman-corr
+# validation vs next_ret_1d/5d (see outputs/features/markets/tier1_corr_results.csv).
 FRED_SERIES = {
     "VIX.csv":      "VIXCLS",
     "DXY.csv":      "DTWEXBGS",
     "T10Y2Y.csv":   "T10Y2Y",
     "FEDFUNDS.csv": "FEDFUNDS",
+    "WALCL.csv":        "WALCL",         # Fed balance sheet, weekly (Thu)
+    "RRPONTSYD.csv":    "RRPONTSYD",     # O/N reverse repo, daily
+    "WTREGEN.csv":      "WTREGEN",       # Treasury General Account, weekly (Wed)
+    "T5YIE.csv":        "T5YIE",         # 5y TIPS breakeven inflation, daily
+    "T10YIE.csv":       "T10YIE",        # 10y TIPS breakeven inflation, daily
+    "BAMLH0A0HYM2.csv": "BAMLH0A0HYM2",  # ICE BofA HY OAS, daily (history starts 2023-10)
+    "BAMLC0A0CM.csv":   "BAMLC0A0CM",    # ICE BofA IG OAS, daily (history starts 2023-10)
 }
 
 # Expected publication lag (calendar days) per FRED series, so the staleness
@@ -83,6 +101,13 @@ FRED_EXPECTED_LAG_DAYS = {
                           # publication variance for this series, not a fetch bug -
                           # do not shrink this threshold without re-verifying against
                           # the live FRED API first.
+    "WALCL.csv":        10,  # weekly (Thu release, as-of prior Wed) - allow slack
+    "RRPONTSYD.csv":     3,  # daily, next-day
+    "WTREGEN.csv":      10,  # weekly (as-of prior Wed)
+    "T5YIE.csv":         3,  # daily
+    "T10YIE.csv":        3,  # daily
+    "BAMLH0A0HYM2.csv":  5,  # daily, ICE BofA ~2-3d lag typical
+    "BAMLC0A0CM.csv":    5,  # daily, ICE BofA ~2-3d lag typical
 }
 
 
@@ -108,8 +133,12 @@ def fetch_alpaca_bars(symbol, start, end):
 
 
 def update_alpaca_ticker(symbol, backfill=False):
-    """Incremental update of <symbol>.csv - same append/dedupe pattern as fetchSectorBars.py."""
+    """Incremental update of <symbol>.csv - same append/dedupe pattern as fetchSectorBars.py.
+    For symbols in LEVEL_TICKERS, also writes a {symbol}_close column (raw price level),
+    needed for ratio features (e.g. copper_gold_ratio, vix_move_ratio) where returns
+    alone aren't enough."""
     out_path = os.path.join(CACHE_DIR, f"{symbol}.csv")
+    is_level = symbol in LEVEL_TICKERS
     end = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
 
     if os.path.exists(out_path) and not backfill:
@@ -160,7 +189,11 @@ def update_alpaca_ticker(symbol, backfill=False):
         df = df[["date", "close"]].sort_values("date")
 
     df[f"{symbol}_ret"] = df["close"].pct_change()
-    df = df[["date", f"{symbol}_ret"]].dropna()
+    if is_level:
+        df[f"{symbol}_close"] = df["close"]
+        df = df[["date", f"{symbol}_ret", f"{symbol}_close"]].dropna(subset=[f"{symbol}_ret"])
+    else:
+        df = df[["date", f"{symbol}_ret"]].dropna()
     df["date"] = pd.to_datetime(df["date"])
 
     if not existing.empty:

@@ -221,6 +221,70 @@ def build_features():
     df["dxy_level"]         = df["DXY"]
     df["dxy_z63"]           = z_score(df["DXY"], 63)
 
+    # ── 5b. Tier-1 public datapoints (added Oct 2026, Spearman-validated) ───────
+    # See outputs/features/markets/tier1_corr_results.csv for the validation that
+    # motivated these. Only features that beat or matched the production RFE-49
+    # median |corr_5d| (~0.032) were wired in; COT positioning and standalone MOVE
+    # level were tested and dropped (not significant — see session notes).
+    print("  building tier-1 public-datapoint features...")
+
+    # Net liquidity = Fed balance sheet (WALCL, $M) - reverse repo (RRPONTSYD, $B->$M)
+    #                 - Treasury General Account (WTREGEN, $M). Only the RATE OF CHANGE
+    # carries signal (corr_5d 0.06-0.07, p<0.002, full 2016-2026 sample) — the raw
+    # level is noise (p=0.18-0.67), so the level itself is not exposed as a feature.
+    walcl = load_series("WALCL.csv", name="WALCL")
+    rrp   = load_series("RRPONTSYD.csv", name="RRP")
+    tga   = load_series("WTREGEN.csv", name="TGA")
+    for s in [walcl, rrp, tga]:
+        s.index = pd.to_datetime(s.index)
+    walcl_d = walcl.reindex(df.index, method="ffill")
+    rrp_d   = rrp.reindex(df.index, method="ffill")
+    tga_d   = tga.reindex(df.index, method="ffill")
+    net_liquidity = walcl_d - (rrp_d * 1000) - tga_d  # RRP is $Bn, others $Mn
+    df["net_liq_chg_21d"] = net_liquidity.diff(21)
+    df["net_liq_chg_63d"] = net_liquidity.diff(63)
+
+    # TIPS breakeven inflation (5y/10y). Breakeven slope corr_5d=0.060, p=0.0018;
+    # t5yie 5d-change corr_5d=-0.069, p=0.0003. Full sample, dense since 2003.
+    t5yie  = load_series("T5YIE.csv",  name="T5YIE")
+    t10yie = load_series("T10YIE.csv", name="T10YIE")
+    for s in [t5yie, t10yie]:
+        s.index = pd.to_datetime(s.index)
+    t5yie_d  = t5yie.reindex(df.index, method="ffill")
+    t10yie_d = t10yie.reindex(df.index, method="ffill")
+    df["t5yie_chg_5d"]    = t5yie_d.diff(5)
+    df["breakeven_slope"] = t10yie_d - t5yie_d
+
+    # VIX/MOVE ratio — stock vs bond implied-vol divergence. corr_5d=0.063, p=0.0016,
+    # full sample. MOVE itself (level/chg) tested not significant (p=0.52-0.55) —
+    # only the ratio against VIX carries signal, so MOVE is not exposed standalone.
+    move = load_series("MOVE.csv", date_col=0, val_col=2, name="MOVE_close")  # col2=_close
+    move.index = pd.to_datetime(move.index)
+    move_d = move.reindex(df.index, method="ffill")
+    df["vix_move_ratio"] = df["VIX"] / move_d.replace(0, np.nan)
+
+    # Copper/Gold ratio — growth risk-on/off proxy. corr_5d=-0.067, p=0.008,
+    # n=1550 (CPER liquid from 2020-07 only — shorter sample, flagged in docs).
+    cper = load_series("CPER.csv", date_col=0, val_col=2, name="CPER_close")  # col2=_close
+    cper.index = pd.to_datetime(cper.index)
+    cper_d = cper.reindex(df.index, method="ffill")
+    gld_price = (1 + df["GLD_ret"].fillna(0)).cumprod() * 100  # reconstructed level, same trick as SPY_price
+    df["copper_gold_ratio"] = cper_d / gld_price.replace(0, np.nan)
+
+    # HY-IG credit spread dispersion — flagged PROMISING but SHORT SAMPLE in review:
+    # corr_5d=0.230 (strongest of all tier-1 candidates, beats every current RFE-49
+    # feature), p<0.0001, but BAMLH0A0HYM2/BAMLC0A0CM history only starts 2023-10
+    # (n=745, ~2.9yrs — one regime, not validated across a full cycle). Wired in as
+    # a candidate for RFE to evaluate on its own merits; do not assume this holds
+    # once more history accumulates or a different regime arrives.
+    hy_oas = load_series("BAMLH0A0HYM2.csv", name="HY_OAS")
+    ig_oas = load_series("BAMLC0A0CM.csv",   name="IG_OAS")
+    for s in [hy_oas, ig_oas]:
+        s.index = pd.to_datetime(s.index)
+    hy_oas_d = hy_oas.reindex(df.index, method="ffill")
+    ig_oas_d = ig_oas.reindex(df.index, method="ffill")
+    df["hy_ig_spread"] = hy_oas_d - ig_oas_d
+
     # ── 6. Sector rotation ────────────────────────────────────────────────────
     print("  building sector rotation features...")
     sect_path = os.path.join(CACHE_DIR, "sector_bars_historical.csv")

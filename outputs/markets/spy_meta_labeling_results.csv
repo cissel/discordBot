@@ -1,0 +1,4 @@
+variant,sharpe,max_dd,total_return,ann_return,n_trades,n_days,win_rate
+(a) primary-only baseline,2.061,-0.016,0.1411,0.0443,503,755,0.5606
+(b) primary + meta hard gate,1.716,-0.0084,0.0957,0.0307,117,755,0.6496
+(c) primary + meta soft scaler,1.844,-0.008,0.0832,0.0268,503,755,0.5447

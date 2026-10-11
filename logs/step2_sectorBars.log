@@ -1,4 +1,4 @@
-[fetchSectorBars] existing: 2702 rows to 2026-10-02, fetching 2026-09-18 to 2026-10-05 (includes overlap for pct_change seed)
+[fetchSectorBars] existing: 2705 rows to 2026-10-07, fetching 2026-09-23 to 2026-10-08 (includes overlap for pct_change seed)
   fetching XLB... 11 bars (+1 seed row dropped)
   fetching XLC... 11 bars (+1 seed row dropped)
   fetching XLE... 11 bars (+1 seed row dropped)
@@ -10,5 +10,5 @@
   fetching XLU... 11 bars (+1 seed row dropped)
   fetching XLV... 11 bars (+1 seed row dropped)
   fetching XLY... 11 bars (+1 seed row dropped)
-[fetchSectorBars] wrote 2703 rows -> /home/jhcv/discordBot/outputs/markets/cache/sector_bars_historical.csv
-  [OK] most recent row (2026-10-05 00:00:00) has valid _ret data (11/11 sectors).
+[fetchSectorBars] wrote 2706 rows -> /home/jhcv/discordBot/outputs/markets/cache/sector_bars_historical.csv
+  [OK] most recent row (2026-10-08 00:00:00) has valid _ret data (11/11 sectors).

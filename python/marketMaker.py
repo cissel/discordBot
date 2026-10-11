@@ -96,7 +96,7 @@ def load_state(symbol):
         "open_buy_price": None,
         "open_sell_order_id": None,
         "open_sell_price": None,
-        "known_order_ids": [],   # order ids we've already logged as filled
+        "last_fill_activity_id": None,  # watermark into /v2/account/activities/FILL
         "cum_fills": 0,
         "cum_buy_shares": 0,
         "cum_sell_shares": 0,
@@ -168,9 +168,53 @@ def get_open_orders(symbol, headers):
     return orders if isinstance(orders, list) else []
 
 
-def get_recent_orders(symbol, headers, limit=20):
-    orders = alpaca_get(f"/v2/orders?status=all&symbols={symbol}&limit={limit}&direction=desc", headers)
-    return orders if isinstance(orders, list) else []
+def get_new_fill_activities(headers, since_id=None, max_pages=20):
+    """Pull FILL activities (per-fill, not per-order) newer than since_id.
+
+    Why this instead of GET /v2/orders?status=all: an order's status only
+    ever reads "filled" if it fills completely. Because this bot cancels and
+    re-places resting limit orders almost every cycle (requoting to follow
+    the touch), it's common for an order to partially fill and then get
+    cancelled - that order's terminal status is "canceled", never "filled",
+    so a status-based check silently drops the partial fill that actually
+    happened. /v2/account/activities/FILL records every individual fill
+    regardless of what happens to the parent order afterward, so it's the
+    only reliable source for "what actually executed".
+
+    Also note: Alpaca's activities endpoint ?symbol= filter has been
+    observed to leak other symbols through (seen SPY rows return on a
+    SOXL-filtered request) - so we deliberately don't filter server-side and
+    instead filter client-side in the caller.
+
+    since_id: exclusive lower bound (an activity "id", which sorts
+    lexicographically by time since its prefix is a zero-padded timestamp).
+    None means "this is the first run" - caller should set a conservative
+    policy (e.g. single page) rather than silently backfilling full history.
+    Returns activities ascending by id (oldest-new first).
+    """
+    collected = []
+    page_token = None
+    for _ in range(max_pages):
+        params = {"direction": "desc", "page_size": 100}
+        if page_token:
+            params["page_token"] = page_token
+        resp = requests.get(f"{PAPER_BASE}/v2/account/activities/FILL",
+                             headers=headers, params=params, timeout=15)
+        resp.raise_for_status()
+        batch = resp.json()
+        if not batch:
+            break
+        stop = False
+        for a in batch:
+            if since_id and a["id"] <= since_id:
+                stop = True
+                break
+            collected.append(a)
+        if stop or len(batch) < 100:
+            break
+        page_token = batch[-1]["id"]
+    collected.sort(key=lambda a: a["id"])
+    return collected
 
 
 def cancel_order(order_id, headers):
@@ -202,6 +246,71 @@ def market_close_position(symbol, shares, headers, dry_run=True):
     return alpaca_post("/v2/orders", payload, headers)
 
 
+def compute_pnl_from_fills(symbol):
+    """Realized P&L via average-cost method over the LOCAL fills log.
+
+    Only correct once the fills log itself is complete/accurate - this bot
+    now sources that log from /v2/account/activities/FILL (see
+    get_new_fill_activities), which captures every partial fill even when
+    the parent order is later cancelled/replaced. Dedupes on activity_id
+    (fallback: order_id+side+qty+filled_at) so re-running after a crash
+    mid-write can't double count.
+    """
+    path = fills_log_path(symbol)
+    if not os.path.exists(path):
+        return {"realized_pl": 0.0, "fill_count": 0, "net_shares": 0.0}
+
+    import csv
+    with open(path) as f:
+        rows = list(csv.DictReader(f))
+
+    seen = set()
+    dedup = []
+    for r in rows:
+        key = r.get("activity_id") or f"{r.get('order_id')}|{r.get('side')}|{r.get('qty')}|{r.get('filled_at')}"
+        if key in seen:
+            continue
+        seen.add(key)
+        dedup.append(r)
+    dedup.sort(key=lambda r: r.get("filled_at") or r.get("timestamp") or "")
+
+    position = 0.0
+    avg_cost = 0.0
+    realized_pl = 0.0
+    for r in dedup:
+        qty = float(r["qty"])
+        px = float(r["filled_avg_price"])
+        if r["side"] == "buy":
+            if position >= 0:
+                new_pos = position + qty
+                avg_cost = (avg_cost * position + px * qty) / new_pos if new_pos != 0 else 0
+                position = new_pos
+            else:
+                cover_qty = min(qty, -position)
+                realized_pl += (avg_cost - px) * cover_qty
+                position += qty
+                if position > 0:
+                    avg_cost = px
+        else:
+            if position <= 0:
+                new_pos = position - qty
+                avg_cost = (avg_cost * (-position) + px * qty) / (-new_pos) if new_pos != 0 else 0
+                position = new_pos
+            else:
+                sell_qty = min(qty, position)
+                realized_pl += (px - avg_cost) * sell_qty
+                position -= qty
+                if position < 0:
+                    avg_cost = px
+
+    return {
+        "realized_pl": round(realized_pl, 2),
+        "fill_count": len(dedup),
+        "net_shares_from_fills": position,
+        "avg_cost_from_fills": round(avg_cost, 4),
+    }
+
+
 def is_market_hours():
     now_et = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-4)))
     if now_et.weekday() >= 5:
@@ -228,7 +337,7 @@ CYCLE_FIELDS = [
     "equity", "daily_pnl_pct", "halted", "actions", "errors",
 ]
 
-FILL_FIELDS = ["timestamp", "symbol", "order_id", "side", "qty", "filled_avg_price", "filled_at"]
+FILL_FIELDS = ["timestamp", "symbol", "order_id", "activity_id", "side", "qty", "filled_avg_price", "filled_at"]
 
 
 def run(symbol=DEFAULT_SYMBOL, qty=DEFAULT_QTY, execute=False, flatten=False):
@@ -282,31 +391,34 @@ def run(symbol=DEFAULT_SYMBOL, qty=DEFAULT_QTY, execute=False, flatten=False):
         daily_pnl_pct = (account["equity"] - account["last_equity"]) / account["last_equity"]
     result["daily_pnl_pct"] = round(daily_pnl_pct * 100, 3)
 
-    # ── detect fills since last cycle (compare recent orders to known ids) ──
+    # ── detect fills since last cycle via account activities (per-fill, not
+    #    per-order, so partial-fills-then-cancelled are never dropped) ──────
     try:
-        recent = get_recent_orders(symbol, headers, limit=20)
-        for o in recent:
-            oid = o.get("id")
-            if o.get("status") == "filled" and oid not in state.get("known_order_ids", []):
-                fill_row = {
-                    "timestamp": datetime.datetime.now().isoformat(timespec="seconds"),
-                    "symbol": symbol,
-                    "order_id": oid,
-                    "side": o.get("side"),
-                    "qty": o.get("filled_qty"),
-                    "filled_avg_price": o.get("filled_avg_price"),
-                    "filled_at": o.get("filled_at"),
-                }
-                result["new_fills"].append(fill_row)
-                append_csv(fills_log_path(symbol), FILL_FIELDS, fill_row)
-                state.setdefault("known_order_ids", []).append(oid)
-                state["cum_fills"] = state.get("cum_fills", 0) + 1
-                if o.get("side") == "buy":
-                    state["cum_buy_shares"] = state.get("cum_buy_shares", 0) + float(o.get("filled_qty") or 0)
-                else:
-                    state["cum_sell_shares"] = state.get("cum_sell_shares", 0) + float(o.get("filled_qty") or 0)
-        # keep known_order_ids bounded
-        state["known_order_ids"] = state.get("known_order_ids", [])[-200:]
+        new_fills = get_new_fill_activities(headers, since_id=state.get("last_fill_activity_id"))
+        # client-side symbol filter - Alpaca's activities endpoint has no
+        # reliable server-side symbol param and has been seen to leak other
+        # symbols through on this account (shared with the SPY bot)
+        new_fills = [a for a in new_fills if a.get("symbol") == symbol]
+        for a in new_fills:
+            fill_row = {
+                "timestamp": datetime.datetime.now().isoformat(timespec="seconds"),
+                "symbol": symbol,
+                "order_id": a.get("order_id"),
+                "activity_id": a.get("id"),
+                "side": a.get("side"),
+                "qty": a.get("qty"),
+                "filled_avg_price": a.get("price"),
+                "filled_at": a.get("transaction_time"),
+            }
+            result["new_fills"].append(fill_row)
+            append_csv(fills_log_path(symbol), FILL_FIELDS, fill_row)
+            state["cum_fills"] = state.get("cum_fills", 0) + 1
+            if a.get("side") == "buy":
+                state["cum_buy_shares"] = state.get("cum_buy_shares", 0) + float(a.get("qty") or 0)
+            else:
+                state["cum_sell_shares"] = state.get("cum_sell_shares", 0) + float(a.get("qty") or 0)
+        if new_fills:
+            state["last_fill_activity_id"] = new_fills[-1]["id"]
     except Exception as e:
         errors.append(f"fill detection failed: {e}")
 
@@ -483,7 +595,27 @@ if __name__ == "__main__":
     parser.add_argument("--qty", type=int, default=DEFAULT_QTY)
     parser.add_argument("--execute", action="store_true", help="place real paper orders (default: dry run)")
     parser.add_argument("--flatten", action="store_true", help="cancel resting orders + market-close position")
+    parser.add_argument("--pnl", action="store_true", help="read-only: print realized/unrealized P&L from the fills log, no quoting")
     args = parser.parse_args()
 
-    out = run(symbol=args.symbol.upper(), qty=args.qty, execute=args.execute, flatten=args.flatten)
-    print(json.dumps(out, indent=2))
+    if args.pnl:
+        symbol = args.symbol.upper()
+        pnl = compute_pnl_from_fills(symbol)
+        env = load_env()
+        key = env.get("APCA_PAPER_API_KEY_ID", "").strip()
+        sec = env.get("APCA_PAPER_API_SECRET_KEY", "").strip()
+        out = {"symbol": symbol, **pnl}
+        if key and sec:
+            try:
+                headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": sec}
+                pos = get_position(symbol, headers)
+                out["broker_position_shares"] = pos["shares"]
+                out["broker_avg_entry"] = pos["avg_entry"]
+                out["broker_unrealized_pl"] = pos["unrealized_pl"]
+                out["total_pl"] = round(pnl["realized_pl"] + pos["unrealized_pl"], 2)
+            except Exception as e:
+                out["broker_fetch_error"] = str(e)
+        print(json.dumps(out, indent=2))
+    else:
+        out = run(symbol=args.symbol.upper(), qty=args.qty, execute=args.execute, flatten=args.flatten)
+        print(json.dumps(out, indent=2))

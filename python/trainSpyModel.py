@@ -402,6 +402,14 @@ SPY_FEATURES = [
     # New features have real holdout signal but hurt 2018-2023 fold generalization.
     # Tombstoned until holdout window grows to 1000+ days (est. Q1 2027).
     # "fear_z21_x_chop", "umcsent_chg_3m", "ccsa_z52", "gld_z21"
+    # Tier-1 public-datapoint candidates (Oct 2026) — Spearman-validated vs RFE-49
+    # median |corr_5d|~0.032 before wiring (see outputs/features/markets/tier1_corr_results.csv).
+    # hy_ig_spread corr_5d=0.230 (strongest of the batch) but only 2023-10+ history (one
+    # regime) — treat RFE's decision on it with that caveat in mind, don't over-trust yet.
+    "net_liq_chg_21d", "net_liq_chg_63d",
+    "t5yie_chg_5d", "breakeven_slope",
+    "vix_move_ratio", "copper_gold_ratio",
+    "hy_ig_spread",
 ]
 
 # Sparse features — imputed with median when unavailable
@@ -494,6 +502,14 @@ SPARSE_FEATURES = [
     # CBOE SKEW + VIX9D (Run 38) — dense 2011+, NaN pre-2011 imputed with median
     "cboe_skew", "skew_z21", "skew_z63", "skew_chg_5d", "skew_chg_1d",
     "skew_high_flag", "vix9d", "vix9d_z21", "vix9d_vix30_ratio",
+    # Tier-1 public datapoints (Oct 2026) — sparse by construction (underlying ETF/
+    # series history starts partway through the 2016+ sample):
+    # vix_move_ratio: MOVE ETN liquid from 2021-03 (51% coverage)
+    # copper_gold_ratio: CPER ETF liquid from 2020-07 (57% coverage)
+    # hy_ig_spread: BAMLH0A0HYM2/BAMLC0A0CM FRED series start 2023-10 (28% coverage —
+    #   shortest of any SPY_FEATURES member; median-impute means pre-2023 rows get a
+    #   constant value, so RFE/GBM importance pre-2023 is necessarily muted)
+    "vix_move_ratio", "copper_gold_ratio", "hy_ig_spread",
 ]
 
 # GBM feature list — drops individual ETF rets (overfits at ~1600 train rows)

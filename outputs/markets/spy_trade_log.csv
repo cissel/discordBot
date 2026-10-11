@@ -67,3 +67,5 @@ date,signal_direction,signal_prob,signal_confidence,regime,position_size_kelly,s
 2026-10-05,UP,0.5586,MED,chop,0.0586,774.74,82995.09,9,6,SELL,3,True,2ef1a792-cb1c-4ecb-a722-9d5f964c2d89,Kelly(50%) blend size=0.059 (blend=0.559 log=0.574 gbm_chop=0.543; regime=chop; chop-lower t=0.51),WARN: FOMC/CPI/NFP within 1 day - position sizing already conservative,
 2026-10-06,UP,0.5341,MED,chop,0.0341,779.57,82990.92,6,3,SELL,3,True,fff46113-114f-4c5d-b0c2-34ecf77fea4d,Kelly(50%) blend size=0.034 (blend=0.534 log=0.549 gbm_chop=0.520; regime=chop; chop-lower t=0.51),,
 2026-10-07,UP,0.5572,MED,bull,0.0572,777.18,82896.92,3,6,BUY,3,True,ace71677-7c35-4987-accb-0a62fd5b6dab,Kelly(50%) blend size=0.057 (blend=0.557 log=0.565 gbm_chop=0.549; regime=chop; chop-lower t=0.51),,
+2026-10-08,UP,0.5622,HIGH,chop,0.0622,774.25,82655.07,6,6,HOLD,0,False,,Kelly(50%) blend size=0.062 (blend=0.562 log=0.543 gbm_chop=0.582; regime=chop; chop-lower t=0.51),,
+2026-10-09,UP,0.6256,HIGH,chop,0.1256,778.69,82579.19,6,13,BUY,7,True,c12773ce-ebab-495f-aadd-5ac85e3af204,Kelly(50%) blend size=0.126 (blend=0.626 log=0.589 gbm_chop=0.662; regime=chop; chop-lower t=0.51),,

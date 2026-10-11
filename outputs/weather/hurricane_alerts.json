@@ -3,9 +3,9 @@
   "storms": {
     "al092026": {
       "name": "Nine",
-      "last_classification": "TS",
-      "last_category_label": "Tropical Storm",
-      "last_adv_num": "005a"
+      "last_classification": "PTC",
+      "last_category_label": "Potential Tropical Cyclone",
+      "last_adv_num": "017"
     }
   }
 }

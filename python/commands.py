@@ -2408,16 +2408,26 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         async def _fetch_cfb_today(date_str: str):
             """Return list of Top-25 (AP curated rank) FBS college football game
             dicts for the given YYYYMMDD date, or []. groups=80 restricts to FBS
-            so garbage/exhibition games from lower divisions don't leak in."""
+            so garbage/exhibition games from lower divisions don't leak in.
+
+            This payload runs ~800KB-900KB on a busy Saturday (vs ~5KB for the
+            NFL scoreboard fetched in the same gather()), and it races alongside
+            4 CPU-bound subprocess calls (nhl/mlb/pga/nba *Today.py via
+            asyncio.to_thread) plus ~9 other concurrent fetches. On the Pi that
+            combo can blow past a short timeout on a loaded morning, so this
+            needs more headroom than the other /ball fetches and must log on
+            failure instead of silently returning [] (bit us Oct 2026 - CFB
+            section just vanished from the post with zero trace in the logs)."""
             url = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
             try:
                 async with aiohttp.ClientSession() as s:
                     async with s.get(
                         url,
                         params={"dates": date_str, "groups": "80", "limit": "200"},
-                        timeout=aiohttp.ClientTimeout(total=10),
+                        timeout=aiohttp.ClientTimeout(total=20),
                     ) as r:
                         if r.status != 200:
+                            print(f"[ball] CFB fetch non-200 status: {r.status}", flush=True)
                             return []
                         data = await r.json()
                 events = data.get("events", [])
@@ -2433,7 +2443,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     ):
                         ranked.append(ev)
                 return ranked
-            except Exception:
+            except Exception as e:
+                print(f"[ball] CFB fetch failed: {type(e).__name__}: {e}", flush=True)
                 return []
 
         async def _fetch_f1_event():
@@ -3001,7 +3012,40 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             print(f"[ball] {len(embeds)} embeds built, truncating to 10", flush=True)
             embeds = embeds[:10]
 
-        await send_func(embeds=embeds)
+        # Discord also hard-caps the TOTAL character count across all embeds in
+        # one message at 6000 (title+description+field name/value summed). A
+        # busy Saturday (full NBA/NHL/MLB slate + a 17-game CFB Top-25 list +
+        # multiple soccer leagues) can blow past that even with <=10 embeds,
+        # and discord.py raises HTTPException if it does. Oct 2026: this
+        # combined send silently dropped the entire NBA/NHL/MLB/CFB/EPL/MLS
+        # batch on a loaded morning with NO exception logged anywhere - so
+        # this is now (a) proactively split into multiple messages to avoid
+        # ever hitting the cap, and (b) wrapped so any remaining failure logs
+        # instead of vanishing.
+        def _embed_len(e):
+            total = len(e.title or "") + len(e.description or "")
+            for f in e.fields:
+                total += len(f.name or "") + len(f.value or "")
+            return total
+
+        batches, current, current_len = [], [], 0
+        for e in embeds:
+            e_len = _embed_len(e)
+            if current and (len(current) >= 10 or current_len + e_len > 5900):
+                batches.append(current)
+                current, current_len = [], 0
+            current.append(e)
+            current_len += e_len
+        if current:
+            batches.append(current)
+
+        try:
+            for batch in batches:
+                await send_func(embeds=batch)
+        except Exception as e:
+            print(f"[ball] FINAL SEND FAILED ({len(embeds)} embeds, {len(batches)} batch(es)): "
+                  f"{type(e).__name__}: {e}", flush=True)
+            raise
 
     @tree.command(name="ball", description="sports happening today or tomorrow", guild=guild)
     @app_commands.describe(day="today (default) or tomorrow")
@@ -8248,6 +8292,21 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         buy_fills = sum(1 for r in fills if r.get("side") == "buy")
         sell_fills = sum(1 for r in fills if r.get("side") == "sell")
 
+        # realized/unrealized P&L via marketMaker.py --pnl (isolates this
+        # symbol's own P&L from the account-wide equity, which is shared
+        # with the SPY bot and therefore not a valid proxy for MM P&L)
+        pnl_data = None
+        try:
+            import json as _json
+            cmd = [PYTHON, os.path.join(pp, "marketMaker.py"), "--symbol", symbol, "--pnl"]
+            result = await asyncio.to_thread(
+                lambda: __import__('subprocess').run(cmd, capture_output=True, text=True, timeout=30)
+            )
+            if result.returncode == 0:
+                pnl_data = _json.loads(result.stdout)
+        except Exception:
+            pnl_data = None
+
         emb = discord.Embed(title=f"MM Bot Status: {symbol}", color=0x00ff99)
         emb.add_field(
             name="Last Cycle",
@@ -8266,12 +8325,27 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             value=f"**{len(rows)}**",
             inline=True,
         )
+        if pnl_data and "realized_pl" in pnl_data:
+            realized = pnl_data.get("realized_pl", 0)
+            unreal = pnl_data.get("broker_unrealized_pl")
+            total = pnl_data.get("total_pl")
+            pnl_lines = [f"Realized: **${realized:,.2f}**"]
+            if unreal is not None:
+                pnl_lines.append(f"Unrealized: ${unreal:,.2f}")
+            if total is not None:
+                pnl_lines.append(f"Total: **${total:,.2f}**")
+            emb.add_field(
+                name="P&L (this symbol only, isolated from account equity)",
+                value="\n".join(pnl_lines),
+                inline=False,
+            )
         if fills:
             recent_lines = []
             for r in fills[-5:]:
                 recent_lines.append(f"{r.get('side','').upper()} {r.get('qty','?')}sh @ ${r.get('filled_avg_price','?')} ({r.get('filled_at','')})")
             emb.add_field(name="Recent Fills", value="\n".join(recent_lines), inline=False)
-        emb.set_footer(text=MM_DISCLAIMER)
+        footer = MM_DISCLAIMER + " | Account equity is shared with the SPY bot - use the P&L field above, not account equity, for this symbol's real return."
+        emb.set_footer(text=footer)
         await _send(interaction, embeds=[emb])
 
     @mm_group.command(name="flatten", description="Cancel resting MM orders and market-close any open position (EOD safety)")

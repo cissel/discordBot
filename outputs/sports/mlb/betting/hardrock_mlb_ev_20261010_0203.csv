@@ -1,0 +1,90 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-10T02:03:23-04:00,1,White Sox @ Guardians,White Sox +1.5 run line,-195,,,upcoming_games_odds,no_model,0.6322,-195,2026-10-11 11:00:00,,1516503401343615398
+2026-10-10T02:03:23-04:00,2,White Sox @ Guardians,Guardians -1.5 run line,+160,,,upcoming_games_odds,no_model,0.3678,+160,2026-10-11 11:00:00,,676582070839017894
+2026-10-10T02:03:23-04:00,3,White Sox @ Guardians,O 7.5,+110,,,upcoming_games_odds,no_model,0.4532,+110,2026-10-11 11:00:00,,2094192720452125105
+2026-10-10T02:03:23-04:00,4,White Sox @ Guardians,U 7.5,-135,,,upcoming_games_odds,no_model,0.5468,-135,2026-10-11 11:00:00,,2359852321908851121
+2026-10-10T02:03:23-04:00,5,White Sox @ Guardians,White Sox ML,+115,,,upcoming_games_odds,no_model,0.4474,+115,2026-10-11 11:00:00,,2505499816876966310
+2026-10-10T02:03:23-04:00,6,White Sox @ Guardians,Guardians ML,-135,,,upcoming_games_odds,no_model,0.5526,-135,2026-10-11 11:00:00,,2817374091072373158
+2026-10-10T02:03:23-04:00,7,Dodgers @ Brewers,O 5.5,-125,50.4,-0.0922,upcoming_games_odds,draftkings_devig,0.5325,-125,2026-10-12 11:00:00,401908030,8042900006203687343
+2026-10-10T02:03:23-04:00,8,Dodgers @ Brewers,U 5.5,+105,50.4,0.0339,upcoming_games_odds,draftkings_devig,0.4675,+105,2026-10-12 11:00:00,401908030,1114111979494179247
+2026-10-10T02:03:23-04:00,9,Dodgers @ Brewers,Dodgers ML,+100,44.6,-0.1077,upcoming_games_odds,espn_bpi,0.4783,+100,2026-10-12 11:00:00,401908030,8185740260752359839
+2026-10-10T02:03:23-04:00,10,Dodgers @ Brewers,Brewers ML,-120,55.4,0.0154,upcoming_games_odds,espn_bpi,0.5217,-120,2026-10-12 11:00:00,401908030,2892884798685184415
+2026-10-10T02:03:23-04:00,11,Chicago White Sox @ Cleveland Guardians,Andrew Benintendi - RBIs (O 0.5),+375,,,props_odds,no_espn_match,,+375,2026-10-11 11:00:00,,7349199252448477579
+2026-10-10T02:03:23-04:00,12,Chicago White Sox @ Cleveland Guardians,Gavin Williams - Earned Runs (O 1.5),+135,,,props_odds,no_espn_match,,+135,2026-10-11 11:00:00,,1657753698593538476
+2026-10-10T02:03:23-04:00,13,Chicago White Sox @ Cleveland Guardians,Chase Meidroth - Runs (O 0.5),+200,,,props_odds,no_espn_match,,+200,2026-10-11 11:00:00,,6634927655118569863
+2026-10-10T02:03:23-04:00,14,Chicago White Sox @ Cleveland Guardians,Chase Meidroth - Total Bases (O 1.5),+225,,,props_odds,no_espn_match,,+225,2026-10-11 11:00:00,,3466685123020325295
+2026-10-10T02:03:23-04:00,15,Chicago White Sox @ Cleveland Guardians,Angel Martinez - Home Runs (O 0.5),+900,,,props_odds,no_espn_match,,+900,2026-10-11 11:00:00,,245584445590077868
+2026-10-10T02:03:23-04:00,16,Chicago White Sox @ Cleveland Guardians,Kyle Teel - RBIs (O 0.5),+275,,,props_odds,no_espn_match,,+275,2026-10-11 11:00:00,,3072422844827828632
+2026-10-10T02:03:23-04:00,17,Chicago White Sox @ Cleveland Guardians,Colson Montgomery - RBIs (O 0.5),+300,,,props_odds,no_espn_match,,+300,2026-10-11 11:00:00,,1033981063489257886
+2026-10-10T02:03:23-04:00,18,Chicago White Sox @ Cleveland Guardians,Andrew Benintendi - Runs (O 0.5),+300,,,props_odds,no_espn_match,,+300,2026-10-11 11:00:00,,5788250925172916628
+2026-10-10T02:03:23-04:00,19,Chicago White Sox @ Cleveland Guardians,Colson Montgomery - Total Bases (O 1.5),+275,,,props_odds,no_espn_match,,+275,2026-10-11 11:00:00,,58817002449535397
+2026-10-10T02:03:23-04:00,20,Chicago White Sox @ Cleveland Guardians,Colson Montgomery - Doubles (O 0.5),+750,,,props_odds,no_espn_match,,+750,2026-10-11 11:00:00,,8051422821194269073
+2026-10-10T02:03:23-04:00,21,Chicago White Sox @ Cleveland Guardians,Colson Montgomery - Home Runs (O 0.5),+575,,,props_odds,no_espn_match,,+575,2026-10-11 11:00:00,,7228046231921099173
+2026-10-10T02:03:23-04:00,22,Chicago White Sox @ Cleveland Guardians,Sean Burke - Strikeouts (O 3.5),-150,,,props_odds,no_espn_match,,-150,2026-10-11 11:00:00,,974217607177699759
+2026-10-10T02:03:23-04:00,23,Chicago White Sox @ Cleveland Guardians,Sean Burke - Earned Runs (O 1.5),+110,,,props_odds,no_espn_match,,+110,2026-10-11 11:00:00,,1349280386198405540
+2026-10-10T02:03:23-04:00,24,Chicago White Sox @ Cleveland Guardians,Miguel Vargas - Home Runs (O 0.5),+575,,,props_odds,no_espn_match,,+575,2026-10-11 11:00:00,,7512036891236106664
+2026-10-10T02:03:23-04:00,25,Chicago White Sox @ Cleveland Guardians,Braden Montgomery - Runs (O 0.5),+210,,,props_odds,no_espn_match,,+210,2026-10-11 11:00:00,,1961880091768258976
+2026-10-10T02:03:23-04:00,26,Chicago White Sox @ Cleveland Guardians,Colson Montgomery - Runs (O 0.5),+220,,,props_odds,no_espn_match,,+220,2026-10-11 11:00:00,,1370782640675881374
+2026-10-10T02:03:23-04:00,27,Chicago White Sox @ Cleveland Guardians,Colson Montgomery - Hits (O 0.5),+135,,,props_odds,no_espn_match,,+135,2026-10-11 11:00:00,,6194221277771858319
+2026-10-10T02:03:23-04:00,28,Chicago White Sox @ Cleveland Guardians,Andrew Benintendi - Hits+Runs+RBI (O 0.5),+100,,,props_odds,no_espn_match,,+100,2026-10-11 11:00:00,,2368387957376811424
+2026-10-10T02:03:23-04:00,29,Chicago White Sox @ Cleveland Guardians,Colson Montgomery - Hits+Runs+RBI (O 0.5),+105,,,props_odds,no_espn_match,,+105,2026-10-11 11:00:00,,190590069424390575
+2026-10-10T02:03:23-04:00,30,Chicago White Sox @ Cleveland Guardians,Chase Meidroth - Hits+Runs+RBI (O 0.5),-190,,,props_odds,no_espn_match,,-190,2026-10-11 11:00:00,,6684103037792944537
+2026-10-10T02:03:23-04:00,31,Chicago White Sox @ Cleveland Guardians,Travis Bazzana - Total Bases (O 1.5),+210,,,props_odds,no_espn_match,,+210,2026-10-11 11:00:00,,7979503055878095277
+2026-10-10T02:03:23-04:00,32,Chicago White Sox @ Cleveland Guardians,Chase Meidroth - Hits (O 0.5),-145,,,props_odds,no_espn_match,,-145,2026-10-11 11:00:00,,4209593993543156111
+2026-10-10T02:03:23-04:00,33,Chicago White Sox @ Cleveland Guardians,Andrew Benintendi - Doubles (O 0.5),+700,,,props_odds,no_espn_match,,+700,2026-10-11 11:00:00,,8733612611624632721
+2026-10-10T02:03:23-04:00,34,Chicago White Sox @ Cleveland Guardians,Angel Martinez - Total Bases (O 1.5),+185,,,props_odds,no_espn_match,,+185,2026-10-11 11:00:00,,6797765550530494895
+2026-10-10T02:03:23-04:00,35,Chicago White Sox @ Cleveland Guardians,Brayan Rocchio - Stolen Bases (O 0.5),+850,,,props_odds,no_espn_match,,+850,2026-10-11 11:00:00,,8406494525685629341
+2026-10-10T02:03:23-04:00,36,Chicago White Sox @ Cleveland Guardians,Kyle Teel - Hits+Runs+RBI (O 1.5),+135,,,props_odds,no_espn_match,,+135,2026-10-11 11:00:00,,8146506279293157785
+2026-10-10T02:03:23-04:00,37,Chicago White Sox @ Cleveland Guardians,Munetaka Murakami - Hits+Runs+RBI (O 0.5),-165,,,props_odds,no_espn_match,,-165,2026-10-11 11:00:00,,6217558263895032213
+2026-10-10T02:03:23-04:00,38,Chicago White Sox @ Cleveland Guardians,Brayan Rocchio - RBIs (O 0.5),+260,,,props_odds,no_espn_match,,+260,2026-10-11 11:00:00,,1023425751862608282
+2026-10-10T02:03:23-04:00,39,Chicago White Sox @ Cleveland Guardians,Sam Antonacci - RBIs (O 0.5),+325,,,props_odds,no_espn_match,,+325,2026-10-11 11:00:00,,6087019845398954398
+2026-10-10T02:03:23-04:00,40,Chicago White Sox @ Cleveland Guardians,Andrew Benintendi - Home Runs (O 0.5),+1000,,,props_odds,no_espn_match,,+1000,2026-10-11 11:00:00,,1795849661265871277
+2026-10-10T02:03:23-04:00,41,Chicago White Sox @ Cleveland Guardians,Andrew Benintendi - Hits (O 0.5),+120,,,props_odds,no_espn_match,,+120,2026-10-11 11:00:00,,8222595930646512005
+2026-10-10T02:03:23-04:00,42,Chicago White Sox @ Cleveland Guardians,Colson Montgomery - Singles (O 0.5),+275,,,props_odds,no_espn_match,,+275,2026-10-11 11:00:00,,3234982615337533844
+2026-10-10T02:03:23-04:00,43,Chicago White Sox @ Cleveland Guardians,Miguel Vargas - Runs (O 0.5),+130,,,props_odds,no_espn_match,,+130,2026-10-11 11:00:00,,8115486857250341268
+2026-10-10T02:03:23-04:00,44,Chicago White Sox @ Cleveland Guardians,Travis Bazzana - Stolen Bases (O 0.5),+750,,,props_odds,no_espn_match,,+750,2026-10-11 11:00:00,,6715392865608008093
+2026-10-10T02:03:23-04:00,45,Chicago White Sox @ Cleveland Guardians,Gavin Williams - Strikeouts (O 6.5),-130,,,props_odds,no_espn_match,,-130,2026-10-11 11:00:00,,6736930070918726063
+2026-10-10T02:03:23-04:00,46,Chicago White Sox @ Cleveland Guardians,Andrew Benintendi - Singles (O 0.5),+220,,,props_odds,no_espn_match,,+220,2026-10-11 11:00:00,,7466114465252114848
+2026-10-10T02:03:23-04:00,47,Chicago White Sox @ Cleveland Guardians,Miguel Vargas - Hits+Runs+RBI (O 1.5),+115,,,props_odds,no_espn_match,,+115,2026-10-11 11:00:00,,8696789858762490263
+2026-10-10T02:03:23-04:00,48,Chicago White Sox @ Cleveland Guardians,Munetaka Murakami - Home Runs (O 0.5),+350,,,props_odds,no_espn_match,,+350,2026-10-11 11:00:00,,2790124832124174761
+2026-10-10T02:03:23-04:00,49,Chicago White Sox @ Cleveland Guardians,Munetaka Murakami - Total Bases (O 1.5),+195,,,props_odds,no_espn_match,,+195,2026-10-11 11:00:00,,4348099823333933477
+2026-10-10T02:03:23-04:00,50,Chicago White Sox @ Cleveland Guardians,Angel Martinez - RBIs (O 0.5),+250,,,props_odds,no_espn_match,,+250,2026-10-11 11:00:00,,3582033290162471317
+2026-10-10T02:03:23-04:00,51,Chicago White Sox @ Cleveland Guardians,Munetaka Murakami - Runs (O 0.5),+140,,,props_odds,no_espn_match,,+140,2026-10-11 11:00:00,,8384013160398586260
+2026-10-10T02:03:23-04:00,52,Chicago White Sox @ Cleveland Guardians,Chase Meidroth - Doubles (O 0.5),+450,,,props_odds,no_espn_match,,+450,2026-10-11 11:00:00,,8194007489084260763
+2026-10-10T02:03:23-04:00,53,Chicago White Sox @ Cleveland Guardians,Braden Montgomery - Total Bases (O 1.5),+240,,,props_odds,no_espn_match,,+240,2026-10-11 11:00:00,,1279292501466939821
+2026-10-10T02:03:23-04:00,54,Chicago White Sox @ Cleveland Guardians,Miguel Vargas - Hits (O 0.5),-160,,,props_odds,no_espn_match,,-160,2026-10-11 11:00:00,,3611758735195767180
+2026-10-10T02:03:23-04:00,55,Chicago White Sox @ Cleveland Guardians,Chase Meidroth - Singles (O 0.5),+110,,,props_odds,no_espn_match,,+110,2026-10-11 11:00:00,,2424334682410844567
+2026-10-10T02:03:23-04:00,56,Chicago White Sox @ Cleveland Guardians,Sam Antonacci - Runs (O 0.5),+140,,,props_odds,no_espn_match,,+140,2026-10-11 11:00:00,,6636053555025412501
+2026-10-10T02:03:23-04:00,57,Chicago White Sox @ Cleveland Guardians,Chase Meidroth - RBIs (O 0.5),+300,,,props_odds,no_espn_match,,+300,2026-10-11 11:00:00,,3571196503559111072
+2026-10-10T02:03:23-04:00,58,Chicago White Sox @ Cleveland Guardians,Munetaka Murakami - RBIs (O 0.5),+185,,,props_odds,no_espn_match,,+185,2026-10-11 11:00:00,,5205440218341179804
+2026-10-10T02:03:23-04:00,59,Chicago White Sox @ Cleveland Guardians,Chase DeLauter - Total Bases (O 1.5),+140,,,props_odds,no_espn_match,,+140,2026-10-11 11:00:00,,3671299488863093157
+2026-10-10T02:03:23-04:00,60,Chicago White Sox @ Cleveland Guardians,Brayan Rocchio - Hits+Runs+RBI (O 0.5),-180,,,props_odds,no_espn_match,,-180,2026-10-11 11:00:00,,1407502755630809497
+2026-10-10T02:03:23-04:00,61,Chicago White Sox @ Cleveland Guardians,Braden Montgomery - Hits+Runs+RBI (O 0.5),-170,,,props_odds,no_espn_match,,-170,2026-10-11 11:00:00,,2819592345043992967
+2026-10-10T02:03:23-04:00,62,Chicago White Sox @ Cleveland Guardians,Munetaka Murakami - Hits (O 0.5),-125,,,props_odds,no_espn_match,,-125,2026-10-11 11:00:00,,2137199293138862490
+2026-10-10T02:03:23-04:00,63,Chicago White Sox @ Cleveland Guardians,Kyle Teel - Runs (O 0.5),+150,,,props_odds,no_espn_match,,+150,2026-10-11 11:00:00,,127789143521624454
+2026-10-10T02:03:23-04:00,64,Chicago White Sox @ Cleveland Guardians,Travis Bazzana - RBIs (O 0.5),+275,,,props_odds,no_espn_match,,+275,2026-10-11 11:00:00,,5083983765890531719
+2026-10-10T02:03:23-04:00,65,Chicago White Sox @ Cleveland Guardians,Brayan Rocchio - Singles (O 0.5),+120,,,props_odds,no_espn_match,,+120,2026-10-11 11:00:00,,2587616557182091659
+2026-10-10T02:03:23-04:00,66,Chicago White Sox @ Cleveland Guardians,Braden Montgomery - RBIs (O 0.5),+300,,,props_odds,no_espn_match,,+300,2026-10-11 11:00:00,,4353133988861313440
+2026-10-10T02:03:23-04:00,67,Chicago White Sox @ Cleveland Guardians,Jo Adell - Singles (O 0.5),+125,,,props_odds,no_espn_match,,+125,2026-10-11 11:00:00,,8077504502946726304
+2026-10-10T02:03:23-04:00,68,Chicago White Sox @ Cleveland Guardians,Sam Antonacci - Stolen Bases (O 0.5),+700,,,props_odds,no_espn_match,,+700,2026-10-11 11:00:00,,9192372660661780890
+2026-10-10T02:03:23-04:00,69,Chicago White Sox @ Cleveland Guardians,Kyle Teel - Doubles (U 0.5),-700,,,props_odds,no_espn_match,,-700,2026-10-11 11:00:00,,3643669821440262555
+2026-10-10T02:03:23-04:00,70,Chicago White Sox @ Cleveland Guardians,Miguel Vargas - Singles (O 0.5),+135,,,props_odds,no_espn_match,,+135,2026-10-11 11:00:00,,9179734123466588565
+2026-10-10T02:03:23-04:00,71,Chicago White Sox @ Cleveland Guardians,Patrick Bailey - Doubles (U 0.5),-850,,,props_odds,no_espn_match,,-850,2026-10-11 11:00:00,,1136171393235419527
+2026-10-10T02:03:23-04:00,72,Chicago White Sox @ Cleveland Guardians,Sam Antonacci - Hits+Runs+RBI (O 1.5),+110,,,props_odds,no_espn_match,,+110,2026-10-11 11:00:00,,2165725974145139093
+2026-10-10T02:03:23-04:00,73,Chicago White Sox @ Cleveland Guardians,Kyle Teel - Hits (U 0.5),+110,,,props_odds,no_espn_match,,+110,2026-10-11 11:00:00,,6611050533908251023
+2026-10-10T02:03:23-04:00,74,Chicago White Sox @ Cleveland Guardians,Travis Bazzana - Hits (O 0.5),-130,,,props_odds,no_espn_match,,-130,2026-10-11 11:00:00,,26787878692585893
+2026-10-10T02:03:23-04:00,75,Chicago White Sox @ Cleveland Guardians,Tristan Peters - Doubles (O 0.5),+450,,,props_odds,no_espn_match,,+450,2026-10-11 11:00:00,,1883232958115086737
+2026-10-10T02:03:23-04:00,76,Chicago White Sox @ Cleveland Guardians,Brayan Rocchio - Hits (O 0.5),-145,,,props_odds,no_espn_match,,-145,2026-10-11 11:00:00,,2316111825210573196
+2026-10-10T02:03:23-04:00,77,Chicago White Sox @ Cleveland Guardians,Steven Kwan - Doubles (U 0.5),-575,,,props_odds,no_espn_match,,-575,2026-10-11 11:00:00,,2796926532386423175
+2026-10-10T02:03:23-04:00,78,Chicago White Sox @ Cleveland Guardians,Brayan Rocchio - Total Bases (O 1.5),+220,,,props_odds,no_espn_match,,+220,2026-10-11 11:00:00,,5619671826717344169
+2026-10-10T02:03:23-04:00,79,Chicago White Sox @ Cleveland Guardians,Travis Bazzana - Home Runs (O 0.5),+900,,,props_odds,no_espn_match,,+900,2026-10-11 11:00:00,,8565826427482669481
+2026-10-10T02:03:23-04:00,80,Chicago White Sox @ Cleveland Guardians,Patrick Bailey - Hits (U 0.5),-105,,,props_odds,no_espn_match,,-105,2026-10-11 11:00:00,,6673238911575261574
+2026-10-10T02:03:23-04:00,81,Chicago White Sox @ Cleveland Guardians,Jo Adell - RBIs (O 0.5),+175,,,props_odds,no_espn_match,,+175,2026-10-11 11:00:00,,3868574816453919127
+2026-10-10T02:03:23-04:00,82,Chicago White Sox @ Cleveland Guardians,Nathaniel Lowe - Total Bases (O 1.5),+185,,,props_odds,no_espn_match,,+185,2026-10-11 11:00:00,,7014677204458144172
+2026-10-10T02:03:23-04:00,83,Chicago White Sox @ Cleveland Guardians,Andrew Benintendi - Total Bases (O 1.5),+275,,,props_odds,no_espn_match,,+275,2026-10-11 11:00:00,,4919823140810523035
+2026-10-10T02:03:23-04:00,84,Chicago White Sox @ Cleveland Guardians,Nathaniel Lowe - RBIs (O 0.5),+220,,,props_odds,no_espn_match,,+220,2026-10-11 11:00:00,,4145572581816271252
+2026-10-10T02:03:23-04:00,85,Chicago White Sox @ Cleveland Guardians,Nathaniel Lowe - Home Runs (O 0.5),+700,,,props_odds,no_espn_match,,+700,2026-10-11 11:00:00,,1054444572610003369
+2026-10-10T02:03:23-04:00,86,Chicago White Sox @ Cleveland Guardians,Tristan Peters - Hits (U 0.5),+115,,,props_odds,no_espn_match,,+115,2026-10-11 11:00:00,,6895722890432479620
+2026-10-10T02:03:23-04:00,87,Chicago White Sox @ Cleveland Guardians,Jose Ramirez - Runs (O 0.5),+125,,,props_odds,no_espn_match,,+125,2026-10-11 11:00:00,,596868016843653536
+2026-10-10T02:03:23-04:00,88,Chicago White Sox @ Cleveland Guardians,Jo Adell - Doubles (U 0.5),-575,,,props_odds,no_espn_match,,-575,2026-10-11 11:00:00,,3392078982362038661
+2026-10-10T02:03:23-04:00,89,Chicago White Sox @ Cleveland Guardians,Braden Montgomery - Hits (O 0.5),-130,,,props_odds,no_espn_match,,-130,2026-10-11 11:00:00,,2700879322281017743

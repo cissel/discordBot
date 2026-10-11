@@ -1,16 +1,26 @@
 [fetchCrossAssetData] Alpaca daily-return tickers:
-  [SPY] existing: 2702 rows to 2026-10-02, fetching 2026-10-03 to 2026-10-05
-  [SPY] wrote 2703 rows -> /home/jhcv/discordBot/outputs/markets/cache/SPY.csv (last: 2026-10-05)
-  [QQQ] existing: 2702 rows to 2026-10-02, fetching 2026-10-03 to 2026-10-05
-  [QQQ] wrote 2703 rows -> /home/jhcv/discordBot/outputs/markets/cache/QQQ.csv (last: 2026-10-05)
-  [GLD] existing: 2702 rows to 2026-10-02, fetching 2026-10-03 to 2026-10-05
-  [GLD] wrote 2703 rows -> /home/jhcv/discordBot/outputs/markets/cache/GLD.csv (last: 2026-10-05)
-  [USO] existing: 2702 rows to 2026-10-02, fetching 2026-10-03 to 2026-10-05
-  [USO] wrote 2703 rows -> /home/jhcv/discordBot/outputs/markets/cache/USO.csv (last: 2026-10-05)
+  [SPY] existing: 2705 rows to 2026-10-07, fetching 2026-10-08 to 2026-10-08
+  [SPY] wrote 2706 rows -> /home/jhcv/discordBot/outputs/markets/cache/SPY.csv (last: 2026-10-08)
+  [QQQ] existing: 2705 rows to 2026-10-07, fetching 2026-10-08 to 2026-10-08
+  [QQQ] wrote 2706 rows -> /home/jhcv/discordBot/outputs/markets/cache/QQQ.csv (last: 2026-10-08)
+  [GLD] existing: 2705 rows to 2026-10-07, fetching 2026-10-08 to 2026-10-08
+  [GLD] wrote 2706 rows -> /home/jhcv/discordBot/outputs/markets/cache/GLD.csv (last: 2026-10-08)
+  [USO] existing: 2705 rows to 2026-10-07, fetching 2026-10-08 to 2026-10-08
+  [USO] wrote 2706 rows -> /home/jhcv/discordBot/outputs/markets/cache/USO.csv (last: 2026-10-08)
+  [CPER] existing: 1475 rows to 2026-10-07, fetching 2026-10-08 to 2026-10-08
+  [CPER] wrote 1476 rows -> /home/jhcv/discordBot/outputs/markets/cache/CPER.csv (last: 2026-10-08)
+  [MOVE] existing: 1285 rows to 2026-10-07, fetching 2026-10-08 to 2026-10-08
+  [MOVE] wrote 1286 rows -> /home/jhcv/discordBot/outputs/markets/cache/MOVE.csv (last: 2026-10-08)
 [fetchCrossAssetData] FRED level series:
-  [VIX.csv] wrote 9589 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-10-02, 4d behind, expected <=3d) [WARN]
-    [WARN] VIX.csv is MORE stale than its known publication lag allows - this may be a genuine fetch problem, not just normal lag.
-  [DXY.csv] wrote 5415 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-10-02, 4d behind, expected <=14d) [OK]
-  [T10Y2Y.csv] wrote 13135 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-10-05, 1d behind, expected <=3d) [OK]
-  [FEDFUNDS.csv] wrote 867 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-09-01, 35d behind, expected <=65d) [OK]
+  [VIX.csv] wrote 9592 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-10-07, 2d behind, expected <=3d) [OK]
+  [DXY.csv] wrote 5415 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-10-02, 7d behind, expected <=14d) [OK]
+  [T10Y2Y.csv] wrote 13138 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-10-08, 1d behind, expected <=3d) [OK]
+  [FEDFUNDS.csv] wrote 867 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-09-01, 38d behind, expected <=65d) [OK]
+  [WALCL.csv] wrote 1243 rows -> /home/jhcv/discordBot/outputs/markets/cache/WALCL.csv (last: 2026-10-07, 2d behind, expected <=10d) [OK]
+  [RRPONTSYD.csv] wrote 6175 rows -> /home/jhcv/discordBot/outputs/markets/cache/RRPONTSYD.csv (last: 2026-10-08, 1d behind, expected <=3d) [OK]
+  [WTREGEN.csv] wrote 1243 rows -> /home/jhcv/discordBot/outputs/markets/cache/WTREGEN.csv (last: 2026-10-07, 2d behind, expected <=10d) [OK]
+  [T5YIE.csv] wrote 6201 rows -> /home/jhcv/discordBot/outputs/markets/cache/T5YIE.csv (last: 2026-10-08, 1d behind, expected <=3d) [OK]
+  [T10YIE.csv] wrote 6201 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10YIE.csv (last: 2026-10-08, 1d behind, expected <=3d) [OK]
+  [BAMLH0A0HYM2.csv] wrote 794 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLH0A0HYM2.csv (last: 2026-10-07, 2d behind, expected <=5d) [OK]
+  [BAMLC0A0CM.csv] wrote 794 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLC0A0CM.csv (last: 2026-10-07, 2d behind, expected <=5d) [OK]
 [fetchCrossAssetData] done.

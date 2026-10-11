@@ -1,0 +1,27 @@
+trial_key,n_model_rows,model_types,mean_sharpe,max_sharpe_in_trial,example_notes,pooled_n_obs
+run30,2,"['gbm_ensemble', 'logistic']",1.6719,1.7776,Run 30 full WFCV: 5 near-constant/zero-importance features pruned. Val improved across board vs R29 on skip-wfcv pass. WFCV is the honest arbiter.,1260
+run29,2,"['gbm_ensemble', 'logistic']",1.669,1.7718,"Run 29: Drop 0pct-coverage noise (aqi_pm25/bad_flag/z21, cboe_pcr_z21). Add TRENDS_FEATURES to SPY_FEATURES (7 cols, 100pct). Clean feature set.",1260
+weekly retrain,24,"['gbm_ensemble', 'logistic']",1.4935166666666664,1.605,weekly retrain,1260
+run39,2,"['gbm_ensemble', 'logistic']",1.4876,1.6481999999999999,run39: skew_chg_1d + skew_chg_5d + vix9d_z21 only (screened from run38 by cross-period Spearman),1260
+run40,2,"['gbm_ensemble', 'logistic']",1.4638000000000002,1.4696000000000002,"run40: fear_z21_x_chop + umcsent_chg_3m + ccsa_z52 + gld_z21, tighter RFE C=0.05 min=35",1260
+run38,2,"['gbm_ensemble', 'logistic']",1.413,1.529,"run38: CBOE SKEW + GEX standalone, vix9d_z21 #1 feature",1260
+run36,2,"['gbm_ensemble', 'logistic']",1.3606,1.3636,"Run 36: WSB features (wsb_avg_score/comments/score_z21), chop-lower t=0.51 live, p80 bear regime. RFE will vet WSB.",1260
+run34,2,"['gbm_ensemble', 'logistic']",1.3606,1.3636,"Run 34: RFE-56 feature set, Kelly 50% (both train+live). Converging toward stable signal core.",1260
+run37,2,"['gbm_ensemble', 'logistic']",1.3606,1.3636,"run37: vol2-press sizing variant, hl sweep confirmed 1260 optimal",1260
+run35,2,"['gbm_ensemble', 'logistic']",1.3606,1.3636,"Run 35: p80 bear regime (VIX>p80 AND 3% below 200dMA), chop-lower t=0.51 threshold, RFE-56 features, Kelly 50%.",1260
+run25,2,"['gbm_ensemble', 'logistic']",1.2252,1.321,"run25: moon phase + NYC/CHI weather full coverage, WFCV pass",1260
+run26,2,"['gbm_ensemble', 'logistic']",1.2252,1.321,"Run 26: Tier1/2/3 alt data. Wiki+Congress+Holiday+MTA (alt1), Daylight+PCR+Earnings+Approval+FlightDisruption (alt2). Google Trends running separately. CBOE PCR 29pct coverage 2015-2019. Pres approval 100pct piecewise.",1260
+run28,2,"['gbm_ensemble', 'logistic']",1.1983000000000001,1.2394,Run 28: Full WFCV with all Tier1/2/3 alt data + Google Trends (233 cols). Logistic val improved R26->R27 (0.5794->0.5913). GBM variance from larger feature set - WFCV will arbitrate.,1260
+run33,2,"['gbm_ensemble', 'logistic']",1.1719000000000002,1.2204000000000002,"Run 33: RFE-70 feature set, Kelly 50%, chop model flip in place.",1260
+tier1 datapoints rfe stability check run2,2,"['gbm_ensemble', 'logistic']",1.0543,1.097,tier1 datapoints RFE stability check run2,1260
+tier1 datapoints rfe test,2,"['gbm_ensemble', 'logistic']",1.0543,1.097,tier1 datapoints RFE test,1260
+run17,2,"['gbm_ensemble', 'logistic']",0.8851,1.0002,"Run 17: AND regime def, drop tail model, half-life arg, vadj WFCV, regime-conditional sizing, fixed regime routing, half-life=756",1260
+run23,2,"['gbm_ensemble', 'logistic']",0.877,0.9346,"run23: bear oversample, regime-change recency, interaction feats, bear WFCV, chop cal, sizing in WFCV",1260
+run16,3,"['gbm_ensemble', 'logistic']",0.8467333333333332,1.0002,"Run 16: BEAR/BULL_FEATURES, bull post-2021, WFCV fold backtest, regime pred model routing, lagged rv vol-adj, drop failed vadj run",1260
+run22,2,"['gbm_ensemble', 'logistic']",0.8095999999999999,0.9621999999999999,"run22: gld_corr_63+era, kill switch backtest, sizing formalized, WFCV PnL CSV",1260
+run21,2,"['gbm_ensemble', 'logistic']",0.7808999999999999,0.8291999999999999,"run21: hl=1260, vadj dropped, gld_corr_x_era + gld_corr_era_flag added",1260
+run20,2,"['gbm_ensemble', 'logistic']",0.7564,0.8324,run20: half-life sweep + vadj 5d model trained + confirmed AND regime,1260
+run19,2,"['gbm_ensemble', 'logistic']",0.7564,0.8324,Run19-calibration-metalearner-pnlcurve,1260
+run18,2,"['gbm_ensemble', 'logistic']",0.7564,0.8324,Run18-vol-signals,1260
+run32,2,"['gbm_ensemble', 'logistic']",0.6480000000000001,0.9036000000000002,"Run 32: chop model flip/drop fix, Kelly fraction sweep (25/33/50%), bear val note, RFECV 40-50 feature selection.",1260
+run31,2,"['gbm_ensemble', 'logistic']",0.6480000000000001,0.9036000000000002,"Run 31: All arch changes. Platt scaling, Kelly sizing, holdout 2024+, 5bp tx cost, rate-shock regime, ret-dist regime, AAII+CFG+ICSA sentiment, 13 Trends terms, 19 regime-x-sentiment interactions, Trends +2bd lag fix, pres_approval look-ahead fix.",1260

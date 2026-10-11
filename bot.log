@@ -67958,3 +67958,1132 @@ Online as several bots#0340
 [setup] 51 commands registered
 Synced 51 slash command(s) to guild 1286546740211613706
 Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl today
+    /nfl tomorrow
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl runradars
+    /nfl playcall
+    /nfl bets
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+    /osrs history
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+    /mlb bets
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /mm
+    /mm quote
+    /mm status
+    /mm flatten
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 51 commands registered
+Synced 51 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl today
+    /nfl tomorrow
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl runradars
+    /nfl playcall
+    /nfl bets
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+    /osrs history
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+    /mlb bets
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /mm
+    /mm quote
+    /mm status
+    /mm flatten
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 51 commands registered
+Synced 51 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[invites] cached 5 invites
+[DJ] indexes ready - 415 tracks · 21 genres · 340 artists
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (1d out)
+[hurricaneAlert] CATEGORY_CHANGE alert sent for Isaias
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[dailyBall] posted to #ball
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] peak alert sent for Draconids
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[hurricaneAlert] CATEGORY_CHANGE alert sent for Isaias
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (0d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[hurricaneAlert] CATEGORY_CHANGE alert sent for Isaias
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[dailyBall] posted to #ball
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[hurricaneAlert] CATEGORY_CHANGE alert sent for Isaias
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[hurricaneAlert] CATEGORY_CHANGE alert sent for Isaias
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[hurricaneAlert] CATEGORY_CHANGE alert sent for Isaias
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[hurricaneAlert] CATEGORY_CHANGE alert sent for Isaias
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-1d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[hurricaneAlert] CATEGORY_CHANGE alert sent for Isaias
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)[opus] loaded successfully
+[startup] token present: True, token length: 72
+[startup] calling asyncio.run...
+  registered: /standings
+  registered: /ping
+  registered: /takemyenergy
+  registered: /duval
+  registered: /westside
+  registered: /ts
+  registered: /goodmorning
+  registered: /dontavius
+  registered: /r2
+  registered: /chucktronic
+  registered: /serversdown
+  registered: /scrote
+  registered: /nuggets
+  registered: /hali
+  registered: /boobs
+  registered: /bully
+  registered: /weather
+    /weather today
+    /weather tomorrow
+    /weather jaxradar
+    /weather flradar
+    /weather usradar
+    /weather jaxsat
+    /weather hurricane
+    /weather alerts
+  registered: /surf
+    /surf forecast
+    /surf wavemap
+    /surf windmap
+    /surf buoywaves
+    /surf tideplot
+    /surf windplot
+  registered: /history
+    /history server
+    /history channel
+    /history user
+    /history userreport
+    /history daily
+    /history invitegraph
+    /history repograph
+    /history repofilesize
+    /history repotreemap
+  registered: /wordle
+    /wordle scores
+  registered: /maptap
+    /maptap scores
+  registered: /cats
+    /cats next
+    /cats win
+    /cats lost
+    /cats stanleycup2024
+    /cats ilikethepanthers
+    /cats pleasecats
+    /cats takemyenergy
+    /cats fuckedm
+    /cats curseedm
+    /cats djkhaled
+    /cats rats
+    /cats pantr
+    /cats kodak
+  registered: /nhl
+    /nhl today
+    /nhl tomorrow
+    /nhl standings
+  registered: /nfl
+    /nfl nextgame
+    /nfl today
+    /nfl tomorrow
+    /nfl wr
+    /nfl fantasyscoreboard
+    /nfl epamap
+    /nfl room40points
+    /nfl amonra
+    /nfl standings
+    /nfl wrstats
+    /nfl testats
+    /nfl rbstats
+    /nfl qbstats
+    /nfl olstats
+    /nfl runradars
+    /nfl playcall
+    /nfl bets
+  registered: /jags
+    /jags next
+    /jags today
+    /jags takemyenergy
+    /jags win
+    /jags howbout
+  registered: /nba
+    /nba today
+    /nba tomorrow
+    /nba standings
+  registered: /magic
+    /magic takemyenergy
+  registered: /pga
+    /pga tournament
+    /pga standings
+  registered: /ball
+  registered: /osrs
+    /osrs hiscores
+    /osrs lvl
+    /osrs history
+  registered: /jaxcams
+  registered: /markets
+    /markets fedrate
+    /markets yieldcurve
+    /markets yieldspread
+    /markets crudeoil
+    /markets chart
+    /markets trades
+    /markets fear
+    /markets movers
+    /markets earnings
+    /markets options
+    /markets short
+    /markets forecast
+    /markets model
+    /markets corr
+    /markets news
+    /markets fomc
+    /markets vix
+    /markets commodities
+    /markets fx
+    /markets bonds
+    /markets macro
+    /markets sector
+    /markets series
+    /markets crypto
+    /markets gex
+  registered: /space
+    /space nextlaunch
+    /space isspass
+  registered: /f1
+    /f1 nextrace
+    /f1 standings
+  registered: /mlb
+    /mlb today
+    /mlb tomorrow
+    /mlb gmscore
+    /mlb fantasystandings
+    /mlb fantasymap
+    /mlb sharpe
+    /mlb fantasyscoreboard
+    /mlb fantasyroster
+    /mlb fantasyfa
+    /mlb whohits
+    /mlb mismatch
+    /mlb ml
+    /mlb fantasyrisk
+    /mlb modeldiagnostics
+    /mlb playertrends
+    /mlb hotcold
+    /mlb zonemap
+    /mlb fantasyownership
+    /mlb lineup
+    /mlb compare
+    /mlb pickup
+    /mlb standings
+    /mlb fantasyszn
+    /mlb fantasycumulative
+    /mlb bets
+  registered: /spy
+    /spy signal
+    /spy diagnostics
+    /spy gaps
+    /spy trade
+    /spy status
+    /spy performance
+  registered: /mm
+    /mm quote
+    /mm status
+    /mm flatten
+  registered: /btcsignal
+  registered: /btcdiagnostics
+  registered: /dj
+    /dj join
+    /dj leave
+    /dj genre
+    /dj artist
+    /dj playlist
+    /dj mix
+    /dj skip
+    /dj pause
+    /dj play
+    /dj stop
+    /dj nowplaying
+    /dj queue
+    /dj backspin
+    /dj yoink
+    /dj mic
+  registered: /jaxships
+  registered: /jaxplanes
+  registered: /track
+  registered: /jax
+    /jax realestate
+  registered: /worldcup
+    /worldcup today
+    /worldcup tomorrow
+    /worldcup standings
+  registered: /nascar
+    /nascar nextevent
+    /nascar standings
+  registered: /ufc
+    /ufc nextevent
+    /ufc standings
+  registered: /billboard
+  registered: /usa
+  registered: /navy_seal
+  registered: /snapshot
+[setup] 51 commands registered
+Synced 51 slash command(s) to guild 1286546740211613706
+Online as several bots#0340
+[2026-10-10 12:45:37] [opus] loaded successfully
+[2026-10-10 12:45:37] [startup] token present: True, token length: 72
+[2026-10-10 12:45:37] [startup] calling asyncio.run...
+[2026-10-10 12:45:39]   registered: /standings
+[2026-10-10 12:45:39]   registered: /ping
+[2026-10-10 12:45:39]   registered: /takemyenergy
+[2026-10-10 12:45:39]   registered: /duval
+[2026-10-10 12:45:39]   registered: /westside
+[2026-10-10 12:45:39]   registered: /ts
+[2026-10-10 12:45:39]   registered: /goodmorning
+[2026-10-10 12:45:39]   registered: /dontavius
+[2026-10-10 12:45:39]   registered: /r2
+[2026-10-10 12:45:39]   registered: /chucktronic
+[2026-10-10 12:45:39]   registered: /serversdown
+[2026-10-10 12:45:39]   registered: /scrote
+[2026-10-10 12:45:39]   registered: /nuggets
+[2026-10-10 12:45:39]   registered: /hali
+[2026-10-10 12:45:39]   registered: /boobs
+[2026-10-10 12:45:39]   registered: /bully
+[2026-10-10 12:45:39]   registered: /weather
+[2026-10-10 12:45:39]     /weather today
+[2026-10-10 12:45:39]     /weather tomorrow
+[2026-10-10 12:45:39]     /weather jaxradar
+[2026-10-10 12:45:39]     /weather flradar
+[2026-10-10 12:45:39]     /weather usradar
+[2026-10-10 12:45:39]     /weather jaxsat
+[2026-10-10 12:45:39]     /weather hurricane
+[2026-10-10 12:45:39]     /weather alerts
+[2026-10-10 12:45:39]   registered: /surf
+[2026-10-10 12:45:39]     /surf forecast
+[2026-10-10 12:45:39]     /surf wavemap
+[2026-10-10 12:45:39]     /surf windmap
+[2026-10-10 12:45:39]     /surf buoywaves
+[2026-10-10 12:45:39]     /surf tideplot
+[2026-10-10 12:45:39]     /surf windplot
+[2026-10-10 12:45:39]   registered: /history
+[2026-10-10 12:45:39]     /history server
+[2026-10-10 12:45:39]     /history channel
+[2026-10-10 12:45:39]     /history user
+[2026-10-10 12:45:39]     /history userreport
+[2026-10-10 12:45:39]     /history daily
+[2026-10-10 12:45:39]     /history invitegraph
+[2026-10-10 12:45:39]     /history repograph
+[2026-10-10 12:45:39]     /history repofilesize
+[2026-10-10 12:45:39]     /history repotreemap
+[2026-10-10 12:45:39]   registered: /wordle
+[2026-10-10 12:45:39]     /wordle scores
+[2026-10-10 12:45:39]   registered: /maptap
+[2026-10-10 12:45:39]     /maptap scores
+[2026-10-10 12:45:39]   registered: /cats
+[2026-10-10 12:45:39]     /cats next
+[2026-10-10 12:45:39]     /cats win
+[2026-10-10 12:45:39]     /cats lost
+[2026-10-10 12:45:39]     /cats stanleycup2024
+[2026-10-10 12:45:39]     /cats ilikethepanthers
+[2026-10-10 12:45:39]     /cats pleasecats
+[2026-10-10 12:45:39]     /cats takemyenergy
+[2026-10-10 12:45:39]     /cats fuckedm
+[2026-10-10 12:45:39]     /cats curseedm
+[2026-10-10 12:45:39]     /cats djkhaled
+[2026-10-10 12:45:39]     /cats rats
+[2026-10-10 12:45:39]     /cats pantr
+[2026-10-10 12:45:39]     /cats kodak
+[2026-10-10 12:45:39]   registered: /nhl
+[2026-10-10 12:45:39]     /nhl today
+[2026-10-10 12:45:39]     /nhl tomorrow
+[2026-10-10 12:45:39]     /nhl standings
+[2026-10-10 12:45:39]   registered: /nfl
+[2026-10-10 12:45:39]     /nfl nextgame
+[2026-10-10 12:45:39]     /nfl today
+[2026-10-10 12:45:39]     /nfl tomorrow
+[2026-10-10 12:45:39]     /nfl wr
+[2026-10-10 12:45:39]     /nfl fantasyscoreboard
+[2026-10-10 12:45:39]     /nfl epamap
+[2026-10-10 12:45:39]     /nfl room40points
+[2026-10-10 12:45:39]     /nfl amonra
+[2026-10-10 12:45:39]     /nfl standings
+[2026-10-10 12:45:39]     /nfl wrstats
+[2026-10-10 12:45:39]     /nfl testats
+[2026-10-10 12:45:39]     /nfl rbstats
+[2026-10-10 12:45:39]     /nfl qbstats
+[2026-10-10 12:45:39]     /nfl olstats
+[2026-10-10 12:45:39]     /nfl runradars
+[2026-10-10 12:45:39]     /nfl playcall
+[2026-10-10 12:45:39]     /nfl bets
+[2026-10-10 12:45:39]   registered: /jags
+[2026-10-10 12:45:39]     /jags next
+[2026-10-10 12:45:39]     /jags today
+[2026-10-10 12:45:39]     /jags takemyenergy
+[2026-10-10 12:45:39]     /jags win
+[2026-10-10 12:45:39]     /jags howbout
+[2026-10-10 12:45:39]   registered: /nba
+[2026-10-10 12:45:39]     /nba today
+[2026-10-10 12:45:39]     /nba tomorrow
+[2026-10-10 12:45:39]     /nba standings
+[2026-10-10 12:45:39]   registered: /magic
+[2026-10-10 12:45:39]     /magic takemyenergy
+[2026-10-10 12:45:39]   registered: /pga
+[2026-10-10 12:45:39]     /pga tournament
+[2026-10-10 12:45:39]     /pga standings
+[2026-10-10 12:45:39]   registered: /ball
+[2026-10-10 12:45:39]   registered: /osrs
+[2026-10-10 12:45:39]     /osrs hiscores
+[2026-10-10 12:45:39]     /osrs lvl
+[2026-10-10 12:45:39]     /osrs history
+[2026-10-10 12:45:39]   registered: /jaxcams
+[2026-10-10 12:45:39]   registered: /markets
+[2026-10-10 12:45:39]     /markets fedrate
+[2026-10-10 12:45:39]     /markets yieldcurve
+[2026-10-10 12:45:39]     /markets yieldspread
+[2026-10-10 12:45:39]     /markets crudeoil
+[2026-10-10 12:45:39]     /markets chart
+[2026-10-10 12:45:39]     /markets trades
+[2026-10-10 12:45:39]     /markets fear
+[2026-10-10 12:45:39]     /markets movers
+[2026-10-10 12:45:39]     /markets earnings
+[2026-10-10 12:45:39]     /markets options
+[2026-10-10 12:45:39]     /markets short
+[2026-10-10 12:45:39]     /markets forecast
+[2026-10-10 12:45:39]     /markets model
+[2026-10-10 12:45:39]     /markets corr
+[2026-10-10 12:45:39]     /markets news
+[2026-10-10 12:45:39]     /markets fomc
+[2026-10-10 12:45:39]     /markets vix
+[2026-10-10 12:45:39]     /markets commodities
+[2026-10-10 12:45:39]     /markets fx
+[2026-10-10 12:45:39]     /markets bonds
+[2026-10-10 12:45:39]     /markets macro
+[2026-10-10 12:45:39]     /markets sector
+[2026-10-10 12:45:39]     /markets series
+[2026-10-10 12:45:39]     /markets crypto
+[2026-10-10 12:45:39]     /markets gex
+[2026-10-10 12:45:39]   registered: /space
+[2026-10-10 12:45:39]     /space nextlaunch
+[2026-10-10 12:45:39]     /space isspass
+[2026-10-10 12:45:39]   registered: /f1
+[2026-10-10 12:45:39]     /f1 nextrace
+[2026-10-10 12:45:39]     /f1 standings
+[2026-10-10 12:45:39]   registered: /mlb
+[2026-10-10 12:45:39]     /mlb today
+[2026-10-10 12:45:39]     /mlb tomorrow
+[2026-10-10 12:45:39]     /mlb gmscore
+[2026-10-10 12:45:39]     /mlb fantasystandings
+[2026-10-10 12:45:39]     /mlb fantasymap
+[2026-10-10 12:45:39]     /mlb sharpe
+[2026-10-10 12:45:39]     /mlb fantasyscoreboard
+[2026-10-10 12:45:39]     /mlb fantasyroster
+[2026-10-10 12:45:39]     /mlb fantasyfa
+[2026-10-10 12:45:39]     /mlb whohits
+[2026-10-10 12:45:39]     /mlb mismatch
+[2026-10-10 12:45:39]     /mlb ml
+[2026-10-10 12:45:39]     /mlb fantasyrisk
+[2026-10-10 12:45:39]     /mlb modeldiagnostics
+[2026-10-10 12:45:39]     /mlb playertrends
+[2026-10-10 12:45:39]     /mlb hotcold
+[2026-10-10 12:45:39]     /mlb zonemap
+[2026-10-10 12:45:39]     /mlb fantasyownership
+[2026-10-10 12:45:39]     /mlb lineup
+[2026-10-10 12:45:39]     /mlb compare
+[2026-10-10 12:45:39]     /mlb pickup
+[2026-10-10 12:45:39]     /mlb standings
+[2026-10-10 12:45:39]     /mlb fantasyszn
+[2026-10-10 12:45:39]     /mlb fantasycumulative
+[2026-10-10 12:45:39]     /mlb bets
+[2026-10-10 12:45:39]   registered: /spy
+[2026-10-10 12:45:39]     /spy signal
+[2026-10-10 12:45:39]     /spy diagnostics
+[2026-10-10 12:45:39]     /spy gaps
+[2026-10-10 12:45:39]     /spy trade
+[2026-10-10 12:45:39]     /spy status
+[2026-10-10 12:45:39]     /spy performance
+[2026-10-10 12:45:39]   registered: /mm
+[2026-10-10 12:45:39]     /mm quote
+[2026-10-10 12:45:39]     /mm status
+[2026-10-10 12:45:39]     /mm flatten
+[2026-10-10 12:45:39]   registered: /btcsignal
+[2026-10-10 12:45:39]   registered: /btcdiagnostics
+[2026-10-10 12:45:39]   registered: /dj
+[2026-10-10 12:45:39]     /dj join
+[2026-10-10 12:45:39]     /dj leave
+[2026-10-10 12:45:39]     /dj genre
+[2026-10-10 12:45:39]     /dj artist
+[2026-10-10 12:45:39]     /dj playlist
+[2026-10-10 12:45:39]     /dj mix
+[2026-10-10 12:45:39]     /dj skip
+[2026-10-10 12:45:39]     /dj pause
+[2026-10-10 12:45:39]     /dj play
+[2026-10-10 12:45:39]     /dj stop
+[2026-10-10 12:45:39]     /dj nowplaying
+[2026-10-10 12:45:39]     /dj queue
+[2026-10-10 12:45:39]     /dj backspin
+[2026-10-10 12:45:39]     /dj yoink
+[2026-10-10 12:45:39]     /dj mic
+[2026-10-10 12:45:39]   registered: /jaxships
+[2026-10-10 12:45:39]   registered: /jaxplanes
+[2026-10-10 12:45:39]   registered: /track
+[2026-10-10 12:45:39]   registered: /jax
+[2026-10-10 12:45:39]     /jax realestate
+[2026-10-10 12:45:39]   registered: /worldcup
+[2026-10-10 12:45:39]     /worldcup today
+[2026-10-10 12:45:39]     /worldcup tomorrow
+[2026-10-10 12:45:39]     /worldcup standings
+[2026-10-10 12:45:39]   registered: /nascar
+[2026-10-10 12:45:39]     /nascar nextevent
+[2026-10-10 12:45:39]     /nascar standings
+[2026-10-10 12:45:39]   registered: /ufc
+[2026-10-10 12:45:39]     /ufc nextevent
+[2026-10-10 12:45:39]     /ufc standings
+[2026-10-10 12:45:39]   registered: /billboard
+[2026-10-10 12:45:39]   registered: /usa
+[2026-10-10 12:45:39]   registered: /navy_seal
+[2026-10-10 12:45:39]   registered: /snapshot
+[2026-10-10 12:45:39] [setup] 51 commands registered
+[2026-10-10 12:45:39] Synced 51 slash command(s) to guild 1286546740211613706
+[2026-10-10 12:45:41] Online as several bots#0340
+[2026-10-10 12:45:42] [invites] cached 2 invites
+[2026-10-10 12:45:54] [DJ] indexes ready - 415 tracks · 21 genres · 340 artists
+[2026-10-10 12:47:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 13:02:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 13:17:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 13:32:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 13:47:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 14:02:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 14:17:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 14:32:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 14:47:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 15:02:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 15:17:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 15:32:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 15:47:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 16:02:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 16:17:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 16:32:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 16:47:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 17:02:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 17:17:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 17:32:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 17:47:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 18:02:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 18:17:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 18:32:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 18:47:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 19:02:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 19:17:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 19:32:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 19:47:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 20:02:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 20:17:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 20:32:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 20:47:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 21:02:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 21:17:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)
+[2026-10-10 21:32:12] [meteorShower] stderr: [meteorShowerAlert] no alert due - nearest is Draconids on Oct 08 (-2d out)

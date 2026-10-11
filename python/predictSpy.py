@@ -61,6 +61,20 @@ CONF_HIGH = 0.06   # >56% or <44%
 
 VIX_REGIMES = [(15, "LOW"), (20, "NORMAL"), (30, "ELEVATED"), (999, "FEAR")]
 
+# Regime-routing hysteresis (Oct'26): walk-forward OOS backtest
+# (python/spyRegimeHysteresisWFCV.py) showed requiring N=5 consecutive days of
+# a new raw regime before the live routing/threshold switches beats the old
+# instant-switch behavior: Sharpe 1.323->1.356, total return +5.8pp, and ~78%
+# fewer regime switches (92->20 over the pooled OOS window), same max
+# drawdown. Applied to MODEL ROUTING + ENTRY THRESHOLD only (both driven by
+# `routing_regime` below) — NOT to the bear/GEX kill switch, chop-VIX gate,
+# or bear position-size halving, which stay on RAW `current_regime` on
+# purpose: those are safety circuit breakers meant to react immediately, and
+# hysteresis was only validated (and should only delay) the routing/threshold
+# side, not risk-cutting logic.
+REGIME_HYSTERESIS_N = 5
+REGIME_HISTORY_LOOKBACK = 60   # trailing days scanned to resolve the hysteresis state
+
 
 def load_best_model(model_type, target):
     """Load the most recently saved model of a given type/target.
@@ -187,6 +201,47 @@ def predict_tomorrow_regime(df, row_df):
         return None, None
 
 
+def resolve_effective_regime(df, row_date, n_confirm=REGIME_HYSTERESIS_N,
+                              lookback_days=REGIME_HISTORY_LOOKBACK):
+    """
+    Walk the trailing `lookback_days` of the precomputed `regime` column up to
+    and including row_date, applying the same hysteresis rule validated in
+    python/spyRegimeHysteresisWFCV.py: the effective (routing) regime only
+    switches to a new raw regime once that regime has appeared N_CONFIRM
+    consecutive days in a row; a broken streak resets the pending candidate.
+    Returns the effective regime for row_date (falls back to the raw regime
+    on that date if history is too short/missing to resolve hysteresis).
+    """
+    hist = df[df["date"] <= pd.Timestamp(row_date)].tail(lookback_days)
+    if "regime" not in hist.columns or hist.empty:
+        return None
+    raw = hist["regime"].astype(str).tolist()
+    raw = [r for r in raw if r and r != "nan"]
+    if not raw:
+        return None
+    if n_confirm <= 0 or len(raw) == 1:
+        return raw[-1]
+
+    effective = raw[0]
+    pending_regime = None
+    pending_count = 0
+    for r in raw[1:]:
+        if r == effective:
+            pending_regime = None
+            pending_count = 0
+        else:
+            if r == pending_regime:
+                pending_count += 1
+            else:
+                pending_regime = r
+                pending_count = 1
+            if pending_count >= n_confirm:
+                effective = r
+                pending_regime = None
+                pending_count = 0
+    return effective
+
+
 def confidence_label(prob):
     dist = abs(prob - 0.5)
     if dist >= CONF_HIGH:
@@ -269,9 +324,18 @@ def predict(target_date=None):
     # NOTE: The regime pred model scores 81.4% but the persistence baseline
     # (tomorrow == today) scores 89.5% — meaning the model actively degrades
     # routing accuracy. We keep it for the probability output in the embed
-    # (useful to know P(bear) is rising) but route on TODAY's regime, not predicted.
+    # (useful to know P(bear) is rising) but route on TODAY's effective
+    # (hysteresis-confirmed) regime, not predicted.
     pred_regime, regime_probs = predict_tomorrow_regime(df, row_df)
-    routing_regime = current_regime   # route on current, not predicted
+    # Hysteresis (Oct'26, see REGIME_HYSTERESIS_N above): route on the
+    # effective regime, which only flips after N_CONFIRM consecutive raw-regime
+    # days agree, instead of the raw regime's instant day-to-day flips.
+    routing_regime = resolve_effective_regime(df, row_date) or current_regime
+    if routing_regime != current_regime:
+        warnings_list.append(
+            f"Hysteresis: routing on '{routing_regime}' (raw regime today is '{current_regime}', "
+            f"not yet confirmed {REGIME_HYSTERESIS_N}d)"
+        )
 
     # ── 1-day direction model ─────────────────────────────────────────────────
     # Use regime-specific Logistic for TODAY's regime.
@@ -477,21 +541,42 @@ def predict(target_date=None):
     # Kelly(50%): pos = clip(0.50 * (2p - 1), 0, 1), halved in bear regime.
     # Kill switch: regime=bear AND gex_sign<=0 AND vix_z21>1.5 -> flat.
     # Chop-lower (Run 35): threshold=0.51 in chop regime, 0.53 in bull/bear.
+    # Chop-VIX gate (Oct'26): within chop, VIX>=22 ("elevated chop") is a distinct
+    # sub-regime where the chop model's edge inverts. Pooled walk-forward OOS
+    # (5 folds, zero lookahead, fixed pre-decided threshold, not fit to sample):
+    # elevated-chop mean next-day return -0.33% vs +0.12% rest (Welch t=-4.11,
+    # p=0.0001). Gating these days out: Sharpe +0.86->+1.70, maxDD 10.5%->4.6%,
+    # total return +38.8%->+73.2% (python/chopVixSubRegimeWFCV.py). Only fires
+    # in chop regime — bear regime already has its own kill switch below, and
+    # high VIX in bull/bear is expected/priced into those regimes' own models.
     # Signal: 50/50 blend of logistic + GBM ensemble (matches WFCV Sharpe 1.855).
     position_size   = 0.0
     sizing_reason   = "no signal"
+    CHOP_VIX_GATE_THRESH = 22.0
     if next_day_result and prob_blend is not None:
         gex_sign_live = float(row["gex_sign"]) if "gex_sign" in row.index and pd.notna(row.get("gex_sign")) else 1.0
         vix_z21_live  = float(row["vix_z21"])  if "vix_z21"  in row.index and pd.notna(row.get("vix_z21"))  else 0.0
+        # Kill switch, chop-VIX gate, and bear half-sizing stay on the RAW
+        # regime (current_regime), not the hysteresis-smoothed routing_regime:
+        # these are safety circuit breakers meant to react same-day, and
+        # hysteresis was only validated for routing/threshold (see
+        # REGIME_HYSTERESIS_N above), not for delaying risk cuts.
         kill = (current_regime == "bear") and (gex_sign_live <= 0) and (vix_z21_live > 1.5)
-        # Regime-conditional threshold: lower bar in chop, standard in bull/bear
-        live_thresh = 0.51 if current_regime == "chop" else 0.53
+        chop_vix_gate = (
+            current_regime == "chop" and vix_val is not None and vix_val >= CHOP_VIX_GATE_THRESH
+        )
+        # Regime-conditional threshold: lower bar in chop, standard in bull/bear.
+        # Uses routing_regime (hysteresis-confirmed) per the Oct'26 WFCV result.
+        live_thresh = 0.51 if routing_regime == "chop" else 0.53
         if kill:
             position_size = 0.0
             sizing_reason = f"kill switch (bear + GEX negative + VIX z21={vix_z21_live:.2f})"
+        elif chop_vix_gate:
+            position_size = 0.0
+            sizing_reason = f"chop-VIX gate (chop regime + VIX={vix_val:.2f} >= {CHOP_VIX_GATE_THRESH:.0f}, elevated-chop edge inverts)"
         elif prob_blend < live_thresh:
             position_size = 0.0
-            sizing_reason = f"no signal (blend={prob_blend:.3f} < {live_thresh:.2f}, regime={current_regime})"
+            sizing_reason = f"no signal (blend={prob_blend:.3f} < {live_thresh:.2f}, regime={routing_regime})"
         else:
             kelly_f = float(np.clip(0.50 * (2 * prob_blend - 1), 0.0, 1.0))
             bear_mult = 0.5 if current_regime == "bear" else 1.0
@@ -500,9 +585,10 @@ def predict(target_date=None):
                 f"Kelly(50%) blend size={position_size:.3f} "
                 f"(blend={prob_blend:.3f} log={prob_logistic:.3f} "
                 + (f"gbm_chop={prob_gbm_chop:.3f}" if prob_gbm_chop is not None else f"gbm={prob_gbm_ens:.3f}" if prob_gbm_ens is not None else "gbm=n/a")
-                + f", regime={current_regime}"
+                + f", regime={routing_regime}"
+                + (f" (raw={current_regime})" if routing_regime != current_regime else "")
                 + (", half-bear" if current_regime == "bear" else "")
-                + (f", chop-lower t={live_thresh}" if current_regime == "chop" else "") + ")"
+                + (f", chop-lower t={live_thresh}" if routing_regime == "chop" else "") + ")"
             )
 
     result = {

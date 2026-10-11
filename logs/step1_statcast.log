@@ -1,19 +1,25 @@
-[fetchStatcastDaily] daily mode: yesterday=2026-10-05, re-checking 21d lookback -> 8 date(s) to fetch
-  [1/8] fetching 2026-09-28...   2026-09-28: no data (off-day or pre-season)
+[fetchStatcastDaily] daily mode: yesterday=2026-10-08, re-checking 21d lookback -> 11 date(s) to fetch
+  [1/11] fetching 2026-09-28...   2026-09-28: no data (off-day or pre-season)
 0 / skipped
-  [2/8] fetching 2026-09-29...   2026-09-29: no data (off-day or pre-season)
+  [2/11] fetching 2026-09-29...   2026-09-29: no data (off-day or pre-season)
 0 / skipped
-  [3/8] fetching 2026-09-30...   2026-09-30: no data (off-day or pre-season)
+  [3/11] fetching 2026-09-30...   2026-09-30: no data (off-day or pre-season)
 0 / skipped
-  [4/8] fetching 2026-10-01...   2026-10-01: no data (off-day or pre-season)
+  [4/11] fetching 2026-10-01...   2026-10-01: no data (off-day or pre-season)
 0 / skipped
-  [5/8] fetching 2026-10-02...   2026-10-02: no data (off-day or pre-season)
+  [5/11] fetching 2026-10-02...   2026-10-02: no data (off-day or pre-season)
 0 / skipped
-  [6/8] fetching 2026-10-03...   2026-10-03: no data (off-day or pre-season)
+  [6/11] fetching 2026-10-03...   2026-10-03: no data (off-day or pre-season)
 0 / skipped
-  [7/8] fetching 2026-10-04...   2026-10-04: no data (off-day or pre-season)
+  [7/11] fetching 2026-10-04...   2026-10-04: no data (off-day or pre-season)
 0 / skipped
-  [8/8] fetching 2026-10-05...   2026-10-05: no data (off-day or pre-season)
+  [8/11] fetching 2026-10-05...   2026-10-05: no data (off-day or pre-season)
+0 / skipped
+  [9/11] fetching 2026-10-06...   2026-10-06: no data (off-day or pre-season)
+0 / skipped
+  [10/11] fetching 2026-10-07...   2026-10-07: no data (off-day or pre-season)
+0 / skipped
+  [11/11] fetching 2026-10-08...   2026-10-08: no data (off-day or pre-season)
 0 / skipped
 
 [fetchStatcastDaily] done. Total rows appended: 0

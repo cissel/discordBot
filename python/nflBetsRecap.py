@@ -39,6 +39,12 @@ import clvTracking
 OUT_DIR = os.path.expanduser("~/discordBot/outputs/sports/nfl/betting")
 MASTER_LOG_PATH = os.path.join(OUT_DIR, "hardrock_bets_log.csv")
 STATE_PATH = os.path.join(OUT_DIR, "recap_graded_events.json")
+GRADED_RESULTS_PATH = os.path.join(OUT_DIR, "hardrock_graded_results.csv")
+GRADED_RESULTS_FIELDS = [
+    "espnEventId", "nflGame", "matchTime", "market", "betDescription",
+    "payout", "confidence", "expectedValue", "modelStatus", "win", "profit",
+    "clv", "gradedAt",
+]
 
 ESPN_SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event={event_id}"
 
@@ -75,6 +81,21 @@ def load_state():
 def save_state(graded_ids):
     with open(STATE_PATH, "w") as f:
         json.dump(sorted(graded_ids), f)
+
+
+def append_graded_results(rows):
+    """Append one row per graded bet to the persistent results log, so
+    later rollups (total W/L, P&L, by bet-type) are a fast CSV read
+    instead of re-fetching/re-grading every final game from ESPN."""
+    if not rows:
+        return
+    write_header = not os.path.exists(GRADED_RESULTS_PATH)
+    with open(GRADED_RESULTS_PATH, "a", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=GRADED_RESULTS_FIELDS)
+        if write_header:
+            w.writeheader()
+        for r in rows:
+            w.writerow(r)
 
 
 def load_master_log():
@@ -371,6 +392,7 @@ def main():
         )
 
         graded = []
+        persist_rows = []
         for r in pos_ev_rows:
             market = r["market"]
             if market == "props_odds":
@@ -381,6 +403,7 @@ def main():
                 continue  # unparseable or push -- excluded from record
             win, detail = result
             profit = american_profit_per_dollar(r["payout"]) if win else -1.0
+            clv = clv_map.get(r.get("outcomeId"))
             graded.append({
                 "desc": r["betDescription"],
                 "payout": r["payout"],
@@ -389,12 +412,29 @@ def main():
                 "win": win,
                 "detail": detail,
                 "profit": profit,
-                "clv": clv_map.get(r.get("outcomeId")),
+                "clv": clv,
+            })
+            persist_rows.append({
+                "espnEventId": eid,
+                "nflGame": r["nflGame"],
+                "matchTime": r["matchTime"],
+                "market": market,
+                "betDescription": r["betDescription"],
+                "payout": r["payout"],
+                "confidence": r["confidence"],
+                "expectedValue": r["expectedValue"],
+                "modelStatus": r["modelStatus"],
+                "win": win,
+                "profit": profit,
+                "clv": clv["clv"] if clv and not clv.get("single_snapshot") else "",
+                "gradedAt": now_utc.isoformat(),
             })
 
         if not graded:
             graded_events.add(eid)
             continue
+
+        append_graded_results(persist_rows)
 
         wins = [g for g in graded if g["win"]]
         losses = [g for g in graded if not g["win"]]
