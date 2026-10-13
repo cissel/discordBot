@@ -1,11 +1,4 @@
 {
   "outlook": {},
-  "storms": {
-    "al092026": {
-      "name": "Nine",
-      "last_classification": "PTC",
-      "last_category_label": "Potential Tropical Cyclone",
-      "last_adv_num": "017"
-    }
-  }
+  "storms": {}
 }

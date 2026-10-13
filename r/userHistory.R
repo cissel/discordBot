@@ -69,7 +69,7 @@ uap <- ggplot(ua,
   
   geom_text(data = label_df,
             mapping = aes(x = date, 
-                          y = tot^1.005, 
+                          y = tot * 1.02, 
                           label = paste(user_name,
                                         ": ",
                                         tot,
@@ -86,8 +86,6 @@ uap <- ggplot(ua,
                         max(ua$date),
                         sep = " "),
        caption = "Source: Discord message log | JHCV") +
-  
-  scale_y_log10() +
   
   myTheme #+
   #myLegend

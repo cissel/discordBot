@@ -43,6 +43,7 @@
 #   /nfl      nextgame | standings | jags | jagsgame | jagswin | howboutthemjags
 #             wr | fantasyscoreboard | epamap | room40points | amonra
 #             wrstats | rbstats | qbstats | testats | olstats | runradars | playcall
+#             penalties
 #             bets (HardRock +EV monitor)
 #
 #   /nba      scoreboard | today | tomorrow | standings
@@ -1874,6 +1875,33 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         except Exception as e:
             await _send(interaction, f"\u274c error: {e}", ephemeral=True)
 
+    @nfl_group.command(name="penalties", description="Penalty scatter - # penalties vs yards lost, colored by cumulative EPA cost")
+    @app_commands.describe(season="Season year (default: latest)",
+                            scope="Team totals (default) or individual players")
+    @app_commands.choices(scope=[
+        app_commands.Choice(name="Teams", value="team"),
+        app_commands.Choice(name="Players", value="player"),
+    ])
+    async def nfl_penalties(interaction: discord.Interaction, season: int = None, scope: str = "team"):
+        await _defer(interaction)
+        try:
+            yr = str(season) if season else ""
+            team_mode = scope == "team"
+            cmd_args = [os.path.join(rp, "nflPenalties.R"), yr, scope]
+            result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript"] + cmd_args,
+                    capture_output=True, text=True, timeout=180
+                )
+            )
+            out_png = os.path.join(op, f"sports/nfl/nflPenalties{'Team' if team_mode else 'Player'}.png")
+            if result.returncode != 0 or not os.path.exists(out_png):
+                err = result.stderr[-400:] if result.stderr else "no output"
+                await _send(interaction, f"\u274c Penalties chart failed\n```{err}```", ephemeral=True); return
+            await _send(interaction, file=discord.File(out_png))
+        except Exception as e:
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
+
     @nfl_group.command(name="runradars", description="Run-direction sonar/radar charts per team (volume + avg yards)")
     @app_commands.describe(season="Season year (default: latest)")
     async def nfl_runradars(interaction: discord.Interaction, season: int = None):
@@ -2062,8 +2090,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
     @jags_group.command(name="howbout", description="how bout them jags")
     async def jags_howbout(interaction: discord.Interaction):
-        await interaction.response.send_message(
-            file=discord.File(os.path.join(op, "sports/nfl/howBout.mov")))
+        await _defer(interaction)
+        await _send(interaction, file=discord.File(os.path.join(op, "sports/nfl/howBout.mov")))
 
     tree.add_command(jags_group)
 

@@ -1,9 +1,9 @@
 [buildSpyFeatures] loading raw series...
-  base df: 2707 rows, 2016-01-05 to 2026-10-09
+  base df: 2708 rows, 2016-01-05 to 2026-10-12
   building SPY technical features...
   building vol regime features...
   loading options snapshot...
-    options rows: 72
+    options rows: 73
   building cross-asset features...
   building macro features...
   building tier-1 public-datapoint features...
@@ -18,21 +18,21 @@
   building intraday aggregated features...
     intraday features rows: 1401, date range: 2021-01-04 to 2026-08-03
   building GEX features...
-    GEX cache rows: 3882, date range: 2011-05-02 to 2026-10-07
-    gex_b coverage in spy_features: 99.9%
+    GEX cache rows: 3884, date range: 2011-05-02 to 2026-10-09
+    gex_b coverage in spy_features: 100.0%
   building VIX term structure / VVIX features...
-    vix_term cache rows: 2589, range: 2016-06-23 to 2026-10-09
+    vix_term cache rows: 2590, range: 2016-06-23 to 2026-10-12
     vvix coverage in spy_features: 95.3%
     vix_term_slope coverage: 95.5%
   building regime labels...
-    bull=761  bear=240  chop=1706
+    bull=761  bear=240  chop=1707
     VIX p33=14.8  p67=19.4  p80=22.6
   building regime-change + interaction features...
     rate-shock regime: 166 shock days, 166 easing days
     returns-distribution regime: ret_skew_21, ret_kurt_21, drawdown_63d, regime_age_z added
   loading moon phase + weather features...
-    moon phase coverage: 2707/2707 rows (100%)
-    weather coverage: NYC=2702 rows, CHI=2702 rows
+    moon phase coverage: 2708/2708 rows (100%)
+    weather coverage: NYC=2705 rows, CHI=2705 rows
   alt data 1: 18 cols, wikipedia=2632 rows
   alt data 2: 14 cols, daylight=2632 rows
   google trends: 17 cols, trends_spy=97% coverage (+2bd publication lag applied)
@@ -59,4 +59,4 @@
     [sparse] opt_pcr_vol: 3%
     [sparse] opt_vega_weighted_iv: 3%
 
-[buildSpyFeatures] wrote 2707 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv
+[buildSpyFeatures] wrote 2708 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv

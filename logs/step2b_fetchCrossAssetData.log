@@ -1,26 +1,31 @@
 [fetchCrossAssetData] Alpaca daily-return tickers:
-  [SPY] existing: 2706 rows to 2026-10-08, fetching 2026-10-09 to 2026-10-09
-  [SPY] wrote 2707 rows -> /home/jhcv/discordBot/outputs/markets/cache/SPY.csv (last: 2026-10-09)
-  [QQQ] existing: 2706 rows to 2026-10-08, fetching 2026-10-09 to 2026-10-09
-  [QQQ] wrote 2707 rows -> /home/jhcv/discordBot/outputs/markets/cache/QQQ.csv (last: 2026-10-09)
-  [GLD] existing: 2706 rows to 2026-10-08, fetching 2026-10-09 to 2026-10-09
-  [GLD] wrote 2707 rows -> /home/jhcv/discordBot/outputs/markets/cache/GLD.csv (last: 2026-10-09)
-  [USO] existing: 2706 rows to 2026-10-08, fetching 2026-10-09 to 2026-10-09
-  [USO] wrote 2707 rows -> /home/jhcv/discordBot/outputs/markets/cache/USO.csv (last: 2026-10-09)
-  [CPER] existing: 1476 rows to 2026-10-08, fetching 2026-10-09 to 2026-10-09
-  [CPER] wrote 1477 rows -> /home/jhcv/discordBot/outputs/markets/cache/CPER.csv (last: 2026-10-09)
-  [MOVE] existing: 1286 rows to 2026-10-08, fetching 2026-10-09 to 2026-10-09
-  [MOVE] wrote 1287 rows -> /home/jhcv/discordBot/outputs/markets/cache/MOVE.csv (last: 2026-10-09)
+  [SPY] existing: 2707 rows to 2026-10-09, fetching 2026-10-10 to 2026-10-12
+  [SPY] wrote 2708 rows -> /home/jhcv/discordBot/outputs/markets/cache/SPY.csv (last: 2026-10-12)
+  [QQQ] existing: 2707 rows to 2026-10-09, fetching 2026-10-10 to 2026-10-12
+  [QQQ] wrote 2708 rows -> /home/jhcv/discordBot/outputs/markets/cache/QQQ.csv (last: 2026-10-12)
+  [GLD] existing: 2707 rows to 2026-10-09, fetching 2026-10-10 to 2026-10-12
+  [GLD] wrote 2708 rows -> /home/jhcv/discordBot/outputs/markets/cache/GLD.csv (last: 2026-10-12)
+  [USO] existing: 2707 rows to 2026-10-09, fetching 2026-10-10 to 2026-10-12
+  [USO] wrote 2708 rows -> /home/jhcv/discordBot/outputs/markets/cache/USO.csv (last: 2026-10-12)
+  [CPER] existing: 1477 rows to 2026-10-09, fetching 2026-10-10 to 2026-10-12
+  [CPER] wrote 1478 rows -> /home/jhcv/discordBot/outputs/markets/cache/CPER.csv (last: 2026-10-12)
+  [MOVE] existing: 1287 rows to 2026-10-09, fetching 2026-10-10 to 2026-10-12
+  [MOVE] wrote 1288 rows -> /home/jhcv/discordBot/outputs/markets/cache/MOVE.csv (last: 2026-10-12)
 [fetchCrossAssetData] FRED level series:
-  [VIX.csv] wrote 9593 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-10-08, 2d behind, expected <=3d) [OK]
-  [DXY.csv] wrote 5415 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-10-02, 8d behind, expected <=14d) [OK]
-  [T10Y2Y.csv] wrote 13139 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-10-09, 1d behind, expected <=3d) [OK]
-  [FEDFUNDS.csv] wrote 867 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-09-01, 39d behind, expected <=65d) [OK]
-  [WALCL.csv] wrote 1243 rows -> /home/jhcv/discordBot/outputs/markets/cache/WALCL.csv (last: 2026-10-07, 3d behind, expected <=10d) [OK]
-  [RRPONTSYD.csv] wrote 6176 rows -> /home/jhcv/discordBot/outputs/markets/cache/RRPONTSYD.csv (last: 2026-10-09, 1d behind, expected <=3d) [OK]
-  [WTREGEN.csv] wrote 1243 rows -> /home/jhcv/discordBot/outputs/markets/cache/WTREGEN.csv (last: 2026-10-07, 3d behind, expected <=10d) [OK]
-  [T5YIE.csv] wrote 6202 rows -> /home/jhcv/discordBot/outputs/markets/cache/T5YIE.csv (last: 2026-10-09, 1d behind, expected <=3d) [OK]
-  [T10YIE.csv] wrote 6202 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10YIE.csv (last: 2026-10-09, 1d behind, expected <=3d) [OK]
-  [BAMLH0A0HYM2.csv] wrote 794 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLH0A0HYM2.csv (last: 2026-10-08, 2d behind, expected <=5d) [OK]
-  [BAMLC0A0CM.csv] wrote 794 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLC0A0CM.csv (last: 2026-10-08, 2d behind, expected <=5d) [OK]
+  [VIX.csv] wrote 9594 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-10-09, 4d behind, expected <=3d) [WARN]
+    [WARN] VIX.csv is MORE stale than its known publication lag allows - this may be a genuine fetch problem, not just normal lag.
+  [DXY.csv] wrote 5415 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-10-02, 11d behind, expected <=14d) [OK]
+  [T10Y2Y.csv] wrote 13139 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-10-09, 4d behind, expected <=3d) [WARN]
+    [WARN] T10Y2Y.csv is MORE stale than its known publication lag allows - this may be a genuine fetch problem, not just normal lag.
+  [FEDFUNDS.csv] wrote 867 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-09-01, 42d behind, expected <=65d) [OK]
+  [WALCL.csv] wrote 1243 rows -> /home/jhcv/discordBot/outputs/markets/cache/WALCL.csv (last: 2026-10-07, 6d behind, expected <=10d) [OK]
+  [RRPONTSYD.csv] wrote 6176 rows -> /home/jhcv/discordBot/outputs/markets/cache/RRPONTSYD.csv (last: 2026-10-09, 4d behind, expected <=3d) [WARN]
+    [WARN] RRPONTSYD.csv is MORE stale than its known publication lag allows - this may be a genuine fetch problem, not just normal lag.
+  [WTREGEN.csv] wrote 1243 rows -> /home/jhcv/discordBot/outputs/markets/cache/WTREGEN.csv (last: 2026-10-07, 6d behind, expected <=10d) [OK]
+  [T5YIE.csv] wrote 6202 rows -> /home/jhcv/discordBot/outputs/markets/cache/T5YIE.csv (last: 2026-10-09, 4d behind, expected <=3d) [WARN]
+    [WARN] T5YIE.csv is MORE stale than its known publication lag allows - this may be a genuine fetch problem, not just normal lag.
+  [T10YIE.csv] wrote 6202 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10YIE.csv (last: 2026-10-09, 4d behind, expected <=3d) [WARN]
+    [WARN] T10YIE.csv is MORE stale than its known publication lag allows - this may be a genuine fetch problem, not just normal lag.
+  [BAMLH0A0HYM2.csv] wrote 794 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLH0A0HYM2.csv (last: 2026-10-08, 5d behind, expected <=5d) [OK]
+  [BAMLC0A0CM.csv] wrote 794 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLC0A0CM.csv (last: 2026-10-08, 5d behind, expected <=5d) [OK]
 [fetchCrossAssetData] done.

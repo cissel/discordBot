@@ -23,7 +23,6 @@ open_drive_flag
 late_reversal_flag
 days_since_regime_change
 regime_transition_flag
-vix_rv_x_bear
 vix_rv_x_chop
 dix_chg_x_bear
 moon_phase_cos
@@ -32,6 +31,7 @@ moon_full_flag
 tavg_nyc
 prcp_flag_nyc
 sunshine_proxy_nyc
+tavg_chi
 temp_range_chi
 sunshine_proxy_chi
 wiki_economy_views
@@ -48,6 +48,7 @@ trends_buy_stocks
 trends_volatility
 trends_fear_index
 trends_fear_z21
+t5yie_chg_5d
 breakeven_slope
 vix_move_ratio
 hy_ig_spread

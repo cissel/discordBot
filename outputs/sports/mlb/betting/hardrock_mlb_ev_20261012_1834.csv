@@ -1,0 +1,79 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-12T18:34:57-04:00,1,Guardians @ Rays,Guardians +1.5 run line,-155,58.3,-0.0416,upcoming_games_odds,draftkings_devig,0.583,-155,2026-10-13 11:00:00,401908023,362662995194675589
+2026-10-12T18:34:57-04:00,2,Guardians @ Rays,Rays -1.5 run line,+130,41.7,-0.0399,upcoming_games_odds,draftkings_devig,0.417,+130,2026-10-13 11:00:00,401908023,6438018892517474693
+2026-10-12T18:34:57-04:00,3,Guardians @ Rays,O 6.5,-125,52.9,-0.0476,upcoming_games_odds,draftkings_devig,0.5325,-125,2026-10-13 11:00:00,401908023,4109378609213473176
+2026-10-12T18:34:57-04:00,4,Guardians @ Rays,U 6.5,+105,52.9,0.0847,upcoming_games_odds,draftkings_devig,0.4675,+105,2026-10-13 11:00:00,401908023,3218791782900957592
+2026-10-12T18:34:57-04:00,5,Guardians @ Rays,Guardians ML,+140,36.2,-0.1321,upcoming_games_odds,espn_bpi,0.3982,+140,2026-10-13 11:00:00,401908023,5194229348944707990
+2026-10-12T18:34:57-04:00,6,Guardians @ Rays,Rays ML,-170,63.8,0.0139,upcoming_games_odds,espn_bpi,0.6018,-170,2026-10-13 11:00:00,401908023,5237013545404727702
+2026-10-12T18:34:57-04:00,7,Cleveland Guardians @ Tampa Bay Rays,Victor Mesa Jr. - Home Runs (O 0.5),+700,16.2,0.2992,props_odds,mlbapi_poisson,,+700,2026-10-13 11:00:00,,7337525926743376284
+2026-10-12T18:34:57-04:00,8,Cleveland Guardians @ Tampa Bay Rays,Brayan Rocchio - RBIs (O 0.5),+350,37.9,0.7075,props_odds,mlbapi_poisson,,+350,2026-10-13 11:00:00,,117989367376642460
+2026-10-12T18:34:57-04:00,9,Cleveland Guardians @ Tampa Bay Rays,Foster Griffin - Strikeouts (O 3.5),-115,74.8,0.399,props_odds,mlbapi_poisson,,-115,2026-10-13 11:00:00,,6036537526456549766
+2026-10-12T18:34:57-04:00,10,Cleveland Guardians @ Tampa Bay Rays,Jonathan Aranda - RBIs (O 0.5),+220,44.8,0.4324,props_odds,mlbapi_poisson,,+220,2026-10-13 11:00:00,,6832157122390786453
+2026-10-12T18:34:57-04:00,11,Cleveland Guardians @ Tampa Bay Rays,Jonny Deluca - Doubles (O 0.5),+500,19.3,0.1573,props_odds,mlbapi_poisson,,+500,2026-10-13 11:00:00,,5519342712727404952
+2026-10-12T18:34:57-04:00,12,Cleveland Guardians @ Tampa Bay Rays,Travis Bazzana - Total Bases (O 1.5),+220,43.4,0.3889,props_odds,mlbapi_poisson,,+220,2026-10-13 11:00:00,,9093074086493553045
+2026-10-12T18:34:57-04:00,13,Cleveland Guardians @ Tampa Bay Rays,Ryan Vilade - Hits (U 0.5),+115,53.5,0.1508,props_odds,mlbapi_poisson,,+115,2026-10-13 11:00:00,,836555400500347286
+2026-10-12T18:34:57-04:00,14,Cleveland Guardians @ Tampa Bay Rays,Travis Bazzana - RBIs (O 0.5),+325,36.9,0.5662,props_odds,mlbapi_poisson,,+325,2026-10-13 11:00:00,,164418444882739606
+2026-10-12T18:34:57-04:00,15,Cleveland Guardians @ Tampa Bay Rays,Chase DeLauter - Total Bases (O 1.5),+165,50.7,0.3423,props_odds,mlbapi_poisson,,+165,2026-10-13 11:00:00,,7600931254485254556
+2026-10-12T18:34:57-04:00,16,Cleveland Guardians @ Tampa Bay Rays,Jo Adell - RBIs (O 0.5),+220,44.6,0.4283,props_odds,mlbapi_poisson,,+220,2026-10-13 11:00:00,,1592059526759186847
+2026-10-12T18:34:57-04:00,17,Cleveland Guardians @ Tampa Bay Rays,Victor Mesa Jr. - Stolen Bases (O 0.5),+800,10.8,-0.0309,props_odds,mlbapi_poisson,,+800,2026-10-13 11:00:00,,8233832962299396509
+2026-10-12T18:34:57-04:00,18,Cleveland Guardians @ Tampa Bay Rays,Taylor Walls - Stolen Bases (O 0.5),+650,15.6,0.1684,props_odds,mlbapi_poisson,,+650,2026-10-13 11:00:00,,4414780478289215903
+2026-10-12T18:34:57-04:00,19,Cleveland Guardians @ Tampa Bay Rays,Ryan Vilade - Home Runs (O 0.5),+800,10.8,-0.0256,props_odds,mlbapi_poisson,,+800,2026-10-13 11:00:00,,807306467056157063
+2026-10-12T18:34:57-04:00,20,Cleveland Guardians @ Tampa Bay Rays,Jose Ramirez - Runs (O 0.5),+155,43.3,0.105,props_odds,mlbapi_poisson,,+155,2026-10-13 11:00:00,,8213262474133242268
+2026-10-12T18:34:57-04:00,21,Cleveland Guardians @ Tampa Bay Rays,Taylor Walls - Runs (O 0.5),+190,38.4,0.1125,props_odds,mlbapi_poisson,,+190,2026-10-13 11:00:00,,8622874535944913311
+2026-10-12T18:34:57-04:00,22,Cleveland Guardians @ Tampa Bay Rays,Patrick Bailey - RBIs (O 0.5),+325,28.1,0.1957,props_odds,mlbapi_poisson,,+325,2026-10-13 11:00:00,,1250911854985871775
+2026-10-12T18:34:57-04:00,23,Cleveland Guardians @ Tampa Bay Rays,Brayan Rocchio - Hits+Runs+RBI (O 0.5),-150,83.3,0.3886,props_odds,mlbapi_poisson,,-150,2026-10-13 11:00:00,,3194320647312507295
+2026-10-12T18:34:57-04:00,24,Cleveland Guardians @ Tampa Bay Rays,Brayan Rocchio - Runs (O 0.5),+230,35.0,0.1563,props_odds,mlbapi_poisson,,+230,2026-10-13 11:00:00,,1577155646644683157
+2026-10-12T18:34:57-04:00,25,Cleveland Guardians @ Tampa Bay Rays,Nathaniel Lowe - RBIs (O 0.5),+260,39.8,0.4338,props_odds,mlbapi_poisson,,+260,2026-10-13 11:00:00,,8255026323802685845
+2026-10-12T18:34:57-04:00,26,Cleveland Guardians @ Tampa Bay Rays,Ryan Vilade - Hits+Runs+RBI (U 1.5),-170,60.4,-0.0405,props_odds,mlbapi_poisson,,-170,2026-10-13 11:00:00,,5609834443838718363
+2026-10-12T18:34:57-04:00,27,Cleveland Guardians @ Tampa Bay Rays,Travis Bazzana - Doubles (O 0.5),+550,16.3,0.0567,props_odds,mlbapi_poisson,,+550,2026-10-13 11:00:00,,632233429588640131
+2026-10-12T18:34:57-04:00,28,Cleveland Guardians @ Tampa Bay Rays,Travis Bazzana - Home Runs (O 0.5),+1000,11.4,0.2533,props_odds,mlbapi_poisson,,+1000,2026-10-13 11:00:00,,8238984724031340978
+2026-10-12T18:34:57-04:00,29,Cleveland Guardians @ Tampa Bay Rays,Yandy Diaz - RBIs (O 0.5),+200,42.4,0.2725,props_odds,mlbapi_poisson,,+200,2026-10-13 11:00:00,,2971367176990228895
+2026-10-12T18:34:57-04:00,30,Cleveland Guardians @ Tampa Bay Rays,Brayan Rocchio - Hits (O 0.5),-120,58.6,0.0747,props_odds,mlbapi_poisson,,-120,2026-10-13 11:00:00,,9027502511547875733
+2026-10-12T18:34:57-04:00,31,Cleveland Guardians @ Tampa Bay Rays,Junior Caminero - Home Runs (O 0.5),+375,22.8,0.0848,props_odds,mlbapi_poisson,,+375,2026-10-13 11:00:00,,6538902802733859231
+2026-10-12T18:34:57-04:00,32,Cleveland Guardians @ Tampa Bay Rays,Ryan Vilade - Singles (U 0.5),-180,66.6,0.0362,props_odds,mlbapi_poisson,,-180,2026-10-13 11:00:00,,7955858005977858453
+2026-10-12T18:34:57-04:00,33,Cleveland Guardians @ Tampa Bay Rays,Brayan Rocchio - Singles (O 0.5),+130,45.5,0.0476,props_odds,mlbapi_poisson,,+130,2026-10-13 11:00:00,,2356278382179778972
+2026-10-12T18:34:57-04:00,34,Cleveland Guardians @ Tampa Bay Rays,Nathaniel Lowe - Total Bases (O 1.5),+210,38.8,0.202,props_odds,mlbapi_poisson,,+210,2026-10-13 11:00:00,,1205358263613391260
+2026-10-12T18:34:57-04:00,35,Cleveland Guardians @ Tampa Bay Rays,Jo Adell - Home Runs (O 0.5),+750,13.5,0.1448,props_odds,mlbapi_poisson,,+750,2026-10-13 11:00:00,,5221572973693108640
+2026-10-12T18:34:57-04:00,36,Cleveland Guardians @ Tampa Bay Rays,Petey Halpin - Runs (O 0.5),+250,27.8,-0.0281,props_odds,mlbapi_poisson,,+250,2026-10-13 11:00:00,,6987425488520216976
+2026-10-12T18:34:57-04:00,37,Cleveland Guardians @ Tampa Bay Rays,Chase DeLauter - Home Runs (O 0.5),+900,11.3,0.1335,props_odds,mlbapi_poisson,,+900,2026-10-13 11:00:00,,2393312407704437123
+2026-10-12T18:34:57-04:00,38,Cleveland Guardians @ Tampa Bay Rays,Travis Bazzana - Runs (O 0.5),+210,36.3,0.1265,props_odds,mlbapi_poisson,,+210,2026-10-13 11:00:00,,164418444882739592
+2026-10-12T18:34:57-04:00,39,Cleveland Guardians @ Tampa Bay Rays,Jonny Deluca - RBIs (O 0.5),+260,36.0,0.2963,props_odds,mlbapi_poisson,,+260,2026-10-13 11:00:00,,1446001501637050783
+2026-10-12T18:34:57-04:00,40,Cleveland Guardians @ Tampa Bay Rays,Brayan Rocchio - Total Bases (O 1.5),+240,39.6,0.3477,props_odds,mlbapi_poisson,,+240,2026-10-13 11:00:00,,978489432384602499
+2026-10-12T18:34:57-04:00,41,Cleveland Guardians @ Tampa Bay Rays,Chase DeLauter - Runs (O 0.5),+180,37.3,0.0433,props_odds,mlbapi_poisson,,+180,2026-10-13 11:00:00,,101637430448357791
+2026-10-12T18:34:57-04:00,42,Cleveland Guardians @ Tampa Bay Rays,Foster Griffin - Earned Runs (U 1.5),-105,34.8,-0.3199,props_odds,mlbapi_poisson,,-105,2026-10-13 11:00:00,,3047097351928938912
+2026-10-12T18:34:57-04:00,43,Cleveland Guardians @ Tampa Bay Rays,Victor Mesa Jr. - Runs (O 0.5),+165,37.4,-0.009,props_odds,mlbapi_poisson,,+165,2026-10-13 11:00:00,,4486159948530712981
+2026-10-12T18:34:57-04:00,44,Cleveland Guardians @ Tampa Bay Rays,Nathaniel Lowe - Doubles (O 0.5),+550,16.0,0.0414,props_odds,mlbapi_poisson,,+550,2026-10-13 11:00:00,,3799389867536941471
+2026-10-12T18:34:57-04:00,45,Cleveland Guardians @ Tampa Bay Rays,Drew Rasmussen - Earned Runs (U 1.5),-120,49.3,-0.0957,props_odds,mlbapi_poisson,,-120,2026-10-13 11:00:00,,5193866289990467997
+2026-10-12T18:34:57-04:00,46,Cleveland Guardians @ Tampa Bay Rays,Nathaniel Lowe - Home Runs (O 0.5),+750,12.6,0.0728,props_odds,mlbapi_poisson,,+750,2026-10-13 11:00:00,,1589419874218803610
+2026-10-12T18:34:57-04:00,47,Cleveland Guardians @ Tampa Bay Rays,Petey Halpin - Total Bases (U 1.5),-375,84.5,0.0698,props_odds,mlbapi_poisson,,-375,2026-10-13 11:00:00,,726850803205276061
+2026-10-12T18:34:57-04:00,48,Cleveland Guardians @ Tampa Bay Rays,Chase DeLauter - RBIs (O 0.5),+225,39.6,0.2862,props_odds,mlbapi_poisson,,+225,2026-10-13 11:00:00,,5460384425344893333
+2026-10-12T18:34:57-04:00,49,Cleveland Guardians @ Tampa Bay Rays,Victor Mesa Jr. - Hits (U 0.5),+140,46.2,0.1088,props_odds,mlbapi_poisson,,+140,2026-10-13 11:00:00,,2710052845486473631
+2026-10-12T18:34:57-04:00,50,Cleveland Guardians @ Tampa Bay Rays,Steven Kwan - Runs (O 0.5),+160,41.1,0.0693,props_odds,mlbapi_poisson,,+160,2026-10-13 11:00:00,,7588871810951807388
+2026-10-12T18:34:57-04:00,51,Cleveland Guardians @ Tampa Bay Rays,Ryan Vilade - Doubles (U 0.5),-650,92.0,0.0616,props_odds,mlbapi_poisson,,-650,2026-10-13 11:00:00,,2325164677014880671
+2026-10-12T18:34:57-04:00,52,Cleveland Guardians @ Tampa Bay Rays,Jonny Deluca - Singles (U 0.5),-115,59.6,0.1139,props_odds,mlbapi_poisson,,-115,2026-10-13 11:00:00,,1555064259019407765
+2026-10-12T18:34:57-04:00,53,Cleveland Guardians @ Tampa Bay Rays,Junior Caminero - Runs (O 0.5),+120,46.1,0.0133,props_odds,mlbapi_poisson,,+120,2026-10-13 11:00:00,,5329722861546504604
+2026-10-12T18:34:57-04:00,54,Cleveland Guardians @ Tampa Bay Rays,Victor Mesa Jr. - Doubles (U 0.5),-650,90.4,0.0427,props_odds,mlbapi_poisson,,-650,2026-10-13 11:00:00,,4622000486973833628
+2026-10-12T18:34:57-04:00,55,Cleveland Guardians @ Tampa Bay Rays,Junior Caminero - Hits+Runs+RBI (O 1.5),-125,66.7,0.2004,props_odds,mlbapi_poisson,,-125,2026-10-13 11:00:00,,2877125836350292360
+2026-10-12T18:34:57-04:00,56,Cleveland Guardians @ Tampa Bay Rays,Travis Bazzana - Hits+Runs+RBI (O 0.5),-150,83.4,0.3907,props_odds,mlbapi_poisson,,-150,2026-10-13 11:00:00,,4953993350056378760
+2026-10-12T18:34:57-04:00,57,Cleveland Guardians @ Tampa Bay Rays,Jo Adell - Hits+Runs+RBI (O 1.5),+120,57.8,0.2726,props_odds,mlbapi_poisson,,+120,2026-10-13 11:00:00,,8133925013607809429
+2026-10-12T18:34:57-04:00,58,Cleveland Guardians @ Tampa Bay Rays,Taylor Walls - Hits+Runs+RBI (O 0.5),-170,76.2,0.2102,props_odds,mlbapi_poisson,,-170,2026-10-13 11:00:00,,18976146272158104
+2026-10-12T18:34:57-04:00,59,Cleveland Guardians @ Tampa Bay Rays,Petey Halpin - RBIs (U 0.5),-525,84.5,0.0057,props_odds,mlbapi_poisson,,-525,2026-10-13 11:00:00,,6987425488520217000
+2026-10-12T18:34:57-04:00,60,Cleveland Guardians @ Tampa Bay Rays,Victor Mesa Jr. - Singles (U 0.5),-135,63.4,0.1036,props_odds,mlbapi_poisson,,-135,2026-10-13 11:00:00,,794334153993748886
+2026-10-12T18:34:57-04:00,61,Cleveland Guardians @ Tampa Bay Rays,Petey Halpin - Hits (U 0.5),-115,61.8,0.1546,props_odds,mlbapi_poisson,,-115,2026-10-13 11:00:00,,2464228165896241576
+2026-10-12T18:34:57-04:00,62,Cleveland Guardians @ Tampa Bay Rays,Victor Mesa Jr. - RBIs (O 0.5),+195,35.0,0.0317,props_odds,mlbapi_poisson,,+195,2026-10-13 11:00:00,,8183597650415845791
+2026-10-12T18:34:57-04:00,63,Cleveland Guardians @ Tampa Bay Rays,Jo Adell - Singles (O 0.5),+120,45.0,-0.0104,props_odds,mlbapi_poisson,,+120,2026-10-13 11:00:00,,870357686473064861
+2026-10-12T18:34:57-04:00,64,Cleveland Guardians @ Tampa Bay Rays,Travis Bazzana - Hits (O 0.5),-125,58.8,0.0587,props_odds,mlbapi_poisson,,-125,2026-10-13 11:00:00,,8884457148285845910
+2026-10-12T18:34:57-04:00,65,Cleveland Guardians @ Tampa Bay Rays,Junior Caminero - RBIs (O 0.5),+165,46.4,0.2294,props_odds,mlbapi_poisson,,+165,2026-10-13 11:00:00,,2146416796809429397
+2026-10-12T18:34:57-04:00,66,Cleveland Guardians @ Tampa Bay Rays,Jonathan Aranda - Hits+Runs+RBI (O 1.5),-110,61.8,0.1796,props_odds,mlbapi_poisson,,-110,2026-10-13 11:00:00,,4631401036513411464
+2026-10-12T18:34:57-04:00,67,Cleveland Guardians @ Tampa Bay Rays,Chase DeLauter - Hits+Runs+RBI (O 1.5),+110,60.4,0.2686,props_odds,mlbapi_poisson,,+110,2026-10-13 11:00:00,,5989636546398126472
+2026-10-12T18:34:57-04:00,68,Cleveland Guardians @ Tampa Bay Rays,Patrick Bailey - Doubles (U 0.5),-1000,93.1,0.0242,props_odds,mlbapi_poisson,,-1000,2026-10-13 11:00:00,,2762436053334884762
+2026-10-12T18:34:57-04:00,69,Cleveland Guardians @ Tampa Bay Rays,Petey Halpin - Doubles (U 0.5),-1100,95.3,0.0396,props_odds,mlbapi_poisson,,-1100,2026-10-13 11:00:00,,8175249890239185317
+2026-10-12T18:34:57-04:00,70,Cleveland Guardians @ Tampa Bay Rays,Junior Caminero - Total Bases (O 1.5),+115,59.2,0.2735,props_odds,mlbapi_poisson,,+115,2026-10-13 11:00:00,,2018116983987503496
+2026-10-12T18:34:57-04:00,71,Cleveland Guardians @ Tampa Bay Rays,Jose Ramirez - Hits+Runs+RBI (O 1.5),+110,56.1,0.1771,props_odds,mlbapi_poisson,,+110,2026-10-13 11:00:00,,1979181078224699784
+2026-10-12T18:34:57-04:00,72,Cleveland Guardians @ Tampa Bay Rays,Chase DeLauter - Hits (O 0.5),-190,65.6,0.0016,props_odds,mlbapi_poisson,,-190,2026-10-13 11:00:00,,3843108374002663835
+2026-10-12T18:34:57-04:00,73,Cleveland Guardians @ Tampa Bay Rays,Steven Kwan - Hits+Runs+RBI (O 1.5),+105,52.2,0.0693,props_odds,mlbapi_poisson,,+105,2026-10-13 11:00:00,,2378901933432897941
+2026-10-12T18:34:57-04:00,74,Cleveland Guardians @ Tampa Bay Rays,Jose Ramirez - RBIs (O 0.5),+260,34.6,0.2441,props_odds,mlbapi_poisson,,+260,2026-10-13 11:00:00,,4152461468035580316
+2026-10-12T18:34:57-04:00,75,Cleveland Guardians @ Tampa Bay Rays,Junior Caminero - Doubles (U 0.5),-600,85.7,-0.0002,props_odds,mlbapi_poisson,,-600,2026-10-13 11:00:00,,8240867637693907359
+2026-10-12T18:34:57-04:00,76,Cleveland Guardians @ Tampa Bay Rays,Jonathan Aranda - Singles (O 0.5),-110,50.8,-0.0298,props_odds,mlbapi_poisson,,-110,2026-10-13 11:00:00,,3706342321646862747
+2026-10-12T18:34:57-04:00,77,Cleveland Guardians @ Tampa Bay Rays,Jose Ramirez - Total Bases (O 1.5),+175,40.5,0.1149,props_odds,mlbapi_poisson,,+175,2026-10-13 11:00:00,,7119710474257695117
+2026-10-12T18:34:57-04:00,78,Cleveland Guardians @ Tampa Bay Rays,Ryan Vilade - Total Bases (U 1.5),-260,70.1,-0.0289,props_odds,mlbapi_poisson,,-260,2026-10-13 11:00:00,,4188852279257989535

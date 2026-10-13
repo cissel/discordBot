@@ -1,0 +1,7 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-12T22:37:08-04:00,1,Brewers @ Dodgers,Brewers +1.5 run line,-155,,,upcoming_games_odds,no_model,0.583,-155,2026-10-15 11:00:00,,5360389553695883678
+2026-10-12T22:37:08-04:00,2,Brewers @ Dodgers,Dodgers -1.5 run line,+130,,,upcoming_games_odds,no_model,0.417,+130,2026-10-15 11:00:00,,8853494014675124638
+2026-10-12T22:37:08-04:00,3,Brewers @ Dodgers,O 7.5,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-15 11:00:00,,4371849435488059781
+2026-10-12T22:37:08-04:00,4,Brewers @ Dodgers,U 7.5,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-15 11:00:00,,7179843803153564037
+2026-10-12T22:37:08-04:00,5,Brewers @ Dodgers,Brewers ML,+145,,,upcoming_games_odds,no_model,0.3908,+145,2026-10-15 11:00:00,,8614980255796560279
+2026-10-12T22:37:08-04:00,6,Brewers @ Dodgers,Dodgers ML,-175,,,upcoming_games_odds,no_model,0.6092,-175,2026-10-15 11:00:00,,5144956742907593111

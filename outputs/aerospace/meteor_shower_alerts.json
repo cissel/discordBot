@@ -47,6 +47,10 @@
     "2027-perseids": {
       "headsup": false,
       "peak": false
+    },
+    "2027-draconids": {
+      "headsup": false,
+      "peak": false
     }
   }
 }

@@ -1,0 +1,40 @@
+scrapedAt,betNumber,nflGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-11T23:42:23-04:00,1,Bills @ Rams,Bills +3.5 spread,-115,51.1,-0.045,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-13 11:15:00,401872994,2217985864758329737
+2026-10-11T23:42:23-04:00,2,Bills @ Rams,Rams -3.5 spread,-105,48.9,-0.045,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-13 11:15:00,401872994,2375611851716297097
+2026-10-11T23:42:23-04:00,3,Bills @ Rams,O 54.5,-110,51.1,-0.0248,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-13 11:15:00,401872994,7859406716356657557
+2026-10-11T23:42:23-04:00,4,Bills @ Rams,U 54.5,-110,51.1,-0.0248,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-13 11:15:00,401872994,5145987940865933717
+2026-10-11T23:42:23-04:00,5,Bills @ Rams,Bills ML,+145,41.4,0.0155,upcoming_games_odds,espn_bpi,0.3908,+145,2026-10-13 11:15:00,401872994,2867623926253617555
+2026-10-11T23:42:23-04:00,6,Bills @ Rams,Rams ML,-175,58.2,-0.0852,upcoming_games_odds,espn_bpi,0.6092,-175,2026-10-13 11:15:00,401872994,2881134725135729043
+2026-10-11T23:42:23-04:00,7,Buffalo Bills @ Los Angeles Rams,Tyler Higbee - First TD (Yes),+1600,,,props_odds,no_model,,+1600,2026-10-13 11:15:00,,5598591046373212549
+2026-10-11T23:42:23-04:00,8,Buffalo Bills @ Los Angeles Rams,Josh Allen - To Score 2+ TDs (O 1.5),+425,19.8,0.0417,props_odds,sleeper_poisson,,+425,2026-10-13 11:15:00,,7405825859933831597
+2026-10-11T23:42:23-04:00,9,Buffalo Bills @ Los Angeles Rams,Davante Adams - First TD (Yes),+700,,,props_odds,no_model,,+700,2026-10-13 11:15:00,,4311392783735849357
+2026-10-11T23:42:23-04:00,10,Buffalo Bills @ Los Angeles Rams,James Cook - Last TD (Yes),+700,,,props_odds,no_model,,+700,2026-10-13 11:15:00,,2767981923547611529
+2026-10-11T23:42:23-04:00,11,Buffalo Bills @ Los Angeles Rams,James Cook - Longest Reception (U 7.5),-105,,,props_odds,no_model,,-105,2026-10-13 11:15:00,,6861340066615263652
+2026-10-11T23:42:23-04:00,12,Buffalo Bills @ Los Angeles Rams,Puka Nacua - Longest Reception (O 28.5),-110,,,props_odds,no_model,,-110,2026-10-13 11:15:00,,7534570761021948311
+2026-10-11T23:42:23-04:00,13,Buffalo Bills @ Los Angeles Rams,Ty Johnson - Longest Reception (O 8.5),-110,,,props_odds,no_model,,-110,2026-10-13 11:15:00,,2520236754028593580
+2026-10-11T23:42:23-04:00,14,Buffalo Bills @ Los Angeles Rams,Dawson Knox - Longest Reception (U 9.5),-115,,,props_odds,no_model,,-115,2026-10-13 11:15:00,,849068076631720335
+2026-10-11T23:42:23-04:00,15,Buffalo Bills @ Los Angeles Rams,Colby Parkinson - Longest Reception (U 11.5),-120,,,props_odds,no_model,,-120,2026-10-13 11:15:00,,8445616724849590674
+2026-10-11T23:42:23-04:00,16,Buffalo Bills @ Los Angeles Rams,Josh Allen - First TD (Yes),+600,,,props_odds,no_model,,+600,2026-10-13 11:15:00,,6349271615120998793
+2026-10-11T23:42:23-04:00,17,Buffalo Bills @ Los Angeles Rams,Konata Mumpfield - Anytime TD (O 0.5),+600,7.7,-0.4618,props_odds,sleeper_poisson,,+600,2026-10-13 11:15:00,,7061165514797744518
+2026-10-11T23:42:23-04:00,18,Buffalo Bills @ Los Angeles Rams,Josh Allen - Anytime TD (O 0.5),-135,56.0,-0.0259,props_odds,sleeper_poisson,,-135,2026-10-13 11:15:00,,8883006537711354271
+2026-10-11T23:42:23-04:00,19,Buffalo Bills @ Los Angeles Rams,Kamren Curl - Tackles + Assists (U 5.5),-150,,,props_odds,no_model,,-150,2026-10-13 11:15:00,,7028839162526695852
+2026-10-11T23:42:23-04:00,20,Buffalo Bills @ Los Angeles Rams,Braden Fiske - Tackles + Assists (U 2.5),-160,,,props_odds,no_model,,-160,2026-10-13 11:15:00,,3762388912723591575
+2026-10-11T23:42:23-04:00,21,Buffalo Bills @ Los Angeles Rams,Kyren Williams - Last TD (Yes),+550,,,props_odds,no_model,,+550,2026-10-13 11:15:00,,6735653195261018502
+2026-10-11T23:42:23-04:00,22,Buffalo Bills @ Los Angeles Rams,Davante Adams - To Score 2+ TDs (O 1.5),+525,10.6,-0.3392,props_odds,sleeper_poisson,,+525,2026-10-13 11:15:00,,7008087973946327460
+2026-10-11T23:42:23-04:00,23,Buffalo Bills @ Los Angeles Rams,Josh Allen - Pass Completions (U 20.5),+100,51.3,0.026,props_odds,sleeper_poisson,,+100,2026-10-13 11:15:00,,4294802209834664345
+2026-10-11T23:42:23-04:00,24,Buffalo Bills @ Los Angeles Rams,Kyren Williams - First TD (Yes),+475,,,props_odds,no_model,,+475,2026-10-13 11:15:00,,7831276949921202565
+2026-10-11T23:42:23-04:00,25,Buffalo Bills @ Los Angeles Rams,Harrison Mevis - Field Goals Made (U 1.5),-110,,,props_odds,no_model,,-110,2026-10-13 11:15:00,,1311779532759499165
+2026-10-11T23:42:23-04:00,26,Buffalo Bills @ Los Angeles Rams,Keon Coleman - Longest Reception (O 19.5),-115,,,props_odds,no_model,,-115,2026-10-13 11:15:00,,7747679592252572054
+2026-10-11T23:42:23-04:00,27,Buffalo Bills @ Los Angeles Rams,Khalil Shakir - Longest Reception (U 19.5),-115,,,props_odds,no_model,,-115,2026-10-13 11:15:00,,4502674758403490203
+2026-10-11T23:42:23-04:00,28,Buffalo Bills @ Los Angeles Rams,Kyren Williams - Longest Reception (O 10.5),-120,,,props_odds,no_model,,-120,2026-10-13 11:15:00,,8425149620170129837
+2026-10-11T23:42:23-04:00,29,Buffalo Bills @ Los Angeles Rams,James Cook - Anytime TD (O 0.5),-125,48.8,-0.1211,props_odds,sleeper_poisson,,-125,2026-10-13 11:15:00,,2740779992454660527
+2026-10-11T23:42:23-04:00,30,Buffalo Bills @ Los Angeles Rams,Terrel Bernard - Tackles + Assists (U 7.5),-125,,,props_odds,no_model,,-125,2026-10-13 11:15:00,,6972267043009724820
+2026-10-11T23:42:23-04:00,31,Buffalo Bills @ Los Angeles Rams,Dawson Knox - Anytime TD (O 0.5),+425,13.1,-0.3141,props_odds,sleeper_poisson,,+425,2026-10-13 11:15:00,,911605776739598727
+2026-10-11T23:42:23-04:00,32,Buffalo Bills @ Los Angeles Rams,Trent McDuffie - Tackles + Assists (U 4.5),-140,,,props_odds,no_model,,-140,2026-10-13 11:15:00,,2381601730816246150
+2026-10-11T23:42:23-04:00,33,Buffalo Bills @ Los Angeles Rams,Christian Benford - Tackles + Assists (O 4.5),-115,,,props_odds,no_model,,-115,2026-10-13 11:15:00,,4847216774774653359
+2026-10-11T23:42:23-04:00,34,Buffalo Bills @ Los Angeles Rams,C.J. Gardner-Johnson - Tackles + Assists (U 5.5),-155,,,props_odds,no_model,,-155,2026-10-13 11:15:00,,5192173154826584483
+2026-10-11T23:42:23-04:00,35,Buffalo Bills @ Los Angeles Rams,Kyren Williams - Anytime TD (O 0.5),-170,62.5,-0.0078,props_odds,sleeper_poisson,,-170,2026-10-13 11:15:00,,5141304146959401375
+2026-10-11T23:42:23-04:00,36,Buffalo Bills @ Los Angeles Rams,Aaron Donald - Tackles + Assists (U 1.5),+115,,,props_odds,no_model,,+115,2026-10-13 11:15:00,,2134774736318759306
+2026-10-11T23:42:23-04:00,37,Buffalo Bills @ Los Angeles Rams,Cole Bishop - Tackles + Assists (O 6.5),+110,,,props_odds,no_model,,+110,2026-10-13 11:15:00,,7779491140750934434
+2026-10-11T23:42:23-04:00,38,Buffalo Bills @ Los Angeles Rams,Nathan Landman - Tackles + Assists (O 7.5),+105,,,props_odds,no_model,,+105,2026-10-13 11:15:00,,4815752285135176084
+2026-10-11T23:42:23-04:00,39,Buffalo Bills @ Los Angeles Rams,Tyler Bass - Kicking Points (O 7.5),+105,,,props_odds,no_model,,+105,2026-10-13 11:15:00,,4395746305293549996
