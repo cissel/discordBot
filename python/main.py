@@ -87,6 +87,30 @@ def _append_message(message: discord.Message):
     except Exception as e:
         print(f"[history] failed to append message: {e}")
 
+# -- voice channel session logging (Oct'26: raw join/leave events; hours are
+# derived later by pairing them - see python/computeVoiceHours.py) -------------
+VOICE_EVENTS_CSV    = Path(os.path.expanduser("~/discordBot/outputs/metrics/voice_events.csv"))
+VOICE_EVENTS_FIELDS = ["datetime", "user_name", "user_display_name", "channel", "event"]
+
+def _append_voice_event(member: discord.Member, channel_name: str, event: str):
+    """Append a single join/leave event to the CSV."""
+    try:
+        VOICE_EVENTS_CSV.parent.mkdir(parents=True, exist_ok=True)
+        write_header = not VOICE_EVENTS_CSV.exists() or VOICE_EVENTS_CSV.stat().st_size == 0
+        with open(VOICE_EVENTS_CSV, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=VOICE_EVENTS_FIELDS)
+            if write_header:
+                writer.writeheader()
+            writer.writerow({
+                "datetime":          datetime.now(timezone.utc).isoformat(),
+                "user_name":         member.name,
+                "user_display_name": member.display_name,
+                "channel":           channel_name,
+                "event":             event,
+            })
+    except Exception as e:
+        print(f"[voice] failed to append event: {e}")
+
 # -- path constants (shared with commands.py) -----------------------------------
 R_PATH      = os.path.expanduser("~/discordBot/r/")
 PYTHON_PATH = os.path.expanduser("~/discordBot/python/")
@@ -134,6 +158,7 @@ intents = discord.Intents.default()
 intents.message_content = True          # needed for live CSV append
 intents.members         = True          # needed for invite tracking / on_member_join
 intents.reactions       = True          # needed for launch alert opt-in tracking
+intents.voice_states    = True          # needed for voice channel hour logging
 
 class BotClient(discord.Client):
     def __init__(self):
@@ -185,9 +210,48 @@ class BotClient(discord.Client):
         asyncio.create_task(self._meteor_shower_alert_loop())
         asyncio.create_task(self._hurricane_alert_loop())
         asyncio.create_task(self._daily_ball_loop())
+        self._log_voice_snapshot("join")
 
     async def on_interaction(self, interaction: discord.Interaction):
         _append_command_usage(interaction)
+
+    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+        """Log raw join/leave events for voice-hour tracking. A channel switch
+        is logged as a leave from the old channel + a join to the new one.
+        Mute/deafen/stream-toggle changes with no channel change are ignored."""
+        if member.bot:
+            return
+        if before.channel == after.channel:
+            return
+        try:
+            if before.channel is not None:
+                _append_voice_event(member, before.channel.name, "leave")
+            if after.channel is not None:
+                _append_voice_event(member, after.channel.name, "join")
+        except Exception as e:
+            print(f"[voice] on_voice_state_update error: {e}")
+
+    def _log_voice_snapshot(self, event: str):
+        """Logs a synthetic join/leave for everyone currently in a voice
+        channel - used at startup (sessions already in progress wouldn't
+        otherwise get a join event) and shutdown (close() calls this with
+        'leave' so an in-progress session pairs cleanly instead of leaving
+        a dangling join for computeVoiceHours.py to guess at)."""
+        try:
+            guild = self.get_guild(GUILD_ID)
+            if not guild:
+                return
+            count = 0
+            for vc in guild.voice_channels:
+                for member in vc.members:
+                    if member.bot:
+                        continue
+                    _append_voice_event(member, vc.name, event)
+                    count += 1
+            if count:
+                print(f"[voice] snapshot logged {count} '{event}' event(s)")
+        except Exception as e:
+            print(f"[voice] snapshot failed: {e}")
 
     async def _snapshot_invites(self):
         """Cache current use-count for every invite in the guild."""
@@ -971,6 +1035,7 @@ class BotClient(discord.Client):
             print("sending goodbye message")
             await ch.send("going offline!")
             await asyncio.sleep(1)
+        self._log_voice_snapshot("leave")
         await super().close()
 
 

@@ -1,0 +1,17 @@
+datetime,user_name,user_display_name,channel,event
+2026-10-13T14:44:00.007789+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T14:48:17.604972+00:00,jhcv.csv,JHCV,vc-test-env,leave
+2026-10-13T16:57:06.578549+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T16:59:13.726303+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T17:02:56.835344+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T17:16:52.788818+00:00,jhcv.csv,JHCV,vc-test-env,leave
+2026-10-13T17:24:07.561193+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T17:28:15.490858+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T17:30:10.889337+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T17:35:03.387383+00:00,jhcv.csv,JHCV,vc-test-env,leave
+2026-10-13T17:35:05.470722+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T17:42:49.794058+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T17:43:18.482329+00:00,jhcv.csv,JHCV,vc-test-env,leave
+2026-10-13T17:43:19.670731+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T17:47:11.235212+00:00,jhcv.csv,JHCV,vc-test-env,join
+2026-10-13T17:49:56.890136+00:00,jhcv.csv,JHCV,vc-test-env,leave

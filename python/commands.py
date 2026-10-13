@@ -155,6 +155,11 @@ async def _quick(interaction: discord.Interaction, content=None, *, _retries: in
 # Keyed by guild_id. Each value: {'vc': VoiceClient, 'queue': [Path], 'now_playing': Path|None}
 _dj_state: dict[int, dict] = {}
 
+# ── /game voice-channel-status state ─────────────────────────────────────────
+# Keyed by voice channel_id. Each value: {'task': asyncio.Task, 'sport': str,
+# 'team': str, 'last_bug': str|None}. See game_group in register_commands().
+_game_watch_state: dict[int, dict] = {}
+
 _AUDIO_EXTS  = {".mp3", ".m4a", ".wav", ".ogg", ".flac"}
 _DJ_MUSIC    = Path(os.path.expanduser("~/discordBot/outputs/dj/music/"))
 _DJ_MIXES    = Path(os.path.expanduser("~/discordBot/outputs/dj/mixes/"))
@@ -847,6 +852,33 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "dailyMessage.R"))
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/dailyMessages.png")))
+
+    @history_group.command(name="voicehours", description="total voice channel hours per user")
+    async def hist_voicehours(interaction: discord.Interaction):
+        await _defer(interaction)
+
+        csv_path = os.path.expanduser("~/discordBot/outputs/metrics/voice_events.csv")
+        if not os.path.exists(csv_path):
+            await _send(interaction,
+                "📊 no voice data yet - the bot started tracking voice channel "
+                "sessions from when it was last restarted. check back once "
+                "people have hung out in a voice channel for a bit.",
+                ephemeral=True)
+            return
+
+        result = await asyncio.to_thread(
+            lambda: subprocess.run(
+                ["Rscript", os.path.join(rp, "voiceHours.R")],
+                capture_output=True, text=True, timeout=60
+            )
+        )
+        img = os.path.expanduser("~/discordBot/outputs/metrics/voiceHours.png")
+        if result.returncode != 0 or not os.path.exists(img):
+            err = result.stderr[-400:] if result.stderr else "no output"
+            await _send(interaction, f"❌ plot failed\n```{err}```", ephemeral=True)
+            return
+        await _send(interaction, ":) <3",
+                    file=discord.File(img, filename="voiceHours.png"))
 
     @history_group.command(name="invitegraph", description="bubble network of who invited who to the server")
     async def hist_invitegraph(interaction: discord.Interaction):
@@ -1623,6 +1655,52 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         await asyncio.to_thread(_run, "Rscript", os.path.join(rp, "room40map.R"))
         await _send(interaction, file=discord.File(os.path.join(op, "sports/nfl/room40map.png")))
+
+    @nfl_group.command(name="fantasyfreeagent", description="Room 40 free agents: mean vs volatility of fantasy pts/game, colored by Sharpe")
+    @app_commands.describe(position="Position scope", season="Season year (default: current)",
+                            top="Max players to plot by total season points (default 40)")
+    @app_commands.choices(position=[
+        app_commands.Choice(name="QB", value="qb"),
+        app_commands.Choice(name="RB", value="rb"),
+        app_commands.Choice(name="WR", value="wr"),
+        app_commands.Choice(name="TE", value="te"),
+        app_commands.Choice(name="FLEX (RB/WR/TE)", value="flex"),
+        app_commands.Choice(name="Kicker", value="k"),
+        app_commands.Choice(name="D/ST", value="dst"),
+    ])
+    async def nfl_fantasyfreeagent(interaction: discord.Interaction,
+                                    position: app_commands.Choice[str],
+                                    season: int = None,
+                                    top: int = 40):
+        await _defer(interaction)
+        try:
+            scope = position.value
+            yr = str(season) if season else ""
+            top_n = str(max(1, min(top, 150)))
+
+            fa_result = await asyncio.to_thread(
+                _run, PYTHON, os.path.join(pp, "nflFreeAgents.py"), scope
+            )
+            if fa_result.returncode != 0:
+                err = (fa_result.stderr or fa_result.stdout or "no output")[-500:]
+                await _send(interaction, f"\u274c couldn't fetch free agents\n```{err}```", ephemeral=True)
+                return
+
+            fa_csv = os.path.join(op, f"sports/nfl/fantasy/free_agents_{scope}.csv")
+            out_png = os.path.join(op, f"sports/nfl/fantasy/free_agent_risk_{scope}.png")
+            r_result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript", os.path.join(rp, "nflFreeAgentRisk.R"), scope, fa_csv, out_png, yr, top_n],
+                    capture_output=True, text=True, timeout=180
+                )
+            )
+            if r_result.returncode != 0 or not os.path.exists(out_png):
+                err = (r_result.stderr or r_result.stdout or "no output")[-500:]
+                await _send(interaction, f"\u274c Free agent risk plot failed\n```{err}```", ephemeral=True)
+                return
+            await _send(interaction, file=discord.File(out_png))
+        except Exception as e:
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
 
     @nfl_group.command(name="amonra", description="I RUN THIS SHIT")
     async def nfl_amonra(interaction: discord.Interaction):
@@ -2731,6 +2809,11 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 _fetch_mls_today(date_str),
                 _fetch_ucl_today(date_str),
                 _fetch_cfb_today(date_str),
+                # writes outputs/sports/nfl/gamesToday.csv (used by /game
+                # watch's league/game autocomplete - see gameWatch.py).
+                # Result unused here, NFL embed above still uses
+                # _fetch_nfl_scoreboard's richer event dicts.
+                asyncio.to_thread(_run, PYTHON,    os.path.join(pp, "nflToday.py")),
                 return_exceptions=True,
             )
 
@@ -8576,6 +8659,153 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         except Exception as e:
             await _send(interaction, f"btcdiagnostics error: `{e}`")
 
+
+    # ── /game ─────────────────────────────────────────────────────────────────
+    # Keeps a voice channel's "status" (the little text banner under the
+    # channel name) in sync with a live ESPN scorebug while people are
+    # watching a game in VC - replaces James manually retyping it by hand.
+    # Keyed by voice channel id: {'task': asyncio.Task, 'sport', 'team',
+    # 'last_bug': str|None}. One watch per channel at a time.
+    game_group = app_commands.Group(name="scorebug", description="live scorebug on a voice channel's status", guild_ids=[guild.id])
+
+    _GAME_POLL_SECONDS = 25
+
+    _LEAGUE_DISPLAY_NAME = {"nfl": "NFL", "mlb": "MLB", "nhl": "NHL", "nba": "NBA"}
+
+    async def _game_sport_autocomplete(interaction: discord.Interaction, current: str):
+        """Only offer leagues that actually have a game today (reads the
+        local gamesToday.csv snapshots - see gameWatch.leagues_with_games_today)."""
+        import gameWatch
+        leagues = await asyncio.to_thread(gameWatch.leagues_with_games_today)
+        current = current.lower().strip()
+        return [
+            app_commands.Choice(name=_LEAGUE_DISPLAY_NAME.get(s, s.upper()), value=s)
+            for s in leagues
+            if current in s or current in _LEAGUE_DISPLAY_NAME.get(s, s.upper()).lower()
+        ][:25]
+
+    async def _game_matchup_autocomplete(interaction: discord.Interaction, current: str):
+        """Offer today's games for whichever league the user already picked
+        in the 'sport' option of this same (not-yet-submitted) command."""
+        import gameWatch
+        sport = (interaction.namespace.sport or "").lower().strip()
+        if not sport:
+            return []
+        games = await asyncio.to_thread(gameWatch.list_games_today, sport)
+        current = current.lower().strip()
+        choices = []
+        for g in games:
+            label = f"{g['matchup']} ({g['time']})" if g.get("time") else g["matchup"]
+            if current and current not in label.lower():
+                continue
+            # Discord choice names are capped at 100 chars
+            choices.append(app_commands.Choice(name=label[:100], value=g["matchup"]))
+        return choices[:25]
+
+    async def _game_watch_loop(channel: discord.VoiceChannel, sport: str, team: str):
+        import gameWatch
+        state = _game_watch_state[channel.id]
+        try:
+            while True:
+                try:
+                    event = await asyncio.to_thread(gameWatch.find_game, sport, team)
+                except Exception as e:
+                    print(f"[gameWatch] fetch error for {sport}/{team}: {e}")
+                    await asyncio.sleep(_GAME_POLL_SECONDS)
+                    continue
+
+                if event is None:
+                    print(f"[gameWatch] no game found for {sport}/{team}, stopping watch")
+                    return
+
+                parsed = gameWatch.parse_event(event, sport)
+                bug = gameWatch.format_scorebug(parsed)
+
+                if bug != state.get("last_bug"):
+                    try:
+                        await channel.edit(status=bug, reason="gameWatch scorebug update")
+                        state["last_bug"] = bug
+                        print(f"[gameWatch] {channel.name}: {bug}")
+                    except discord.Forbidden:
+                        print(f"[gameWatch] missing 'Set Voice Channel Status' permission in #{channel.name} - stopping watch")
+                        return
+                    except Exception as e:
+                        print(f"[gameWatch] status edit failed: {e}")
+
+                if parsed["state"] == "post":
+                    print(f"[gameWatch] {sport}/{team} final - stopping watch")
+                    return
+
+                await asyncio.sleep(_GAME_POLL_SECONDS)
+        finally:
+            _game_watch_state.pop(channel.id, None)
+
+    @game_group.command(name="watch", description="track a live game's score on this voice channel's status")
+    @app_commands.describe(sport="which league (only leagues with a game today are shown)",
+                            game="which game today in that league")
+    @app_commands.autocomplete(sport=_game_sport_autocomplete, game=_game_matchup_autocomplete)
+    async def game_watch(interaction: discord.Interaction, sport: str, game: str):
+        if not interaction.user.voice or not interaction.user.voice.channel:
+            await _quick(interaction, "you gotta be in a voice channel first", ephemeral=True)
+            return
+        channel = interaction.user.voice.channel
+        if channel.id in _game_watch_state:
+            await _quick(interaction, f"already watching a game on **{channel.name}** - `/scorebug unwatch` first", ephemeral=True)
+            return
+
+        await _defer(interaction)
+        import gameWatch
+        sport = sport.lower().strip()
+        team = gameWatch.team_query_from_matchup(game)
+        try:
+            event = await asyncio.to_thread(gameWatch.find_game, sport, team)
+        except Exception as e:
+            await _send(interaction, f"❌ couldn't reach ESPN: `{e}`", ephemeral=True)
+            return
+        if event is None:
+            await _send(interaction, f"couldn't find **{game}** today - try picking from the dropdown again", ephemeral=True)
+            return
+
+        parsed = gameWatch.parse_event(event, sport)
+        bug = gameWatch.format_scorebug(parsed)
+        try:
+            await channel.edit(status=bug, reason="gameWatch scorebug start")
+        except discord.Forbidden:
+            await _send(
+                interaction,
+                "❌ I don't have the **Set Voice Channel Status** permission for this channel "
+                "(separate from Manage Channels - check the channel's permission overrides)",
+                ephemeral=True,
+            )
+            return
+        except Exception as e:
+            await _send(interaction, f"❌ couldn't set channel status: `{e}`", ephemeral=True)
+            return
+
+        task = asyncio.create_task(_game_watch_loop(channel, sport, team))
+        _game_watch_state[channel.id] = {"task": task, "sport": sport, "team": team, "last_bug": bug}
+        await _send(interaction, f"📺 watching **{game}** ({sport.upper()}) on **{channel.name}**\n`{bug}`")
+
+    @game_group.command(name="unwatch", description="stop tracking and clear the scorebug on your voice channel")
+    async def game_unwatch(interaction: discord.Interaction):
+        if not interaction.user.voice or not interaction.user.voice.channel:
+            await _quick(interaction, "you gotta be in a voice channel first", ephemeral=True)
+            return
+        channel = interaction.user.voice.channel
+        state = _game_watch_state.get(channel.id)
+        if not state:
+            await _quick(interaction, f"not currently watching a game on **{channel.name}**", ephemeral=True)
+            return
+        state["task"].cancel()
+        _game_watch_state.pop(channel.id, None)
+        await _defer(interaction)
+        try:
+            await channel.edit(status=None, reason="gameWatch stopped")
+        except Exception as e:
+            print(f"[gameWatch] clear status failed: {e}")
+        await _send(interaction, f"stopped watching - cleared status on **{channel.name}**")
+
+    tree.add_command(game_group)
 
     # ── /dj ───────────────────────────────────────────────────────────────────
     dj_group = app_commands.Group(name="dj", description="let DJ several bots spin a few tunes", guild_ids=[guild.id])
