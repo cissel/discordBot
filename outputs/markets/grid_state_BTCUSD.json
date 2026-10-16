@@ -1,0 +1,51 @@
+{
+  "initialized": true,
+  "symbol": "BTC/USD",
+  "center_price": 82185.143,
+  "lower_bound": 80990.35023371053,
+  "upper_bound": 83379.93576628946,
+  "atr_abs": 1991.2831638325722,
+  "spacing_pct": 0.3634454849976532,
+  "qty_per_level": 0.0033799025911262063,
+  "levels": [
+    80990.35023371,
+    81289.04842528,
+    81587.74661686,
+    81886.44480843,
+    82185.143,
+    82483.84119157,
+    82782.53938314,
+    83081.23757472,
+    83379.93576629
+  ],
+  "level_orders": {
+    "80990.35023371": {
+      "side": "buy",
+      "order_id": "cc30811e-0fb1-4dd6-ac60-4b9dd08746b4",
+      "qty": 0.0033799025911262063
+    },
+    "81289.04842528": {
+      "side": "buy",
+      "order_id": "7766e087-0c43-4696-bdd5-e8ec636531af",
+      "qty": 0.0033799025911262063
+    },
+    "81587.74661686": {
+      "side": "buy",
+      "order_id": "f96e9a41-d3fd-442d-b23e-a96eb989db8e",
+      "qty": 0.0033799025911262063
+    },
+    "82185.143": {
+      "side": "sell",
+      "order_id": "8210d94d-b661-474b-96f4-d52e5045fb4c",
+      "qty": 0.000303407
+    }
+  },
+  "pending_reorders": [],
+  "last_fill_activity_id": "20261016014645126::2fb2201d-0b23-4d5b-b151-ee8a10f490d7",
+  "realized_pl": 0.18,
+  "completed_round_trips": 2,
+  "halted": false,
+  "halt_reason": null,
+  "created_at": "2026-10-15T21:10:46",
+  "breakout_atr_mult": 1.5
+}

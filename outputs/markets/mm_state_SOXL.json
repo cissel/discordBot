@@ -1,10 +1,10 @@
 {
-  "open_buy_order_id": "456b7a5d-245e-4294-8d75-0fed8a13fdc2",
-  "open_buy_price": 122.94,
-  "open_sell_order_id": "f5823117-79ef-4e3a-8849-3d5fd6ad3cab",
-  "open_sell_price": 122.99,
-  "cum_fills": 3782,
-  "cum_buy_shares": 8589.0,
-  "cum_sell_shares": 8561.0,
-  "last_fill_activity_id": "20261013134810768::cef0dd32-0d19-4deb-b826-3730bf399334"
+  "open_buy_order_id": null,
+  "open_buy_price": null,
+  "open_sell_order_id": null,
+  "open_sell_price": null,
+  "cum_fills": 5061,
+  "cum_buy_shares": 11490.0,
+  "cum_sell_shares": 11451.0,
+  "last_fill_activity_id": "20261015155954577::8a9d7284-d89a-4514-bcd3-91ff93d6d13d"
 }

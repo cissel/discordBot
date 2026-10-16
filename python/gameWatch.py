@@ -16,6 +16,7 @@ e.g.
 """
 
 import csv
+import json
 import os
 import re
 import time
@@ -45,6 +46,78 @@ GAMES_TODAY_CSV = {
 # dead cron job shows "no games" instead of yesterday's stale schedule).
 _GAMES_TODAY_MAX_AGE_SECONDS = 12 * 60 * 60
 
+# ── active-watch persistence ──────────────────────────────────────────────
+# Survives a bot restart mid-game: /scorebug watch writes an entry here,
+# /scorebug unwatch (and a watch loop ending on its own - final score, game
+# not found, permission revoked) clears it. On startup main.py reads this
+# back via restorable_watches() and relaunches the poll loop for anything
+# still valid - same pattern as outputs/aerospace/launch_alerts.json uses
+# for launch-alert state.
+WATCH_STATE_PATH = os.path.expanduser("~/discordBot/outputs/sports/scorebug_watches.json")
+# Don't resume anything older than this - e.g. the bot was down overnight
+# and the persisted game is long since over/no longer today's slate.
+_WATCH_STATE_MAX_AGE_SECONDS = 20 * 60 * 60
+
+
+def _load_watch_state() -> dict:
+    if not os.path.exists(WATCH_STATE_PATH):
+        return {}
+    try:
+        with open(WATCH_STATE_PATH) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save_watch_state(state: dict) -> None:
+    os.makedirs(os.path.dirname(WATCH_STATE_PATH), exist_ok=True)
+    try:
+        with open(WATCH_STATE_PATH, "w") as f:
+            json.dump(state, f, indent=2)
+    except Exception:
+        pass
+
+
+def persist_watch(channel_id: int, sport: str, team: str) -> None:
+    """Record an active /scorebug watch to disk, keyed by channel id."""
+    state = _load_watch_state()
+    state[str(channel_id)] = {"sport": sport, "team": team, "started_at": time.time()}
+    _save_watch_state(state)
+
+
+def clear_watch(channel_id: int) -> None:
+    """Remove a channel's persisted watch. Safe to call even if nothing is
+    persisted for it (idempotent) - called from both /scorebug unwatch and
+    the watch loop's own cleanup, whichever happens first."""
+    state = _load_watch_state()
+    if str(channel_id) in state:
+        del state[str(channel_id)]
+        _save_watch_state(state)
+
+
+def restorable_watches() -> dict[int, dict]:
+    """Return {channel_id: {'sport':..., 'team':...}} for watches that were
+    active when the bot last went down, dropping (and persisting the drop
+    of) anything older than _WATCH_STATE_MAX_AGE_SECONDS."""
+    state = _load_watch_state()
+    now = time.time()
+    out = {}
+    changed = False
+    for cid_str, entry in list(state.items()):
+        age = now - entry.get("started_at", 0)
+        if age > _WATCH_STATE_MAX_AGE_SECONDS:
+            del state[cid_str]
+            changed = True
+            continue
+        try:
+            out[int(cid_str)] = {"sport": entry["sport"], "team": entry["team"]}
+        except (KeyError, ValueError):
+            del state[cid_str]
+            changed = True
+    if changed:
+        _save_watch_state(state)
+    return out
+
 _RECORD_SUFFIX_RE = re.compile(r"\s*\(\d+-\d+\)\s*$")
 # ESPN's pregame shortDetail is "M/D - 7:40 PM EDT" - since /game watch only
 # ever looks at today's slate, the date prefix is redundant; strip it down
@@ -61,6 +134,15 @@ LEAGUE_EMOJI = {
     "nba": "<:nba:1495930595694346360>",
 }
 LEAGUE_NAME = {"nfl": "NFL", "mlb": "MLB", "nhl": "NHL", "nba": "NBA"}
+
+# James's local teams - use the team's own custom-emoji logo in place of its
+# plain abbreviation wherever it appears in a scorebug. Keyed by (sport, ESPN
+# abbreviation) since abbreviations can repeat across sports.
+TEAM_EMOJI = {
+    ("nhl", "FLA"): "<:floridaPanthersShield:1354680697683574874>",
+    ("nfl", "JAX"): "<:jagsHead:1354679128108044348>",
+    ("nba", "ORL"): "<:Orlando_Magic:1491259637587116283>",
+}
 
 # Leagues whose emoji already has visual padding baked in (the NBA emoji is
 # narrow with built-in left/right whitespace) - skip the space we'd normally
@@ -210,9 +292,52 @@ def parse_event(event: dict, sport: str) -> dict:
         "short_detail": stype.get("shortDetail", ""),  # e.g. "Final", "Top 9th", "7:40 PM EST"
         "period": status.get("period"),
         "clock": status.get("displayClock"),
+        "situation": comp.get("situation"),    # MLB only: {'outs','onFirst','onSecond','onThird',...}
         "home": teams.get("home", {}),
         "away": teams.get("away", {}),
     }
+
+
+# MLB live-status symbols (James's manual scorebug convention):
+# 🔻<inning> / 🔺<inning> for bottom/top of the inning; outs as 2 dots -
+# ⚪ = out recorded, ⚫ = out not yet recorded (fills left-to-right as outs
+# happen); bases shown 3rd-2nd-1st (left-to-right, mirrors the diamond as
+# seen from home plate) - ▪️ empty, ◽ occupied.
+_MLB_OUT_RECORDED = "⚪"
+_MLB_OUT_PENDING = "⚫"
+_MLB_BASE_EMPTY = "▪️"
+_MLB_BASE_OCCUPIED = "◽"
+
+
+def _mlb_live_segment(parsed: dict) -> str:
+    """Build the inning/outs/bases segment for a live MLB game, e.g.
+    '🔻6 | ⚪ ⚫ | ▪️▪️▪️' (bottom 6th, 1 out recorded, bases empty).
+    Falls back to ESPN's plain shortDetail ('Top 9th') if situation data
+    isn't available yet (can lag a few seconds behind the period/score)."""
+    situation = parsed.get("situation")
+    period = parsed.get("period")
+    type_name = parsed.get("type_name", "").upper()
+
+    if not period:
+        return parsed["short_detail"] or "In Progress"
+
+    is_bottom = "BOTTOM" in type_name or "BOT_" in type_name or parsed["short_detail"].lower().startswith("bot")
+    arrow = "🔻" if is_bottom else "🔺"
+    inning_part = f"{arrow}{period}"
+
+    if not situation:
+        # no live situation payload yet - still show inning, skip outs/bases
+        return inning_part
+
+    outs = situation.get("outs", 0) or 0
+    outs_part = " ".join(_MLB_OUT_RECORDED if i < outs else _MLB_OUT_PENDING for i in range(2))
+
+    bases_part = "".join(
+        _MLB_BASE_OCCUPIED if situation.get(key) else _MLB_BASE_EMPTY
+        for key in ("onThird", "onSecond", "onFirst")
+    )
+
+    return f"{inning_part} | {outs_part} | {bases_part}"
 
 
 def _live_status_text(parsed: dict) -> str:
@@ -228,8 +353,7 @@ def _live_status_text(parsed: dict) -> str:
     type_name = parsed.get("type_name", "").upper()
 
     if sport == "mlb":
-        # ESPN already formats this as "Top 9th" / "Bot 9th" / "Mid 9th"
-        return parsed["short_detail"] or "In Progress"
+        return _mlb_live_segment(parsed)
 
     if sport == "nfl":
         if "HALFTIME" in type_name:
@@ -266,6 +390,12 @@ def _live_status_text(parsed: dict) -> str:
     return parsed["short_detail"] or "In Progress"
 
 
+def _team_label(sport: str, abbr: str) -> str:
+    """Return the team's custom emoji logo if it's one of James's local
+    teams (see TEAM_EMOJI), otherwise its plain ESPN abbreviation."""
+    return TEAM_EMOJI.get((sport, abbr), abbr)
+
+
 def format_scorebug(parsed: dict) -> str:
     """Render the fixed-format voice-channel-status string:
       '<emoji> <LEAGUE> | <away> <away_score>-<home_score> <home> | <status>'
@@ -281,15 +411,18 @@ def format_scorebug(parsed: dict) -> str:
     else:
         prefix = f"{LEAGUE_NAME.get(sport, sport.upper())} |"
 
+    away_label = _team_label(sport, away.get("abbr", "?"))
+    home_label = _team_label(sport, home.get("abbr", "?"))
+
     if state == "pre":
-        matchup = f"{away.get('abbr','?')} @ {home.get('abbr','?')}"
+        matchup = f"{away_label} @ {home_label}"
         status_text = _PREGAME_DATE_PREFIX_RE.sub("", parsed["short_detail"]) or "Scheduled"
         status_text = _AMPM_SPACE_RE.sub(r"\1\2", status_text)
     elif state == "post":
-        matchup = f"{away.get('abbr','?')} {away.get('score','0')}-{home.get('score','0')} {home.get('abbr','?')}"
+        matchup = f"{away_label} {away.get('score','0')}-{home.get('score','0')} {home_label}"
         status_text = (parsed["short_detail"] or "Final").upper()
     else:  # "in"
-        matchup = f"{away.get('abbr','?')} {away.get('score','0')}-{home.get('score','0')} {home.get('abbr','?')}"
+        matchup = f"{away_label} {away.get('score','0')}-{home.get('score','0')} {home_label}"
         status_text = _live_status_text(parsed)
 
     return f"{prefix} {matchup} | {status_text}"

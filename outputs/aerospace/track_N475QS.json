@@ -1,0 +1,19 @@
+{
+  "tail_query": "N475QS",
+  "callsign": "EJA475",
+  "registration": "N475QS",
+  "hex": "a5d51c",
+  "aircraft_type": "EMBRAER EMB-505 Phenom 300",
+  "operator": "",
+  "altitude_ft": 20325,
+  "on_ground": false,
+  "ground_speed_kt": 358.7,
+  "vertical_rate_str": "climbing 1,984 ft/min",
+  "heading_deg": 11.09,
+  "lat": 31.105973,
+  "lon": -81.433081,
+  "squawk": "0764",
+  "updated_utc": "2026-10-15 16:36 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N475QS.png"
+}

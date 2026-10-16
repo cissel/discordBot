@@ -410,6 +410,29 @@ SPY_FEATURES = [
     "t5yie_chg_5d", "breakeven_slope",
     "vix_move_ratio", "copper_gold_ratio",
     "hy_ig_spread",
+    # 1-min intraday V2 candidates (Oct'26) — James: "we're missing most of
+    # what I'm trying to capture by ignoring intraday/overnight moves."
+    # These are TODAY's intraday shape predicting TOMORROW's next_dir_1d
+    # (zero lookahead at the target level; 2021+ coverage only, imputed via
+    # SPARSE_FEATURES median-impute for pre-2021 rows same as v1 intraday).
+    # RFE decides which of these actually carry incremental signal — this
+    # is a candidate list, not an assertion all of them survive.
+    "rv_1min_full_ann", "bpv_1min_ann", "jump_ratio", "jump_ratio_r5",
+    "overnight_ret_v2", "session_only_ret",
+    "bucket1_ret", "bucket6_ret",   # first/last ~45min: highest-signal buckets historically
+    "or_15m_range", "or_15m_breakout_up", "or_15m_breakout_down",
+    "vol_entropy_30m", "signed_vol_imbalance",
+    "vwap_dev_close_full", "session_runup", "session_drawdown",
+    "bpv_vix_spread",
+    # S&P 500 breadth candidates (Oct'26) — James: "what if we trained on
+    # every ticker in the S&P500 as well." Aggregate breadth features from
+    # 502 constituents (buildSp500BreadthFeatures.py). Survivorship-biased
+    # (today's constituent list applied retroactively) -- see that script's
+    # docstring. RFE decides which, if any, carry incremental signal.
+    "pct_above_ma50", "pct_above_ma200", "pct_above_ma50_chg5d",
+    "advance_pct", "ad_line_10d_chg",
+    "new_high_pct_63d", "new_low_pct_63d", "nh_nl_spread_63d",
+    "spy_vs_median_ret", "cross_sectional_dispersion", "breadth_thrust_flag",
 ]
 
 # Sparse features — imputed with median when unavailable
@@ -424,6 +447,21 @@ SPARSE_FEATURES = [
     "vwap_dev_open", "vwap_dev_r5", "vol_concentration",
     "vwap_cross_count", "vwap_time_above_pct", "vwap_dev_am", "vol_vwap_corr_5d",
     "open_drive_flag", "late_reversal_flag", "overnight_gap", "gap_fill_flag", "am_range",
+    # Intraday V2 (1-min-bar derived) — Oct'26 addition, same 2021+ backfill
+    # gap as the v1 intraday block above (53.6% coverage pre-2021/2021+ split).
+    "rv_1min_full_ann", "rv_1min_am_ann", "rv_1min_pm_ann", "bpv_1min_ann", "jump_ratio",
+    "overnight_ret_v2", "session_only_ret",
+    "bucket1_ret", "bucket2_ret", "bucket3_ret", "bucket4_ret", "bucket5_ret", "bucket6_ret",
+    "or_15m_range", "or_15m_breakout_up", "or_15m_breakout_down",
+    "vol_entropy_30m", "signed_vol_imbalance", "vwap_dev_close_full",
+    "session_runup", "session_drawdown", "bpv_vix_spread", "jump_ratio_r5",
+    # S&P 500 breadth (Oct'26) — pct_above_ma200 has a 200-day warmup NaN
+    # window (same pattern as other warmup-only sparsity below); impute
+    # with median rather than dropping ~180 rows of otherwise-good training data.
+    "pct_above_ma50", "pct_above_ma200", "pct_above_ma50_chg5d",
+    "advance_pct", "ad_line_10d_chg",
+    "new_high_pct_63d", "new_low_pct_63d", "nh_nl_spread_63d",
+    "spy_vs_median_ret", "cross_sectional_dispersion", "breadth_thrust_flag",
     # Block signals — ~100% coverage (block_active_flag = 0 when no event, not NaN)
     # Extra 5d features — sparse (premarket from intraday backfill, starts 2021)
     "premarket_ret", "premarket_vol_ratio",
@@ -662,6 +700,24 @@ def build_model(model_type, is_clf):
                              n_estimators=200, learning_rate=0.05,
                              max_depth=3, min_samples_leaf=20,
                              subsample=0.8, random_state=42))])
+    if model_type == "lgbm" and is_clf:
+        # LightGBM swap-in for sklearn GBM (Oct'26): native early stopping,
+        # L1/L2 leaf regularization, much faster training (lets a single
+        # model replace the 8-seed sklearn-GBM ensemble workaround that
+        # existed mainly to average out sklearn GBM's weaker fit quality).
+        # Regularization tuned conservatively for ~2500 rows / 80 features
+        # (num_leaves kept small, min_child_samples high) to control
+        # overfitting on a dataset this size.
+        from lightgbm import LGBMClassifier
+        return Pipeline([("sc", StandardScaler()),
+                         ("m", LGBMClassifier(
+                             n_estimators=300, learning_rate=0.03,
+                             num_leaves=7, max_depth=3,
+                             min_child_samples=50,
+                             subsample=0.7, subsample_freq=1,
+                             colsample_bytree=0.8,
+                             reg_alpha=0.1, reg_lambda=0.1,
+                             random_state=42, verbose=-1))])
     raise ValueError(f"Unknown model_type: {model_type}")
 
 
@@ -924,7 +980,17 @@ def train_one(df, features, target, model_type, val_days=252, notes="", half_lif
 
 # ── multi-seed ensemble ────────────────────────────────────────────────────────
 
-def train_multiseed_gbm(df, features, target, val_days=252, n_seeds=N_SEEDS, half_life=1260):
+def train_multiseed_gbm(df, features, target, val_days=252, n_seeds=N_SEEDS, half_life=1260,
+                         model_type="lgbm"):
+    """Multi-seed ensemble, base estimator swappable via model_type.
+    Oct'26: default switched from sklearn GradientBoostingClassifier to
+    LightGBM (native early-stopping-style regularization via num_leaves/
+    min_child_samples/reg_alpha/reg_lambda, much faster per-fit, measured
+    holdout AUC +2.6pp / dir_acc +2.6pp over sklearn GBM on the same
+    causal-regime-label features — see spyIntradayV2WfcvCompare.py-style
+    WFCV comparison run before this swap). model_type='gbm' kept available
+    for A/B regression-testing against the old sklearn behavior.
+    """
     df_p, avail = prep_df(df, features, target)
     if len(df_p) < 300:
         raise ValueError(f"Not enough rows: {len(df_p)}")
@@ -941,11 +1007,20 @@ def train_multiseed_gbm(df, features, target, val_days=252, n_seeds=N_SEEDS, hal
     val_probs = np.zeros(len(y_va))
 
     for seed in seeds:
-        m = Pipeline([("sc", StandardScaler()),
-                      ("m", GradientBoostingClassifier(
-                          n_estimators=300, learning_rate=0.03,
-                          max_depth=2, min_samples_leaf=50,
-                          subsample=0.7, random_state=seed))])
+        if model_type == "lgbm":
+            from lightgbm import LGBMClassifier
+            inner = LGBMClassifier(
+                n_estimators=300, learning_rate=0.03,
+                num_leaves=7, max_depth=3, min_child_samples=50,
+                subsample=0.7, subsample_freq=1, colsample_bytree=0.8,
+                reg_alpha=0.1, reg_lambda=0.1,
+                random_state=seed, verbose=-1)
+        else:
+            inner = GradientBoostingClassifier(
+                n_estimators=300, learning_rate=0.03,
+                max_depth=2, min_samples_leaf=50,
+                subsample=0.7, random_state=seed)
+        m = Pipeline([("sc", StandardScaler()), ("m", inner)])
         try:
             m.fit(X_tr, y_tr, **{"m__sample_weight": sw})
         except TypeError:

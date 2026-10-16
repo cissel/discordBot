@@ -1,0 +1,56 @@
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8899
+ * Running on http://10.0.0.252:8899
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [15/Oct/2026 23:25:46] "GET / HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:12] "GET / HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:13] "GET /api/live?symbol=GME&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:13] "GET /api/live?symbol=TQQQ&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:13] "GET /api/live?symbol=GME&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:14] "GET /api/symbol_equity?symbol=TQQQ&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:14] "GET /api/live?symbol=SOXL&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:14] "GET /api/live?symbol=TQQQ&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:14] "GET /api/symbol_equity?symbol=GME&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:15] "GET /api/live?symbol=GME&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:15] "GET /api/live?symbol=SOXL&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:15] "GET /api/symbol_equity?symbol=SOXL&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:15] "GET /api/live?symbol=TQQQ&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:15] "GET /api/live?symbol=GME&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:15] "GET /api/symbol_equity?symbol=TQQQ&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/live?symbol=SOXL&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/symbol_equity?symbol=GME&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/live?symbol=TQQQ&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/symbol_equity?symbol=TQQQ&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/live?symbol=GME&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/symbol_equity?symbol=TQQQ&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/live?symbol=TQQQ&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/live?symbol=SOXL&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/symbol_equity?symbol=TQQQ&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/symbol_equity?symbol=SOXL&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/symbol_equity?symbol=GME&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:16] "GET /api/live?symbol=SOXL&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/symbol_equity?symbol=GME&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/symbol_equity?symbol=GME&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/equity?window=480 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/symbol_equity?symbol=GME&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/live?symbol=TQQQ&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/live?symbol=GME&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/live?symbol=SOXL&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/symbol_equity?symbol=SOXL&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/symbol_equity?symbol=SOXL&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/symbol_equity?symbol=SOXL&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/symbol_equity?symbol=SOXL&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:17] "GET /api/symbol_equity?symbol=TQQQ&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:18] "GET /api/equity?window=480 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:18] "GET /api/live?symbol=TQQQ&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:18] "GET /api/symbol_equity?symbol=TQQQ&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:18] "GET /api/live?symbol=GME&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:18] "GET /api/equity?window=480 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:18] "GET /api/live?symbol=SOXL&window_seconds=120 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:18] "GET /api/equity?window=480 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:18] "GET /api/symbol_equity?symbol=GME&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:18] "GET /api/symbol_equity?symbol=SOXL&window=5 HTTP/1.1" 200 -
+10.0.0.119 - - [16/Oct/2026 02:30:19] "GET /api/equity?window=480 HTTP/1.1" 200 -

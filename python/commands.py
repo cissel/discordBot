@@ -70,6 +70,7 @@
 import asyncio
 import os
 import random
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -1697,6 +1698,52 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             if r_result.returncode != 0 or not os.path.exists(out_png):
                 err = (r_result.stderr or r_result.stdout or "no output")[-500:]
                 await _send(interaction, f"\u274c Free agent risk plot failed\n```{err}```", ephemeral=True)
+                return
+            await _send(interaction, file=discord.File(out_png))
+        except Exception as e:
+            await _send(interaction, f"\u274c error: {e}", ephemeral=True)
+
+    @nfl_group.command(name="teamrisk", description="Room 40 team roster: mean vs volatility of fantasy pts/game, by position")
+    @app_commands.describe(team="Room 40 team name (default: your team, drunken sailors)",
+                            season="Season year (default: current)")
+    async def nfl_teamrisk(interaction: discord.Interaction,
+                            team: str = "drunken sailors",
+                            season: int = None):
+        await _defer(interaction)
+        try:
+            yr = str(season) if season else ""
+
+            roster_result = await asyncio.to_thread(
+                _run, PYTHON, os.path.join(pp, "nflTeamRosterRisk.py"), team
+            )
+            if roster_result.returncode != 0:
+                err = (roster_result.stderr or roster_result.stdout or "no output")[-500:]
+                await _send(interaction, f"\u274c couldn't fetch team roster\n```{err}```", ephemeral=True)
+                return
+
+            stdout = roster_result.stdout or ""
+            roster_csv = None
+            team_name = team
+            for line in stdout.splitlines():
+                if line.startswith("OUT_PATH="):
+                    roster_csv = line.split("=", 1)[1].strip()
+                elif line.startswith("TEAM_NAME="):
+                    team_name = line.split("=", 1)[1].strip()
+            if not roster_csv:
+                await _send(interaction, f"\u274c couldn't resolve team roster output path\n```{stdout[-500:]}```", ephemeral=True)
+                return
+
+            slug = re.sub(r"[^a-z0-9]+", "_", team_name.lower()).strip("_")
+            out_png = os.path.join(op, f"sports/nfl/fantasy/team_roster_risk_{slug}.png")
+            r_result = await asyncio.to_thread(
+                lambda: __import__("subprocess").run(
+                    ["Rscript", os.path.join(rp, "nflTeamRosterRisk.R"), roster_csv, out_png, team_name, yr],
+                    capture_output=True, text=True, timeout=180
+                )
+            )
+            if r_result.returncode != 0 or not os.path.exists(out_png):
+                err = (r_result.stderr or r_result.stdout or "no output")[-500:]
+                await _send(interaction, f"\u274c Team risk plot failed\n```{err}```", ephemeral=True)
                 return
             await _send(interaction, file=discord.File(out_png))
         except Exception as e:
@@ -8739,6 +8786,62 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 await asyncio.sleep(_GAME_POLL_SECONDS)
         finally:
             _game_watch_state.pop(channel.id, None)
+            gameWatch.clear_watch(channel.id)
+
+    def _start_game_watch(channel: discord.VoiceChannel, sport: str, team: str, last_bug: str | None = None):
+        """Register and launch a watch loop for `channel`, persisting it to
+        disk so it can be resumed across a bot restart (see
+        gameWatch.persist_watch / restore_game_watches below). Shared by
+        /scorebug watch and the on_ready() restore path."""
+        import gameWatch
+        task = asyncio.create_task(_game_watch_loop(channel, sport, team))
+        _game_watch_state[channel.id] = {"task": task, "sport": sport, "team": team, "last_bug": last_bug}
+        gameWatch.persist_watch(channel.id, sport, team)
+
+    async def restore_game_watches(client: discord.Client):
+        """Called once from main.py's on_ready() - relaunches any watch
+        that was still active when the bot last went down (restart for an
+        update, crash, etc.) so a mid-game restart doesn't silently kill
+        the scorebug. Channels that no longer exist, or whose game already
+        finished/vanished from today's slate, are dropped quietly."""
+        import gameWatch
+        pending = gameWatch.restorable_watches()
+        if not pending:
+            return
+        restored = 0
+        for channel_id, info in pending.items():
+            channel = client.get_channel(channel_id)
+            if not isinstance(channel, discord.VoiceChannel):
+                gameWatch.clear_watch(channel_id)
+                continue
+            sport, team = info["sport"], info["team"]
+            try:
+                event = await asyncio.to_thread(gameWatch.find_game, sport, team)
+            except Exception as e:
+                print(f"[gameWatch] restore fetch error for {sport}/{team}: {e}")
+                gameWatch.clear_watch(channel_id)
+                continue
+            if event is None:
+                print(f"[gameWatch] restore: no game found for {sport}/{team} - dropping")
+                gameWatch.clear_watch(channel_id)
+                continue
+            parsed = gameWatch.parse_event(event, sport)
+            if parsed["state"] == "post":
+                print(f"[gameWatch] restore: {sport}/{team} already final - dropping")
+                gameWatch.clear_watch(channel_id)
+                continue
+            bug = gameWatch.format_scorebug(parsed)
+            try:
+                await channel.edit(status=bug, reason="gameWatch scorebug restored after restart")
+            except Exception as e:
+                print(f"[gameWatch] restore: couldn't set status on #{channel.name}: {e}")
+                gameWatch.clear_watch(channel_id)
+                continue
+            _start_game_watch(channel, sport, team, last_bug=bug)
+            restored += 1
+            print(f"[gameWatch] restored watch on #{channel.name}: {sport}/{team}")
+        if restored:
+            print(f"[gameWatch] restored {restored} watch(es) after restart")
 
     @game_group.command(name="watch", description="track a live game's score on this voice channel's status")
     @app_commands.describe(sport="which league (only leagues with a game today are shown)",
@@ -8782,9 +8885,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, f"❌ couldn't set channel status: `{e}`", ephemeral=True)
             return
 
-        task = asyncio.create_task(_game_watch_loop(channel, sport, team))
-        _game_watch_state[channel.id] = {"task": task, "sport": sport, "team": team, "last_bug": bug}
-        await _send(interaction, f"📺 watching **{game}** ({sport.upper()}) on **{channel.name}**\n`{bug}`")
+        _start_game_watch(channel, sport, team, last_bug=bug)
+        await _send(interaction, f"📺 watching **{game}** ({sport.upper()}) on **{channel.name}**\n{bug}")
 
     @game_group.command(name="unwatch", description="stop tracking and clear the scorebug on your voice channel")
     async def game_unwatch(interaction: discord.Interaction):
@@ -8798,6 +8900,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             return
         state["task"].cancel()
         _game_watch_state.pop(channel.id, None)
+        import gameWatch
+        gameWatch.clear_watch(channel.id)
         await _defer(interaction)
         try:
             await channel.edit(status=None, reason="gameWatch stopped")
@@ -8806,6 +8910,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, f"stopped watching - cleared status on **{channel.name}**")
 
     tree.add_command(game_group)
+    tree._scorebug_restore_func = restore_game_watches
 
     # ── /dj ───────────────────────────────────────────────────────────────────
     dj_group = app_commands.Group(name="dj", description="let DJ several bots spin a few tunes", guild_ids=[guild.id])
@@ -9191,7 +9296,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     file=discord.File(img))
 
     # ── /track ────────────────────────────────────────────────────────────────
-    @tree.command(name="track", description="live position + recent flight track for a plane by tail number or callsign", guild=guild)
+    @tree.command(name="track", description="live flight track by tail/callsign; auto-watches it if not airborne yet", guild=guild)
     @app_commands.describe(tail="Tail/registration (e.g. N508KD) or callsign/flight number (e.g. EJA781, DAL123)")
     async def track(interaction: discord.Interaction, tail: str):
         import json as _json
@@ -9205,7 +9310,49 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             _run, PYTHON, os.path.join(pp, "trackPlane.py"), "--tail", tail_clean
         )
         if "NOT_FOUND" in (proc.stdout or ""):
-            await _send(interaction, f"✈ couldn't find **{tail_clean}** as a tail number or callsign - it may not be airborne / broadcasting ADS-B right now", ephemeral=True)
+            # Not airborne/broadcasting right now - register a PENDING watch
+            # instead of just erroring out, so e.g. a tail number grabbed
+            # before the plane even powers on still gets tracked. Background
+            # loop polls by registration and pings the moment it shows up.
+            emb = discord.Embed(
+                title=f"👀 Watching for {tail_clean}",
+                description=(
+                    f"**{tail_clean}** isn't broadcasting ADS-B right now (plane's likely off / on the ground "
+                    f"with the transponder in standby). I'll check every ~3 min and ping here as soon as it "
+                    f"powers on, then again on takeoff and landing."
+                ),
+                color=0x00bfff,
+            )
+            emb.set_footer(text="React 🔔 to get pinged for this watch")
+            msg = await interaction.followup.send(embed=emb)
+
+            watch_path = os.path.expanduser("~/discordBot/outputs/aerospace/flight_watches.json")
+            os.makedirs(os.path.dirname(watch_path), exist_ok=True)
+            try:
+                if os.path.exists(watch_path):
+                    with open(watch_path) as f:
+                        watch_state = _json.load(f)
+                else:
+                    watch_state = {"watches": {}}
+                watch_state.setdefault("watches", {})[str(msg.id)] = {
+                    "tail_query": tail_clean,
+                    "callsign": tail_clean,
+                    "registration": tail_clean,
+                    "hex": None,
+                    "channel_id": interaction.channel_id,
+                    "guild_id": interaction.guild_id,
+                    "last_on_ground": None,
+                    "reactors": [interaction.user.id],
+                    "active": True,
+                    "pending": True,
+                    "miss_count": 0,
+                    "created_utc": datetime.now(_tz.utc).isoformat(),
+                }
+                with open(watch_path, "w") as f:
+                    _json.dump(watch_state, f, indent=2)
+                await msg.add_reaction("🔔")
+            except Exception as e:
+                print(f"[track] failed to register pending flight watch: {e}")
             return
         img = os.path.join(op, f"aerospace/track_{tail_clean}.png")
         stats_path = os.path.join(op, f"aerospace/track_{tail_clean}.json")
@@ -9220,6 +9367,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                     stats = _json.load(f)
             except Exception:
                 stats = {}
+
 
         callsign     = stats.get("callsign") or tail_clean
         registration = stats.get("registration") or tail_clean

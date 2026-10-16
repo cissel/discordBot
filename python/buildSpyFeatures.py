@@ -550,6 +550,82 @@ def build_features():
         print("    [warn] spy_intraday_features.csv not found "
               "-- run buildIntradayFeatures.py after fetchIntradayBars.py backfill")
 
+    # ── 12b. Intraday V2 features (1-min realized vol, overnight/session split,
+    #          time buckets, opening range, volume profile) — Oct'26 addition,
+    #          per James: "incorporate 1min data, keep the macro features".
+    #          Same join convention as INTRADAY_COLS above: today's row gets
+    #          today's own intraday shape (known as of today's close), used to
+    #          predict TOMORROW's direction (next_dir_1d) — zero lookahead
+    #          relative to the target. Coverage starts 2021 (intraday bar
+    #          backfill start) vs macro features back to 2016 — pre-2021 rows
+    #          get NaN here exactly like the v1 intraday block, handled by
+    #          trainSpyModel.py's existing SPARSE_FEATURES median-impute path.
+    print("  building intraday V2 features (1-min realized vol, overnight/session split)...")
+    intraday_v2_path = os.path.expanduser(
+        "~/discordBot/outputs/features/markets/spy_intraday_features_v2.csv"
+    )
+    if os.path.exists(intraday_v2_path):
+        idf2 = pd.read_csv(intraday_v2_path, parse_dates=["date"]).set_index("date").sort_index()
+        idf2.index = pd.to_datetime(idf2.index)
+        INTRADAY_V2_COLS = [
+            "rv_1min_full_ann", "rv_1min_am_ann", "rv_1min_pm_ann",
+            "bpv_1min_ann", "jump_ratio",
+            "overnight_ret_v2", "session_only_ret",
+            "bucket1_ret", "bucket2_ret", "bucket3_ret",
+            "bucket4_ret", "bucket5_ret", "bucket6_ret",
+            "or_15m_range", "or_15m_breakout_up", "or_15m_breakout_down",
+            "vol_entropy_30m", "signed_vol_imbalance",
+            "vwap_dev_close_full", "session_runup", "session_drawdown",
+        ]
+        for col in INTRADAY_V2_COLS:
+            if col in idf2.columns:
+                df[col] = idf2[col].reindex(df.index)
+        # Derived: jump-robust vol vs VIX-implied spread (does realized
+        # micro-vol run hot or cold relative to options-implied vol today)
+        if "bpv_1min_ann" in df.columns and "vix_level" in df.columns:
+            df["bpv_vix_spread"] = df["vix_level"] - (df["bpv_1min_ann"] * 100)
+        # Rolling 5d mean of the jump ratio — persistent jumpy regime vs
+        # one-off event day (single-day jump_ratio is noisy; the rolling
+        # mean is a steadier regime signal)
+        if "jump_ratio" in df.columns:
+            df["jump_ratio_r5"] = df["jump_ratio"].rolling(5, min_periods=2).mean()
+        print(f"    intraday V2 features rows: {len(idf2)}, "
+              f"date range: {idf2.index[0].date()} to {idf2.index[-1].date()}")
+    else:
+        print("    [warn] spy_intraday_features_v2.csv not found "
+              "-- run buildSpyIntradayFeaturesV2.py")
+
+    # ── 12c. S&P 500 market-breadth features (Oct'26 addition) ───────────────
+    # "What if we trained on every ticker in the S&P500" -- aggregate breadth
+    # signals (% above MA, advance/decline, new-high/new-low, cross-sectional
+    # dispersion/divergence) computed from 502 constituents' own daily bars
+    # (buildSp500BreadthFeatures.py). SURVIVORSHIP CAVEAT: uses today's
+    # constituent list applied retroactively (see that script's docstring) --
+    # treat absolute breadth LEVELS in early years with skepticism, changes
+    # are less affected. Same-day join (today's breadth predicting tomorrow's
+    # next_dir_1d, zero lookahead relative to the target).
+    print("  building S&P 500 breadth features...")
+    breadth_path = os.path.expanduser(
+        "~/discordBot/outputs/features/markets/spy_sp500_breadth_features.csv"
+    )
+    if os.path.exists(breadth_path):
+        bdf = pd.read_csv(breadth_path, parse_dates=["date"]).set_index("date").sort_index()
+        bdf.index = pd.to_datetime(bdf.index)
+        BREADTH_COLS = [
+            "pct_above_ma50", "pct_above_ma200", "pct_above_ma50_chg5d",
+            "advance_pct", "ad_line_10d_chg",
+            "new_high_pct_63d", "new_low_pct_63d", "nh_nl_spread_63d",
+            "spy_vs_median_ret", "cross_sectional_dispersion", "breadth_thrust_flag",
+        ]
+        for col in BREADTH_COLS:
+            if col in bdf.columns:
+                df[col] = bdf[col].reindex(df.index)
+        print(f"    breadth features rows: {len(bdf)}, "
+              f"date range: {bdf.index[0].date()} to {bdf.index[-1].date()}")
+    else:
+        print("    [warn] spy_sp500_breadth_features.csv not found "
+              "-- run fetchSp500ConstituentBars.py then buildSp500BreadthFeatures.py")
+
     # ── 13. Order flow / CVD features — REMOVED ──────────────────────────────
     # Lee-Ready tick classification on SPY ETF is structurally contaminated by
     # MOC/closing auction flow (index rebalancers, APs). Correlation with returns
@@ -661,22 +737,47 @@ def build_features():
     # The 3% gap filter (spy_cum < spy_ma200 * 0.97) ensures the bear label only fires
     # during genuine, confirmed downtrends — not marginal 200d MA breaches.
     # Those borderline days belong in chop — the bear model should only train on genuine downtrends.
-    print("  building regime labels...")
+    #
+    # FIXED Oct'26 (purge-gap audit): the VIX percentile thresholds (p33/p67/p80)
+    # were previously computed over the FULL 2016-2026 sample and applied to
+    # EVERY historical day — i.e. a 2018 row's regime label depended on VIX
+    # values from 2024-2026 that didn't exist yet. Despite the comment above
+    # claiming "no leakage," this was lookahead bias in the regime LABEL
+    # (not the rolling MAs, which were already correctly causal). Confirmed
+    # impact: 13.2% of all regime labels flip once computed with an EXPANDING
+    # (causal-only) quantile instead, concentrated in 2018-2019 (41-48% of
+    # days relabeled) where the full-sample thresholds were calibrated on a
+    # VIX distribution that 2018-2019 data didn't yet contain. Bull-regime
+    # day count drops 725->445 (-39%) after the fix.
+    # Now uses an EXPANDING quantile (min_periods=252, ~1yr warmup to avoid
+    # a thin/noisy early-sample threshold) so each day's regime label only
+    # ever depends on VIX history available as of that day.
+    print("  building regime labels (expanding/causal VIX percentile thresholds)...")
     spy_cum   = (1 + df["SPY_ret"].fillna(0)).cumprod()
     spy_ma50  = spy_cum.rolling(50,  min_periods=50).mean()
     spy_ma200 = spy_cum.rolling(200, min_periods=200).mean()
-    vix_p33   = df["vix_level"].quantile(0.33)
-    vix_p67   = df["vix_level"].quantile(0.67)
-    vix_p80   = df["vix_level"].quantile(0.80)
+    REGIME_QUANTILE_WARMUP = 252
+    vix_p33_exp = df["vix_level"].expanding(min_periods=REGIME_QUANTILE_WARMUP).quantile(0.33)
+    vix_p67_exp = df["vix_level"].expanding(min_periods=REGIME_QUANTILE_WARMUP).quantile(0.67)
+    vix_p80_exp = df["vix_level"].expanding(min_periods=REGIME_QUANTILE_WARMUP).quantile(0.80)
+    # Backfill the warmup period (first REGIME_QUANTILE_WARMUP rows have no
+    # valid expanding quantile yet) with the first available threshold —
+    # these earliest rows predate any WFCV fold/holdout window anyway, this
+    # just avoids NaN regime labels propagating into days_since_regime_change
+    # and other downstream features for the handful of pre-warmup rows.
+    vix_p33_exp = vix_p33_exp.bfill()
+    vix_p67_exp = vix_p67_exp.bfill()
+    vix_p80_exp = vix_p80_exp.bfill()
     # Bull: VIX calm (< p33) AND price trending up on both timeframes
-    bull_mask = (df["vix_level"] < vix_p33) & (spy_cum > spy_ma50) & (spy_cum > spy_ma200)
+    bull_mask = (df["vix_level"] < vix_p33_exp) & (spy_cum > spy_ma50) & (spy_cum > spy_ma200)
     # Bear: VIX very elevated (> p80) AND price more than 3% below 200d MA (genuine downtrend)
-    bear_mask = (df["vix_level"] > vix_p80) & (spy_cum < spy_ma200 * 0.97)
+    bear_mask = (df["vix_level"] > vix_p80_exp) & (spy_cum < spy_ma200 * 0.97)
     # Chop: everything else
     df["regime"] = np.where(bull_mask, "bull", np.where(bear_mask, "bear", "chop"))
     regime_counts = df["regime"].value_counts()
     print(f"    bull={regime_counts.get('bull',0)}  bear={regime_counts.get('bear',0)}  chop={regime_counts.get('chop',0)}")
-    print(f"    VIX p33={vix_p33:.1f}  p67={vix_p67:.1f}  p80={vix_p80:.1f}")
+    print(f"    VIX percentile thresholds now EXPANDING (causal) — final-day values: "
+          f"p33={vix_p33_exp.iloc[-1]:.1f}  p67={vix_p67_exp.iloc[-1]:.1f}  p80={vix_p80_exp.iloc[-1]:.1f}")
 
     # ── 17. Regime-change recency + interaction features ─────────────────────
     # days_since_regime_change: how many days since the regime last flipped.

@@ -1,0 +1,93 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-14T18:58:36-04:00,1,Brewers @ Dodgers,Brewers +1.5 run line,-140,56.3,-0.0347,upcoming_games_odds,draftkings_devig,0.5564,-140,2026-10-15 11:00:00,401908032,5360389553695883678
+2026-10-14T18:58:36-04:00,2,Brewers @ Dodgers,Dodgers -1.5 run line,+115,43.7,-0.0606,upcoming_games_odds,draftkings_devig,0.4436,+115,2026-10-15 11:00:00,401908032,8853494014675124638
+2026-10-14T18:58:36-04:00,3,Brewers @ Dodgers,O 7.5,+100,53.1,0.0625,upcoming_games_odds,draftkings_devig,0.4783,+100,2026-10-15 11:00:00,401908032,4371849435488059781
+2026-10-14T18:58:36-04:00,4,Brewers @ Dodgers,U 7.5,-120,53.1,-0.026,upcoming_games_odds,draftkings_devig,0.5217,-120,2026-10-15 11:00:00,401908032,7179843803153564037
+2026-10-14T18:58:36-04:00,5,Brewers @ Dodgers,Brewers ML,+150,35.2,-0.1203,upcoming_games_odds,espn_bpi,0.3836,+150,2026-10-15 11:00:00,401908032,8614980255796560279
+2026-10-14T18:58:36-04:00,6,Brewers @ Dodgers,Dodgers ML,-180,64.8,0.0082,upcoming_games_odds,espn_bpi,0.6164,-180,2026-10-15 11:00:00,401908032,5144956742907593111
+2026-10-14T18:58:36-04:00,7,Rays @ Guardians,Rays +1.5 run line,-200,,,upcoming_games_odds,no_model,0.6429,-200,2026-10-16 09:00:00,,3446537854958829993
+2026-10-14T18:58:36-04:00,8,Rays @ Guardians,Guardians -1.5 run line,+170,,,upcoming_games_odds,no_model,0.3571,+170,2026-10-16 09:00:00,,7690054603848679849
+2026-10-14T18:58:36-04:00,9,Rays @ Guardians,O 6.5,-120,,,upcoming_games_odds,no_model,0.5217,-120,2026-10-16 09:00:00,,396475007322161569
+2026-10-14T18:58:36-04:00,10,Rays @ Guardians,U 6.5,+100,,,upcoming_games_odds,no_model,0.4783,+100,2026-10-16 09:00:00,,4642947243467473313
+2026-10-14T18:58:36-04:00,11,Rays @ Guardians,Rays ML,+110,,,upcoming_games_odds,no_model,0.4532,+110,2026-10-16 09:00:00,,5593206764842647975
+2026-10-14T18:58:36-04:00,12,Rays @ Guardians,Guardians ML,-135,,,upcoming_games_odds,no_model,0.5468,-135,2026-10-16 09:00:00,,7401402015231902119
+2026-10-14T18:58:36-04:00,13,Milwaukee Brewers @ Los Angeles Dodgers,Robert Gasser - Strikeouts (O 3.5),+105,75.5,0.5486,props_odds,mlbapi_poisson,,+105,2026-10-15 11:00:00,,5172381655280779696
+2026-10-14T18:58:36-04:00,14,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Home Runs (O 0.5),+1100,13.0,0.558,props_odds,mlbapi_poisson,,+1100,2026-10-15 11:00:00,,1000249208470634921
+2026-10-14T18:58:36-04:00,15,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Home Runs (O 0.5),+750,16.5,0.4041,props_odds,mlbapi_poisson,,+750,2026-10-15 11:00:00,,2923286249357836706
+2026-10-14T18:58:36-04:00,16,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - RBIs (O 0.5),+275,48.4,0.8162,props_odds,mlbapi_poisson,,+275,2026-10-15 11:00:00,,699833030847627667
+2026-10-14T18:58:36-04:00,17,Milwaukee Brewers @ Los Angeles Dodgers,Blake Snell - Earned Runs (U 1.5),-170,73.6,0.1686,props_odds,mlbapi_poisson,,-170,2026-10-15 11:00:00,,8315691557554618796
+2026-10-14T18:58:36-04:00,18,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - RBIs (O 0.5),+325,36.8,0.5656,props_odds,mlbapi_poisson,,+325,2026-10-15 11:00:00,,962962656048841107
+2026-10-14T18:58:36-04:00,19,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Runs (O 0.5),+165,49.1,0.3014,props_odds,mlbapi_poisson,,+165,2026-10-15 11:00:00,,8041133207988601223
+2026-10-14T18:58:36-04:00,20,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Doubles (O 0.5),+525,21.7,0.3583,props_odds,mlbapi_poisson,,+525,2026-10-15 11:00:00,,7418744090835157389
+2026-10-14T18:58:36-04:00,21,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Hits+Runs+RBI (O 1.5),+125,68.5,0.5416,props_odds,mlbapi_poisson,,+125,2026-10-15 11:00:00,,8819433508826120625
+2026-10-14T18:58:36-04:00,22,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - Runs (O 0.5),+200,40.0,0.1991,props_odds,mlbapi_poisson,,+200,2026-10-15 11:00:00,,5562007166237409689
+2026-10-14T18:58:36-04:00,23,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - RBIs (O 0.5),+220,44.6,0.4271,props_odds,mlbapi_poisson,,+220,2026-10-15 11:00:00,,1780471541532852637
+2026-10-14T18:58:36-04:00,24,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - RBIs (O 0.5),+260,45.0,0.6188,props_odds,mlbapi_poisson,,+260,2026-10-15 11:00:00,,5045015022888157597
+2026-10-14T18:58:36-04:00,25,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Total Bases (O 1.5),+210,51.8,0.6045,props_odds,mlbapi_poisson,,+210,2026-10-15 11:00:00,,443303179094983084
+2026-10-14T18:58:36-04:00,26,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Singles (O 0.5),+170,41.4,0.1183,props_odds,mlbapi_poisson,,+170,2026-10-15 11:00:00,,6486784406127247793
+2026-10-14T18:58:36-04:00,27,Milwaukee Brewers @ Los Angeles Dodgers,Luis Lara - Runs (O 0.5),+210,33.6,0.0423,props_odds,mlbapi_poisson,,+210,2026-10-15 11:00:00,,5474081420387418527
+2026-10-14T18:58:36-04:00,28,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Runs (O 0.5),+165,47.6,0.2608,props_odds,mlbapi_poisson,,+165,2026-10-15 11:00:00,,7919536018049597859
+2026-10-14T18:58:36-04:00,29,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - RBIs (O 0.5),+220,47.2,0.5117,props_odds,mlbapi_poisson,,+220,2026-10-15 11:00:00,,3806094116803182995
+2026-10-14T18:58:36-04:00,30,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Total Bases (O 1.5),+230,47.6,0.5722,props_odds,mlbapi_poisson,,+230,2026-10-15 11:00:00,,3382489075163464114
+2026-10-14T18:58:36-04:00,31,Milwaukee Brewers @ Los Angeles Dodgers,Luis Lara - Hits (O 0.5),-120,53.7,-0.0151,props_odds,mlbapi_poisson,,-120,2026-10-15 11:00:00,,117860710222004624
+2026-10-14T18:58:36-04:00,32,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - Hits+Runs+RBI (O 1.5),+115,65.5,0.4074,props_odds,mlbapi_poisson,,+115,2026-10-15 11:00:00,,7762213496300896657
+2026-10-14T18:58:36-04:00,33,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Hits+Runs+RBI (O 1.5),-110,72.1,0.3774,props_odds,mlbapi_poisson,,-110,2026-10-15 11:00:00,,5381146237284254106
+2026-10-14T18:58:36-04:00,34,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - Total Bases (O 1.5),+160,47.7,0.2397,props_odds,mlbapi_poisson,,+160,2026-10-15 11:00:00,,5160665459091177900
+2026-10-14T18:58:36-04:00,35,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Hits (O 0.5),-110,58.6,0.1188,props_odds,mlbapi_poisson,,-110,2026-10-15 11:00:00,,3294009284974739857
+2026-10-14T18:58:36-04:00,36,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Singles (O 0.5),+120,50.5,0.1105,props_odds,mlbapi_poisson,,+120,2026-10-15 11:00:00,,96176534888513965
+2026-10-14T18:58:36-04:00,37,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Runs (O 0.5),+125,53.0,0.1934,props_odds,mlbapi_poisson,,+125,2026-10-15 11:00:00,,1020126942034264483
+2026-10-14T18:58:36-04:00,38,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Singles (O 0.5),+135,45.4,0.0658,props_odds,mlbapi_poisson,,+135,2026-10-15 11:00:00,,6783820846067745159
+2026-10-14T18:58:36-04:00,39,Milwaukee Brewers @ Los Angeles Dodgers,Luis Lara - Singles (O 0.5),+125,44.6,0.003,props_odds,mlbapi_poisson,,+125,2026-10-15 11:00:00,,8725073420930384287
+2026-10-14T18:58:36-04:00,40,Milwaukee Brewers @ Los Angeles Dodgers,Joey Ortiz - Hits+Runs+RBI (O 0.5),-150,76.8,0.2806,props_odds,mlbapi_poisson,,-150,2026-10-15 11:00:00,,424442328430805421
+2026-10-14T18:58:36-04:00,41,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Singles (O 0.5),-115,54.5,0.0189,props_odds,mlbapi_poisson,,-115,2026-10-15 11:00:00,,2263533855560565157
+2026-10-14T18:58:36-04:00,42,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Hits+Runs+RBI (O 0.5),-160,88.1,0.4309,props_odds,mlbapi_poisson,,-160,2026-10-15 11:00:00,,4202680940817940899
+2026-10-14T18:58:36-04:00,43,Milwaukee Brewers @ Los Angeles Dodgers,Joey Ortiz - Runs (O 0.5),+225,30.6,-0.0046,props_odds,mlbapi_poisson,,+225,2026-10-15 11:00:00,,9221076310359671213
+2026-10-14T18:58:36-04:00,44,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - Runs (O 0.5),+165,42.8,0.133,props_odds,mlbapi_poisson,,+165,2026-10-15 11:00:00,,5267021390644642193
+2026-10-14T18:58:36-04:00,45,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - Total Bases (O 1.5),+250,38.2,0.336,props_odds,mlbapi_poisson,,+250,2026-10-15 11:00:00,,4223694635249303980
+2026-10-14T18:58:36-04:00,46,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - RBIs (O 0.5),+300,36.1,0.4451,props_odds,mlbapi_poisson,,+300,2026-10-15 11:00:00,,3043625683894010245
+2026-10-14T18:58:36-04:00,47,Milwaukee Brewers @ Los Angeles Dodgers,Luis Lara - Hits+Runs+RBI (O 0.5),-165,79.9,0.2839,props_odds,mlbapi_poisson,,-165,2026-10-15 11:00:00,,5362920794819264941
+2026-10-14T18:58:36-04:00,48,Milwaukee Brewers @ Los Angeles Dodgers,Miguel Rojas - Singles (U 0.5),-165,68.8,0.1051,props_odds,mlbapi_poisson,,-165,2026-10-15 11:00:00,,446171011973513637
+2026-10-14T18:58:36-04:00,49,Milwaukee Brewers @ Los Angeles Dodgers,Mookie Betts - Hits (U 0.5),+180,36.8,0.0301,props_odds,mlbapi_poisson,,+180,2026-10-15 11:00:00,,8871727525236179360
+2026-10-14T18:58:36-04:00,50,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - Hits+Runs+RBI (O 0.5),-160,83.4,0.3545,props_odds,mlbapi_poisson,,-160,2026-10-15 11:00:00,,4122179097478693273
+2026-10-14T18:58:36-04:00,51,Milwaukee Brewers @ Los Angeles Dodgers,Mookie Betts - Hits+Runs+RBI (U 1.5),+100,37.0,-0.2602,props_odds,mlbapi_poisson,,+100,2026-10-15 11:00:00,,711653532465496457
+2026-10-14T18:58:36-04:00,52,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Hits (O 0.5),-155,64.4,0.0597,props_odds,mlbapi_poisson,,-155,2026-10-15 11:00:00,,1415878983320469903
+2026-10-14T18:58:36-04:00,53,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Hits (O 0.5),-125,57.9,0.042,props_odds,mlbapi_poisson,,-125,2026-10-15 11:00:00,,7563421731721970059
+2026-10-14T18:58:36-04:00,54,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Total Bases (O 1.5),+260,31.4,0.1297,props_odds,mlbapi_poisson,,+260,2026-10-15 11:00:00,,6498287324978348458
+2026-10-14T18:58:36-04:00,55,Milwaukee Brewers @ Los Angeles Dodgers,Kyle Tucker - Runs (O 0.5),+130,44.3,0.0179,props_odds,mlbapi_poisson,,+130,2026-10-15 11:00:00,,3239932142024786354
+2026-10-14T18:58:36-04:00,56,Milwaukee Brewers @ Los Angeles Dodgers,Luis Lara - RBIs (O 0.5),+300,34.7,0.3881,props_odds,mlbapi_poisson,,+300,2026-10-15 11:00:00,,7469746025390014869
+2026-10-14T18:58:36-04:00,57,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Home Runs (O 0.5),+525,17.9,0.1168,props_odds,mlbapi_poisson,,+525,2026-10-15 11:00:00,,7325141159502807445
+2026-10-14T18:58:36-04:00,58,Milwaukee Brewers @ Los Angeles Dodgers,Tommy Edman - Hits (U 0.5),+120,42.4,-0.0664,props_odds,mlbapi_poisson,,+120,2026-10-15 11:00:00,,5361205176038457767
+2026-10-14T18:58:36-04:00,59,Milwaukee Brewers @ Los Angeles Dodgers,Andrew Vaughn - Doubles (O 0.5),+575,15.9,0.0728,props_odds,mlbapi_poisson,,+575,2026-10-15 11:00:00,,5701308706902376842
+2026-10-14T18:58:36-04:00,60,Milwaukee Brewers @ Los Angeles Dodgers,Joey Ortiz - Hits (O 0.5),-115,52.6,-0.0169,props_odds,mlbapi_poisson,,-115,2026-10-15 11:00:00,,6596352876581355915
+2026-10-14T18:58:36-04:00,61,Milwaukee Brewers @ Los Angeles Dodgers,Andrew Vaughn - Singles (O 0.5),+120,44.9,-0.012,props_odds,mlbapi_poisson,,+120,2026-10-15 11:00:00,,1321878027168252298
+2026-10-14T18:58:36-04:00,62,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Runs (O 0.5),+125,47.3,0.0639,props_odds,mlbapi_poisson,,+125,2026-10-15 11:00:00,,4043719122394153370
+2026-10-14T18:58:36-04:00,63,Milwaukee Brewers @ Los Angeles Dodgers,Blake Snell - Strikeouts (U 6.5),-130,58.8,0.0411,props_odds,mlbapi_poisson,,-130,2026-10-15 11:00:00,,6422387436017549740
+2026-10-14T18:58:36-04:00,64,Milwaukee Brewers @ Los Angeles Dodgers,Andrew Vaughn - Hits (O 0.5),-125,57.1,0.0277,props_odds,mlbapi_poisson,,-125,2026-10-15 11:00:00,,3312469062466011528
+2026-10-14T18:58:36-04:00,65,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Runs (O 0.5),+210,36.0,0.1153,props_odds,mlbapi_poisson,,+210,2026-10-15 11:00:00,,8588320562714116514
+2026-10-14T18:58:36-04:00,66,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Hits (O 0.5),-175,64.5,0.0138,props_odds,mlbapi_poisson,,-175,2026-10-15 11:00:00,,5377074951885029792
+2026-10-14T18:58:36-04:00,67,Milwaukee Brewers @ Los Angeles Dodgers,Mookie Betts - Total Bases (U 1.5),-155,47.4,-0.2209,props_odds,mlbapi_poisson,,-155,2026-10-15 11:00:00,,6046976531643892105
+2026-10-14T18:58:36-04:00,68,Milwaukee Brewers @ Los Angeles Dodgers,Joey Ortiz - Singles (O 0.5),+130,42.0,-0.0339,props_odds,mlbapi_poisson,,+130,2026-10-15 11:00:00,,3176638680009933201
+2026-10-14T18:58:36-04:00,69,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Hits+Runs+RBI (O 0.5),-165,83.0,0.3326,props_odds,mlbapi_poisson,,-165,2026-10-15 11:00:00,,5950640546191114655
+2026-10-14T18:58:36-04:00,70,Milwaukee Brewers @ Los Angeles Dodgers,Freddie Freeman - Singles (O 0.5),-110,53.8,0.0263,props_odds,mlbapi_poisson,,-110,2026-10-15 11:00:00,,296627475398656434
+2026-10-14T18:58:36-04:00,71,Milwaukee Brewers @ Los Angeles Dodgers,Freddie Freeman - Total Bases (O 1.5),+145,48.4,0.1855,props_odds,mlbapi_poisson,,+145,2026-10-15 11:00:00,,4119620609082786202
+2026-10-14T18:58:36-04:00,72,Milwaukee Brewers @ Los Angeles Dodgers,Robert Gasser - Earned Runs (O 1.5),-120,68.1,0.2476,props_odds,mlbapi_poisson,,-120,2026-10-15 11:00:00,,8625284706973385097
+2026-10-14T18:58:36-04:00,73,Milwaukee Brewers @ Los Angeles Dodgers,Joey Ortiz - Total Bases (O 1.5),+250,30.5,0.0687,props_odds,mlbapi_poisson,,+250,2026-10-15 11:00:00,,4711255474400526770
+2026-10-14T18:58:36-04:00,74,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - Doubles (O 0.5),+525,18.7,0.1681,props_odds,mlbapi_poisson,,+525,2026-10-15 11:00:00,,7501902354267111856
+2026-10-14T18:58:36-04:00,75,Milwaukee Brewers @ Los Angeles Dodgers,Miguel Rojas - Total Bases (O 1.5),+300,19.9,-0.2028,props_odds,mlbapi_poisson,,+300,2026-10-15 11:00:00,,3639746276406460803
+2026-10-14T18:58:36-04:00,76,Milwaukee Brewers @ Los Angeles Dodgers,Will Smith - Doubles (U 0.5),-650,88.4,0.02,props_odds,mlbapi_poisson,,-650,2026-10-15 11:00:00,,7276279472649798059
+2026-10-14T18:58:36-04:00,77,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Hits (O 0.5),-200,64.8,-0.0277,props_odds,mlbapi_poisson,,-200,2026-10-15 11:00:00,,3695402703527215523
+2026-10-14T18:58:36-04:00,78,Milwaukee Brewers @ Los Angeles Dodgers,Miguel Rojas - RBIs (U 0.5),-375,80.7,0.0217,props_odds,mlbapi_poisson,,-375,2026-10-15 11:00:00,,1675638591960777124
+2026-10-14T18:58:36-04:00,79,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - RBIs (O 0.5),+175,44.2,0.2145,props_odds,mlbapi_poisson,,+175,2026-10-15 11:00:00,,5854984209248158107
+2026-10-14T18:58:36-04:00,80,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Hits (O 0.5),-250,69.8,-0.023,props_odds,mlbapi_poisson,,-250,2026-10-15 11:00:00,,3664204340261945743
+2026-10-14T18:58:36-04:00,81,Milwaukee Brewers @ Los Angeles Dodgers,Kyle Tucker - Total Bases (U 1.5),-225,60.9,-0.1204,props_odds,mlbapi_poisson,,-225,2026-10-15 11:00:00,,3180260299513135532
+2026-10-14T18:58:36-04:00,82,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Stolen Bases (O 0.5),+350,22.6,0.019,props_odds,mlbapi_poisson,,+350,2026-10-15 11:00:00,,3379529361660182957
+2026-10-14T18:58:36-04:00,83,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Total Bases (O 1.5),+145,57.4,0.4067,props_odds,mlbapi_poisson,,+145,2026-10-15 11:00:00,,1456567025286644124
+2026-10-14T18:58:36-04:00,84,Milwaukee Brewers @ Los Angeles Dodgers,Miguel Rojas - Hits (U 0.5),-120,57.1,0.0464,props_odds,mlbapi_poisson,,-120,2026-10-15 11:00:00,,7563048369678057900
+2026-10-14T18:58:36-04:00,85,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Total Bases (O 1.5),+145,53.2,0.304,props_odds,mlbapi_poisson,,+145,2026-10-15 11:00:00,,5535616516348838275
+2026-10-14T18:58:36-04:00,86,Milwaukee Brewers @ Los Angeles Dodgers,Kyle Tucker - Hits (U 0.5),+145,44.1,0.081,props_odds,mlbapi_poisson,,+145,2026-10-15 11:00:00,,698820101465571753
+2026-10-14T18:58:36-04:00,87,Milwaukee Brewers @ Los Angeles Dodgers,Luis Lara - Total Bases (O 1.5),+275,27.0,0.0135,props_odds,mlbapi_poisson,,+275,2026-10-15 11:00:00,,7408964427753587116
+2026-10-14T18:58:36-04:00,88,Milwaukee Brewers @ Los Angeles Dodgers,Teoscar Hernandez - Doubles (U 0.5),-600,86.6,0.0102,props_odds,mlbapi_poisson,,-600,2026-10-15 11:00:00,,5891501752070570407
+2026-10-14T18:58:36-04:00,89,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - Singles (O 0.5),+145,40.8,-0.0006,props_odds,mlbapi_poisson,,+145,2026-10-15 11:00:00,,8676659724936151469
+2026-10-14T18:58:36-04:00,90,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Singles (O 0.5),-105,48.5,-0.0525,props_odds,mlbapi_poisson,,-105,2026-10-15 11:00:00,,615485847453696428
+2026-10-14T18:58:36-04:00,91,Milwaukee Brewers @ Los Angeles Dodgers,Teoscar Hernandez - Total Bases (U 1.5),-175,55.6,-0.1255,props_odds,mlbapi_poisson,,-175,2026-10-15 11:00:00,,3615903546073022870
+2026-10-14T18:58:36-04:00,92,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Hits+Runs+RBI (O 1.5),+100,66.0,0.3192,props_odds,mlbapi_poisson,,+100,2026-10-15 11:00:00,,5294725860291641755

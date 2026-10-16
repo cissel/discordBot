@@ -1,0 +1,10 @@
+{
+  "open_buy_order_id": null,
+  "open_buy_price": null,
+  "open_sell_order_id": null,
+  "open_sell_price": null,
+  "last_fill_activity_id": "20261015152606107::8bf70c80-bb54-403f-a0f0-95c91e893245",
+  "cum_fills": 259,
+  "cum_buy_shares": 538.0,
+  "cum_sell_shares": 538.0
+}

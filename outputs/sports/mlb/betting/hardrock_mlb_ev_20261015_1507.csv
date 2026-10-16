@@ -1,0 +1,176 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-15T15:07:48-04:00,1,Rays @ Guardians,Rays +1.5 run line,-260,64.2,-0.1114,upcoming_games_odds,draftkings_devig,0.6842,-260,2026-10-16 09:00:00,401908025,3446537854958829993
+2026-10-15T15:07:48-04:00,2,Rays @ Guardians,Guardians -1.5 run line,+200,35.8,0.0746,upcoming_games_odds,draftkings_devig,0.3158,+200,2026-10-16 09:00:00,401908025,7690054603848679849
+2026-10-15T15:07:48-04:00,3,Rays @ Guardians,O 6.5,-130,50.9,-0.1001,upcoming_games_odds,draftkings_devig,0.5306,-130,2026-10-16 09:00:00,401908025,396475007322161569
+2026-10-15T15:07:48-04:00,4,Rays @ Guardians,U 6.5,+100,50.9,0.0173,upcoming_games_odds,draftkings_devig,0.4694,+100,2026-10-16 09:00:00,401908025,4642947243467473313
+2026-10-15T15:07:48-04:00,5,Rays @ Guardians,,+325,,,upcoming_games_odds,no_model,0.2217,+325,2026-10-16 09:00:00,401908025,5593206764842647975
+2026-10-15T15:07:48-04:00,6,Rays @ Guardians,,-475,,,upcoming_games_odds,no_model,0.7783,-475,2026-10-16 09:00:00,401908025,7401402015231902119
+2026-10-15T15:07:48-04:00,7,Brewers @ Dodgers,Brewers +1.5 run line,-165,60.2,-0.0335,upcoming_games_odds,draftkings_devig,0.594,-165,2026-10-16 11:00:00,401908033,908917399204528556
+2026-10-15T15:07:48-04:00,8,Brewers @ Dodgers,Dodgers -1.5 run line,+135,39.8,-0.0642,upcoming_games_odds,draftkings_devig,0.406,+135,2026-10-16 11:00:00,401908033,4860826072222138796
+2026-10-15T15:07:48-04:00,9,Brewers @ Dodgers,O 7.5,-115,50.9,-0.049,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-16 11:00:00,401908033,4427524757512126896
+2026-10-15T15:07:48-04:00,10,Brewers @ Dodgers,U 7.5,-105,50.9,-0.0069,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-16 11:00:00,401908033,7143195332816535984
+2026-10-15T15:07:48-04:00,11,Brewers @ Dodgers,,+130,,,upcoming_games_odds,no_model,0.414,+130,2026-10-16 11:00:00,401908033,7676939233747141016
+2026-10-15T15:07:48-04:00,12,Brewers @ Dodgers,,-160,,,upcoming_games_odds,no_model,0.586,-160,2026-10-16 11:00:00,401908033,6819003504733061528
+2026-10-15T15:07:48-04:00,13,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Total Bases (O 1.5),+800,50.7,3.5587,props_odds,mlbapi_poisson,,+800,2026-10-16 09:00:00,,3916940866698215842
+2026-10-15T15:07:48-04:00,14,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Total Bases (O 1.5),+850,48.3,3.592,props_odds,mlbapi_poisson,,+850,2026-10-16 09:00:00,,3124751534978630056
+2026-10-15T15:07:48-04:00,15,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Total Bases (O 1.5),+700,59.2,3.7386,props_odds,mlbapi_poisson,,+700,2026-10-16 09:00:00,,2698611614378230192
+2026-10-15T15:07:48-04:00,16,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Total Bases (O 1.5),+850,43.0,3.0881,props_odds,mlbapi_poisson,,+850,2026-10-16 09:00:00,,9014413112509596080
+2026-10-15T15:07:48-04:00,17,Tampa Bay Rays @ Cleveland Guardians,Steven Kwan - Total Bases (O 1.5),+850,35.4,2.3591,props_odds,mlbapi_poisson,,+850,2026-10-16 09:00:00,,3724090925232816547
+2026-10-15T15:07:48-04:00,18,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - RBIs (O 0.5),+700,44.8,2.5811,props_odds,mlbapi_poisson,,+700,2026-10-16 09:00:00,,1069180152753291697
+2026-10-15T15:07:48-04:00,19,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Singles (O 0.5),+500,46.7,1.8033,props_odds,mlbapi_poisson,,+500,2026-10-16 09:00:00,,7811487708857106831
+2026-10-15T15:07:48-04:00,20,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Doubles (O 0.5),+1400,20.2,2.029,props_odds,mlbapi_poisson,,+1400,2026-10-16 09:00:00,,6908759050800988566
+2026-10-15T15:07:48-04:00,21,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Singles (O 0.5),+475,50.8,1.9221,props_odds,mlbapi_poisson,,+475,2026-10-16 09:00:00,,6754672316610904459
+2026-10-15T15:07:48-04:00,22,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Hits (O 0.5),+300,65.0,1.5994,props_odds,mlbapi_poisson,,+300,2026-10-16 09:00:00,,4587186937193955732
+2026-10-15T15:07:48-04:00,23,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Hits (O 0.5),+325,64.1,1.7263,props_odds,mlbapi_poisson,,+325,2026-10-16 09:00:00,,6412555459697443240
+2026-10-15T15:07:48-04:00,24,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - RBIs (O 0.5),+650,46.4,2.4793,props_odds,mlbapi_poisson,,+650,2026-10-16 09:00:00,,4085131751649837452
+2026-10-15T15:07:48-04:00,25,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - Total Bases (O 1.5),+750,45.0,2.8209,props_odds,mlbapi_poisson,,+750,2026-10-16 09:00:00,,4468029288679080361
+2026-10-15T15:07:48-04:00,26,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - Singles (O 0.5),+525,45.0,1.8113,props_odds,mlbapi_poisson,,+525,2026-10-16 09:00:00,,7492345937680007559
+2026-10-15T15:07:48-04:00,27,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Runs (O 0.5),+500,46.1,1.7636,props_odds,mlbapi_poisson,,+500,2026-10-16 09:00:00,,7606260564997833137
+2026-10-15T15:07:48-04:00,28,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - RBIs (O 0.5),+650,44.6,2.3475,props_odds,mlbapi_poisson,,+650,2026-10-16 09:00:00,,4972202064898818448
+2026-10-15T15:07:48-04:00,29,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Runs (O 0.5),+650,37.2,1.788,props_odds,mlbapi_poisson,,+650,2026-10-16 09:00:00,,7875297866175086997
+2026-10-15T15:07:48-04:00,30,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Home Runs (O 0.5),+1100,22.8,1.7405,props_odds,mlbapi_poisson,,+1100,2026-10-16 09:00:00,,881963730911494562
+2026-10-15T15:07:48-04:00,31,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Runs (O 0.5),+600,38.4,1.6853,props_odds,mlbapi_poisson,,+600,2026-10-16 09:00:00,,6520459847220199829
+2026-10-15T15:07:48-04:00,32,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - RBIs (O 0.5),+700,39.6,2.166,props_odds,mlbapi_poisson,,+700,2026-10-16 09:00:00,,8127459038255513996
+2026-10-15T15:07:48-04:00,33,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - RBIs (O 0.5),+750,37.9,2.2252,props_odds,mlbapi_poisson,,+750,2026-10-16 09:00:00,,5667649216781091211
+2026-10-15T15:07:48-04:00,34,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Hits+Runs+RBI (O 0.5),+240,89.9,2.0557,props_odds,mlbapi_poisson,,+240,2026-10-16 09:00:00,,1031286584013619612
+2026-10-15T15:07:48-04:00,35,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - Total Bases (O 1.5),+600,38.7,1.7092,props_odds,mlbapi_poisson,,+600,2026-10-16 09:00:00,,8653825422322172327
+2026-10-15T15:07:48-04:00,36,Tampa Bay Rays @ Cleveland Guardians,Steven Kwan - Runs (O 0.5),+550,41.1,1.6733,props_odds,mlbapi_poisson,,+550,2026-10-16 09:00:00,,3644662170882539932
+2026-10-15T15:07:48-04:00,37,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Singles (O 0.5),+400,50.3,1.5152,props_odds,mlbapi_poisson,,+400,2026-10-16 09:00:00,,8868837738632315274
+2026-10-15T15:07:48-04:00,38,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Doubles (O 0.5),+1500,16.0,1.5579,props_odds,mlbapi_poisson,,+1500,2026-10-16 09:00:00,,8884267535344730518
+2026-10-15T15:07:48-04:00,39,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Hits+Runs+RBI (O 0.5),+250,87.6,2.0672,props_odds,mlbapi_poisson,,+250,2026-10-16 09:00:00,,6520512623778333063
+2026-10-15T15:07:48-04:00,40,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Runs (O 0.5),+525,37.6,1.3475,props_odds,mlbapi_poisson,,+525,2026-10-16 09:00:00,,6388951659468423567
+2026-10-15T15:07:48-04:00,41,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - Hits (O 0.5),+325,59.8,1.5426,props_odds,mlbapi_poisson,,+325,2026-10-16 09:00:00,,2894178036759003559
+2026-10-15T15:07:48-04:00,42,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - RBIs (O 0.5),+600,42.4,1.9692,props_odds,mlbapi_poisson,,+600,2026-10-16 09:00:00,,4293429831485489551
+2026-10-15T15:07:48-04:00,43,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Runs (O 0.5),+650,35.0,1.6279,props_odds,mlbapi_poisson,,+650,2026-10-16 09:00:00,,3082248779135582625
+2026-10-15T15:07:48-04:00,44,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - Singles (O 0.5),+350,57.3,1.5779,props_odds,mlbapi_poisson,,+350,2026-10-16 09:00:00,,4006064770984837551
+2026-10-15T15:07:48-04:00,45,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Singles (O 0.5),+500,38.4,1.3016,props_odds,mlbapi_poisson,,+500,2026-10-16 09:00:00,,1748582681207243183
+2026-10-15T15:07:48-04:00,46,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Hits (O 0.5),+275,65.6,1.4607,props_odds,mlbapi_poisson,,+275,2026-10-16 09:00:00,,5517711186923225477
+2026-10-15T15:07:48-04:00,47,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - Runs (O 0.5),+450,43.3,1.3834,props_odds,mlbapi_poisson,,+450,2026-10-16 09:00:00,,5750094996678246817
+2026-10-15T15:07:48-04:00,48,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - Doubles (O 0.5),+1100,19.3,1.3146,props_odds,mlbapi_poisson,,+1100,2026-10-16 09:00:00,,3860706660175708570
+2026-10-15T15:07:48-04:00,49,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Hits (O 0.5),+300,61.6,1.465,props_odds,mlbapi_poisson,,+300,2026-10-16 09:00:00,,1270413354984407441
+2026-10-15T15:07:48-04:00,50,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Hits (O 0.5),+350,48.4,1.1772,props_odds,mlbapi_poisson,,+350,2026-10-16 09:00:00,,6825038896125051294
+2026-10-15T15:07:48-04:00,51,Tampa Bay Rays @ Cleveland Guardians,Steven Kwan - Singles (O 0.5),+325,56.3,1.3927,props_odds,mlbapi_poisson,,+325,2026-10-16 09:00:00,,2544174176781074827
+2026-10-15T15:07:48-04:00,52,Tampa Bay Rays @ Cleveland Guardians,Patrick Bailey - RBIs (O 0.5),+800,28.1,1.532,props_odds,mlbapi_poisson,,+800,2026-10-16 09:00:00,,4614893221464637873
+2026-10-15T15:07:48-04:00,53,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Hits+Runs+RBI (O 0.5),+250,86.5,2.0263,props_odds,mlbapi_poisson,,+250,2026-10-16 09:00:00,,5399338417911890320
+2026-10-15T15:07:48-04:00,54,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Singles (O 0.5),+400,50.9,1.5449,props_odds,mlbapi_poisson,,+400,2026-10-16 09:00:00,,6589727980258460079
+2026-10-15T15:07:48-04:00,55,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Runs (O 0.5),+525,37.3,1.3287,props_odds,mlbapi_poisson,,+525,2026-10-16 09:00:00,,7533089440558875015
+2026-10-15T15:07:48-04:00,56,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Hits+Runs+RBI (O 0.5),+260,76.2,1.7432,props_odds,mlbapi_poisson,,+260,2026-10-16 09:00:00,,7150406651894432169
+2026-10-15T15:07:48-04:00,57,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - Doubles (O 0.5),+1200,19.4,1.5254,props_odds,mlbapi_poisson,,+1200,2026-10-16 09:00:00,,90898553194545558
+2026-10-15T15:07:48-04:00,58,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - Doubles (O 0.5),+1400,15.1,1.2628,props_odds,mlbapi_poisson,,+1400,2026-10-16 09:00:00,,3649199655654392214
+2026-10-15T15:07:48-04:00,59,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Total Bases (O 1.5),+900,22.3,1.228,props_odds,mlbapi_poisson,,+900,2026-10-16 09:00:00,,6780064747380408739
+2026-10-15T15:07:48-04:00,60,Tampa Bay Rays @ Cleveland Guardians,Steven Kwan - Hits (O 0.5),+240,63.5,1.1575,props_odds,mlbapi_poisson,,+240,2026-10-16 09:00:00,,7652596080936354218
+2026-10-15T15:07:48-04:00,61,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Hits+Runs+RBI (O 0.5),+210,87.0,1.6959,props_odds,mlbapi_poisson,,+210,2026-10-16 09:00:00,,7533722793616212398
+2026-10-15T15:07:48-04:00,62,Tampa Bay Rays @ Cleveland Guardians,Steven Kwan - Hits+Runs+RBI (O 0.5),+195,82.6,1.4365,props_odds,mlbapi_poisson,,+195,2026-10-16 09:00:00,,9194557097604415913
+2026-10-15T15:07:48-04:00,63,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Doubles (O 0.5),+1400,14.3,1.145,props_odds,mlbapi_poisson,,+1400,2026-10-16 09:00:00,,1458440879252570518
+2026-10-15T15:07:48-04:00,64,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - RBIs (O 0.5),+600,36.0,1.5206,props_odds,mlbapi_poisson,,+600,2026-10-16 09:00:00,,6003619013421302159
+2026-10-15T15:07:48-04:00,65,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - Singles (O 0.5),+375,40.4,0.92,props_odds,mlbapi_poisson,,+375,2026-10-16 09:00:00,,8891014613286650255
+2026-10-15T15:07:48-04:00,66,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - RBIs (O 0.5),+650,34.6,1.5918,props_odds,mlbapi_poisson,,+650,2026-10-16 09:00:00,,8679931195619934620
+2026-10-15T15:07:48-04:00,67,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - RBIs (O 0.5),+1000,25.2,1.7718,props_odds,mlbapi_poisson,,+1000,2026-10-16 09:00:00,,3271493147095597451
+2026-10-15T15:07:48-04:00,68,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Doubles (O 0.5),+1300,15.1,1.1105,props_odds,mlbapi_poisson,,+1300,2026-10-16 09:00:00,,5745730835311624608
+2026-10-15T15:07:48-04:00,69,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - Hits (O 0.5),+240,56.4,0.918,props_odds,mlbapi_poisson,,+240,2026-10-16 09:00:00,,5843692332741951912
+2026-10-15T15:07:48-04:00,70,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - Home Runs (O 0.5),+1400,13.3,0.9968,props_odds,mlbapi_poisson,,+1400,2026-10-16 09:00:00,,6634186354970460586
+2026-10-15T15:07:48-04:00,71,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Home Runs (O 0.5),+1400,13.2,0.9848,props_odds,mlbapi_poisson,,+1400,2026-10-16 09:00:00,,8476158602564993450
+2026-10-15T15:07:48-04:00,72,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Home Runs (O 0.5),+1600,11.9,1.0239,props_odds,mlbapi_poisson,,+1600,2026-10-16 09:00:00,,1925672944554607012
+2026-10-15T15:07:48-04:00,73,Tampa Bay Rays @ Cleveland Guardians,Petey Halpin - Singles (O 0.5),+425,31.2,0.6363,props_odds,mlbapi_poisson,,+425,2026-10-16 09:00:00,,5370005845079884169
+2026-10-15T15:07:48-04:00,74,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Doubles (O 0.5),+1300,13.5,0.8916,props_odds,mlbapi_poisson,,+1300,2026-10-16 09:00:00,,282392247067083155
+2026-10-15T15:07:48-04:00,75,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - Runs (O 0.5),+475,32.5,0.868,props_odds,mlbapi_poisson,,+475,2026-10-16 09:00:00,,1442247821754499475
+2026-10-15T15:07:48-04:00,76,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - Hits+Runs+RBI (O 0.5),+195,81.2,1.3945,props_odds,mlbapi_poisson,,+195,2026-10-16 09:00:00,,3810412174380237195
+2026-10-15T15:07:48-04:00,77,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Home Runs (O 0.5),+1400,11.3,0.7002,props_odds,mlbapi_poisson,,+1400,2026-10-16 09:00:00,,1274902798399570341
+2026-10-15T15:07:48-04:00,78,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - Hits+Runs+RBI (O 1.5),+260,57.8,1.0824,props_odds,mlbapi_poisson,,+260,2026-10-16 09:00:00,,8202419377350508961
+2026-10-15T15:07:48-04:00,79,Tampa Bay Rays @ Cleveland Guardians,Steven Kwan - Doubles (O 0.5),+1200,13.0,0.6879,props_odds,mlbapi_poisson,,+1200,2026-10-16 09:00:00,,7021938379717738909
+2026-10-15T15:07:48-04:00,80,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - Home Runs (O 0.5),+1200,13.5,0.7508,props_odds,mlbapi_poisson,,+1200,2026-10-16 09:00:00,,7760086261813084590
+2026-10-15T15:07:48-04:00,81,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Doubles (O 0.5),+1400,10.7,0.5984,props_odds,mlbapi_poisson,,+1400,2026-10-16 09:00:00,,4714138789562417565
+2026-10-15T15:07:48-04:00,82,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Hits+Runs+RBI (O 1.5),+240,53.4,0.8171,props_odds,mlbapi_poisson,,+240,2026-10-16 09:00:00,,5992057923533144497
+2026-10-15T15:07:48-04:00,83,Tampa Bay Rays @ Cleveland Guardians,Steven Kwan - RBIs (O 0.5),+700,19.1,0.5278,props_odds,mlbapi_poisson,,+700,2026-10-16 09:00:00,,606665913604899210
+2026-10-15T15:07:48-04:00,84,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Total Bases (O 1.5),+300,39.6,0.5855,props_odds,mlbapi_poisson,,+300,2026-10-16 09:00:00,,1916193092738875824
+2026-10-15T15:07:48-04:00,85,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - Hits+Runs+RBI (O 2.5),+210,41.0,0.2725,props_odds,mlbapi_poisson,,+210,2026-10-16 09:00:00,,2009406939762655664
+2026-10-15T15:07:48-04:00,86,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - Hits (O 1.5),+250,32.6,0.1413,props_odds,mlbapi_poisson,,+250,2026-10-16 09:00:00,,5474419153530126737
+2026-10-15T15:07:48-04:00,87,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - Hits (U 2.5),-375,93.9,0.1895,props_odds,mlbapi_poisson,,-375,2026-10-16 09:00:00,,3818517121265172909
+2026-10-15T15:07:48-04:00,88,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - Singles (U 2.5),-850,97.9,0.0944,props_odds,mlbapi_poisson,,-850,2026-10-16 09:00:00,,7640938337104167312
+2026-10-15T15:07:48-04:00,89,Tampa Bay Rays @ Cleveland Guardians,Patrick Bailey - Hits (U 1.5),-375,88.7,0.1241,props_odds,mlbapi_poisson,,-375,2026-10-16 09:00:00,,1870731448026268071
+2026-10-15T15:07:48-04:00,90,Tampa Bay Rays @ Cleveland Guardians,Patrick Bailey - Singles (U 1.5),-650,93.8,0.0823,props_odds,mlbapi_poisson,,-650,2026-10-16 09:00:00,,3255206356231258512
+2026-10-15T15:07:48-04:00,91,Tampa Bay Rays @ Cleveland Guardians,Patrick Bailey - Hits+Runs+RBI (U 2.5),-300,88.4,0.1788,props_odds,mlbapi_poisson,,-300,2026-10-16 09:00:00,,2947193566872600970
+2026-10-15T15:07:48-04:00,92,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - Total Bases (U 2.5),-375,83.5,0.0582,props_odds,mlbapi_poisson,,-375,2026-10-16 09:00:00,,3109349576096743842
+2026-10-15T15:07:48-04:00,93,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - Hits+Runs+RBI (O 2.5),+210,29.1,-0.0983,props_odds,mlbapi_poisson,,+210,2026-10-16 09:00:00,,6703002176412844450
+2026-10-15T15:07:48-04:00,94,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Singles (U 1.5),-800,87.6,-0.0151,props_odds,mlbapi_poisson,,-800,2026-10-16 09:00:00,,2585445445241274780
+2026-10-15T15:07:48-04:00,95,Milwaukee Brewers @ Los Angeles Dodgers,Tyler Glasnow - Strikeouts (O 6.5),+125,62.7,0.4109,props_odds,mlbapi_poisson,,+125,2026-10-16 11:00:00,,4144190781516808623
+2026-10-15T15:07:48-04:00,96,Milwaukee Brewers @ Los Angeles Dodgers,Shane Drohan - Earned Runs (O 1.5),+115,80.9,0.7384,props_odds,mlbapi_poisson,,+115,2026-10-16 11:00:00,,7611541277485695383
+2026-10-15T15:07:48-04:00,97,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Home Runs (O 0.5),+1000,13.0,0.4282,props_odds,mlbapi_poisson,,+1000,2026-10-16 11:00:00,,5195542088451752364
+2026-10-15T15:07:48-04:00,98,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - RBIs (O 0.5),+250,48.4,0.6951,props_odds,mlbapi_poisson,,+250,2026-10-16 11:00:00,,1655104236012306827
+2026-10-15T15:07:48-04:00,99,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Home Runs (O 0.5),+600,16.5,0.1564,props_odds,mlbapi_poisson,,+600,2026-10-16 11:00:00,,8287250038502064558
+2026-10-15T15:07:48-04:00,100,Milwaukee Brewers @ Los Angeles Dodgers,Enrique Hernandez - Home Runs (O 0.5),+900,9.3,-0.0705,props_odds,mlbapi_poisson,,+900,2026-10-16 11:00:00,,721613619875414437
+2026-10-15T15:07:48-04:00,101,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Runs (O 0.5),+145,49.1,0.2032,props_odds,mlbapi_poisson,,+145,2026-10-16 11:00:00,,1844256644427547057
+2026-10-15T15:07:48-04:00,102,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Hits+Runs+RBI (O 1.5),+110,68.5,0.4388,props_odds,mlbapi_poisson,,+110,2026-10-16 11:00:00,,233234043993457051
+2026-10-15T15:07:48-04:00,103,Milwaukee Brewers @ Los Angeles Dodgers,Christian Yelich - Runs (O 0.5),+170,44.3,0.1954,props_odds,mlbapi_poisson,,+170,2026-10-16 11:00:00,,5228711764396474755
+2026-10-15T15:07:48-04:00,104,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - Runs (O 0.5),+180,40.0,0.1192,props_odds,mlbapi_poisson,,+180,2026-10-16 11:00:00,,5473594994134745522
+2026-10-15T15:07:48-04:00,105,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Singles (O 0.5),+165,41.4,0.0975,props_odds,mlbapi_poisson,,+165,2026-10-16 11:00:00,,2056436000309248387
+2026-10-15T15:07:48-04:00,106,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - RBIs (O 0.5),+195,44.6,0.3156,props_odds,mlbapi_poisson,,+195,2026-10-16 11:00:00,,8608301420858442115
+2026-10-15T15:07:48-04:00,107,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Home Runs (O 0.5),+700,15.8,0.2618,props_odds,mlbapi_poisson,,+700,2026-10-16 11:00:00,,7327662260476838297
+2026-10-15T15:07:48-04:00,108,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Home Runs (O 0.5),+500,19.4,0.1648,props_odds,mlbapi_poisson,,+500,2026-10-16 11:00:00,,5542869015573168556
+2026-10-15T15:07:48-04:00,109,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Singles (O 0.5),-105,54.5,0.064,props_odds,mlbapi_poisson,,-105,2026-10-16 11:00:00,,3670361856901513615
+2026-10-15T15:07:48-04:00,110,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - RBIs (O 0.5),+275,36.8,0.3814,props_odds,mlbapi_poisson,,+275,2026-10-16 11:00:00,,1549674265048121731
+2026-10-15T15:07:48-04:00,111,Milwaukee Brewers @ Los Angeles Dodgers,Christian Yelich - Total Bases (O 1.5),+200,41.3,0.2403,props_odds,mlbapi_poisson,,+200,2026-10-16 11:00:00,,3986417947479507374
+2026-10-15T15:07:48-04:00,112,Milwaukee Brewers @ Los Angeles Dodgers,Christian Yelich - RBIs (O 0.5),+250,39.3,0.3771,props_odds,mlbapi_poisson,,+250,2026-10-16 11:00:00,,5625792567632331139
+2026-10-15T15:07:48-04:00,113,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - RBIs (O 0.5),+220,45.0,0.4389,props_odds,mlbapi_poisson,,+220,2026-10-16 11:00:00,,8070886525480599982
+2026-10-15T15:07:48-04:00,114,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Total Bases (O 1.5),+180,51.8,0.4492,props_odds,mlbapi_poisson,,+180,2026-10-16 11:00:00,,58320298273014169
+2026-10-15T15:07:48-04:00,115,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Hits+Runs+RBI (O 1.5),-115,72.1,0.3488,props_odds,mlbapi_poisson,,-115,2026-10-16 11:00:00,,1180845529052086701
+2026-10-15T15:07:48-04:00,116,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Singles (O 0.5),+115,50.5,0.0852,props_odds,mlbapi_poisson,,+115,2026-10-16 11:00:00,,1296735038167187875
+2026-10-15T15:07:48-04:00,117,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Singles (O 0.5),+130,45.4,0.0432,props_odds,mlbapi_poisson,,+130,2026-10-16 11:00:00,,8323194881795293572
+2026-10-15T15:07:48-04:00,118,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Runs (O 0.5),+120,53.0,0.1669,props_odds,mlbapi_poisson,,+120,2026-10-16 11:00:00,,5415065791164973475
+2026-10-15T15:07:48-04:00,119,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - Total Bases (O 1.5),+155,47.7,0.2159,props_odds,mlbapi_poisson,,+155,2026-10-16 11:00:00,,8845938284854116782
+2026-10-15T15:07:48-04:00,120,Milwaukee Brewers @ Los Angeles Dodgers,Max Muncy - Total Bases (O 1.5),+185,,,props_odds,player_not_matched,,+185,2026-10-16 11:00:00,,3277971400618541446
+2026-10-15T15:07:48-04:00,121,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Hits (O 0.5),-120,58.6,0.0744,props_odds,mlbapi_poisson,,-120,2026-10-16 11:00:00,,4532221629098492312
+2026-10-15T15:07:48-04:00,122,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Total Bases (O 1.5),+260,31.4,0.1297,props_odds,mlbapi_poisson,,+260,2026-10-16 11:00:00,,3173008041343844780
+2026-10-15T15:07:48-04:00,123,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Runs (O 0.5),+145,47.6,0.1656,props_odds,mlbapi_poisson,,+145,2026-10-16 11:00:00,,3859001751164289457
+2026-10-15T15:07:48-04:00,124,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - Hits+Runs+RBI (O 1.5),+105,65.5,0.342,props_odds,mlbapi_poisson,,+105,2026-10-16 11:00:00,,784977774904476059
+2026-10-15T15:07:48-04:00,125,Milwaukee Brewers @ Los Angeles Dodgers,Mookie Betts - Hits+Runs+RBI (U 1.5),+100,37.0,-0.2602,props_odds,mlbapi_poisson,,+100,2026-10-16 11:00:00,,1355518344287093165
+2026-10-15T15:07:48-04:00,126,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - Total Bases (O 1.5),+240,38.2,0.2978,props_odds,mlbapi_poisson,,+240,2026-10-16 11:00:00,,6134221134603878832
+2026-10-15T15:07:48-04:00,127,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - RBIs (O 0.5),+195,44.2,0.3028,props_odds,mlbapi_poisson,,+195,2026-10-16 11:00:00,,1237958320527114673
+2026-10-15T15:07:48-04:00,128,Milwaukee Brewers @ Los Angeles Dodgers,Christian Yelich - Hits+Runs+RBI (O 1.5),+125,58.5,0.3157,props_odds,mlbapi_poisson,,+125,2026-10-16 11:00:00,,8316478012505850274
+2026-10-15T15:07:48-04:00,129,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Total Bases (O 1.5),+200,47.6,0.4292,props_odds,mlbapi_poisson,,+200,2026-10-16 11:00:00,,8331062959086371248
+2026-10-15T15:07:48-04:00,130,Milwaukee Brewers @ Los Angeles Dodgers,Jake Bauers - Hits+Runs+RBI (O 0.5),-180,88.1,0.3698,props_odds,mlbapi_poisson,,-180,2026-10-16 11:00:00,,1030830842617921953
+2026-10-15T15:07:48-04:00,131,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Hits (O 0.5),-210,69.8,0.0302,props_odds,mlbapi_poisson,,-210,2026-10-16 11:00:00,,8821178994541068710
+2026-10-15T15:07:48-04:00,132,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Runs (O 0.5),+130,47.3,0.0876,props_odds,mlbapi_poisson,,+130,2026-10-16 11:00:00,,4231164446933909897
+2026-10-15T15:07:48-04:00,133,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Singles (O 0.5),+110,48.5,0.0191,props_odds,mlbapi_poisson,,+110,2026-10-16 11:00:00,,2846817734912770438
+2026-10-15T15:07:48-04:00,134,Milwaukee Brewers @ Los Angeles Dodgers,Mookie Betts - Home Runs (O 0.5),+600,17.1,0.1938,props_odds,mlbapi_poisson,,+600,2026-10-16 11:00:00,,3090201621632778664
+2026-10-15T15:07:48-04:00,135,Milwaukee Brewers @ Los Angeles Dodgers,Joey Ortiz - Hits (O 0.5),-115,52.6,-0.0169,props_odds,mlbapi_poisson,,-115,2026-10-16 11:00:00,,7322740773416468890
+2026-10-15T15:07:48-04:00,136,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - Runs (O 0.5),+155,42.8,0.0902,props_odds,mlbapi_poisson,,+155,2026-10-16 11:00:00,,592203171460415922
+2026-10-15T15:07:48-04:00,137,Milwaukee Brewers @ Los Angeles Dodgers,Enrique Hernandez - Hits+Runs+RBI (U 0.5),+105,34.2,-0.2991,props_odds,mlbapi_poisson,,+105,2026-10-16 11:00:00,,350192312770494884
+2026-10-15T15:07:48-04:00,138,Milwaukee Brewers @ Los Angeles Dodgers,Enrique Hernandez - Hits (U 0.5),-115,61.4,0.1479,props_odds,mlbapi_poisson,,-115,2026-10-16 11:00:00,,8159599343414935951
+2026-10-15T15:07:48-04:00,139,Milwaukee Brewers @ Los Angeles Dodgers,Jackson Chourio - Home Runs (O 0.5),+500,17.9,0.0721,props_odds,mlbapi_poisson,,+500,2026-10-16 11:00:00,,3454566580938211746
+2026-10-15T15:07:48-04:00,140,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Hits (O 0.5),-170,64.5,0.0246,props_odds,mlbapi_poisson,,-170,2026-10-16 11:00:00,,1997805820510863771
+2026-10-15T15:07:48-04:00,141,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - Hits+Runs+RBI (O 0.5),-175,83.4,0.3099,props_odds,mlbapi_poisson,,-175,2026-10-16 11:00:00,,6451701893751243178
+2026-10-15T15:07:48-04:00,142,Milwaukee Brewers @ Los Angeles Dodgers,Kyle Tucker - Runs (O 0.5),+125,44.3,-0.0042,props_odds,mlbapi_poisson,,+125,2026-10-16 11:00:00,,8856308487685276039
+2026-10-15T15:07:48-04:00,143,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - RBIs (O 0.5),+275,36.1,0.3548,props_odds,mlbapi_poisson,,+275,2026-10-16 11:00:00,,4072974285956841859
+2026-10-15T15:07:48-04:00,144,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Hits (O 0.5),-180,64.8,0.0084,props_odds,mlbapi_poisson,,-180,2026-10-16 11:00:00,,2276938562576449944
+2026-10-15T15:07:48-04:00,145,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Hits (O 0.5),-135,57.9,0.0077,props_odds,mlbapi_poisson,,-135,2026-10-16 11:00:00,,3865688884247658924
+2026-10-15T15:07:48-04:00,146,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Hits (O 0.5),-170,64.4,0.023,props_odds,mlbapi_poisson,,-170,2026-10-16 11:00:00,,5127717126701973920
+2026-10-15T15:07:48-04:00,147,Milwaukee Brewers @ Los Angeles Dodgers,Mookie Betts - Hits (U 0.5),+170,36.8,-0.0067,props_odds,mlbapi_poisson,,+170,2026-10-16 11:00:00,,8218980874054664596
+2026-10-15T15:07:48-04:00,148,Milwaukee Brewers @ Los Angeles Dodgers,Tyler Glasnow - Earned Runs (O 1.5),-155,65.3,0.0741,props_odds,mlbapi_poisson,,-155,2026-10-16 11:00:00,,4197593586684002715
+2026-10-15T15:07:48-04:00,149,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Total Bases (O 1.5),+155,53.2,0.3573,props_odds,mlbapi_poisson,,+155,2026-10-16 11:00:00,,6364454890172973461
+2026-10-15T15:07:48-04:00,150,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - RBIs (O 0.5),+185,47.2,0.3464,props_odds,mlbapi_poisson,,+185,2026-10-16 11:00:00,,326920577937965443
+2026-10-15T15:07:48-04:00,151,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Doubles (O 0.5),+400,21.7,0.0866,props_odds,mlbapi_poisson,,+400,2026-10-16 11:00:00,,7801393051531870598
+2026-10-15T15:07:48-04:00,152,Milwaukee Brewers @ Los Angeles Dodgers,Max Muncy - Doubles (O 0.5),+550,,,props_odds,player_not_matched,,+550,2026-10-16 11:00:00,,3752094036572373387
+2026-10-15T15:07:48-04:00,153,Milwaukee Brewers @ Los Angeles Dodgers,Max Muncy - Home Runs (O 0.5),+500,,,props_odds,player_not_matched,,+500,2026-10-16 11:00:00,,5976582372265689508
+2026-10-15T15:07:48-04:00,154,Milwaukee Brewers @ Los Angeles Dodgers,Enrique Hernandez - Total Bases (U 1.5),-375,78.1,-0.0114,props_odds,mlbapi_poisson,,-375,2026-10-16 11:00:00,,3312951420310913427
+2026-10-15T15:07:48-04:00,155,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Hits+Runs+RBI (O 1.5),+100,65.5,0.3096,props_odds,mlbapi_poisson,,+100,2026-10-16 11:00:00,,257607605441135012
+2026-10-15T15:07:48-04:00,156,Milwaukee Brewers @ Los Angeles Dodgers,Kyle Tucker - Total Bases (U 1.5),-220,60.9,-0.1142,props_odds,mlbapi_poisson,,-220,2026-10-16 11:00:00,,8037700481415512484
+2026-10-15T15:07:48-04:00,157,Milwaukee Brewers @ Los Angeles Dodgers,Joey Ortiz - Total Bases (O 1.5),+250,30.5,0.0687,props_odds,mlbapi_poisson,,+250,2026-10-16 11:00:00,,1882392423552909714
+2026-10-15T15:07:48-04:00,158,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Hits+Runs+RBI (O 1.5),+130,52.8,0.215,props_odds,mlbapi_poisson,,+130,2026-10-16 11:00:00,,4492917530821788061
+2026-10-15T15:07:48-04:00,159,Milwaukee Brewers @ Los Angeles Dodgers,Garrett Mitchell - Doubles (O 0.5),+525,18.7,0.1681,props_odds,mlbapi_poisson,,+525,2026-10-16 11:00:00,,5452765845858156931
+2026-10-15T15:07:48-04:00,160,Milwaukee Brewers @ Los Angeles Dodgers,Brice Turang - Singles (O 0.5),+110,46.7,-0.0194,props_odds,mlbapi_poisson,,+110,2026-10-16 11:00:00,,7126363280821584306
+2026-10-15T15:07:48-04:00,161,Milwaukee Brewers @ Los Angeles Dodgers,Christian Yelich - Hits (O 0.5),-150,58.6,-0.0237,props_odds,mlbapi_poisson,,-150,2026-10-16 11:00:00,,4082636547181117844
+2026-10-15T15:07:48-04:00,162,Milwaukee Brewers @ Los Angeles Dodgers,Christian Yelich - Doubles (O 0.5),+450,17.7,-0.026,props_odds,mlbapi_poisson,,+450,2026-10-16 11:00:00,,1742872876253577615
+2026-10-15T15:07:48-04:00,163,Milwaukee Brewers @ Los Angeles Dodgers,Freddie Freeman - Singles (O 0.5),-115,53.8,0.005,props_odds,mlbapi_poisson,,-115,2026-10-16 11:00:00,,5833692907726569879
+2026-10-15T15:07:48-04:00,164,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Doubles (O 0.5),+475,17.6,0.0141,props_odds,mlbapi_poisson,,+475,2026-10-16 11:00:00,,1379259982901543311
+2026-10-15T15:07:48-04:00,165,Milwaukee Brewers @ Los Angeles Dodgers,Mookie Betts - Total Bases (U 1.5),-170,47.4,-0.2479,props_odds,mlbapi_poisson,,-170,2026-10-16 11:00:00,,4993975555956277656
+2026-10-15T15:07:48-04:00,166,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Hits+Runs+RBI (O 1.5),+105,66.0,0.3521,props_odds,mlbapi_poisson,,+105,2026-10-16 11:00:00,,834068357744558503
+2026-10-15T15:07:48-04:00,167,Milwaukee Brewers @ Los Angeles Dodgers,Shohei Ohtani - Total Bases (O 1.5),+145,57.4,0.4067,props_odds,mlbapi_poisson,,+145,2026-10-16 11:00:00,,3840908578659631513
+2026-10-15T15:07:48-04:00,168,Milwaukee Brewers @ Los Angeles Dodgers,Will Smith - Doubles (U 0.5),-700,88.4,0.0103,props_odds,mlbapi_poisson,,-700,2026-10-16 11:00:00,,4950614487406346631
+2026-10-15T15:07:48-04:00,169,Milwaukee Brewers @ Los Angeles Dodgers,Enrique Hernandez - RBIs (U 0.5),-375,74.6,-0.0547,props_odds,mlbapi_poisson,,-375,2026-10-16 11:00:00,,2151440848695460237
+2026-10-15T15:07:48-04:00,170,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - RBIs (O 0.5),+195,47.0,0.3856,props_odds,mlbapi_poisson,,+195,2026-10-16 11:00:00,,8974878597558960515
+2026-10-15T15:07:48-04:00,171,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - Hits (O 0.5),-185,64.7,-0.0035,props_odds,mlbapi_poisson,,-185,2026-10-16 11:00:00,,1367181476155752880
+2026-10-15T15:07:48-04:00,172,Milwaukee Brewers @ Los Angeles Dodgers,Andy Pages - Runs (O 0.5),+135,42.9,0.0073,props_odds,mlbapi_poisson,,+135,2026-10-16 11:00:00,,1335297109976547721
+2026-10-15T15:07:48-04:00,173,Milwaukee Brewers @ Los Angeles Dodgers,Cooper Pratt - Doubles (U 0.5),-850,91.0,0.0168,props_odds,mlbapi_poisson,,-850,2026-10-16 11:00:00,,418867362364785039
+2026-10-15T15:07:48-04:00,174,Milwaukee Brewers @ Los Angeles Dodgers,Teoscar Hernandez - Doubles (U 0.5),-650,86.6,-0.0009,props_odds,mlbapi_poisson,,-650,2026-10-16 11:00:00,,4823950747886551470
+2026-10-15T15:07:48-04:00,175,Milwaukee Brewers @ Los Angeles Dodgers,William Contreras - Singles (O 0.5),+100,51.7,0.0341,props_odds,mlbapi_poisson,,+100,2026-10-16 11:00:00,,4491757498809844107

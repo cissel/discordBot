@@ -210,6 +210,7 @@ class BotClient(discord.Client):
         asyncio.create_task(self._meteor_shower_alert_loop())
         asyncio.create_task(self._hurricane_alert_loop())
         asyncio.create_task(self._daily_ball_loop())
+        asyncio.create_task(self._restore_scorebug_watches())
         self._log_voice_snapshot("join")
 
     async def on_interaction(self, interaction: discord.Interaction):
@@ -319,6 +320,20 @@ class BotClient(discord.Client):
             print(f"[DJ] indexes ready - {total} tracks · {len(genres)} genres · {len(artists)} artists")
         except Exception as e:
             print(f"[DJ] warmup failed: {e}")
+
+    async def _restore_scorebug_watches(self):
+        """Relaunches any /scorebug watch that was still active when the
+        bot last went down (e.g. restarted for an update mid-game) - see
+        gameWatch.py's persist_watch/restorable_watches and commands.py's
+        restore_game_watches for the actual logic."""
+        restore_func = getattr(self.tree, "_scorebug_restore_func", None)
+        if restore_func is None:
+            print("[gameWatch] _scorebug_restore_func not registered on tree - skipping restore")
+            return
+        try:
+            await restore_func(self)
+        except Exception as e:
+            print(f"[gameWatch] restore failed: {e}")
 
     async def _launch_alert_loop(self):
         """Background loop - checks for launch alerts.
@@ -512,7 +527,18 @@ class BotClient(discord.Client):
 
                 label = callsign if callsign == registration else f"{callsign} ({registration})"
 
-                if action == "TAKEOFF":
+                if action == "FIRSTCONTACT":
+                    on_ground_now = fields.get("on_ground", "false") == "true"
+                    status_note = " (currently on the ground)" if on_ground_now else " (already airborne)"
+                    emb = discord.Embed(
+                        title=f"📡 {label} is now broadcasting ADS-B{status_note}",
+                        description=f"Started transmitting. Track it live with `/track {tail_query}`",
+                        color=0x00bfff,
+                    )
+                    await channel.send(content=mentions, embed=emb)
+                    print(f"[flightWatch] FIRSTCONTACT alert sent for {label}")
+
+                elif action == "TAKEOFF":
                     emb = discord.Embed(
                         title=f"🛫 {label} is airborne",
                         description="Wheels up! Track it with `/track " + tail_query + "`",
