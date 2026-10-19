@@ -277,3 +277,5 @@ espnEventId,nflGame,matchTime,market,betDescription,payout,confidence,expectedVa
 401872992,San Francisco 49ers @ Seattle Seahawks,2026-10-12 07:25:00,props_odds,AJ Barner - Anytime TD (O 0.5),+300,28.1,0.1243,sleeper_poisson,False,-1.0,0.0,2026-10-12T13:00:21.853682+00:00
 401872993,Ravens @ Falcons,2026-10-12 11:20:00,upcoming_games_odds,Falcons -3.5 spread,+105,52.2,0.0696,draftkings_devig,False,-1.0,-0.012195121951219468,2026-10-12T13:00:21.853682+00:00
 401872994,Bills @ Rams,2026-10-13 11:15:00,upcoming_games_odds,Bills ML,+150,41.8,0.0456,espn_bpi,True,1.5,-0.00816326530612238,2026-10-13T13:00:33.619042+00:00
+401872995,Seattle Seahawks @ Denver Broncos,2026-10-16 11:15:00,props_odds,Jaxon Smith-Njigba - To Score 2+ TDs (O 1.5),+550,23.5,0.5265,sleeper_poisson,False,-1.0,0.010989010989011005,2026-10-16T13:00:25.407050+00:00
+401872995,Seattle Seahawks @ Denver Broncos,2026-10-16 11:15:00,props_odds,Jaxon Smith-Njigba - Anytime TD (O 0.5),+100,60.1,0.203,sleeper_poisson,False,-1.0,0.0,2026-10-16T13:00:25.407050+00:00

@@ -13,10 +13,33 @@ Usage:
 """
 
 import argparse
+import csv
+import os
 import numpy as np
 from stable_baselines3 import PPO
 
 from mm_env import MarketMakerEnv, MMEnvConfig
+
+CSV_FIELDS = [
+    "group", "tag", "mode", "episodes", "config_seed", "ent_coef", "net_arch",
+    "historical_frac_cfg", "train_timesteps", "model_path",
+    "rl_mean", "rl_std", "rl_median",
+    "base_mean", "base_std", "base_median",
+    "diff_mean", "diff_std", "tstat", "win_rate",
+]
+
+
+def append_csv_row(path, row):
+    """Append one eval result row, writing the header if the file is new.
+    One row per (model, eval-mode) so a crashed/interrupted overnight sweep
+    loses at most the in-progress run, not everything before it."""
+    file_exists = os.path.exists(path)
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, "a", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+        if not file_exists:
+            w.writeheader()
+        w.writerow(row)
 
 # Fixed baseline matches marketMaker.py's actual logic: quote AT the market
 # touch (half_spread_bps = half the market spread) with zero skew. The env's
@@ -49,6 +72,19 @@ def main():
     parser.add_argument("--mode", choices=["synthetic", "historical", "mixed"], default="synthetic")
     parser.add_argument("--episodes", type=int, default=200)
     parser.add_argument("--seed", type=int, default=123)
+    parser.add_argument("--out-csv", type=str, default=None,
+                         help="append a results row (config metadata + stats) to this CSV")
+    parser.add_argument("--group", type=str, default="",
+                         help="sweep group label, e.g. 'seed_sweep' or 'grid_sweep' (metadata only)")
+    parser.add_argument("--tag", type=str, default="", help="config tag, e.g. 'seed43' (metadata only)")
+    parser.add_argument("--config-seed", type=int, default=None,
+                         help="the --seed the MODEL was trained with (metadata only, distinct from "
+                              "--seed above which seeds eval episodes)")
+    parser.add_argument("--ent-coef", type=float, default=None, help="training ent_coef (metadata only)")
+    parser.add_argument("--net-arch", type=str, default=None, help="training net_arch (metadata only)")
+    parser.add_argument("--historical-frac-cfg", type=float, default=None,
+                         help="training historical_frac (metadata only)")
+    parser.add_argument("--train-timesteps", type=int, default=None, help="training timesteps (metadata only)")
     args = parser.parse_args()
 
     model = PPO.load(args.model)
@@ -75,8 +111,31 @@ def main():
     print(f"Baseline:    mean={base_rewards.mean():.3f}  std={base_rewards.std():.3f}  "
           f"median={np.median(base_rewards):.3f}")
     diff = rl_rewards - base_rewards
-    print(f"Paired diff: mean={diff.mean():.3f}  std={diff.std():.3f}  "
+    n = len(diff)
+    se = diff.std(ddof=1) / np.sqrt(n) if n > 1 else float("nan")
+    tstat = diff.mean() / se if se and se > 0 else float("nan")
+    print(f"Paired diff: mean={diff.mean():.3f}  std={diff.std():.3f}  tstat={tstat:.2f}  "
           f"(positive = RL beats baseline on same price path)")
+
+    if args.out_csv:
+        row = {
+            "group": args.group,
+            "tag": args.tag,
+            "mode": args.mode,
+            "episodes": args.episodes,
+            "config_seed": args.config_seed,
+            "ent_coef": args.ent_coef,
+            "net_arch": args.net_arch,
+            "historical_frac_cfg": args.historical_frac_cfg,
+            "train_timesteps": args.train_timesteps,
+            "model_path": args.model,
+            "rl_mean": rl_rewards.mean(), "rl_std": rl_rewards.std(), "rl_median": np.median(rl_rewards),
+            "base_mean": base_rewards.mean(), "base_std": base_rewards.std(), "base_median": np.median(base_rewards),
+            "diff_mean": diff.mean(), "diff_std": diff.std(), "tstat": tstat,
+            "win_rate": (rl_rewards > base_rewards).mean() * 100,
+        }
+        append_csv_row(args.out_csv, row)
+        print(f"Appended result row to {args.out_csv}")
 
 
 if __name__ == "__main__":

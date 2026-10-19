@@ -3,8 +3,8 @@
   "open_buy_price": null,
   "open_sell_order_id": null,
   "open_sell_price": null,
-  "cum_fills": 5061,
-  "cum_buy_shares": 11490.0,
-  "cum_sell_shares": 11451.0,
-  "last_fill_activity_id": "20261015155954577::8a9d7284-d89a-4514-bcd3-91ff93d6d13d"
+  "cum_fills": 6765,
+  "cum_buy_shares": 15334.0,
+  "cum_sell_shares": 15296.0,
+  "last_fill_activity_id": "20261016155947538::67345d3f-c3ea-4f01-ab01-5c65b713ffa8"
 }

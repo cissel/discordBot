@@ -78,10 +78,12 @@ def _save_watch_state(state: dict) -> None:
         pass
 
 
-def persist_watch(channel_id: int, sport: str, team: str) -> None:
-    """Record an active /scorebug watch to disk, keyed by channel id."""
+def persist_watch(channel_id: int, sport: str, mode: str = "single", team: str | None = None) -> None:
+    """Record an active /scorebug watch to disk, keyed by channel id.
+    mode is 'single' (one team, as before) or 'live' (rotates through
+    whatever's currently in-progress in `sport` - team is unused/None)."""
     state = _load_watch_state()
-    state[str(channel_id)] = {"sport": sport, "team": team, "started_at": time.time()}
+    state[str(channel_id)] = {"sport": sport, "mode": mode, "team": team, "started_at": time.time()}
     _save_watch_state(state)
 
 
@@ -96,9 +98,11 @@ def clear_watch(channel_id: int) -> None:
 
 
 def restorable_watches() -> dict[int, dict]:
-    """Return {channel_id: {'sport':..., 'team':...}} for watches that were
-    active when the bot last went down, dropping (and persisting the drop
-    of) anything older than _WATCH_STATE_MAX_AGE_SECONDS."""
+    """Return {channel_id: {'sport':..., 'mode':..., 'team':...}} for watches
+    that were active when the bot last went down, dropping (and persisting
+    the drop of) anything older than _WATCH_STATE_MAX_AGE_SECONDS. 'team' is
+    None for mode='live'. Entries written before the 'mode' field existed
+    are treated as 'single' for backward compatibility."""
     state = _load_watch_state()
     now = time.time()
     out = {}
@@ -110,7 +114,11 @@ def restorable_watches() -> dict[int, dict]:
             changed = True
             continue
         try:
-            out[int(cid_str)] = {"sport": entry["sport"], "team": entry["team"]}
+            out[int(cid_str)] = {
+                "sport": entry["sport"],
+                "mode": entry.get("mode", "single"),
+                "team": entry.get("team"),
+            }
         except (KeyError, ValueError):
             del state[cid_str]
             changed = True
@@ -142,6 +150,7 @@ TEAM_EMOJI = {
     ("nhl", "FLA"): "<:floridaPanthersShield:1354680697683574874>",
     ("nfl", "JAX"): "<:jagsHead:1354679128108044348>",
     ("nba", "ORL"): "<:Orlando_Magic:1491259637587116283>",
+    ("nba", "MIA"): "<:heatLogo:1355036048878473296>",
 }
 
 # Leagues whose emoji already has visual padding baked in (the NBA emoji is
@@ -211,6 +220,24 @@ def find_game(sport: str, team_query: str) -> dict | None:
     priority = {"in": 0, "pre": 1, "post": 2}
     matches.sort(key=lambda e: priority.get(e["competitions"][0]["status"]["type"]["state"], 3))
     return matches[0]
+
+
+def list_live_events(sport: str) -> list[dict]:
+    """Return parsed dicts (see parse_event) for every currently in-progress
+    game in `sport`'s ESPN scoreboard, sorted by ESPN event id for a stable
+    rotation order poll-to-poll. Empty list just means nothing's live right
+    now (normal between windows, e.g. early NFL games done / late not yet
+    started) - not an error."""
+    sport = sport.lower()
+    if sport not in ESPN_SCOREBOARD_URLS:
+        raise ValueError(f"unsupported sport: {sport}")
+
+    resp = requests.get(ESPN_SCOREBOARD_URLS[sport], timeout=20)
+    resp.raise_for_status()
+    events = resp.json().get("events", [])
+    live = [e for e in events if e["competitions"][0]["status"]["type"]["state"] == "in"]
+    live.sort(key=lambda e: e["id"])
+    return [parse_event(e, sport) for e in live]
 
 
 def _clean_matchup(matchup: str) -> str:

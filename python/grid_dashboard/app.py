@@ -49,6 +49,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from gridBot import (  # noqa: E402
     symbol_safe, state_path, cycle_log_path, fills_log_path,
     load_env, get_crypto_quote, get_crypto_position, PAPER_BASE, DATA_BASE,
+    OUT_DIR, append_csv,
 )
 
 SYMBOLS = ["BTC/USD", "ETH/USD", "SOL/USD"]
@@ -124,25 +125,40 @@ def cached_position(symbol):
     return pos
 
 
-# ── 1-min OHLC candles, straight from Alpaca's own crypto bars endpoint -
-#    real exchange OHLC, not reconstructed from our own poll-tick buffer.
+# ── OHLC candles, straight from Alpaca's own crypto bars endpoint - real
+#    exchange OHLC, not reconstructed from our own poll-tick buffer.
 #    Replaced the original mid-price-line chart per James's request (the
 #    poll-tick line hid a lot of real intra-minute movement a true candle
-#    shows). Fetches a generous trailing window once per TTL and serves all
-#    window sizes (both live and cycle-history modes) from that single
-#    cached fetch, sliced client-side-of-the-cache (i.e. here) - avoids
-#    hitting Alpaca's bars endpoint on every dashboard poll. ────────────────
+#    shows). Timeframe is chosen adaptively by requested window (see
+#    choose_timeframe) - a 24h window of 1-min candles is ~1440 bars and
+#    unreadable, so longer windows step up to coarser bars. Each
+#    (symbol, timeframe) pair fetches a generous trailing window once per
+#    TTL and serves every window size that maps to that timeframe from the
+#    single cached fetch, sliced client-side-of-the-cache (i.e. here). ─────
 CANDLE_CACHE_TTL_SEC = 15
 CANDLE_FETCH_MINUTES = 1440  # 24h - covers every window option in both modes
-_candle_cache = {}  # symbol -> (fetched_at, bars)
+_candle_cache = {}  # (symbol, timeframe) -> (fetched_at, bars)
 
 
-def fetch_1m_bars(symbol, minutes=CANDLE_FETCH_MINUTES):
+def choose_timeframe(window_minutes):
+    """Coarser candles for longer windows keep the chart legible - confirmed
+    a 24h/1-min combo (1440 bars) was the unreadable case James asked to
+    fix. Pick a bar size that keeps candle count in a sane ~50-250 range."""
+    if window_minutes <= 60:
+        return "1Min"
+    if window_minutes <= 240:
+        return "5Min"
+    if window_minutes <= 720:
+        return "15Min"
+    return "30Min"
+
+
+def fetch_bars(symbol, timeframe, minutes=CANDLE_FETCH_MINUTES):
     now = datetime.datetime.now(datetime.timezone.utc)
     start = now - datetime.timedelta(minutes=minutes)
     _, data_headers = get_headers()
     params = {
-        "symbols": symbol, "timeframe": "1Min",
+        "symbols": symbol, "timeframe": timeframe,
         "start": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "end": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "limit": 10000,
@@ -153,21 +169,45 @@ def fetch_1m_bars(symbol, minutes=CANDLE_FETCH_MINUTES):
     return (data.get("bars") or {}).get(symbol, [])
 
 
-def cached_1m_bars(symbol):
+def cached_bars(symbol, timeframe):
     now = time.time()
-    cached = _candle_cache.get(symbol)
+    key = (symbol, timeframe)
+    cached = _candle_cache.get(key)
     if cached is not None and (now - cached[0]) < CANDLE_CACHE_TTL_SEC:
         return cached[1]
     try:
-        bars = fetch_1m_bars(symbol)
+        bars = fetch_bars(symbol, timeframe)
     except Exception:
         return cached[1] if cached else []
-    _candle_cache[symbol] = (now, bars)
+    _candle_cache[key] = (now, bars)
     return bars
 
 
+def timeframe_minutes(timeframe):
+    """Maps choose_timeframe()'s bar-size strings to a bucket width in
+    minutes, used to snap fill markers onto the candle they belong to
+    (see snap_fill_to_bucket) rather than plotting them at their literal
+    fill second, which floats them off the candle body at any timeframe
+    coarser than 1Min - confirmed as the "fills off the candles" report
+    (Oct 2026, persisting after the earlier UTC-vs-local-timestamp fix)."""
+    return {"1Min": 1, "5Min": 5, "15Min": 15, "30Min": 30}.get(timeframe, 1)
+
+
+def snap_fill_to_bucket(fill_t, window_minutes):
+    """Floors a real fill timestamp to the START of the OHLC bucket it fell
+    in, matching Alpaca bars' own bucket-start "t" convention, so the fills
+    scatter dataset lines up exactly on the candle it executed against. A
+    fill plotted at its exact second (the old behavior) visually floats in
+    the gap between candle bodies for any bar size above 1Min - which is
+    most of the time, since the default live window (24h) renders 30Min
+    bars and even "last 4 hours" cycle view renders 5Min bars."""
+    minutes = timeframe_minutes(choose_timeframe(window_minutes or 1))
+    return fill_t.floor(f"{minutes}min")
+
+
 def candles_payload(symbol, window_minutes):
-    bars = cached_1m_bars(symbol)
+    timeframe = choose_timeframe(window_minutes or CANDLE_FETCH_MINUTES)
+    bars = cached_bars(symbol, timeframe)
     if window_minutes:
         cutoff_iso = (datetime.datetime.now(datetime.timezone.utc)
                       - datetime.timedelta(minutes=window_minutes)).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -195,7 +235,19 @@ _fills_cache = {}
 
 def _load_parsed_csv_cached(path, cache):
     """mtime-gated cache, same pattern as mm_dashboard - gridBot's cron
-    cycle only appends every ~1min, no need to re-parse on every poll."""
+    cycle only appends every ~1min, no need to re-parse on every poll.
+
+    NOTE on timestamp columns: gridBot's own "timestamp" column is the
+    bot-process's local wall clock (Pi runs EDT, written via naive
+    datetime.now()), NOT UTC - but every other time source in this
+    dashboard (Alpaca's bars/candles, Alpaca's fill "filled_at") is real
+    UTC. Mislabeling the naive local "timestamp" as UTC (pd.to_datetime
+    utc=True just stamps a 'Z' on it without converting) silently shifts
+    everything written from "timestamp" ~4h off from the real-UTC candles
+    - confirmed as the "fills don't line up with candles" bug (Oct 2026).
+    Where a real-UTC column exists (fills log has "filled_at" straight
+    from Alpaca's activity feed) that one is parsed too and preferred for
+    anything plotted against candles or compared to wall-clock time."""
     if not os.path.exists(path):
         return pd.DataFrame()
     mtime = os.path.getmtime(path)
@@ -206,6 +258,8 @@ def _load_parsed_csv_cached(path, cache):
     if not df.empty and "timestamp" in df.columns:
         df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce", utc=True)
         df = df.dropna(subset=["timestamp"])
+    if not df.empty and "filled_at" in df.columns:
+        df["filled_at"] = pd.to_datetime(df["filled_at"], errors="coerce", utc=True)
     cache[path] = (mtime, df)
     return df
 
@@ -219,15 +273,61 @@ def load_cycles(symbol, window_minutes):
 
 
 def load_fills(symbol, window_minutes=None, since_epoch=None):
+    """Filters/sorts on "filled_at" (real UTC from Alpaca) rather than the
+    bot's local-wall-clock "timestamp" column - see _load_parsed_csv_cached
+    note. Falls back to "timestamp" only for pre-fix rows that somehow lack
+    a parsed filled_at (shouldn't happen going forward, cheap safety net)."""
     df = _load_parsed_csv_cached(fills_log_path(symbol), _fills_cache)
     if df.empty:
         return df
+    time_col = "filled_at" if "filled_at" in df.columns else "timestamp"
+    df = df.dropna(subset=[time_col])
     if since_epoch is not None:
-        return df[df["timestamp"] >= pd.Timestamp(since_epoch, unit="s", tz="UTC")]
+        return df[df[time_col] >= pd.Timestamp(since_epoch, unit="s", tz="UTC")]
     if window_minutes:
-        cutoff = df["timestamp"].max() - pd.Timedelta(minutes=window_minutes)
-        return df[df["timestamp"] >= cutoff]
+        cutoff = df[time_col].max() - pd.Timedelta(minutes=window_minutes)
+        return df[df[time_col] >= cutoff]
     return df
+
+
+# ── combined unrealized P&L history - gridBot's own cycle log only ever
+#    persisted realized_pl (unrealized is a live mark-to-market number, not
+#    something a fill-reconciliation cycle naturally produces), so there's
+#    no historical series to read for the equity chart's unrealized line.
+#    Self-sample it here instead: every /api/equity call already computes
+#    combined unrealized_now from live Alpaca positions - append it to a
+#    small CSV (throttled so a 1-5s frontend poll doesn't spam the log) and
+#    that log becomes the real history going forward. Starts empty on first
+#    deploy and builds up from now - no backfill is possible since the
+#    number was never retained before. Timestamps are genuine UTC (unlike
+#    gridBot's own naive-local "timestamp" columns - see
+#    _load_parsed_csv_cached's note on that bug) so this lines up correctly
+#    against the candle chart's real-UTC x-axis. ────────────────────────────
+UNREALIZED_LOG_PATH = os.path.join(OUT_DIR, "grid_unrealized_log.csv")
+UNREALIZED_LOG_FIELDS = ["timestamp", "unrealized_pl"]
+UNREALIZED_LOG_MIN_INTERVAL_SEC = 30
+_unrealized_cache = {}
+_last_unrealized_log_epoch = 0
+
+
+def log_unrealized_sample(unrealized_now):
+    global _last_unrealized_log_epoch
+    now_epoch = time.time()
+    if now_epoch - _last_unrealized_log_epoch < UNREALIZED_LOG_MIN_INTERVAL_SEC:
+        return
+    append_csv(UNREALIZED_LOG_PATH, UNREALIZED_LOG_FIELDS, {
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        "unrealized_pl": round(unrealized_now, 2),
+    })
+    _last_unrealized_log_epoch = now_epoch
+
+
+def load_unrealized_history(window_minutes):
+    df = _load_parsed_csv_cached(UNREALIZED_LOG_PATH, _unrealized_cache)
+    if df.empty or window_minutes is None:
+        return df
+    cutoff = df["timestamp"].max() - pd.Timedelta(minutes=window_minutes)
+    return df[df["timestamp"] >= cutoff]
 
 
 def symbol_live_payload(symbol, window_seconds):
@@ -265,7 +365,9 @@ def symbol_live_payload(symbol, window_seconds):
     fills = []
     if not fills_df.empty:
         for _, row in fills_df.iterrows():
-            fills.append({"t": row["timestamp"].isoformat(), "price": float(row["filled_avg_price"]),
+            fill_t = row["filled_at"] if "filled_at" in row and pd.notna(row["filled_at"]) else row["timestamp"]
+            bucket_t = snap_fill_to_bucket(fill_t, window_minutes)
+            fills.append({"t": bucket_t.isoformat(), "price": float(row["filled_avg_price"]),
                           "side": row["side"], "qty": float(row["qty"])})
 
     unrealized = pos.get("unrealized_pl", 0.0)
@@ -326,7 +428,9 @@ def api_data():
     fills = []
     if not fills_df.empty:
         for _, row in fills_df.iterrows():
-            fills.append({"t": row["timestamp"].isoformat(), "price": float(row["filled_avg_price"]),
+            fill_t = row["filled_at"] if "filled_at" in row and pd.notna(row["filled_at"]) else row["timestamp"]
+            bucket_t = snap_fill_to_bucket(fill_t, window_minutes)
+            fills.append({"t": bucket_t.isoformat(), "price": float(row["filled_avg_price"]),
                           "side": row["side"], "qty": float(row["qty"])})
 
     levels = state.get("levels", [])
@@ -356,14 +460,12 @@ def api_data():
 
 @app.route("/api/equity")
 def api_equity():
-    """Combined grid-bot P&L across BTC/ETH/SOL. History line is REALIZED
-    P&L only (gridBot's state already tracks this authoritatively per
-    cycle - see module docstring for why this avoids reconstructing an
-    avg-cost P&L curve the way mm_dashboard does). Unrealized/total are
-    live "right now" numbers from Alpaca positions, not charted over time -
-    unrealized is just the current inventory mark and swings with price
-    noise, it isn't the grid strategy's performance signal the way
-    completed round trips / realized P&L is."""
+    """Combined grid-bot P&L across BTC/ETH/SOL. Realized history comes
+    straight from gridBot's own per-symbol cycle state (authoritative, see
+    module docstring). Unrealized history is self-sampled by this endpoint
+    itself (see log_unrealized_sample) since gridBot's cycle log never
+    persisted it - it's a live mark-to-market number, not something a
+    fill-reconciliation cycle naturally produces."""
     window_minutes_raw = request.args.get("window", "480")
     window_minutes = None if window_minutes_raw == "all" else int(window_minutes_raw)
 
@@ -400,6 +502,13 @@ def api_equity():
         if state.get("halted"):
             any_halted.append({"symbol": s, "reason": state.get("halt_reason")})
 
+    log_unrealized_sample(unrealized_now)
+    unrealized_df = load_unrealized_history(window_minutes)
+    unrealized_history = []
+    if not unrealized_df.empty:
+        u_ts_strs = unrealized_df["timestamp"].dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+        unrealized_history = [{"t": t, "unrealized_pl": p} for t, p in zip(u_ts_strs, unrealized_df["unrealized_pl"])]
+
     day = pd.Timestamp.utcnow().date()
     day_start_realized = None
     if all_times:
@@ -409,6 +518,7 @@ def api_equity():
 
     return jsonify({
         "history": history,
+        "unrealized_history": unrealized_history,
         "realized_now": round(realized_now, 2),
         "unrealized_now": round(unrealized_now, 2),
         "total_now": round(realized_now + unrealized_now, 2),
@@ -475,7 +585,10 @@ PAGE = """
       <div class="pnl-line"><div style="font-size:12px;opacity:0.75;">Round trips</div><span id="equityRoundTrips">-</span></div>
     </div>
     <canvas id="chart-equity"></canvas>
-    <div class="legend"><span><span class="dot" style="background:#4C9BE0"></span>combined realized P&amp;L</span></div>
+    <div class="legend">
+      <span><span class="dot" style="background:#4C9BE0"></span>combined realized P&amp;L</span>
+      <span><span class="dot" style="background:#E0A02E"></span>combined unrealized P&amp;L</span>
+    </div>
     <div id="haltedBanner"></div>
   </div>
   <div class="controls">
@@ -487,9 +600,12 @@ PAGE = """
     </label>
     <label id="liveWindowWrap">Window:
       <select id="liveWindowSel">
-        <option value="300" selected>Last 5 min</option>
+        <option value="300">Last 5 min</option>
         <option value="900">Last 15 min</option>
         <option value="1800">Last 30 min</option>
+        <option value="7200">Last 2 hours</option>
+        <option value="21600">Last 6 hours</option>
+        <option value="86400" selected>Last 24 hours</option>
       </select>
     </label>
     <label id="cycleWindowWrap" style="display:none">Window:
@@ -529,7 +645,7 @@ PAGE = """
   </div>
 
 <script>
-const GRID = '#274066', TXT = '#ffffff', BUY = '#2E9E4E', SELL = '#D9453D', MID = '#4C9BE0', IDLE = '#5A7290';
+const GRID = '#274066', TXT = '#ffffff', BUY = '#2E9E4E', SELL = '#D9453D', MID = '#4C9BE0', IDLE = '#5A7290', UNREAL = '#E0A02E';
 const SYMBOLS = ['BTC/USD', 'ETH/USD', 'SOL/USD'];
 const SAFE = s => s.replace('/', '');
 const charts = {};
@@ -542,19 +658,27 @@ const LEGEND_LIVE = `
   <span><span class="dot" style="background:${BUY}"></span>resting buy level</span>
   <span><span class="dot" style="background:${SELL}"></span>resting sell level</span>
   <span><span class="dot" style="background:${IDLE}"></span>idle grid level</span>
-  <span>&#9632; fill (size = qty)</span>`;
+  <span>&#9632; fill (size = notional $)</span>`;
 const LEGEND_CYCLE = `
   <span><span class="dot" style="background:${BUY}"></span>up candle</span>
   <span><span class="dot" style="background:${SELL}"></span>down candle</span>
   <span><span class="dot" style="background:${BUY}"></span>resting buy level</span>
   <span><span class="dot" style="background:${SELL}"></span>resting sell level</span>
-  <span>&#9632; fill (size = qty)</span>`;
+  <span>&#9632; fill (size = notional $)</span>`;
 
 function fmtNum(v, dp=2) { return (v === null || v === undefined || isNaN(v)) ? '-' : Number(v).toFixed(dp); }
 function fmtPnl(delta) {
   const cls = delta >= 0 ? 'pos-pos' : 'pos-neg';
   const sign = delta >= 0 ? '+' : '';
   return `<span class="${cls}">${sign}$${delta.toFixed(2)}</span>`;
+}
+// Fill marker size reflects notional (USD) size, not raw crypto qty - qty
+// alone isn't comparable across symbols (0.003 BTC and 0.9 SOL can be the
+// same dollar size), so sizing by qty made fills look wildly inconsistent
+// across the three panels. notional = qty * fill price.
+function fillRadius(f) {
+  const notional = f.qty * f.price;
+  return Math.min(4 + notional / 15, 18);
 }
 
 function makeChart(symbol) {
@@ -586,7 +710,7 @@ function makeChart(symbol) {
         legend: { display: false },
         tooltip: { callbacks: { label: function(c) {
           const d = c.raw;
-          if (c.dataset.label === 'fills') return `${d.side.toUpperCase()} filled ${d.qty}@${d.price}`;
+          if (c.dataset.label === 'fills') return `${d.side.toUpperCase()} filled ${d.qty}@${d.price} (~$${fmtNum(d.qty * d.price)})`;
           if (c.dataset.label === 'candles') return `O ${fmtNum(d.o)} H ${fmtNum(d.h)} L ${fmtNum(d.l)} C ${fmtNum(d.c)}`;
           if (c.dataset.label && c.dataset.label.startsWith('level-')) return `level ${d.price} (${d.side || 'idle'})`;
           return `${c.dataset.label}: ${d.price}`;
@@ -642,7 +766,7 @@ async function refreshLive(symbol, windowSec) {
     const fillData = d.fills.map(f => ({t: f.t, price: f.price, side: f.side, qty: f.qty}));
     chart.data.datasets[1].data = fillData;
     chart.data.datasets[1].pointBackgroundColor = fillData.map(f => f.side === 'buy' ? BUY : SELL);
-    chart.data.datasets[1].pointRadius = fillData.map(f => Math.min(5 + f.qty * 1000, 16));
+    chart.data.datasets[1].pointRadius = fillData.map(fillRadius);
     chart.update('none');
 
     if (d.fills.length > lastFillCount[symbol] && lastFillCount[symbol] !== 0) {
@@ -683,7 +807,7 @@ async function refreshCycle(symbol, windowMin) {
     const fillData = d.fills.map(f => ({t: f.t, price: f.price, side: f.side, qty: f.qty}));
     chart.data.datasets[1].data = fillData;
     chart.data.datasets[1].pointBackgroundColor = fillData.map(f => f.side === 'buy' ? BUY : SELL);
-    chart.data.datasets[1].pointRadius = fillData.map(f => Math.min(5 + f.qty * 1000, 16));
+    chart.data.datasets[1].pointRadius = fillData.map(fillRadius);
     chart.update('none');
 
     const latest = d.latest_cycle || {};
@@ -707,6 +831,8 @@ const equityChart = new Chart(document.getElementById('chart-equity').getContext
   data: { datasets: [
     { label: 'realized_pl', data: [], borderColor: MID, backgroundColor: MID + '22', fill: true,
       borderWidth: 2, pointRadius: 0, stepped: true, tension: 0, parsing: {xAxisKey:'t', yAxisKey:'realized_pl'} },
+    { label: 'unrealized_pl', data: [], borderColor: UNREAL, backgroundColor: 'transparent', fill: false,
+      borderWidth: 2, pointRadius: 0, borderDash: [5, 3], tension: 0.15, parsing: {xAxisKey:'t', yAxisKey:'unrealized_pl'} },
   ]},
   options: {
     responsive: true,
@@ -718,7 +844,10 @@ const equityChart = new Chart(document.getElementById('chart-equity').getContext
     },
     plugins: {
       legend: { display: false },
-      tooltip: { callbacks: { label: c => `Realized: $${Number(c.raw.realized_pl).toLocaleString(undefined,{minimumFractionDigits:2})}` } }
+      tooltip: { callbacks: { label: function(c) {
+        if (c.dataset.label === 'unrealized_pl') return `Unrealized: $${Number(c.raw.unrealized_pl).toLocaleString(undefined,{minimumFractionDigits:2})}`;
+        return `Realized: $${Number(c.raw.realized_pl).toLocaleString(undefined,{minimumFractionDigits:2})}`;
+      } } }
     }
   }
 });
@@ -728,6 +857,7 @@ async function refreshEquity() {
     const res = await fetch(`/api/equity?window=480`);
     const d = await res.json();
     equityChart.data.datasets[0].data = d.history.map(p => ({t: p.t, realized_pl: p.realized_pl}));
+    equityChart.data.datasets[1].data = (d.unrealized_history || []).map(p => ({t: p.t, unrealized_pl: p.unrealized_pl}));
     equityChart.update('none');
 
     document.getElementById('equityRealized').className = 'big ' + (d.realized_now >= 0 ? 'pos-pos' : 'pos-neg');

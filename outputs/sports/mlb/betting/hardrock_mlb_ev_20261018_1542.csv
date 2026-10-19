@@ -1,0 +1,93 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-18T15:42:26-04:00,1,Rays @ Guardians,Rays -1.5 run line,+140,40.7,-0.0243,upcoming_games_odds,draftkings_devig,0.4009,+140,2026-10-19 08:08:00,401930515,6183993696376193451
+2026-10-18T15:42:26-04:00,2,Rays @ Guardians,Guardians +1.5 run line,-165,59.3,-0.0468,upcoming_games_odds,draftkings_devig,0.5991,-165,2026-10-19 08:08:00,401930515,2990941560570511787
+2026-10-18T15:42:26-04:00,3,Rays @ Guardians,O 6.5,-105,48.7,-0.0492,upcoming_games_odds,draftkings_devig,0.4892,-105,2026-10-19 08:08:00,401930515,929856436769522077
+2026-10-18T15:42:26-04:00,4,Rays @ Guardians,U 6.5,-115,48.7,-0.0895,upcoming_games_odds,draftkings_devig,0.5108,-115,2026-10-19 08:08:00,401930515,638248360897282461
+2026-10-18T15:42:26-04:00,5,Rays @ Guardians,,-135,,,upcoming_games_odds,no_model,0.5468,-135,2026-10-19 08:08:00,401930515,1494308323074376111
+2026-10-18T15:42:26-04:00,6,Rays @ Guardians,,+110,,,upcoming_games_odds,no_model,0.4532,+110,2026-10-19 08:08:00,401930515,6362699520261882287
+2026-10-18T15:42:26-04:00,7,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Home Runs (O 0.5),+1400,11.9,0.7858,props_odds,mlbapi_poisson,,+1400,2026-10-19 08:08:00,,5710350948929503646
+2026-10-18T15:42:26-04:00,8,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - RBIs (O 0.5),+350,37.9,0.7075,props_odds,mlbapi_poisson,,+350,2026-10-19 08:08:00,,1135237825789297030
+2026-10-18T15:42:26-04:00,9,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - RBIs (O 0.5),+260,44.8,0.6115,props_odds,mlbapi_poisson,,+260,2026-10-19 08:08:00,,3973484706137244065
+2026-10-18T15:42:26-04:00,10,Tampa Bay Rays @ Cleveland Guardians,Ryan Vilade - RBIs (O 0.5),+375,36.1,0.7149,props_odds,mlbapi_poisson,,+375,2026-10-19 08:08:00,,5899154825043640707
+2026-10-18T15:42:26-04:00,11,Tampa Bay Rays @ Cleveland Guardians,Ryan Vilade - Home Runs (O 0.5),+1000,10.8,0.1909,props_odds,mlbapi_poisson,,+1000,2026-10-19 08:08:00,,7532713612801081778
+2026-10-18T15:42:26-04:00,12,Tampa Bay Rays @ Cleveland Guardians,Parker Messick - Strikeouts (O 4.5),-135,71.9,0.2518,props_odds,mlbapi_poisson,,-135,2026-10-19 08:08:00,,1152847393566359978
+2026-10-18T15:42:26-04:00,13,Tampa Bay Rays @ Cleveland Guardians,Petey Halpin - Stolen Bases (O 0.5),+900,11.4,0.1351,props_odds,mlbapi_poisson,,+900,2026-10-19 08:08:00,,5088575571865239983
+2026-10-18T15:42:26-04:00,14,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Runs (O 0.5),+230,38.4,0.2659,props_odds,mlbapi_poisson,,+230,2026-10-19 08:08:00,,2013055233294467496
+2026-10-18T15:42:26-04:00,15,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Home Runs (O 0.5),+850,13.2,0.2571,props_odds,mlbapi_poisson,,+850,2026-10-19 08:08:00,,6738036540460630426
+2026-10-18T15:42:26-04:00,16,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Total Bases (O 1.5),+225,43.0,0.3985,props_odds,mlbapi_poisson,,+225,2026-10-19 08:08:00,,4216200408688886172
+2026-10-18T15:42:26-04:00,17,Tampa Bay Rays @ Cleveland Guardians,Travis Bazzana - Stolen Bases (O 0.5),+800,14.2,0.2786,props_odds,mlbapi_poisson,,+800,2026-10-19 08:08:00,,6709871437718618542
+2026-10-18T15:42:26-04:00,18,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - RBIs (O 0.5),+250,39.6,0.3851,props_odds,mlbapi_poisson,,+250,2026-10-19 08:08:00,,4798916122655195536
+2026-10-18T15:42:26-04:00,19,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Home Runs (O 0.5),+425,22.8,0.199,props_odds,mlbapi_poisson,,+425,2026-10-19 08:08:00,,251859118535606694
+2026-10-18T15:42:26-04:00,20,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Total Bases (O 1.5),+165,50.7,0.3423,props_odds,mlbapi_poisson,,+165,2026-10-19 08:08:00,,930863074024489382
+2026-10-18T15:42:26-04:00,21,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Runs (O 0.5),+250,35.0,0.2263,props_odds,mlbapi_poisson,,+250,2026-10-19 08:08:00,,3902885373755392432
+2026-10-18T15:42:26-04:00,22,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - RBIs (O 0.5),+260,43.9,0.5792,props_odds,mlbapi_poisson,,+260,2026-10-19 08:08:00,,7249832154560070035
+2026-10-18T15:42:26-04:00,23,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Hits+Runs+RBI (O 0.5),-130,76.2,0.3482,props_odds,mlbapi_poisson,,-130,2026-10-19 08:08:00,,6422144478978638245
+2026-10-18T15:42:26-04:00,24,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - Runs (O 0.5),+160,43.3,0.1267,props_odds,mlbapi_poisson,,+160,2026-10-19 08:08:00,,5747623992605409700
+2026-10-18T15:42:26-04:00,25,Tampa Bay Rays @ Cleveland Guardians,Nathaniel Lowe - RBIs (O 0.5),+260,39.8,0.4338,props_odds,mlbapi_poisson,,+260,2026-10-19 08:08:00,,3873637505463091605
+2026-10-18T15:42:26-04:00,26,Tampa Bay Rays @ Cleveland Guardians,Drew Rasmussen - Strikeouts (O 5.5),+115,52.2,0.1216,props_odds,mlbapi_poisson,,+115,2026-10-19 08:08:00,,8150020095721210285
+2026-10-18T15:42:26-04:00,27,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Hits+Runs+RBI (O 0.5),-145,83.3,0.4078,props_odds,mlbapi_poisson,,-145,2026-10-19 08:08:00,,2790202485736866217
+2026-10-18T15:42:26-04:00,28,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Hits+Runs+RBI (O 1.5),-105,66.7,0.302,props_odds,mlbapi_poisson,,-105,2026-10-19 08:08:00,,2075673859310354858
+2026-10-18T15:42:26-04:00,29,Tampa Bay Rays @ Cleveland Guardians,Patrick Bailey - RBIs (O 0.5),+325,28.1,0.1957,props_odds,mlbapi_poisson,,+325,2026-10-19 08:08:00,,1293380583212319140
+2026-10-18T15:42:26-04:00,30,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - RBIs (O 0.5),+210,44.6,0.3836,props_odds,mlbapi_poisson,,+210,2026-10-19 08:08:00,,4073596889113690510
+2026-10-18T15:42:26-04:00,31,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Runs (O 0.5),+210,37.2,0.1524,props_odds,mlbapi_poisson,,+210,2026-10-19 08:08:00,,4359271060718354860
+2026-10-18T15:42:26-04:00,32,Tampa Bay Rays @ Cleveland Guardians,Liam Hicks - Hits+Runs+RBI (O 1.5),+135,59.4,0.3959,props_odds,mlbapi_poisson,,+135,2026-10-19 08:08:00,,4048997675452989849
+2026-10-18T15:42:26-04:00,33,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Singles (O 0.5),+135,45.5,0.0704,props_odds,mlbapi_poisson,,+135,2026-10-19 08:08:00,,1566622416854188440
+2026-10-18T15:42:26-04:00,34,Tampa Bay Rays @ Cleveland Guardians,Travis Bazzana - RBIs (O 0.5),+300,36.9,0.4741,props_odds,mlbapi_poisson,,+300,2026-10-19 08:08:00,,5718941273289785742
+2026-10-18T15:42:26-04:00,35,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Runs (O 0.5),+135,46.1,0.0824,props_odds,mlbapi_poisson,,+135,2026-10-19 08:08:00,,1641613817152668076
+2026-10-18T15:42:26-04:00,36,Tampa Bay Rays @ Cleveland Guardians,Ben Williamson - Hits (U 0.5),+115,49.8,0.0713,props_odds,mlbapi_poisson,,+115,2026-10-19 08:08:00,,3538303111653360027
+2026-10-18T15:42:26-04:00,37,Tampa Bay Rays @ Cleveland Guardians,Travis Bazzana - Runs (O 0.5),+220,36.3,0.1629,props_odds,mlbapi_poisson,,+220,2026-10-19 08:08:00,,6316814774025978246
+2026-10-18T15:42:26-04:00,38,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - RBIs (O 0.5),+200,42.4,0.2725,props_odds,mlbapi_poisson,,+200,2026-10-19 08:08:00,,447676371301433751
+2026-10-18T15:42:26-04:00,39,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Hits (O 0.5),-120,58.6,0.0747,props_odds,mlbapi_poisson,,-120,2026-10-19 08:08:00,,5132936309085700520
+2026-10-18T15:42:26-04:00,40,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Hits+Runs+RBI (O 1.5),+105,61.8,0.2667,props_odds,mlbapi_poisson,,+105,2026-10-19 08:08:00,,6375771476565557653
+2026-10-18T15:42:26-04:00,41,Tampa Bay Rays @ Cleveland Guardians,Travis Bazzana - Total Bases (O 1.5),+195,43.4,0.2804,props_odds,mlbapi_poisson,,+195,2026-10-19 08:08:00,,8353003617384530329
+2026-10-18T15:42:26-04:00,42,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Hits (O 0.5),+100,48.4,-0.0324,props_odds,mlbapi_poisson,,+100,2026-10-19 08:08:00,,4261928142731608480
+2026-10-18T15:42:26-04:00,43,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - Stolen Bases (O 0.5),+325,25.6,0.0889,props_odds,mlbapi_poisson,,+325,2026-10-19 08:08:00,,4381100604588687780
+2026-10-18T15:42:26-04:00,44,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Doubles (O 0.5),+450,20.2,0.1106,props_odds,mlbapi_poisson,,+450,2026-10-19 08:08:00,,7470630422104375694
+2026-10-18T15:42:26-04:00,45,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Hits+Runs+RBI (O 1.5),+120,60.4,0.329,props_odds,mlbapi_poisson,,+120,2026-10-19 08:08:00,,1511127415005512101
+2026-10-18T15:42:26-04:00,46,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Hits (O 0.5),-210,65.0,-0.0407,props_odds,mlbapi_poisson,,-210,2026-10-19 08:08:00,,9174982945348387235
+2026-10-18T15:42:26-04:00,47,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Total Bases (O 1.5),+250,39.6,0.3873,props_odds,mlbapi_poisson,,+250,2026-10-19 08:08:00,,1158076602148585893
+2026-10-18T15:42:26-04:00,48,Tampa Bay Rays @ Cleveland Guardians,Petey Halpin - Runs (O 0.5),+250,27.8,-0.0281,props_odds,mlbapi_poisson,,+250,2026-10-19 08:08:00,,6028584397874266511
+2026-10-18T15:42:26-04:00,49,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - RBIs (O 0.5),+175,46.4,0.2758,props_odds,mlbapi_poisson,,+175,2026-10-19 08:08:00,,1368152321703412119
+2026-10-18T15:42:26-04:00,50,Tampa Bay Rays @ Cleveland Guardians,Chandler Simpson - Hits+Runs+RBI (O 1.5),-105,55.1,0.0762,props_odds,mlbapi_poisson,,-105,2026-10-19 08:08:00,,7210750424993890713
+2026-10-18T15:42:26-04:00,51,Tampa Bay Rays @ Cleveland Guardians,Ben Williamson - Singles (U 0.5),-130,58.3,0.0317,props_odds,mlbapi_poisson,,-130,2026-10-19 08:08:00,,8231669649884971422
+2026-10-18T15:42:26-04:00,52,Tampa Bay Rays @ Cleveland Guardians,Nathaniel Lowe - Total Bases (O 1.5),+200,38.8,0.1632,props_odds,mlbapi_poisson,,+200,2026-10-19 08:08:00,,883572529158029722
+2026-10-18T15:42:26-04:00,53,Tampa Bay Rays @ Cleveland Guardians,Steven Kwan - Runs (O 0.5),+165,41.1,0.0899,props_odds,mlbapi_poisson,,+165,2026-10-19 08:08:00,,3303906623315116452
+2026-10-18T15:42:26-04:00,54,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Total Bases (O 1.5),+125,59.2,0.3327,props_odds,mlbapi_poisson,,+125,2026-10-19 08:08:00,,8055805109000602025
+2026-10-18T15:42:26-04:00,55,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Runs (O 0.5),+180,37.3,0.0433,props_odds,mlbapi_poisson,,+180,2026-10-19 08:08:00,,2641877478091653510
+2026-10-18T15:42:26-04:00,56,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Singles (O 0.5),+155,38.4,-0.0218,props_odds,mlbapi_poisson,,+155,2026-10-19 08:08:00,,2869075853571129764
+2026-10-18T15:42:26-04:00,57,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - Runs (O 0.5),+125,45.3,0.02,props_odds,mlbapi_poisson,,+125,2026-10-19 08:08:00,,2090671958122430877
+2026-10-18T15:42:26-04:00,58,Tampa Bay Rays @ Cleveland Guardians,Parker Messick - Earned Runs (U 1.5),-105,50.7,-0.0102,props_odds,mlbapi_poisson,,-105,2026-10-19 08:08:00,,3885958422310551943
+2026-10-18T15:42:26-04:00,59,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - Doubles (O 0.5),+425,19.3,0.0126,props_odds,mlbapi_poisson,,+425,2026-10-19 08:08:00,,1299955112990605719
+2026-10-18T15:42:26-04:00,60,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - Hits+Runs+RBI (O 1.5),+120,56.1,0.2332,props_odds,mlbapi_poisson,,+120,2026-10-19 08:08:00,,6639337607882998179
+2026-10-18T15:42:26-04:00,61,Tampa Bay Rays @ Cleveland Guardians,Petey Halpin - Total Bases (U 1.5),-375,84.5,0.0698,props_odds,mlbapi_poisson,,-375,2026-10-19 08:08:00,,6614851655731118489
+2026-10-18T15:42:26-04:00,62,Tampa Bay Rays @ Cleveland Guardians,Travis Bazzana - Home Runs (O 0.5),+900,11.4,0.1394,props_odds,mlbapi_poisson,,+900,2026-10-19 08:08:00,,1292982280830189986
+2026-10-18T15:42:26-04:00,63,Tampa Bay Rays @ Cleveland Guardians,Petey Halpin - RBIs (U 0.5),-525,84.5,0.0057,props_odds,mlbapi_poisson,,-525,2026-10-19 08:08:00,,2726756717739245973
+2026-10-18T15:42:26-04:00,64,Tampa Bay Rays @ Cleveland Guardians,Ben Williamson - Hits+Runs+RBI (U 0.5),+130,26.0,-0.4027,props_odds,mlbapi_poisson,,+130,2026-10-19 08:08:00,,7630995452514664862
+2026-10-18T15:42:26-04:00,65,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - Hits+Runs+RBI (O 1.5),-120,67.5,0.2371,props_odds,mlbapi_poisson,,-120,2026-10-19 08:08:00,,734362032400368041
+2026-10-18T15:42:26-04:00,66,Tampa Bay Rays @ Cleveland Guardians,Ben Williamson - Total Bases (U 1.5),-325,76.1,-0.0054,props_odds,mlbapi_poisson,,-325,2026-10-19 08:08:00,,1810891179580064146
+2026-10-18T15:42:26-04:00,67,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - Hits+Runs+RBI (O 1.5),+120,57.8,0.2726,props_odds,mlbapi_poisson,,+120,2026-10-19 08:08:00,,5783917561473270179
+2026-10-18T15:42:26-04:00,68,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - Total Bases (O 1.5),+125,53.1,0.1946,props_odds,mlbapi_poisson,,+125,2026-10-19 08:08:00,,5326696646178898345
+2026-10-18T15:42:26-04:00,69,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Runs (O 0.5),+150,37.6,-0.061,props_odds,mlbapi_poisson,,+150,2026-10-19 08:08:00,,8219015519811010980
+2026-10-18T15:42:26-04:00,70,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - Total Bases (O 1.5),+180,38.7,0.0837,props_odds,mlbapi_poisson,,+180,2026-10-19 08:08:00,,7461374454048883089
+2026-10-18T15:42:26-04:00,71,Tampa Bay Rays @ Cleveland Guardians,Drew Rasmussen - Earned Runs (U 1.5),-120,49.3,-0.0957,props_odds,mlbapi_poisson,,-120,2026-10-19 08:08:00,,8676466263100359083
+2026-10-18T15:42:26-04:00,72,Tampa Bay Rays @ Cleveland Guardians,Petey Halpin - Hits (U 0.5),-115,61.8,0.1546,props_odds,mlbapi_poisson,,-115,2026-10-19 08:08:00,,5137950082108359061
+2026-10-18T15:42:26-04:00,73,Tampa Bay Rays @ Cleveland Guardians,Steven Kwan - Hits+Runs+RBI (O 1.5),+110,52.2,0.0954,props_odds,mlbapi_poisson,,+110,2026-10-19 08:08:00,,6531620652733039010
+2026-10-18T15:42:26-04:00,74,Tampa Bay Rays @ Cleveland Guardians,Petey Halpin - Doubles (U 0.5),-1000,95.3,0.0482,props_odds,mlbapi_poisson,,-1000,2026-10-19 08:08:00,,6977028866070151576
+2026-10-18T15:42:26-04:00,75,Tampa Bay Rays @ Cleveland Guardians,Chandler Simpson - Runs (O 0.5),+175,35.4,-0.0263,props_odds,mlbapi_poisson,,+175,2026-10-19 08:08:00,,3329469959423263136
+2026-10-18T15:42:26-04:00,76,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Hits (O 0.5),-200,64.1,-0.0378,props_odds,mlbapi_poisson,,-200,2026-10-19 08:08:00,,6606018007514874278
+2026-10-18T15:42:26-04:00,77,Tampa Bay Rays @ Cleveland Guardians,Ryan Vilade - Hits+Runs+RBI (O 0.5),-130,74.5,0.3172,props_odds,mlbapi_poisson,,-130,2026-10-19 08:08:00,,1567955295529992602
+2026-10-18T15:42:26-04:00,78,Tampa Bay Rays @ Cleveland Guardians,Chandler Simpson - Singles (O 0.5),-190,63.7,-0.0278,props_odds,mlbapi_poisson,,-190,2026-10-19 08:08:00,,2533888634331988388
+2026-10-18T15:42:26-04:00,79,Tampa Bay Rays @ Cleveland Guardians,Patrick Bailey - Doubles (U 0.5),-1000,93.1,0.0242,props_odds,mlbapi_poisson,,-1000,2026-10-19 08:08:00,,4013660311260365200
+2026-10-18T15:42:26-04:00,80,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Singles (O 0.5),+105,46.7,-0.0422,props_odds,mlbapi_poisson,,+105,2026-10-19 08:08:00,,5292145253485248942
+2026-10-18T15:42:26-04:00,81,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Singles (O 0.5),-105,50.3,-0.0179,props_odds,mlbapi_poisson,,-105,2026-10-19 08:08:00,,1785139117240222122
+2026-10-18T15:42:26-04:00,82,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Home Runs (O 0.5),+800,11.3,0.0201,props_odds,mlbapi_poisson,,+800,2026-10-19 08:08:00,,5945147919345779109
+2026-10-18T15:42:26-04:00,83,Tampa Bay Rays @ Cleveland Guardians,Jonny Deluca - RBIs (O 0.5),+240,36.0,0.2243,props_odds,mlbapi_poisson,,+240,2026-10-19 08:08:00,,4358384144603021719
+2026-10-18T15:42:26-04:00,84,Tampa Bay Rays @ Cleveland Guardians,Ben Williamson - Doubles (U 0.5),-800,89.4,0.0054,props_odds,mlbapi_poisson,,-800,2026-10-19 08:08:00,,3984265027879305630
+2026-10-18T15:42:26-04:00,85,Tampa Bay Rays @ Cleveland Guardians,Ryan Vilade - Doubles (U 0.5),-950,92.0,0.0169,props_odds,mlbapi_poisson,,-950,2026-10-19 08:08:00,,6514951705342378377
+2026-10-18T15:42:26-04:00,86,Tampa Bay Rays @ Cleveland Guardians,Nathaniel Lowe - Singles (U 0.5),-165,63.6,0.0216,props_odds,mlbapi_poisson,,-165,2026-10-19 08:08:00,,3776704560358359438
+2026-10-18T15:42:26-04:00,87,Tampa Bay Rays @ Cleveland Guardians,Ryan Vilade - Hits (U 0.5),-125,53.5,-0.0365,props_odds,mlbapi_poisson,,-125,2026-10-19 08:08:00,,3425489480948253093
+2026-10-18T15:42:26-04:00,88,Tampa Bay Rays @ Cleveland Guardians,Travis Bazzana - Hits+Runs+RBI (O 0.5),-170,83.4,0.3253,props_odds,mlbapi_poisson,,-170,2026-10-19 08:08:00,,4344648044621463974
+2026-10-18T15:42:26-04:00,89,Tampa Bay Rays @ Cleveland Guardians,Jose Ramirez - RBIs (O 0.5),+260,34.6,0.2441,props_odds,mlbapi_poisson,,+260,2026-10-19 08:08:00,,7568390199953195408
+2026-10-18T15:42:26-04:00,90,Tampa Bay Rays @ Cleveland Guardians,Patrick Bailey - Hits+Runs+RBI (O 0.5),-140,69.2,0.1868,props_odds,mlbapi_poisson,,-140,2026-10-19 08:08:00,,2658876816915300777
+2026-10-18T15:42:26-04:00,91,Tampa Bay Rays @ Cleveland Guardians,Nathaniel Lowe - Doubles (O 0.5),+500,16.0,-0.0387,props_odds,mlbapi_poisson,,+500,2026-10-19 08:08:00,,7510135874890367376
+2026-10-18T15:42:26-04:00,92,Tampa Bay Rays @ Cleveland Guardians,Jo Adell - Home Runs (O 0.5),+700,13.5,0.0774,props_odds,mlbapi_poisson,,+700,2026-10-19 08:08:00,,3366582045978526110

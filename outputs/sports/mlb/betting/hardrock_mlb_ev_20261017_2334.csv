@@ -1,0 +1,18 @@
+scrapedAt,betNumber,mlbGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-17T23:34:29-04:00,1,Rays @ Guardians,Rays -1.5 run line,+145,,,upcoming_games_odds,no_model,0.3883,+145,2026-10-19 08:00:00,,6183993696376193451
+2026-10-17T23:34:29-04:00,2,Rays @ Guardians,Guardians +1.5 run line,-180,,,upcoming_games_odds,no_model,0.6117,-180,2026-10-19 08:00:00,,2990941560570511787
+2026-10-17T23:34:29-04:00,3,Rays @ Guardians,O 6.5,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-19 08:00:00,,929856436769522077
+2026-10-17T23:34:29-04:00,4,Rays @ Guardians,U 6.5,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-19 08:00:00,,638248360897282461
+2026-10-17T23:34:29-04:00,5,Rays @ Guardians,,-125,,,upcoming_games_odds,no_model,0.5325,-125,2026-10-19 08:00:00,,1494308323074376111
+2026-10-17T23:34:29-04:00,6,Rays @ Guardians,,+105,,,upcoming_games_odds,no_model,0.4675,+105,2026-10-19 08:00:00,,6362699520261882287
+2026-10-17T23:34:29-04:00,7,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Hits+Runs+RBI (O 1.5),+105,,,props_odds,no_espn_match,,+105,2026-10-19 08:00:00,,2075673859310354858
+2026-10-17T23:34:29-04:00,8,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Hits+Runs+RBI (O 0.5),-155,,,props_odds,no_espn_match,,-155,2026-10-19 08:00:00,,2790202485736866217
+2026-10-17T23:34:29-04:00,9,Tampa Bay Rays @ Cleveland Guardians,Junior Caminero - Hits (O 0.5),-200,,,props_odds,no_espn_match,,-200,2026-10-19 08:00:00,,9174982945348387235
+2026-10-17T23:34:29-04:00,10,Tampa Bay Rays @ Cleveland Guardians,Taylor Walls - Hits+Runs+RBI (O 0.5),-150,,,props_odds,no_espn_match,,-150,2026-10-19 08:00:00,,6422144478978638245
+2026-10-17T23:34:29-04:00,11,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Hits+Runs+RBI (O 1.5),+105,,,props_odds,no_espn_match,,+105,2026-10-19 08:00:00,,6375771476565557653
+2026-10-17T23:34:29-04:00,12,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - Hits+Runs+RBI (O 1.5),-110,,,props_odds,no_espn_match,,-110,2026-10-19 08:00:00,,734362032400368041
+2026-10-17T23:34:29-04:00,13,Tampa Bay Rays @ Cleveland Guardians,Brayan Rocchio - Hits (O 0.5),-125,,,props_odds,no_espn_match,,-125,2026-10-19 08:00:00,,5132936309085700520
+2026-10-17T23:34:29-04:00,14,Tampa Bay Rays @ Cleveland Guardians,Chase DeLauter - Hits+Runs+RBI (O 1.5),+115,,,props_odds,no_espn_match,,+115,2026-10-19 08:00:00,,1511127415005512101
+2026-10-17T23:34:29-04:00,15,Tampa Bay Rays @ Cleveland Guardians,Yandy Diaz - Total Bases (O 1.5),+130,,,props_odds,no_espn_match,,+130,2026-10-19 08:00:00,,5326696646178898345
+2026-10-17T23:34:29-04:00,16,Tampa Bay Rays @ Cleveland Guardians,Jonathan Aranda - Hits (O 0.5),-195,,,props_odds,no_espn_match,,-195,2026-10-19 08:00:00,,6606018007514874278
+2026-10-17T23:34:29-04:00,17,Tampa Bay Rays @ Cleveland Guardians,Petey Halpin - Hits (U 0.5),-120,,,props_odds,no_espn_match,,-120,2026-10-19 08:00:00,,5137950082108359061

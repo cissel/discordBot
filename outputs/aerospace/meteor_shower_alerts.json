@@ -25,7 +25,7 @@
       "peak": true
     },
     "2026-orionids": {
-      "headsup": false,
+      "headsup": true,
       "peak": false
     },
     "2026-taurids": {

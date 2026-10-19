@@ -263,6 +263,43 @@ def enforce_no_self_cross(symbol, buy_price, sell_price):
     return True, None
 
 
+MIN_QUOTE_GAP_BPS = 1.0   # minimum enforced gap between buy/sell targets, in
+                          # bps of mid - see enforce_min_gap.
+MIN_QUOTE_GAP_ABS = 0.02  # dollars - absolute floor under MIN_QUOTE_GAP_BPS so
+                          # cheap/low-vol symbols can't have a tiny bps gap
+                          # collapse back to equal (or inverted) cent prices
+                          # once rounded for submission.
+
+
+def enforce_min_gap(mid, buy_price, sell_price,
+                     min_gap_bps=MIN_QUOTE_GAP_BPS, min_gap_abs=MIN_QUOTE_GAP_ABS):
+    """Guarantee sell_price - buy_price >= a minimum gap, BEFORE either
+    price is ever compared against a stale resting order or rounded to
+    cents for submission. Added after James flagged the bot getting
+    "stuck" with buy/sell orders flopped (crossed) for extended stretches -
+    missing opportunities while quoting nothing, or leaving built-up
+    inventory unhedged.
+
+    Pushes both prices apart symmetrically around their own midpoint
+    (NOT necessarily the market mid) when the gap is too thin or inverted -
+    this preserves whatever skew/center the RL policy or spread-widening
+    already computed, it just widens the gap enough to survive cent
+    rounding and never invert. Running this on every cycle's freshly
+    computed targets, before any comparison to existing resting orders, is
+    what makes a genuine self-cross effectively unreachable except from a
+    STALE held side (see the self-cross guard below, which auto-corrects
+    that remaining case rather than blocking the cycle).
+
+    Returns (buy_price, sell_price, adjusted: bool).
+    """
+    min_gap = max(mid * min_gap_bps / 10000.0, min_gap_abs)
+    gap = sell_price - buy_price
+    if gap >= min_gap:
+        return buy_price, sell_price, False
+    center = (buy_price + sell_price) / 2.0
+    return center - min_gap / 2.0, center + min_gap / 2.0, True
+
+
 def enforce_no_cross(symbol, side, price, data_headers):
     """Hard safety gate - added Oct 2026 after resting limit orders were
     observed going out priced THROUGH the touch (buys above the live ask,
@@ -824,6 +861,17 @@ def run(symbol=DEFAULT_SYMBOL, qty=DEFAULT_QTY, execute=False, flatten=False, rl
         actions.append(f"spread widened +/-{spread_widen_bps:.2f}bps "
                         f"-> buy {round(target_buy_price,4)} / sell {round(target_sell_price,4)}")
 
+    # Minimum-gap enforcement (strictly buy < sell, always): runs on every
+    # cycle's fresh targets regardless of source (baseline/RL/widened), so
+    # target_sell_price - target_buy_price is guaranteed non-crossing before
+    # it is ever compared to a resting order or rounded for submission. See
+    # enforce_min_gap docstring / the self-cross guard below for why this
+    # was added.
+    target_buy_price, target_sell_price, gap_adjusted = enforce_min_gap(
+        mid, target_buy_price, target_sell_price)
+    if gap_adjusted:
+        actions.append(f"min-gap enforced -> buy {round(target_buy_price,4)} / sell {round(target_sell_price,4)}")
+
     try:
         open_orders = get_open_orders(symbol, headers)
     except Exception as e:
@@ -833,22 +881,33 @@ def run(symbol=DEFAULT_SYMBOL, qty=DEFAULT_QTY, execute=False, flatten=False, rl
     open_buy = next((o for o in open_orders if o.get("side") == "buy"), None)
     open_sell = next((o for o in open_orders if o.get("side") == "sell"), None)
 
-    # ── Self-cross hard block (Oct 2026): precompute what EACH side's
+    # ── Self-cross guard (Oct 2026; auto-correct replacing the hard block
+    # added later the same cycle of fixes): precompute what EACH side's
     # resting price will actually be after this cycle BEFORE touching
-    # either order, and refuse to submit/hold anything this cycle if that
-    # would leave a buy resting at/above a sell. This is SEPARATE from (and
-    # stronger than) enforce_no_cross, which only validates each side
-    # independently against a freshly re-fetched external NBBO - two sides
-    # can each individually pass that check (fetched moments apart) and
-    # still cross EACH OTHER, e.g. if a bad feed snapshot priced both sides
-    # off a locked/crossed NBBO (see get_quote's bid>=ask guard added the
-    # same day), or if only ONE side needed requoting this cycle and the
-    # other side's untouched, already-resting order is left behind the new
-    # price. Checking the PROJECTED final state of both sides up front
-    # (not just the two freshly computed targets) catches that case too.
-    # On a block: cancel BOTH resting orders and place nothing this cycle -
-    # partial action (only fixing one side) could still leave a crossed
-    # book, and the underlying price computation is already known bad.
+    # either order. This is SEPARATE from (and stronger than)
+    # enforce_no_cross, which only validates each side independently
+    # against a freshly re-fetched external NBBO - two sides can each
+    # individually pass that check (fetched moments apart) and still cross
+    # EACH OTHER, most commonly when only ONE side needed requoting this
+    # cycle and the other side's untouched, already-resting order is left
+    # behind the new price. Checking the PROJECTED final state of both
+    # sides up front (not just the two freshly computed targets) catches
+    # that case too.
+    #
+    # Previous behavior was a HARD BLOCK: cancel both resting orders and
+    # place NOTHING this cycle. James flagged this as the bot getting
+    # "stuck" - repeated cycles with no resting quote on either side
+    # (missed fills) or, worse, the side that should be working to flatten
+    # existing inventory going silent while the position sat unhedged
+    # ("bags"). Replaced with auto-correct: enforce_min_gap() above already
+    # guarantees target_sell_price - target_buy_price >= a minimum gap
+    # before either number is ever compared to a stale resting price, so a
+    # cross detected here can ONLY come from a stale held side - resync
+    # BOTH sides to the fresh, already-gap-enforced targets this same
+    # cycle rather than cancel-and-wait. enforce_no_cross below still
+    # independently re-validates each side against the live market right
+    # before submission, so this still can never submit a price that
+    # crosses the real NBBO.
     need_requote_buy = want_buy and ((not open_buy) or (float(open_buy.get("limit_price", 0)) != round(target_buy_price, 2)))
     need_requote_sell = want_sell and ((not open_sell) or (float(open_sell.get("limit_price", 0)) != round(target_sell_price, 2)))
     projected_buy_price = (round(target_buy_price, 2) if need_requote_buy
@@ -856,140 +915,123 @@ def run(symbol=DEFAULT_SYMBOL, qty=DEFAULT_QTY, execute=False, flatten=False, rl
     projected_sell_price = (round(target_sell_price, 2) if need_requote_sell
                              else (float(open_sell["limit_price"]) if (want_sell and open_sell) else None))
 
-    self_cross_blocked = False
     if projected_buy_price is not None and projected_sell_price is not None:
         ok, reason = enforce_no_self_cross(symbol, projected_buy_price, projected_sell_price)
         if not ok:
-            self_cross_blocked = True
             errors.append(reason)
-            actions.append(f"SELF-CROSS HARD BLOCK: {reason} - cancelling both sides, no quotes placed this cycle")
-            if execute:
-                if open_buy:
-                    cancel_order(open_buy["id"], headers)
-                    actions.append(f"cancelled buy @ {open_buy.get('limit_price')} (self-cross safety)")
-                if open_sell:
-                    cancel_order(open_sell["id"], headers)
-                    actions.append(f"cancelled sell @ {open_sell.get('limit_price')} (self-cross safety)")
-            state["open_buy_order_id"] = None
-            state["open_buy_price"] = None
-            state["open_sell_order_id"] = None
-            state["open_sell_price"] = None
+            actions.append(f"SELF-CROSS auto-corrected: {reason} - resyncing both sides to fresh targets this cycle")
+            need_requote_buy = want_buy
+            need_requote_sell = want_sell
 
-    if self_cross_blocked:
+    # BUY side
+    if not want_buy:
+        if open_buy:
+            if execute:
+                cancel_order(open_buy["id"], headers)
+            actions.append(f"cancelled buy (inventory cap: {shares} >= {inventory_cap})")
         result["open_orders"]["buy"] = None
-        result["open_orders"]["sell"] = None
-        buy_action, buy_price = "BLOCKED (self-cross safety)", None
-        sell_action, sell_price = "BLOCKED (self-cross safety)", None
+        buy_action, buy_price = "SKIP (inventory cap)", None
     else:
-        # BUY side
-        if not want_buy:
-            if open_buy:
-                if execute:
-                    cancel_order(open_buy["id"], headers)
-                actions.append(f"cancelled buy (inventory cap: {shares} >= {inventory_cap})")
-            result["open_orders"]["buy"] = None
-            buy_action, buy_price = "SKIP (inventory cap)", None
-        else:
-            need_requote = need_requote_buy
-            if need_requote:
-                if open_buy and execute:
-                    cancel_order(open_buy["id"], headers)
-                    actions.append(f"cancelled stale buy @ {open_buy.get('limit_price')}")
-                # Hard safety gate: re-check against a FRESH quote immediately
-                # before submission, refuse to place a buy priced above the
-                # live ask (see enforce_no_cross docstring for why this exists).
-                ok, fresh_bid, fresh_ask, reason = enforce_no_cross(symbol, "buy", target_buy_price, data_headers)
-                if not ok:
-                    errors.append(reason)
-                    actions.append(f"BLOCKED buy order: {reason}")
+        need_requote = need_requote_buy
+        if need_requote:
+            if open_buy and execute:
+                cancel_order(open_buy["id"], headers)
+                actions.append(f"cancelled stale buy @ {open_buy.get('limit_price')}")
+            # Hard safety gate: re-check against a FRESH quote immediately
+            # before submission, refuse to place a buy priced above the
+            # live ask (see enforce_no_cross docstring for why this exists).
+            ok, fresh_bid, fresh_ask, reason = enforce_no_cross(symbol, "buy", target_buy_price, data_headers)
+            if not ok:
+                errors.append(reason)
+                actions.append(f"BLOCKED buy order: {reason}")
+                result["open_orders"]["buy"] = None
+                # Bug fix (Oct 2026): the stale buy was already cancelled
+                # at the broker a few lines up (if open_buy and execute),
+                # but state["open_buy_order_id"/"open_buy_price"] was
+                # never cleared here - unlike the broker-rejection branch
+                # below, which does clear it. That left a dead order id/
+                # price sitting in mm_state_{symbol}.json, which both the
+                # live dashboard's fallback display (app.py) and
+                # live_poller.py's seed_orders_from_state() read straight
+                # from - showing a "resting" buy/sell that doesn't exist
+                # at the broker anymore, sometimes crossed against the
+                # other (correctly updated) side. This is what produced
+                # the stale/crossed quote lines James flagged on the
+                # dashboard. Clearing it here makes this branch match the
+                # broker-rejection branch's behavior.
+                state["open_buy_order_id"] = None
+                state["open_buy_price"] = None
+                buy_action, buy_price = "BLOCKED (would cross market)", None
+            else:
+                ok2, resp, reason2, capped_qty = place_limit_safe(
+                    symbol, "buy", qty, target_buy_price, shares, headers, dry_run=not execute)
+                if not ok2:
+                    errors.append(reason2)
+                    actions.append(f"BLOCKED buy order: {reason2}")
                     result["open_orders"]["buy"] = None
-                    # Bug fix (Oct 2026): the stale buy was already cancelled
-                    # at the broker a few lines up (if open_buy and execute),
-                    # but state["open_buy_order_id"/"open_buy_price"] was
-                    # never cleared here - unlike the broker-rejection branch
-                    # below, which does clear it. That left a dead order id/
-                    # price sitting in mm_state_{symbol}.json, which both the
-                    # live dashboard's fallback display (app.py) and
-                    # live_poller.py's seed_orders_from_state() read straight
-                    # from - showing a "resting" buy/sell that doesn't exist
-                    # at the broker anymore, sometimes crossed against the
-                    # other (correctly updated) side. This is what produced
-                    # the stale/crossed quote lines James flagged on the
-                    # dashboard. Clearing it here makes this branch match the
-                    # broker-rejection branch's behavior.
                     state["open_buy_order_id"] = None
                     state["open_buy_price"] = None
-                    buy_action, buy_price = "BLOCKED (would cross market)", None
+                    buy_action, buy_price = "BLOCKED (broker rejected/flip-capped)", None
                 else:
-                    ok2, resp, reason2, capped_qty = place_limit_safe(
-                        symbol, "buy", qty, target_buy_price, shares, headers, dry_run=not execute)
-                    if not ok2:
-                        errors.append(reason2)
-                        actions.append(f"BLOCKED buy order: {reason2}")
-                        result["open_orders"]["buy"] = None
-                        state["open_buy_order_id"] = None
-                        state["open_buy_price"] = None
-                        buy_action, buy_price = "BLOCKED (broker rejected/flip-capped)", None
-                    else:
-                        state["open_buy_order_id"] = resp.get("id")
-                        state["open_buy_price"] = round(target_buy_price, 2)
-                        qty_note = f" (qty capped {qty}->{capped_qty}, avoiding long/short flip)" if capped_qty != qty else ""
-                        actions.append(f"placed buy {capped_qty}sh @ {round(target_buy_price,2)} (id={resp.get('id')}){qty_note}")
-                        buy_action, buy_price = "PLACED", round(target_buy_price, 2)
-                        result["open_orders"]["buy"] = {"price": round(target_buy_price, 2), "qty": capped_qty}
-            else:
-                buy_action, buy_price = "HOLD (already at touch)", round(target_buy_price, 2)
-                result["open_orders"]["buy"] = {"price": round(target_buy_price, 2), "qty": qty}
-
-        # SELL side
-        if not want_sell:
-            if open_sell:
-                if execute:
-                    cancel_order(open_sell["id"], headers)
-                actions.append(f"cancelled sell (inventory cap: {shares} <= {-inventory_cap})")
-            result["open_orders"]["sell"] = None
-            sell_action, sell_price = "SKIP (inventory cap)", None
+                    state["open_buy_order_id"] = resp.get("id")
+                    state["open_buy_price"] = round(target_buy_price, 2)
+                    qty_note = f" (qty capped {qty}->{capped_qty}, avoiding long/short flip)" if capped_qty != qty else ""
+                    actions.append(f"placed buy {capped_qty}sh @ {round(target_buy_price,2)} (id={resp.get('id')}){qty_note}")
+                    buy_action, buy_price = "PLACED", round(target_buy_price, 2)
+                    result["open_orders"]["buy"] = {"price": round(target_buy_price, 2), "qty": capped_qty}
         else:
-            need_requote = need_requote_sell
-            if need_requote:
-                if open_sell and execute:
-                    cancel_order(open_sell["id"], headers)
-                    actions.append(f"cancelled stale sell @ {open_sell.get('limit_price')}")
-                # Hard safety gate: re-check against a FRESH quote immediately
-                # before submission, refuse to place a sell priced below the
-                # live bid (see enforce_no_cross docstring for why this exists).
-                ok, fresh_bid, fresh_ask, reason = enforce_no_cross(symbol, "sell", target_sell_price, data_headers)
-                if not ok:
-                    errors.append(reason)
-                    actions.append(f"BLOCKED sell order: {reason}")
+            buy_action, buy_price = "HOLD (already at touch)", round(target_buy_price, 2)
+            result["open_orders"]["buy"] = {"price": round(target_buy_price, 2), "qty": qty}
+
+    # SELL side
+    if not want_sell:
+        if open_sell:
+            if execute:
+                cancel_order(open_sell["id"], headers)
+            actions.append(f"cancelled sell (inventory cap: {shares} <= {-inventory_cap})")
+        result["open_orders"]["sell"] = None
+        sell_action, sell_price = "SKIP (inventory cap)", None
+    else:
+        need_requote = need_requote_sell
+        if need_requote:
+            if open_sell and execute:
+                cancel_order(open_sell["id"], headers)
+                actions.append(f"cancelled stale sell @ {open_sell.get('limit_price')}")
+            # Hard safety gate: re-check against a FRESH quote immediately
+            # before submission, refuse to place a sell priced below the
+            # live bid (see enforce_no_cross docstring for why this exists).
+            ok, fresh_bid, fresh_ask, reason = enforce_no_cross(symbol, "sell", target_sell_price, data_headers)
+            if not ok:
+                errors.append(reason)
+                actions.append(f"BLOCKED sell order: {reason}")
+                result["open_orders"]["sell"] = None
+                # Bug fix (Oct 2026): mirrors the buy-side fix above -
+                # clear the stale order id/price so state (and anything
+                # reading it, e.g. the dashboard) doesn't keep reporting
+                # a resting sell that the broker no longer has.
+                state["open_sell_order_id"] = None
+                state["open_sell_price"] = None
+                sell_action, sell_price = "BLOCKED (would cross market)", None
+            else:
+                ok2, resp, reason2, capped_qty = place_limit_safe(
+                    symbol, "sell", qty, target_sell_price, shares, headers, dry_run=not execute)
+                if not ok2:
+                    errors.append(reason2)
+                    actions.append(f"BLOCKED sell order: {reason2}")
                     result["open_orders"]["sell"] = None
-                    # Bug fix (Oct 2026): mirrors the buy-side fix above -
-                    # clear the stale order id/price so state (and anything
-                    # reading it, e.g. the dashboard) doesn't keep reporting
-                    # a resting sell that the broker no longer has.
                     state["open_sell_order_id"] = None
                     state["open_sell_price"] = None
-                    sell_action, sell_price = "BLOCKED (would cross market)", None
+                    sell_action, sell_price = "BLOCKED (broker rejected/flip-capped)", None
                 else:
-                    ok2, resp, reason2, capped_qty = place_limit_safe(
-                        symbol, "sell", qty, target_sell_price, shares, headers, dry_run=not execute)
-                    if not ok2:
-                        errors.append(reason2)
-                        actions.append(f"BLOCKED sell order: {reason2}")
-                        result["open_orders"]["sell"] = None
-                        state["open_sell_order_id"] = None
-                        state["open_sell_price"] = None
-                        sell_action, sell_price = "BLOCKED (broker rejected/flip-capped)", None
-                    else:
-                        state["open_sell_order_id"] = resp.get("id")
-                        state["open_sell_price"] = round(target_sell_price, 2)
-                        qty_note = f" (qty capped {qty}->{capped_qty}, avoiding long/short flip)" if capped_qty != qty else ""
-                        actions.append(f"placed sell {capped_qty}sh @ {round(target_sell_price,2)} (id={resp.get('id')}){qty_note}")
-                        sell_action, sell_price = "PLACED", round(target_sell_price, 2)
-                        result["open_orders"]["sell"] = {"price": round(target_sell_price, 2), "qty": capped_qty}
-            else:
-                sell_action, sell_price = "HOLD (already at touch)", round(target_sell_price, 2)
-                result["open_orders"]["sell"] = {"price": round(target_sell_price, 2), "qty": qty}
+                    state["open_sell_order_id"] = resp.get("id")
+                    state["open_sell_price"] = round(target_sell_price, 2)
+                    qty_note = f" (qty capped {qty}->{capped_qty}, avoiding long/short flip)" if capped_qty != qty else ""
+                    actions.append(f"placed sell {capped_qty}sh @ {round(target_sell_price,2)} (id={resp.get('id')}){qty_note}")
+                    sell_action, sell_price = "PLACED", round(target_sell_price, 2)
+                    result["open_orders"]["sell"] = {"price": round(target_sell_price, 2), "qty": capped_qty}
+        else:
+            sell_action, sell_price = "HOLD (already at touch)", round(target_sell_price, 2)
+            result["open_orders"]["sell"] = {"price": round(target_sell_price, 2), "qty": qty}
 
     save_state(symbol, state)
     _log_cycle(result, state, errors, actions, buy_action, buy_price, sell_action, sell_price)

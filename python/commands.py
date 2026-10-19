@@ -854,9 +854,15 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, ":) <3",
                     file=discord.File(os.path.join(op, "metrics/dailyMessages.png")))
 
-    @history_group.command(name="voicehours", description="total voice channel hours per user")
-    async def hist_voicehours(interaction: discord.Interaction):
+    @history_group.command(name="voice", description="voice channel hours per user")
+    @app_commands.choices(scope=[
+        app_commands.Choice(name="total", value="total"),
+        app_commands.Choice(name="over time", value="overtime"),
+    ])
+    async def hist_voice(interaction: discord.Interaction, scope: app_commands.Choice[str] = None):
         await _defer(interaction)
+
+        mode = scope.value if scope else "overtime"
 
         csv_path = os.path.expanduser("~/discordBot/outputs/metrics/voice_events.csv")
         if not os.path.exists(csv_path):
@@ -867,19 +873,25 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 ephemeral=True)
             return
 
+        if mode == "overtime":
+            r_script = "voiceHoursOverTime.R"
+            img      = os.path.expanduser("~/discordBot/outputs/metrics/voiceHoursOverTime.png")
+        else:
+            r_script = "voiceHours.R"
+            img      = os.path.expanduser("~/discordBot/outputs/metrics/voiceHours.png")
+
         result = await asyncio.to_thread(
             lambda: subprocess.run(
-                ["Rscript", os.path.join(rp, "voiceHours.R")],
+                ["Rscript", os.path.join(rp, r_script)],
                 capture_output=True, text=True, timeout=60
             )
         )
-        img = os.path.expanduser("~/discordBot/outputs/metrics/voiceHours.png")
         if result.returncode != 0 or not os.path.exists(img):
             err = result.stderr[-400:] if result.stderr else "no output"
             await _send(interaction, f"❌ plot failed\n```{err}```", ephemeral=True)
             return
         await _send(interaction, ":) <3",
-                    file=discord.File(img, filename="voiceHours.png"))
+                    file=discord.File(img, filename=os.path.basename(img)))
 
     @history_group.command(name="invitegraph", description="bubble network of who invited who to the server")
     async def hist_invitegraph(interaction: discord.Interaction):
@@ -8716,6 +8728,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
     game_group = app_commands.Group(name="scorebug", description="live scorebug on a voice channel's status", guild_ids=[guild.id])
 
     _GAME_POLL_SECONDS = 25
+    _LIVE_SENTINEL = "__live__"
 
     _LEAGUE_DISPLAY_NAME = {"nfl": "NFL", "mlb": "MLB", "nhl": "NHL", "nba": "NBA"}
 
@@ -8733,7 +8746,10 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
 
     async def _game_matchup_autocomplete(interaction: discord.Interaction, current: str):
         """Offer today's games for whichever league the user already picked
-        in the 'sport' option of this same (not-yet-submitted) command."""
+        in the 'sport' option of this same (not-yet-submitted) command, plus
+        a 'Live games only' pseudo-choice (see _LIVE_SENTINEL) that rotates
+        the status through whatever's currently in-progress instead of
+        pinning to one team."""
         import gameWatch
         sport = (interaction.namespace.sport or "").lower().strip()
         if not sport:
@@ -8741,6 +8757,9 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         games = await asyncio.to_thread(gameWatch.list_games_today, sport)
         current = current.lower().strip()
         choices = []
+        live_label = "🔴 Live games only (rotates)"
+        if not current or current in live_label.lower() or "live" in current:
+            choices.append(app_commands.Choice(name=live_label, value=_LIVE_SENTINEL))
         for g in games:
             label = f"{g['matchup']} ({g['time']})" if g.get("time") else g["matchup"]
             if current and current not in label.lower():
@@ -8748,6 +8767,13 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             # Discord choice names are capped at 100 chars
             choices.append(app_commands.Choice(name=label[:100], value=g["matchup"]))
         return choices[:25]
+
+    def _no_live_bug(sport: str) -> str:
+        import gameWatch
+        emoji = gameWatch.LEAGUE_EMOJI.get(sport, "")
+        name = gameWatch.LEAGUE_NAME.get(sport, sport.upper())
+        prefix = f"{emoji} |" if emoji else f"{name} |"
+        return f"{prefix} no live {name} games right now"
 
     async def _game_watch_loop(channel: discord.VoiceChannel, sport: str, team: str):
         import gameWatch
@@ -8788,15 +8814,65 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             _game_watch_state.pop(channel.id, None)
             gameWatch.clear_watch(channel.id)
 
-    def _start_game_watch(channel: discord.VoiceChannel, sport: str, team: str, last_bug: str | None = None):
+    async def _game_watch_loop_live(channel: discord.VoiceChannel, sport: str):
+        """Like _game_watch_loop, but instead of one pinned team this
+        rotates the channel status through every currently in-progress game
+        in `sport`, re-deriving the live set on the same poll cadence
+        (finished games drop out, newly-kicked-off games get picked up).
+        Never auto-stops on its own - a league's live set naturally goes
+        empty between windows, which isn't "done for the day" - only
+        /scorebug unwatch ends it."""
+        import gameWatch
+        state = _game_watch_state[channel.id]
+        idx = 0
+        try:
+            while True:
+                try:
+                    live = await asyncio.to_thread(gameWatch.list_live_events, sport)
+                except Exception as e:
+                    print(f"[gameWatch] live fetch error for {sport}: {e}")
+                    await asyncio.sleep(_GAME_POLL_SECONDS)
+                    continue
+
+                if live:
+                    idx = idx % len(live)
+                    bug = gameWatch.format_scorebug(live[idx])
+                    idx += 1
+                else:
+                    bug = _no_live_bug(sport)
+                    idx = 0
+
+                if bug != state.get("last_bug"):
+                    try:
+                        await channel.edit(status=bug, reason="gameWatch live-rotation update")
+                        state["last_bug"] = bug
+                        print(f"[gameWatch] {channel.name} (live {sport}): {bug}")
+                    except discord.Forbidden:
+                        print(f"[gameWatch] missing 'Set Voice Channel Status' permission in #{channel.name} - stopping watch")
+                        return
+                    except Exception as e:
+                        print(f"[gameWatch] status edit failed: {e}")
+
+                await asyncio.sleep(_GAME_POLL_SECONDS)
+        finally:
+            _game_watch_state.pop(channel.id, None)
+            gameWatch.clear_watch(channel.id)
+
+    def _start_game_watch(channel: discord.VoiceChannel, sport: str, mode: str = "single",
+                           team: str | None = None, last_bug: str | None = None):
         """Register and launch a watch loop for `channel`, persisting it to
         disk so it can be resumed across a bot restart (see
         gameWatch.persist_watch / restore_game_watches below). Shared by
-        /scorebug watch and the on_ready() restore path."""
+        /scorebug watch and the on_ready() restore path. mode='single' pins
+        one team (`team` required); mode='live' rotates through whatever's
+        currently in-progress in `sport` (`team` unused)."""
         import gameWatch
-        task = asyncio.create_task(_game_watch_loop(channel, sport, team))
-        _game_watch_state[channel.id] = {"task": task, "sport": sport, "team": team, "last_bug": last_bug}
-        gameWatch.persist_watch(channel.id, sport, team)
+        if mode == "live":
+            task = asyncio.create_task(_game_watch_loop_live(channel, sport))
+        else:
+            task = asyncio.create_task(_game_watch_loop(channel, sport, team))
+        _game_watch_state[channel.id] = {"task": task, "mode": mode, "sport": sport, "team": team, "last_bug": last_bug}
+        gameWatch.persist_watch(channel.id, sport, mode=mode, team=team)
 
     async def restore_game_watches(client: discord.Client):
         """Called once from main.py's on_ready() - relaunches any watch
@@ -8814,7 +8890,26 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             if not isinstance(channel, discord.VoiceChannel):
                 gameWatch.clear_watch(channel_id)
                 continue
-            sport, team = info["sport"], info["team"]
+            sport, mode, team = info["sport"], info.get("mode", "single"), info["team"]
+
+            if mode == "live":
+                try:
+                    live = await asyncio.to_thread(gameWatch.list_live_events, sport)
+                except Exception as e:
+                    print(f"[gameWatch] restore live-fetch error for {sport}: {e}")
+                    live = []
+                bug = gameWatch.format_scorebug(live[0]) if live else _no_live_bug(sport)
+                try:
+                    await channel.edit(status=bug, reason="gameWatch scorebug restored after restart")
+                except Exception as e:
+                    print(f"[gameWatch] restore: couldn't set status on #{channel.name}: {e}")
+                    gameWatch.clear_watch(channel_id)
+                    continue
+                _start_game_watch(channel, sport, mode="live", last_bug=bug)
+                restored += 1
+                print(f"[gameWatch] restored live-rotation watch on #{channel.name}: {sport}")
+                continue
+
             try:
                 event = await asyncio.to_thread(gameWatch.find_game, sport, team)
             except Exception as e:
@@ -8837,7 +8932,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 print(f"[gameWatch] restore: couldn't set status on #{channel.name}: {e}")
                 gameWatch.clear_watch(channel_id)
                 continue
-            _start_game_watch(channel, sport, team, last_bug=bug)
+            _start_game_watch(channel, sport, mode="single", team=team, last_bug=bug)
             restored += 1
             print(f"[gameWatch] restored watch on #{channel.name}: {sport}/{team}")
         if restored:
@@ -8859,6 +8954,33 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _defer(interaction)
         import gameWatch
         sport = sport.lower().strip()
+
+        if game == _LIVE_SENTINEL:
+            try:
+                live = await asyncio.to_thread(gameWatch.list_live_events, sport)
+            except Exception as e:
+                await _send(interaction, f"❌ couldn't reach ESPN: `{e}`", ephemeral=True)
+                return
+            bug = gameWatch.format_scorebug(live[0]) if live else _no_live_bug(sport)
+            try:
+                await channel.edit(status=bug, reason="gameWatch live-rotation start")
+            except discord.Forbidden:
+                await _send(
+                    interaction,
+                    "❌ I don't have the **Set Voice Channel Status** permission for this channel "
+                    "(separate from Manage Channels - check the channel's permission overrides)",
+                    ephemeral=True,
+                )
+                return
+            except Exception as e:
+                await _send(interaction, f"❌ couldn't set channel status: `{e}`", ephemeral=True)
+                return
+
+            _start_game_watch(channel, sport, mode="live", last_bug=bug)
+            note = f"{len(live)} live right now" if live else "none live yet - will pick games up as they start"
+            await _send(interaction, f"📺 rotating **live {sport.upper()} games** on **{channel.name}** ({note})\n{bug}")
+            return
+
         team = gameWatch.team_query_from_matchup(game)
         try:
             event = await asyncio.to_thread(gameWatch.find_game, sport, team)
@@ -8885,7 +9007,7 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             await _send(interaction, f"❌ couldn't set channel status: `{e}`", ephemeral=True)
             return
 
-        _start_game_watch(channel, sport, team, last_bug=bug)
+        _start_game_watch(channel, sport, mode="single", team=team, last_bug=bug)
         await _send(interaction, f"📺 watching **{game}** ({sport.upper()}) on **{channel.name}**\n{bug}")
 
     @game_group.command(name="unwatch", description="stop tracking and clear the scorebug on your voice channel")

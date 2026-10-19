@@ -57,9 +57,9 @@ class EpisodeLogCallback(BaseCallback):
             w.writerows(self._rows)
 
 
-def make_env(mode, seed):
+def make_env(mode, seed, historical_frac=0.3):
     def _init():
-        env = MarketMakerEnv(MMEnvConfig(mode=mode, seed=seed))
+        env = MarketMakerEnv(MMEnvConfig(mode=mode, seed=seed, historical_frac=historical_frac))
         return Monitor(env)
     return _init
 
@@ -79,13 +79,17 @@ def main():
     parser.add_argument("--tag-suffix", type=str, default="",
                          help="appended to the output model filename, e.g. '_hptest', so experimental "
                               "runs don't overwrite the canonical ppo_mm_<mode>_<timesteps>.zip")
+    parser.add_argument("--historical-frac", type=float, default=0.3,
+                         help="mode=mixed only: fraction of training episodes that replay a real "
+                              "historical SOXL day instead of a synthetic one (default 0.3, matches "
+                              "MMEnvConfig default / the validated mixed/2M model).")
     args = parser.parse_args()
 
     os.makedirs(MODEL_DIR, exist_ok=True)
 
     net_arch = [int(x) for x in args.net_arch.split(",")]
 
-    env_fns = [make_env(args.mode, args.seed + i) for i in range(args.n_envs)]
+    env_fns = [make_env(args.mode, args.seed + i, args.historical_frac) for i in range(args.n_envs)]
     vec_env = DummyVecEnv(env_fns) if args.n_envs == 1 else SubprocVecEnv(env_fns)
 
     model = PPO(
@@ -114,7 +118,8 @@ def main():
     model.save(model_path)
     print(f"Saved model to {model_path}")
     print(f"Episode log at {log_path}")
-    print(f"Config: net_arch={net_arch} ent_coef={args.ent_coef}")
+    print(f"Config: net_arch={net_arch} ent_coef={args.ent_coef} historical_frac={args.historical_frac} "
+          f"mode={args.mode} seed={args.seed}")
 
 
 if __name__ == "__main__":

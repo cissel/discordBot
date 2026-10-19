@@ -61,6 +61,13 @@ OUT_DIR    = os.path.expanduser("~/discordBot/outputs/markets")
 PAPER_BASE = "https://paper-api.alpaca.markets"
 DATA_BASE  = "https://data.alpaca.markets"
 
+MIN_NOTIONAL_USD = 10.05  # Alpaca crypto orders reject below $10 cost basis
+                           # ("cost basis must be >= minimal amount of order 10",
+                           # confirmed live Oct 2026 - a stuck 0.0923 SOL re-arm
+                           # at $103.81 (~$9.58) 403'd every retry cycle forever
+                           # since it can never clear $10 at that qty/price).
+                           # Small buffer above $10 avoids float-rounding rejections.
+
 DEFAULT_LEVELS            = 14    # grid steps each side of center (levels+1 price points)
 DEFAULT_ATR_MULT          = 0.6   # half-range = ATR_MULT * daily ATR%. Tightened from 1.5
                                    # on Oct 2026 after launch night: at 1.5x ATR the nearest
@@ -308,6 +315,20 @@ def place_limit(symbol, side, qty, price, headers):
     return alpaca_post("/v2/orders", payload, headers)
 
 
+def bump_to_min_notional(qty, price, min_notional=MIN_NOTIONAL_USD):
+    """Scale qty up to clear Alpaca's minimum crypto order notional if the
+    raw qty*price falls short (happens to odd-lot remainders left over from
+    partial fills). Returns (qty, bumped_bool). Caller is responsible for
+    capping the result to whatever's actually available for sell orders -
+    this just computes what's needed to clear the floor, it doesn't know
+    about position balance."""
+    if price <= 0:
+        return qty, False
+    if qty * price >= min_notional:
+        return qty, False
+    return min_notional / price, True
+
+
 def init_grid(symbol, budget, levels, atr_mult, min_spacing_pct, breakout_atr_mult,
                headers, data_headers, execute, actions, errors):
     quote = get_crypto_quote(symbol, data_headers)
@@ -333,7 +354,7 @@ def init_grid(symbol, budget, levels, atr_mult, min_spacing_pct, breakout_atr_mu
         "halted": False,
         "halt_reason": None,
         "breakout_atr_mult": breakout_atr_mult,
-        "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
     })
 
     placed = 0
@@ -369,7 +390,7 @@ def run(symbol, budget, levels, atr_mult, min_spacing_pct, breakout_atr_mult,
         execute, flatten, reset):
     errors, actions = [], []
     result = {
-        "timestamp": datetime.datetime.now().isoformat(timespec="seconds"),
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "symbol": symbol, "mode": "EXECUTE" if execute else "DRY-RUN",
         "quote": None, "grid": None, "position": None,
         "halted": False, "flattened": False, "new_fills": [],
@@ -484,10 +505,23 @@ def run(symbol, budget, levels, atr_mult, min_spacing_pct, breakout_atr_mult,
     pending = state.get("pending_reorders", [])
     still_pending = []
     for p in pending:
+        qty = p["qty"]
+        qty, bumped = bump_to_min_notional(qty, p["price"])
+        if p["side"] == "sell" and bumped:
+            # don't bump a sell past what we actually hold - that would just
+            # trade a $10-min-notional 403 for an insufficient-balance one
+            try:
+                pos = get_crypto_position(symbol, headers)
+                qty = min(qty, pos.get("qty_available", qty))
+                bumped = qty * p["price"] >= MIN_NOTIONAL_USD
+            except Exception as e:
+                errors.append(f"qty_available lookup for pending sell bump failed: {e}")
+                qty, bumped = p["qty"], False
         try:
-            order = place_limit(symbol, p["side"], p["qty"], p["price"], headers)
-            state["level_orders"][str(p["price"])] = {"side": p["side"], "order_id": order["id"], "qty": p["qty"]}
-            actions.append(f"retried pending {p['side']} @ {p['price']:.4f} qty {p['qty']:.8f} - placed successfully")
+            order = place_limit(symbol, p["side"], qty, p["price"], headers)
+            state["level_orders"][str(p["price"])] = {"side": p["side"], "order_id": order["id"], "qty": qty}
+            note = f" (bumped {p['qty']:.8f} -> {qty:.8f} to clear ${MIN_NOTIONAL_USD:.2f} min notional)" if bumped else ""
+            actions.append(f"retried pending {p['side']} @ {p['price']:.4f} qty {qty:.8f} - placed successfully{note}")
         except Exception as e:
             errors.append(f"pending {p['side']} @ {p['price']} retry failed again: {e}")
             still_pending.append(p)
@@ -521,7 +555,7 @@ def run(symbol, budget, levels, atr_mult, min_spacing_pct, breakout_atr_mult,
 
         for a in fill_group:
             fill_row = {
-                "timestamp": datetime.datetime.now().isoformat(timespec="seconds"),
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
                 "symbol": symbol, "order_id": oid, "activity_id": a.get("id"),
                 "side": a.get("side"), "qty": a.get("qty"), "filled_avg_price": a.get("price"),
                 "filled_at": a.get("transaction_time"), "level_price": level_price,
@@ -557,11 +591,18 @@ def run(symbol, budget, levels, atr_mult, min_spacing_pct, breakout_atr_mult,
             if idx is not None and idx + 1 < len(levels):
                 sell_price = levels[idx + 1]
                 sell_qty = qty
+                qty_available = None
                 try:
                     pos = get_crypto_position(symbol, headers)
-                    sell_qty = min(qty, pos.get("qty_available", qty))
+                    qty_available = pos.get("qty_available", qty)
+                    sell_qty = min(qty, qty_available)
                 except Exception as e:
                     errors.append(f"qty_available lookup failed, using raw fill qty (may 403): {e}")
+                bumped_sell, sell_bumped_flag = bump_to_min_notional(sell_qty, sell_price)
+                if sell_bumped_flag and qty_available is not None:
+                    # only bump up to whatever coin we actually hold - never
+                    # claim more than the position has just to clear $10
+                    sell_qty = min(bumped_sell, qty_available)
                 if execute:
                     try:
                         order = place_limit(symbol, "sell", sell_qty, sell_price, headers)
@@ -586,18 +627,20 @@ def run(symbol, budget, levels, atr_mult, min_spacing_pct, breakout_atr_mult,
             del state["level_orders"][level_key]
             if idx is not None and idx - 1 >= 0:
                 buy_price = levels[idx - 1]
+                buy_qty, buy_bumped = bump_to_min_notional(qty, buy_price)
                 if execute:
                     try:
-                        order = place_limit(symbol, "buy", qty, buy_price, headers)
-                        state["level_orders"][str(buy_price)] = {"side": "buy", "order_id": order["id"], "qty": qty}
+                        order = place_limit(symbol, "buy", buy_qty, buy_price, headers)
+                        state["level_orders"][str(buy_price)] = {"side": "buy", "order_id": order["id"], "qty": buy_qty}
+                        note = f" (bumped {qty:.8f} -> {buy_qty:.8f} to clear ${MIN_NOTIONAL_USD:.2f} min notional)" if buy_bumped else ""
                         actions.append(f"sell filled @ {price:.4f} (level {level_price:.4f}, "
-                                       f"+${realized:.2f}) -> re-armed buy @ {buy_price:.4f} qty {qty:.8f}")
+                                       f"+${realized:.2f}) -> re-armed buy @ {buy_price:.4f} qty {buy_qty:.8f}{note}")
                     except Exception as e:
                         errors.append(f"re-arm buy @ {buy_price} after sell fill failed: {e} - queued for retry")
                         state.setdefault("pending_reorders", []).append(
-                            {"side": "buy", "price": buy_price, "qty": qty})
+                            {"side": "buy", "price": buy_price, "qty": buy_qty})
                 else:
-                    actions.append(f"[DRY-RUN] would re-arm buy @ {buy_price:.4f} qty {qty:.8f} "
+                    actions.append(f"[DRY-RUN] would re-arm buy @ {buy_price:.4f} qty {buy_qty:.8f} "
                                    f"after sell fill @ {price:.4f} (+${realized:.2f})")
 
     save_state(symbol, state)

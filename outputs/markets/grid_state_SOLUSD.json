@@ -25,41 +25,26 @@
     108.25429119
   ],
   "level_orders": {
-    "102.60370881": {
-      "side": "buy",
-      "order_id": "33b30a09-94fe-4bd3-be5f-e729b801a77e",
-      "qty": 0.9485056293809103
-    },
     "103.00732184": {
       "side": "buy",
-      "order_id": "cd442671-38c9-4611-b2b4-33a38a6c13eb",
-      "qty": 0.9485056293809103
-    },
-    "103.41093486": {
-      "side": "buy",
-      "order_id": "26cf706f-f7d9-480f-8bb8-ac864a2ea076",
-      "qty": 0.9485056293809103
+      "order_id": "9fb0f368-ecc8-4e87-9d3b-dbb70a05e5c1",
+      "qty": 0.09756588
     },
     "103.81454789": {
       "side": "buy",
-      "order_id": "c17564fd-a44e-44dd-8ed4-4e3fcd1a46de",
-      "qty": 0.9485056293809103
-    },
-    "104.21816092": {
-      "side": "buy",
-      "order_id": "8382c0b0-75ac-4983-bbb6-800282380a3f",
-      "qty": 0.9485056293809103
+      "order_id": "62d34f9a-3b7e-4d38-bc83-64a4437832e7",
+      "qty": 0.09680724141522822
     },
     "105.02538697": {
       "side": "buy",
-      "order_id": "a7f1ea24-c62d-4d8a-ab10-557f31846600",
+      "order_id": "bfa8c736-63cc-4fb0-beae-036393900d21",
       "qty": 0.6971837
     }
   },
   "pending_reorders": [],
-  "last_fill_activity_id": "20261016002242020::b1ade104-92e3-47f1-b4e7-8196ccd3fd50",
-  "realized_pl": 2.06,
-  "completed_round_trips": 7,
+  "last_fill_activity_id": "20261019000552100::322e8ad0-66fb-4f7e-ae38-be294cb6cc41",
+  "realized_pl": 28.23,
+  "completed_round_trips": 111,
   "halted": false,
   "halt_reason": null,
   "created_at": "2026-10-15T21:10:52",

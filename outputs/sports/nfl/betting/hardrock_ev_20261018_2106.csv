@@ -1,0 +1,109 @@
+scrapedAt,betNumber,nflGame,betDescription,payout,confidence,expectedValue,market,modelStatus,bookImpliedProbDevigged,hardrockOddsRaw,matchTime,espnEventId,outcomeId
+2026-10-18T21:06:38-04:00,1,Commanders @ 49ers,Commanders +7.5 spread,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-20 11:15:00,401873008,4979152732679176606
+2026-10-18T21:06:38-04:00,2,Commanders @ 49ers,49ers -7.5 spread,-110,50.0,-0.0455,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-20 11:15:00,401873008,5604027180976832926
+2026-10-18T21:06:38-04:00,3,Commanders @ 49ers,O 52.0,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-20 11:15:00,401873008,7065057738782540186
+2026-10-18T21:06:38-04:00,4,Commanders @ 49ers,U 52.0,-110,48.9,-0.0661,upcoming_games_odds,draftkings_devig,0.5,-110,2026-10-20 11:15:00,401873008,6891669153128776090
+2026-10-18T21:06:38-04:00,5,Commanders @ 49ers,,+325,,,upcoming_games_odds,no_model,0.2217,+325,2026-10-20 11:15:00,401873008,8444178913680294311
+2026-10-18T21:06:38-04:00,6,Commanders @ 49ers,,-475,,,upcoming_games_odds,no_model,0.7783,-475,2026-10-20 11:15:00,401873008,7566188092575580583
+2026-10-18T21:06:38-04:00,7,Patriots @ Bears,Patriots +3.0 spread,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-23 11:15:00,,8990535226795098534
+2026-10-18T21:06:38-04:00,8,Patriots @ Bears,Bears -3.0 spread,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-23 11:15:00,,2717020945867997606
+2026-10-18T21:06:38-04:00,9,Patriots @ Bears,O 50.0,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-23 11:15:00,,7483658938974601636
+2026-10-18T21:06:38-04:00,10,Patriots @ Bears,U 50.0,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-23 11:15:00,,795813492329415076
+2026-10-18T21:06:38-04:00,11,Patriots @ Bears,,+130,,,upcoming_games_odds,no_model,0.4202,+130,2026-10-23 11:15:00,,3756413064543601062
+2026-10-18T21:06:38-04:00,12,Patriots @ Bears,,-150,,,upcoming_games_odds,no_model,0.5798,-150,2026-10-23 11:15:00,,3004311926772728230
+2026-10-18T21:06:38-04:00,13,Steelers vs* Saints,None -2.0 spread,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 00:30:00,,1348531974255542689
+2026-10-18T21:06:38-04:00,14,Steelers vs* Saints,None +2.0 spread,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 00:30:00,,6397067156537868705
+2026-10-18T21:06:38-04:00,15,Steelers vs* Saints,O 44.5,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 00:30:00,,3936915988242629002
+2026-10-18T21:06:38-04:00,16,Steelers vs* Saints,U 44.5,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 00:30:00,,1197038564941103498
+2026-10-18T21:06:38-04:00,17,Steelers vs* Saints,,-130,,,upcoming_games_odds,no_model,0.5486,-130,2026-10-26 00:30:00,,4956506314818847109
+2026-10-18T21:06:38-04:00,18,Steelers vs* Saints,,+115,,,upcoming_games_odds,no_model,0.4514,+115,2026-10-26 00:30:00,,6836759159246029189
+2026-10-18T21:06:38-04:00,19,Colts @ Vikings,Colts +5.5 spread,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 04:00:00,,868574859305812381
+2026-10-18T21:06:38-04:00,20,Colts @ Vikings,Vikings -5.5 spread,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 04:00:00,,5791009252021764509
+2026-10-18T21:06:38-04:00,21,Colts @ Vikings,O 42.0,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,4275970189876658602
+2026-10-18T21:06:38-04:00,22,Colts @ Vikings,U 42.0,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,8771688517899256234
+2026-10-18T21:06:38-04:00,23,Colts @ Vikings,,+210,,,upcoming_games_odds,no_model,0.3087,+210,2026-10-26 04:00:00,,6890019502495498666
+2026-10-18T21:06:38-04:00,24,Colts @ Vikings,,-260,,,upcoming_games_odds,no_model,0.6913,-260,2026-10-26 04:00:00,,2387264300055134634
+2026-10-18T21:06:38-04:00,25,Browns @ Titans,Browns -1.5 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,850954584175280523
+2026-10-18T21:06:38-04:00,26,Browns @ Titans,Titans +1.5 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,2575833241458180491
+2026-10-18T21:06:38-04:00,27,Browns @ Titans,O 36.5,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 04:00:00,,7891347439150563723
+2026-10-18T21:06:38-04:00,28,Browns @ Titans,U 36.5,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 04:00:00,,6552089499961262475
+2026-10-18T21:06:38-04:00,29,Browns @ Titans,,-120,,,upcoming_games_odds,no_model,0.5217,-120,2026-10-26 04:00:00,,4775887340700828074
+2026-10-18T21:06:38-04:00,30,Browns @ Titans,,+100,,,upcoming_games_odds,no_model,0.4783,+100,2026-10-26 04:00:00,,808216068987421098
+2026-10-18T21:06:38-04:00,31,Giants @ Texans,Giants +8.5 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,5805707523461874089
+2026-10-18T21:06:38-04:00,32,Giants @ Texans,Texans -8.5 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,3596691906236645801
+2026-10-18T21:06:38-04:00,33,Giants @ Texans,O 43.0,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 04:00:00,,9054855319808770442
+2026-10-18T21:06:38-04:00,34,Giants @ Texans,U 43.0,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 04:00:00,,3990557538830647690
+2026-10-18T21:06:38-04:00,35,Giants @ Texans,,+325,,,upcoming_games_odds,no_model,0.2234,+325,2026-10-26 04:00:00,,6012932067631956393
+2026-10-18T21:06:38-04:00,36,Giants @ Texans,,-450,,,upcoming_games_odds,no_model,0.7766,-450,2026-10-26 04:00:00,,7393285353421013417
+2026-10-18T21:06:38-04:00,37,Dolphins @ Jets,Dolphins +5.0 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,3927945210310558101
+2026-10-18T21:06:38-04:00,38,Dolphins @ Jets,Jets -5.0 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,4930559077353914773
+2026-10-18T21:06:38-04:00,39,Dolphins @ Jets,O 39.5,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 04:00:00,,5358760121621152167
+2026-10-18T21:06:38-04:00,40,Dolphins @ Jets,U 39.5,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 04:00:00,,645743111577928103
+2026-10-18T21:06:38-04:00,41,Dolphins @ Jets,,+190,,,upcoming_games_odds,no_model,0.331,+190,2026-10-26 04:00:00,,3083968880922722718
+2026-10-18T21:06:38-04:00,42,Dolphins @ Jets,,-230,,,upcoming_games_odds,no_model,0.669,-230,2026-10-26 04:00:00,,402075302823592350
+2026-10-18T21:06:38-04:00,43,Bengals @ Ravens,Bengals +3.0 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,2897084150815261075
+2026-10-18T21:06:38-04:00,44,Bengals @ Ravens,Ravens -3.0 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,4570171412383400339
+2026-10-18T21:06:38-04:00,45,Bengals @ Ravens,O 50.5,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 04:00:00,,3246723952185311657
+2026-10-18T21:06:38-04:00,46,Bengals @ Ravens,U 50.5,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 04:00:00,,3397594539702223273
+2026-10-18T21:06:38-04:00,47,Bengals @ Ravens,,+135,,,upcoming_games_odds,no_model,0.4088,+135,2026-10-26 04:00:00,,178892996643783087
+2026-10-18T21:06:38-04:00,48,Bengals @ Ravens,,-160,,,upcoming_games_odds,no_model,0.5912,-160,2026-10-26 04:00:00,,8185167234201682351
+2026-10-18T21:06:38-04:00,49,Buccaneers @ Panthers,Buccaneers +3.0 spread,+100,,,upcoming_games_odds,no_model,0.4783,+100,2026-10-26 04:00:00,,209699663186624899
+2026-10-18T21:06:38-04:00,50,Buccaneers @ Panthers,Panthers -3.0 spread,-120,,,upcoming_games_odds,no_model,0.5217,-120,2026-10-26 04:00:00,,5691987784580071811
+2026-10-18T21:06:38-04:00,51,Buccaneers @ Panthers,O 44.5,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,2405200031943623082
+2026-10-18T21:06:38-04:00,52,Buccaneers @ Panthers,U 44.5,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,6331916694545629610
+2026-10-18T21:06:38-04:00,53,Buccaneers @ Panthers,,+150,,,upcoming_games_odds,no_model,0.386,+150,2026-10-26 04:00:00,,4356579785355428268
+2026-10-18T21:06:38-04:00,54,Buccaneers @ Panthers,,-175,,,upcoming_games_odds,no_model,0.614,-175,2026-10-26 04:00:00,,1857081992164802988
+2026-10-18T21:06:38-04:00,55,49ers @ Falcons,49ers -5.0 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,3814836112699031968
+2026-10-18T21:06:38-04:00,56,49ers @ Falcons,Falcons +5.0 spread,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 04:00:00,,6340511078723748256
+2026-10-18T21:06:38-04:00,57,49ers @ Falcons,O 50.5,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 04:00:00,,5228403445739946400
+2026-10-18T21:06:38-04:00,58,49ers @ Falcons,U 50.5,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 04:00:00,,3745593268428210592
+2026-10-18T21:06:38-04:00,59,49ers @ Falcons,,-240,,,upcoming_games_odds,no_model,0.6756,-240,2026-10-26 04:00:00,,8637456839845478803
+2026-10-18T21:06:38-04:00,60,49ers @ Falcons,,+195,,,upcoming_games_odds,no_model,0.3244,+195,2026-10-26 04:00:00,,4003252823281238419
+2026-10-18T21:06:38-04:00,61,Broncos @ Cardinals,Broncos -4.0 spread,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 07:05:00,,7428930716160885153
+2026-10-18T21:06:38-04:00,62,Broncos @ Cardinals,Cardinals +4.0 spread,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 07:05:00,,2073024859310522785
+2026-10-18T21:06:38-04:00,63,Broncos @ Cardinals,O 43.5,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 07:05:00,,4214213743111963040
+2026-10-18T21:06:38-04:00,64,Broncos @ Cardinals,U 43.5,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 07:05:00,,7578402664757723552
+2026-10-18T21:06:38-04:00,65,Broncos @ Cardinals,,-220,,,upcoming_games_odds,no_model,0.6581,-220,2026-10-26 07:05:00,,6945373198846394778
+2026-10-18T21:06:38-04:00,66,Broncos @ Cardinals,,+180,,,upcoming_games_odds,no_model,0.3419,+180,2026-10-26 07:05:00,,7706481535872008602
+2026-10-18T21:06:38-04:00,67,Rams @ Raiders,Rams -5.5 spread,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 07:25:00,,9161377449416720777
+2026-10-18T21:06:38-04:00,68,Rams @ Raiders,Raiders +5.5 spread,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 07:25:00,,2908129366812787081
+2026-10-18T21:06:38-04:00,69,Rams @ Raiders,O 47.0,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 07:25:00,,603253927831536019
+2026-10-18T21:06:38-04:00,70,Rams @ Raiders,U 47.0,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 07:25:00,,1420657260199281043
+2026-10-18T21:06:38-04:00,71,Rams @ Raiders,,-260,,,upcoming_games_odds,no_model,0.6913,-260,2026-10-26 07:25:00,,6729204127584354711
+2026-10-18T21:06:38-04:00,72,Rams @ Raiders,,+210,,,upcoming_games_odds,no_model,0.3087,+210,2026-10-26 07:25:00,,363366054296158615
+2026-10-18T21:06:38-04:00,73,Packers @ Lions,Packers +3.5 spread,-115,,,upcoming_games_odds,no_model,0.5108,-115,2026-10-26 07:25:00,,974715487369953707
+2026-10-18T21:06:38-04:00,74,Packers @ Lions,Lions -3.5 spread,-105,,,upcoming_games_odds,no_model,0.4892,-105,2026-10-26 07:25:00,,5996229071888056747
+2026-10-18T21:06:38-04:00,75,Packers @ Lions,O 52.5,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 07:25:00,,8838422649223905685
+2026-10-18T21:06:38-04:00,76,Packers @ Lions,U 52.5,-110,,,upcoming_games_odds,no_model,0.5,-110,2026-10-26 07:25:00,,5787233901680394645
+2026-10-18T21:06:38-04:00,77,Packers @ Lions,,+150,,,upcoming_games_odds,no_model,0.3836,+150,2026-10-26 07:25:00,,4917350527131582897
+2026-10-18T21:06:38-04:00,78,Packers @ Lions,,-180,,,upcoming_games_odds,no_model,0.6164,-180,2026-10-26 07:25:00,,4148923840711492017
+2026-10-18T21:06:38-04:00,79,Washington Commanders @ San Francisco 49ers,Brandin Cooks - Last TD (Yes),+1600,,,props_odds,no_model,,+1600,2026-10-20 11:15:00,,1679861417026650539
+2026-10-18T21:06:38-04:00,80,Washington Commanders @ San Francisco 49ers,Jayden Daniels - To Score 2+ TDs (O 1.5),+1750,5.4,-0.0067,props_odds,sleeper_poisson,,+1750,2026-10-20 11:15:00,,5087780624085942679
+2026-10-18T21:06:38-04:00,81,Washington Commanders @ San Francisco 49ers,Stefon Diggs - To Score 2+ TDs (O 1.5),+1600,7.0,0.1861,props_odds,sleeper_poisson,,+1600,2026-10-20 11:15:00,,2236746406528418209
+2026-10-18T21:06:38-04:00,82,Washington Commanders @ San Francisco 49ers,Antonio Williams - Last TD (Yes),+2000,,,props_odds,no_model,,+2000,2026-10-20 11:15:00,,3951840546141634970
+2026-10-18T21:06:38-04:00,83,Washington Commanders @ San Francisco 49ers,George Kittle - Last TD (Yes),+800,,,props_odds,no_model,,+800,2026-10-20 11:15:00,,3726560565049557386
+2026-10-18T21:06:38-04:00,84,Washington Commanders @ San Francisco 49ers,Treylon Burks - Anytime TD (O 0.5),+575,5.8,-0.6069,props_odds,sleeper_poisson,,+575,2026-10-20 11:15:00,,417890224622928294
+2026-10-18T21:06:38-04:00,85,Washington Commanders @ San Francisco 49ers,Rachaad White - First TD (Yes),+750,,,props_odds,no_model,,+750,2026-10-20 11:15:00,,1980815502997586311
+2026-10-18T21:06:38-04:00,86,Washington Commanders @ San Francisco 49ers,Jayden Daniels - Pass Completions (U 18.5),-105,40.5,-0.2086,props_odds,sleeper_poisson,,-105,2026-10-20 11:15:00,,7965043331149463958
+2026-10-18T21:06:38-04:00,87,Washington Commanders @ San Francisco 49ers,Brandin Cooks - Anytime TD (O 0.5),+250,18.1,-0.3656,props_odds,sleeper_poisson,,+250,2026-10-20 11:15:00,,2528999953506894254
+2026-10-18T21:06:38-04:00,88,Washington Commanders @ San Francisco 49ers,Brock Purdy - Pass Completions (U 20.5),+100,58.7,0.175,props_odds,sleeper_poisson,,+100,2026-10-20 11:15:00,,7495850924393497003
+2026-10-18T21:06:38-04:00,89,Washington Commanders @ San Francisco 49ers,Stefon Diggs - Anytime TD (O 0.5),+220,34.9,0.1184,props_odds,sleeper_poisson,,+220,2026-10-20 11:15:00,,1191911292978463149
+2026-10-18T21:06:38-04:00,90,Washington Commanders @ San Francisco 49ers,Drew Stevens - Field Goals Made (O 1.5),-105,,,props_odds,no_model,,-105,2026-10-20 11:15:00,,9122507758627848615
+2026-10-18T21:06:38-04:00,91,Washington Commanders @ San Francisco 49ers,Christian McCaffrey - Longest Reception (U 15.5),-110,,,props_odds,no_model,,-110,2026-10-20 11:15:00,,1927488517022286247
+2026-10-18T21:06:38-04:00,92,Washington Commanders @ San Francisco 49ers,Drew Stevens - Kicking Points (O 6.5),-110,,,props_odds,no_model,,-110,2026-10-20 11:15:00,,1133482659486499239
+2026-10-18T21:06:38-04:00,93,Washington Commanders @ San Francisco 49ers,Eddy Pineiro - Field Goals Made (U 1.5),-110,,,props_odds,no_model,,-110,2026-10-20 11:15:00,,23978120281457035
+2026-10-18T21:06:38-04:00,94,Washington Commanders @ San Francisco 49ers,Stefon Diggs - Longest Reception (U 17.5),-110,,,props_odds,no_model,,-110,2026-10-20 11:15:00,,2002575500744196503
+2026-10-18T21:06:38-04:00,95,Washington Commanders @ San Francisco 49ers,Kyle Juszczyk - Anytime TD (O 0.5),+450,,,props_odds,player_not_matched,,+450,2026-10-20 11:15:00,,5380111634557698474
+2026-10-18T21:06:38-04:00,96,Washington Commanders @ San Francisco 49ers,Rachaad White - Longest Reception (U 8.5),-120,,,props_odds,no_model,,-120,2026-10-20 11:15:00,,763909372119220653
+2026-10-18T21:06:38-04:00,97,Washington Commanders @ San Francisco 49ers,Terry McLaurin - Longest Reception (O 19.5),-120,,,props_odds,no_model,,-120,2026-10-20 11:15:00,,2257638009132417428
+2026-10-18T21:06:38-04:00,98,Washington Commanders @ San Francisco 49ers,George Kittle - To Score 2+ TDs (O 1.5),+575,11.9,-0.1993,props_odds,sleeper_poisson,,+575,2026-10-20 11:15:00,,7642089696838943111
+2026-10-18T21:06:38-04:00,99,Washington Commanders @ San Francisco 49ers,Mike Evans - First TD (Yes),+575,,,props_odds,no_model,,+575,2026-10-20 11:15:00,,4780915377175658921
+2026-10-18T21:06:38-04:00,100,Washington Commanders @ San Francisco 49ers,Chigoziem Okonkwo - Longest Reception (O 13.5),-115,,,props_odds,no_model,,-115,2026-10-20 11:15:00,,592261210293010837
+2026-10-18T21:06:38-04:00,101,Washington Commanders @ San Francisco 49ers,George Kittle - Anytime TD (O 0.5),+105,44.6,-0.0864,props_odds,sleeper_poisson,,+105,2026-10-20 11:15:00,,6529700588878430632
+2026-10-18T21:06:38-04:00,102,Washington Commanders @ San Francisco 49ers,Antonio Williams - Anytime TD (O 0.5),+475,21.3,0.2269,props_odds,sleeper_poisson,,+475,2026-10-20 11:15:00,,5251391718837846447
+2026-10-18T21:06:38-04:00,103,Washington Commanders @ San Francisco 49ers,Antonio Williams - Longest Reception (U 12.5),-110,,,props_odds,no_model,,-110,2026-10-20 11:15:00,,541667595057758612
+2026-10-18T21:06:38-04:00,104,Washington Commanders @ San Francisco 49ers,Jayden Daniels - Anytime TD (O 0.5),+240,30.9,0.0515,props_odds,sleeper_poisson,,+240,2026-10-20 11:15:00,,5592183782351438238
+2026-10-18T21:06:38-04:00,105,Washington Commanders @ San Francisco 49ers,George Kittle - Longest Reception (U 23.5),-120,,,props_odds,no_model,,-120,2026-10-20 11:15:00,,3744251162015170985
+2026-10-18T21:06:38-04:00,106,Washington Commanders @ San Francisco 49ers,Mike Evans - Longest Reception (U 24.5),-120,,,props_odds,no_model,,-120,2026-10-20 11:15:00,,1414016380692464046
+2026-10-18T21:06:38-04:00,107,Washington Commanders @ San Francisco 49ers,Christian McCaffrey - Anytime TD (O 0.5),-275,66.0,-0.0994,props_odds,sleeper_poisson,,-275,2026-10-20 11:15:00,,339528063123587477
+2026-10-18T21:06:38-04:00,108,Washington Commanders @ San Francisco 49ers,Mike Evans - Anytime TD (O 0.5),-135,47.8,-0.168,props_odds,sleeper_poisson,,-135,2026-10-20 11:15:00,,5832282562403369350
