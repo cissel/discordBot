@@ -93,14 +93,14 @@ eq_long <- resolved |>
   select(date, Strategy = strat_equity, `SPY Buy & Hold` = bh_equity) |>
   pivot_longer(-date, names_to = "series", values_to = "equity")
 
-# broker equity (actual Alpaca account), rebased to 100 if present
+# SPY-strategy-only equity from pnlLedger (fees included), rebased to 100 if present
 if ("broker_equity" %in% names(resolved)) {
   brk <- resolved |>
     mutate(broker_equity = suppressWarnings(as.numeric(broker_equity))) |>
     filter(!is.na(broker_equity))
   if (nrow(brk) >= 2) {
     brk <- brk |> mutate(equity = 100 * broker_equity / broker_equity[1],
-                         series = "Broker (actual)")
+                         series = "SPY strategy (actual, net of fees)")
     eq_long <- bind_rows(eq_long, brk |> select(date, series, equity))
   }
 }
@@ -114,7 +114,7 @@ p1 <- ggplot(eq_long, aes(date, equity, colour = series)) +
   geom_hline(yintercept = 100, colour = navy_grid, linewidth = 0.4) +
   geom_line(linewidth = 0.9) +
   scale_colour_manual(values = c("Strategy" = col_strat, "SPY Buy & Hold" = col_bh,
-                                 "Broker (actual)" = col_broker)) +
+                                 "SPY strategy (actual, net of fees)" = col_broker)) +
   labs(title = "SPY Paper Trading - Forward Track Record",
        subtitle = sub1, x = NULL, y = "Equity (start = 100)") +
   navy_theme()

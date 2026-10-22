@@ -1,0 +1,6 @@
+feature,majority_sign,frac_sign_match,signs_by_year,mean_coef_last_fold
+XLF_ret,-,1.0,--------,-0.0721785097605896
+fomc_window,-,1.0,--------,-0.07946756055439395
+moon_phase_cos,-,1.0,--------,-0.041004821684710396
+sector_risk_off_r5,-,1.0,--------,-0.0393543266153724
+new_high_pct_63d,-,1.0,--------,-0.03359266340033753

@@ -186,6 +186,49 @@ SPARSE_FEATURES = [
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
+# ── Stale-feature guard (Oct 2026) ──────────────────────────────────────────
+# Oct 19 2026 audit: 17 of the live logistic model's 80 features had been NaN
+# (median-imputed at inference) since Jun-Aug 2026 because their fetchers
+# silently stopped (Google Trends, Wikipedia views, holiday/earnings flags,
+# presidential approval, VWAP intraday set; cboe_pcr_equity dead since 2019).
+# A model trained on a varying feature and scored on its median every day is
+# a different model. Rule: any feature whose last non-NaN date is more than
+# STALE_MAX_LAG_DAYS before the newest row is dropped from EVERY feature list
+# before training, and the drop is printed so it shows up in the cron report.
+STALE_MAX_LAG_DAYS = 10
+
+
+def find_stale_features(df, features, max_lag_days=STALE_MAX_LAG_DAYS):
+    """Return {feature: last_valid_date_str} for features stale vs df['date'].max()."""
+    last = df["date"].max()
+    stale = {}
+    for f in features:
+        if f not in df.columns:
+            continue
+        valid = df.loc[df[f].notna(), "date"]
+        if valid.empty:
+            stale[f] = "never"
+        elif (last - valid.max()).days > max_lag_days:
+            stale[f] = str(valid.max().date())
+    return stale
+
+
+def drop_stale_features_inplace(df, feature_lists, label=""):
+    """Filter every list in feature_lists in place; returns the stale dict."""
+    allf = sorted({f for lst in feature_lists for f in lst})
+    stale = find_stale_features(df, allf)
+    if stale:
+        print(f"  [stale-guard{(' ' + label) if label else ''}] dropping {len(stale)} feature(s) with no data in the "
+              f"last {STALE_MAX_LAG_DAYS} days:")
+        for f, d in sorted(stale.items(), key=lambda kv: kv[1]):
+            print(f"      {f:<28} last valid {d}")
+        for lst in feature_lists:
+            lst[:] = [f for f in lst if f not in stale]
+    else:
+        print(f"  [stale-guard{(' ' + label) if label else ''}] all features current")
+    return stale
+
+
 def prep_chop(df_raw, features):
     """Filter to chop rows, impute sparse, dropna on core."""
     df = df_raw[df_raw["regime"] == "chop"].copy()
@@ -382,6 +425,7 @@ def main():
           f"{(df_raw.regime=='chop').sum()} chop rows "
           f"({(df_raw.regime=='chop').mean():.1%})")
 
+    drop_stale_features_inplace(df_raw, [CHOP_FEATURES, SPARSE_FEATURES], label="trainChopModel")
     df, avail = prep_chop(df_raw, CHOP_FEATURES)
     print(f"  chop after dropna: {len(df)} rows, {len(avail)} features available")
     print(f"  date range: {df.date.min().date()} to {df.date.max().date()}")

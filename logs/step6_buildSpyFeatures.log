@@ -1,9 +1,9 @@
 [buildSpyFeatures] loading raw series...
-  base df: 2712 rows, 2016-01-05 to 2026-10-16
+  base df: 2715 rows, 2016-01-05 to 2026-10-21
   building SPY technical features...
   building vol regime features...
   loading options snapshot...
-    options rows: 77
+    options rows: 80
   building cross-asset features...
   building macro features...
   building tier-1 public-datapoint features...
@@ -14,33 +14,33 @@
   building VWAP features...
     VWAP cache rows: 1371, date range: 2021-01-04 to 2026-06-23
   building block order features...
-    Block events: 3226 | days with blocks: 961
+    Block events: 3229 | days with blocks: 963
   building intraday aggregated features...
-    intraday features rows: 1401, date range: 2021-01-04 to 2026-08-03
+    intraday features rows: 1455, date range: 2021-01-04 to 2026-10-21
   building intraday V2 features (1-min realized vol, overnight/session split)...
-    intraday V2 features rows: 1451, date range: 2021-01-04 to 2026-10-13
+    intraday V2 features rows: 1455, date range: 2021-01-04 to 2026-10-21
   building S&P 500 breadth features...
-    breadth features rows: 2711, date range: 2016-01-04 to 2026-10-14
+    breadth features rows: 2716, date range: 2016-01-04 to 2026-10-21
   building GEX features...
-    GEX cache rows: 3887, date range: 2011-05-02 to 2026-10-14
+    GEX cache rows: 3890, date range: 2011-05-02 to 2026-10-19
     gex_b coverage in spy_features: 99.9%
   building VIX term structure / VVIX features...
-    vix_term cache rows: 2594, range: 2016-06-23 to 2026-10-16
+    vix_term cache rows: 2597, range: 2016-06-23 to 2026-10-21
     vvix coverage in spy_features: 95.4%
     vix_term_slope coverage: 95.5%
   building regime labels (expanding/causal VIX percentile thresholds)...
-    bull=473  bear=239  chop=2000
+    bull=473  bear=239  chop=2003
     VIX percentile thresholds now EXPANDING (causal) — final-day values: p33=14.8  p67=19.4  p80=22.6
   building regime-change + interaction features...
     rate-shock regime: 166 shock days, 166 easing days
     returns-distribution regime: ret_skew_21, ret_kurt_21, drawdown_63d, regime_age_z added
   loading moon phase + weather features...
-    moon phase coverage: 2712/2712 rows (100%)
-    weather coverage: NYC=2707 rows, CHI=2707 rows
+    moon phase coverage: 2715/2715 rows (100%)
+    weather coverage: NYC=2712 rows, CHI=2712 rows
   alt data 1: 18 cols, wikipedia=2632 rows
   alt data 2: 14 cols, daylight=2632 rows
   google trends: 17 cols, trends_spy=97% coverage (+2bd publication lag applied)
-  sentiment: aaii=97%, crypto_fear_greed=78%
+  sentiment: aaii=97%, crypto_fear_greed=77%
   macro sentiment: icsa=97% coverage
   regime×sentiment interactions: added
   [info] wsb_daily.csv not found — run fetchRedditWSB.py (optional)
@@ -54,7 +54,7 @@
     [sparse] cboe_pcr_z21: 0%
     [sparse] hy_ig_spread: 28%
     [sparse] mta_bus_riders: 45%
-    [sparse] mta_riders_z21: 45%
+    [sparse] mta_riders_z21: 44%
     [sparse] mta_subway_riders: 45%
     [sparse] mta_total_riders: 45%
     [sparse] opt_atm_iv_avg: 3%
@@ -62,5 +62,7 @@
     [sparse] opt_iv_term_slope: 3%
     [sparse] opt_pcr_vol: 3%
     [sparse] opt_vega_weighted_iv: 3%
+    [sparse] vix_move_ratio: 0%
 
-[buildSpyFeatures] wrote 2712 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv
+[buildSpyFeatures] wrote 2715 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv
+EXIT:0

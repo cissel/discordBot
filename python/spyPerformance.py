@@ -115,8 +115,40 @@ def wfcv_expected_hit_rate():
     return best
 
 
+LEDGER_DAILY = os.path.expanduser("~/discordBot/outputs/markets/pnl_ledger_daily.csv")
+LEDGER_CSV = os.path.expanduser("~/discordBot/outputs/markets/pnl_ledger.csv")
+
+
+def ledger_spy_curve(base_equity):
+    """SPY-STRATEGY-ONLY equity curve: base_equity + cumulative SPY autopilot
+    P&L (realized net of broker fees + unrealized, marked at daily close) from
+    pnlLedger.py's per-strategy series. Preferred over Alpaca's account
+    portfolio history, which is shared with the MM / grid bots and therefore
+    says nothing about this strategy. Returns (curve, fees_usd, total_pnl) or
+    (None, None, None) if the ledger hasn't run yet."""
+    if not os.path.exists(LEDGER_DAILY):
+        return None, None, None
+    curve = []
+    with open(LEDGER_DAILY) as f:
+        for r in csv.DictReader(f):
+            if r.get("strategy") == "SPY autopilot":
+                try:
+                    curve.append((r["date"], base_equity + float(r["total"])))
+                except (TypeError, ValueError):
+                    pass
+    fees = total = None
+    if os.path.exists(LEDGER_CSV):
+        with open(LEDGER_CSV) as f:
+            for r in csv.DictReader(f):
+                if r.get("strategy") == "SPY autopilot":
+                    fees = float(r.get("fees") or 0)
+                    total = float(r.get("total") or 0)
+    return (curve or None), fees, total
+
+
 def alpaca_portfolio_history(env):
-    """Actual paper equity curve from Alpaca. Returns list of (date, equity) or None."""
+    """ACCOUNT-WIDE paper equity curve from Alpaca (fallback only - the
+    account is shared with other bots). Returns list of (date, equity) or None."""
     key    = env.get("APCA_PAPER_API_KEY_ID", "").strip()
     secret = env.get("APCA_PAPER_API_SECRET_KEY", "").strip()
     if not key or not secret:
@@ -264,10 +296,17 @@ def main():
         lb = binom_lower_bound(expected_hit, 20)
         drift_flag = rolling_hit < lb
 
-    # Actual broker equity curve (preferred for the plot when available)
-    broker_curve = alpaca_portfolio_history(env)
+    # Strategy-only equity curve from the per-strategy ledger (fees included).
+    # Falls back to the account-wide Alpaca curve only if the ledger is absent.
+    base_equity = next((d["log_equity"] for d in daily if d.get("log_equity")), 0.0) or 0.0
+    broker_curve, spy_fees, spy_total_pnl = ledger_spy_curve(base_equity)
+    broker_source = "ledger (SPY-only, net of fees)"
     if broker_curve is None:
-        errors.append("Alpaca portfolio history unavailable (keys missing or API error) - using trade-log equity")
+        broker_curve = alpaca_portfolio_history(env)
+        broker_source = "alpaca account (SHARED with other bots - not SPY-only)"
+        errors.append("pnl_ledger_daily.csv missing - broker curve is account-wide, not SPY-only")
+    if broker_curve is None:
+        errors.append("No broker/ledger curve available - using trade-log equity")
 
     # Write per-day CSV for the R plot
     os.makedirs(os.path.dirname(OUT_DAILY), exist_ok=True)
@@ -320,6 +359,9 @@ def main():
         "first_date":       daily[0]["date"] if daily else None,
         "last_date":        daily[-1]["date"] if daily else None,
         "broker_history":   bool(broker_curve),
+        "broker_source":    broker_source,
+        "spy_strategy_pnl_usd": spy_total_pnl,
+        "spy_fees_usd":     spy_fees,
         "errors":           errors,
     }
 

@@ -407,7 +407,7 @@ def _live_status_text(parsed: dict) -> str:
         if not period:
             return parsed["short_detail"] or "In Progress"
         if period <= 3:
-            label = f"P{period}"
+            label = {1: "1st", 2: "2nd", 3: "3rd"}[period]
         elif period == 4:
             label = "OT"
         else:

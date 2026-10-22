@@ -28,9 +28,12 @@ sys.path.insert(0, os.path.dirname(__file__))
 import spyIntradaySwingTrain as m
 from spyVolTargetWFCV import run_wfcv, ann_sharpe as _unused_ann_sharpe
 
+# Label set: pass a suffix as argv[1] ("" = original 0.15% zigzag labels, "_pct40bps",
+# "_pct60bps"). Default stays pct40 for backward compatibility.
+_SFX = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else "_pct40bps"
 SWING_LABEL_PATH = os.path.expanduser(
-    "~/discordBot/outputs/features/markets/spy_intraday_swing_labels_pct40bps.csv")
-OUT_PATH = os.path.expanduser("/tmp/spy_swing_wfcv_full_daily_pnl.csv")
+    f"~/discordBot/outputs/features/markets/spy_intraday_swing_labels{_SFX}.csv")
+OUT_PATH = os.path.expanduser(f"~/discordBot/outputs/markets/spy_swing_wfcv_full_daily_pnl{_SFX or '_pct15bps'}.csv")
 SEED = 42
 
 

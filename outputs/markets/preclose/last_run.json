@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-21",
+  "signal": {
+    "date": "2026-10-21",
+    "next_day": {
+      "direction": "UP",
+      "probability": 0.6318,
+      "prob_logistic": 0.5847,
+      "prob_gbm_ens": 0.6789,
+      "prob_gbm_chop": null,
+      "confidence": "HIGH",
+      "model": "blend_50_50",
+      "regime": "chop",
+      "regime_pred": "chop"
+    },
+    "next_5d": {
+      "direction": "UP",
+      "expected_ret": 0.00156,
+      "expected_ret_pct": 0.16,
+      "probability": 0.5272,
+      "confidence": "LOW",
+      "model": "gbm"
+    },
+    "macro_context": {
+      "vix": 18.44,
+      "vix_regime": "NORMAL",
+      "yield_curve": 0.33,
+      "fedfunds": 3.75,
+      "fomc_in_days": 7,
+      "cpi_in_days": 22,
+      "nfp_in_days": 16,
+      "is_event_window": false
+    },
+    "top_signals": [
+      "Gold/SPY correlation positive (risk-off)",
+      "Risk-off sector leadership",
+      "VIX premium high (expensive options)"
+    ],
+    "regime_probs": {
+      "bear": 0.0,
+      "bull": 0.002,
+      "chop": 0.998
+    },
+    "position_size": 0.1318,
+    "sizing_reason": "Kelly(50%) blend size=0.132 (blend=0.632 log=0.585 gbm=0.679, regime=chop, chop-lower t=0.51)",
+    "warnings": []
+  },
+  "account": {
+    "equity": 81510.04,
+    "cash": 67921.91,
+    "buying_power": 304434.36,
+    "last_equity": 81478.26,
+    "status": "ACTIVE"
+  },
+  "current_position": {
+    "shares": 17.0,
+    "market_value": 13123.66,
+    "avg_entry": 772.296471,
+    "unrealized_pl": -5.380007,
+    "intraday_pl": 49.81,
+    "side": "long"
+  },
+  "target": {
+    "position_size_kelly": 0.1898,
+    "target_shares": 20,
+    "target_notional": 15439.6,
+    "spy_price": 771.98
+  },
+  "order": {
+    "action": "BUY",
+    "shares": 3,
+    "reason": "increase position 17 -> 20 shares",
+    "sizing_reason": "TREND/VOL: SPY above 200dma (idx/ma 1.067) -> base 0.25 x vol_scalar 0.76 = 0.190 | shadow model: blend=0.6318 kelly_size=0.1",
+    "deferred_to_fire": true,
+    "time_in_force": "day@15:52"
+  },
+  "risk_checks": {
+    "passed": true,
+    "flags": []
+  },
+  "executed": false,
+  "order_id": null,
+  "trade_log_row": {
+    "date": "2026-10-21",
+    "signal_direction": "UP",
+    "signal_prob": 0.6318,
+    "signal_confidence": "HIGH",
+    "regime": "chop",
+    "position_size_kelly": 0.1898,
+    "spy_price": 771.98,
+    "equity": 81510.04,
+    "prev_shares": 17,
+    "target_shares": 20,
+    "order_action": "BUY",
+    "order_shares": 3,
+    "executed": false,
+    "order_id": "",
+    "sizing_reason": "PRECLOSE/MOC TREND/VOL: SPY above 200dma (idx/ma 1.067) -> base 0.25 x vol_scalar 0.76 = 0.190 | shadow model: blend=0.6318 kelly_size=0.1",
+    "risk_flags": "",
+    "errors": ""
+  },
+  "errors": [],
+  "vol_regime": {
+    "date": "2026-10-21",
+    "gex": 4633712807.480003,
+    "gex_quintile": 1,
+    "vix": 18.44,
+    "vix9d": 16.4,
+    "vix3m": 19.07,
+    "term_inverted": false,
+    "rv_iv_ratio": 0.786,
+    "expected_vol": 0.1449,
+    "scalar": 0.759,
+    "label": "vol_scalar=0.76 (GEX q1, exp vol 14.5%)"
+  },
+  "trend": {
+    "above_ma": true,
+    "ratio": 1.0673,
+    "ma_days": 200
+  },
+  "strategy_mode": "trend_vol"
+}

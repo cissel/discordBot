@@ -1,0 +1,25 @@
+policy,period,PT,time,stop,expiry
+1 hold,holdout,0.0,0.0,0.0,1.0
+1 hold,H1,0.0,0.0,0.0,1.0
+1 hold,H2,0.0,0.0,0.0,1.0
+2 PT,holdout,0.803,0.0,0.0,0.197
+2 PT,H1,0.856,0.0,0.0,0.144
+2 PT,H2,0.817,0.0,0.0,0.183
+3 time,holdout,0.0,1.0,0.0,0.0
+3 time,H1,0.0,1.0,0.0,0.0
+3 time,H2,0.0,1.0,0.0,0.0
+4 PT+time,holdout,0.672,0.328,0.0,0.0
+4 PT+time,H1,0.682,0.318,0.0,0.0
+4 PT+time,H2,0.662,0.338,0.0,0.0
+5 PT+time+stop (live),holdout,0.672,0.294,0.033,0.0
+5 PT+time+stop (live),H1,0.682,0.275,0.043,0.0
+5 PT+time+stop (live),H2,0.662,0.315,0.023,0.0
+6 stop,holdout,0.0,0.0,0.046,0.954
+6 stop,H1,0.0,0.0,0.07,0.93
+6 stop,H2,0.0,0.0,0.04,0.96
+7 time+stop (-2x),holdout,0.0,0.925,0.075,0.0
+7 time+stop (-2x),H1,0.0,0.914,0.086,0.0
+7 time+stop (-2x),H2,0.0,0.94,0.06,0.0
+5b PT+time+stop2x (sensitivity),holdout,0.67,0.264,0.067,0.0
+5b PT+time+stop2x (sensitivity),H1,0.679,0.252,0.069,0.0
+5b PT+time+stop2x (sensitivity),H2,0.661,0.285,0.053,0.0

@@ -1,4 +1,11 @@
 {
   "outlook": {},
-  "storms": {}
+  "storms": {
+    "al102026": {
+      "name": "Josephine",
+      "last_classification": "STS",
+      "last_category_label": "Subtropical Storm",
+      "last_adv_num": "004"
+    }
+  }
 }

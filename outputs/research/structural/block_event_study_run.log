@@ -1,0 +1,56 @@
+AUDIT: signed deviation vs file market_price by year
+        n  mean_signed_dev_vs_market_price  share_below
+year                                                   
+2022  647                           0.0548       0.0000
+2023  665                           0.0400       0.0000
+2024  801                           0.0254       0.0100
+2025  729                           0.0144       0.0645
+2026  384                           0.0038       0.3568
+adjusted close coverage 1509-2711: 1.0000 (gaps chained from SPY.csv)
+raw close reconstruction check vs 856 auction prints: max abs err 0.05 bp
+time of day: {'close_window': 2142, 'session': 830, 'after_hours': 254}
+corrected direction: {'at_close': 1940, 'below': 749, 'above': 537}  |dev_c| median 0.0000
+
+TOTAL HYPOTHESES TESTED (incl. 2 strategy backtests): 352
+
+STRONGEST CELL (n>=100):
+test             T4_tod
+spec                  B
+subset              all
+direction         above
+cell            session
+horizon             1mo
+n                   331
+mean_excess    0.007625
+ci90_lo        0.002409
+ci90_hi        0.013061
+t_like         2.355022
+
+STRATEGY: long SPY at close of print day, hold 21d, cost 1bp/side
+  trades 44  days in market 924/1202  total return 0.5304  Sharpe 0.67  maxDD -0.2871
+  SPY buy and hold same window: Sharpe 0.74  maxDD -0.2450
+LONG/SHORT toward-block, hold 21d, one per day, 1bp/side: trades 54  total -0.0802  Sharpe -0.02  maxDD -0.3464  days 1134/1202
+# SPY block print event study (2022-01-03 to 2026-10-16, 3226 prints on 961 days)
+Data audit: outcomes.market_price is the prior-day dividend-adjusted close, not the price at print. The file's direction/deviation columns are 94 pct 'above_market' by construction (deviation falls 5.5 pct in 2022 to 0.4 pct in 2026, the dividend signature), and its forward window starts at the prior close so Spec A 1d returns contain the print-day move (lookahead). Spec A runs the tests as filed; Spec B re-references every print to the same-day raw close rebuilt from closing-auction prints (max error 0.05 bp), starts the clock at that close, and is the headline. 1940 prints sit within 1bp of the close (MOC style) and are excluded from above/below.
+| spec | sample | dir | h | n | excess bp | 90% CI bp | gap-fill hit rate [90% CI] | matched base hit |
+|---|---|---|---|---|---|---|---|---|
+| B | one_per_day | above | 1d | 101 | +10 | [-13, +34] | 0.46 [0.38, 0.54] | 0.42 |
+| B | one_per_day | above | 3d | 101 | +24 | [-18, +64] | 0.53 [0.45, 0.61] | 0.51 |
+| B | one_per_day | above | 1w | 101 | +42 | [-8, +91] | 0.54 [0.46, 0.62] | 0.53 |
+| B | one_per_day | above | 2w | 101 | +22 | [-45, +86] | 0.60 [0.52, 0.68] | 0.57 |
+| B | one_per_day | above | 1mo | 101 | +100 | [+10, +191] | 0.74 [0.67, 0.81] | 0.63 |
+| B | one_per_day | below | 1d | 149 | -4 | [-23, +16] | 0.39 [0.33, 0.46] | 0.36 |
+| B | one_per_day | below | 3d | 149 | -4 | [-36, +27] | 0.40 [0.34, 0.47] | 0.37 |
+| B | one_per_day | below | 1w | 149 | -17 | [-58, +23] | 0.40 [0.34, 0.47] | 0.37 |
+| B | one_per_day | below | 2w | 149 | -15 | [-68, +40] | 0.34 [0.28, 0.40] | 0.36 |
+| B | one_per_day | below | 1mo | 147 | -33 | [-109, +45] | 0.32 [0.26, 0.39] | 0.33 |
+| A | one_per_day | above | 1d | 907 | +12 | [+1, +23] | 0.09 [0.07, 0.10] | n/a |
+| A | one_per_day | above | 1mo | 901 | +4 | [-31, +38] | 0.60 [0.57, 0.63] | n/a |
+| A | one_per_day | below | 1d | 53 | -120 | [-163, -75] | 0.81 [0.71, 0.89] | n/a |
+| A | one_per_day | below | 1mo | 50 | +55 | [-92, +202] | 0.87 [0.78, 0.93] | n/a |
+Main test (Spec A+B, both samples, 20 cells): 1 excess-return cells clear a 90% CI; tiers (40 cells): 5; time of day (30 cells): 2. Total hypotheses 352 incl. 2 backtests; at a 90 pct CI expect about 35 false positives by chance.
+Strongest cell: T4_tod spec B all above session 1mo, n=331, excess +76 bp, 90% CI [+24, +131], t-like 2.36.
+Strategy on it (long at close of print day, hold 21d, 1bp per side): 44 trades, Sharpe 0.67, max DD -28.7 pct, total return +53.0 pct, in market 924/1202 days. SPY buy and hold over the same window: Sharpe 0.74, max DD -24.5 pct.
+Long/short toward the block side (long after above prints, short after below, hold 21d, one per day, 1bp per side): 54 trades, Sharpe -0.02, max DD -34.6 pct, total return -8.0 pct.
+Verdict: FAIL. Spec A 'below' cells (-120 bp at 1d) are the print-day move leaking into the window, not a signal. In Spec B the only recurring pattern is 1mo drift toward the print side (above +57 to +100 bp, below -33 to -60 bp, t-like at most 2.4), it is one effect seen in nested cells, it does not survive a 352-hypothesis haircut, gap-fill hit rates are within 11 points of the matched baseline, and neither tradeable version beats SPY buy and hold over the same window.
+Caveat: 4.8 years of SPY, mostly a bull market, with ~3 prints per event day; one-event-per-day n is the honest n.

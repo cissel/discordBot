@@ -1,0 +1,19 @@
+{
+  "tail_query": "N971QS",
+  "callsign": "EJA971",
+  "registration": "N971QS",
+  "hex": "ad88cb",
+  "aircraft_type": "CESSNA 680 Citation Latitude",
+  "operator": "",
+  "altitude_ft": 26150,
+  "on_ground": false,
+  "ground_speed_kt": 389.1,
+  "vertical_rate_str": "climbing 1,920 ft/min",
+  "heading_deg": 213.89,
+  "lat": 43.126831,
+  "lon": -70.514214,
+  "squawk": "7374",
+  "updated_utc": "2026-10-20 21:27 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N971QS.png"
+}

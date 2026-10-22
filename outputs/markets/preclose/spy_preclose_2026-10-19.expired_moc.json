@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-19",
+  "placed_at": "15:42:15",
+  "executed": true,
+  "order_id": "95bceaeb-8fa1-43f8-952c-9b5a82be5609",
+  "action": "SELL",
+  "order_shares": 12,
+  "target_shares": 0,
+  "position_size": 0.0,
+  "spy_price_proxy": 768.39,
+  "signal_prob": 0.5037,
+  "sizing_reason": "no signal (blend=0.504 < 0.51, regime=chop)",
+  "risk_flags": [],
+  "errors": []
+}

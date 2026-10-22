@@ -1,0 +1,14 @@
+leg,period,ann_ret,ann_vol,sharpe,max_dd,avg_exposure,n
+constant exposure,full,1.39,1.75,0.798,-4.07,0.1,2712
+constant exposure,2016-2020,1.42,1.85,0.769,-4.07,0.1,1258
+constant exposure,2021-2026,1.37,1.66,0.828,-2.79,0.1,1454
+vol-regime scaled,full,1.05,1.13,0.93,-1.92,0.0897,2712
+vol-regime scaled,2016-2020,1.17,1.12,1.047,-1.75,0.0949,1258
+vol-regime scaled,2021-2026,0.95,1.14,0.831,-1.92,0.0852,1454
+realized vol by GEX q0,full,12.76,29.47,,,0.528,498
+realized vol by GEX q1,full,11.47,17.33,,,0.748,440
+realized vol by GEX q2,full,11.06,14.57,,,0.893,483
+realized vol by GEX q3,full,11.1,12.54,,,0.992,518
+realized vol by GEX q4,full,10.4,10.04,,,1.157,773
+live log: kelly only,2026-07-02..2026-10-15,2.34,0.74,3.158,-0.16,0.0669,71
+live log: kelly x scalar,2026-07-02..2026-10-15,2.07,0.71,2.928,-0.14,0.0659,71

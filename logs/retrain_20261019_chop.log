@@ -1,0 +1,128 @@
+[trainChopModel] loading features...
+  2712 total rows, 2000 chop rows (73.7%)
+  [stale-guard trainChopModel] dropping 76 feature(s) with no data in the last 10 days:
+      cboe_pcr_equity              last valid 2019-10-04
+      mta_bus_riders               last valid 2025-01-08
+      mta_riders_z21               last valid 2025-01-08
+      mta_subway_riders            last valid 2025-01-08
+      mta_total_riders             last valid 2025-01-08
+      wiki_economy_views           last valid 2026-06-23
+      wiki_sp500_views             last valid 2026-06-23
+      wiki_stock_market_views      last valid 2026-06-23
+      aaii_bearish                 last valid 2026-06-24
+      aaii_bull_bear_spread        last valid 2026-06-24
+      aaii_bull_z8                 last valid 2026-06-24
+      aaii_bullish                 last valid 2026-06-24
+      aaii_neutral                 last valid 2026-06-24
+      aaii_spread_x_bear           last valid 2026-06-24
+      aaii_spread_x_bull           last valid 2026-06-24
+      ccsa                         last valid 2026-06-24
+      ccsa_z52                     last valid 2026-06-24
+      cfg_extreme_fear             last valid 2026-06-24
+      cfg_greed                    last valid 2026-06-24
+      cfg_value                    last valid 2026-06-24
+      cfg_z21                      last valid 2026-06-24
+      cfg_z21_x_bear               last valid 2026-06-24
+      cfg_z21_x_bull               last valid 2026-06-24
+      daylight_chg_7d              last valid 2026-06-24
+      daylight_hours_nyc           last valid 2026-06-24
+      daylight_z365                last valid 2026-06-24
+      days_to_earnings_season      last valid 2026-06-24
+      days_to_next_holiday         last valid 2026-06-24
+      earnings_season_flag         last valid 2026-06-24
+      holiday_week                 last valid 2026-06-24
+      icsa_chg_4w                  last valid 2026-06-24
+      icsa_x_rate_shock            last valid 2026-06-24
+      icsa_z52                     last valid 2026-06-24
+      icsa_z52_x_bear              last valid 2026-06-24
+      icsa_z52_x_chop              last valid 2026-06-24
+      is_post_holiday              last valid 2026-06-24
+      is_pre_holiday               last valid 2026-06-24
+      pres_approval                last valid 2026-06-24
+      pres_approval_chg_21d        last valid 2026-06-24
+      umcsent_chg_3m               last valid 2026-06-24
+      umcsent_z12                  last valid 2026-06-24
+      wiki_total_views             last valid 2026-06-24
+      wiki_views_z21               last valid 2026-06-24
+      buy_x_bull                   last valid 2026-06-26
+      crash_x_bear                 last valid 2026-06-26
+      crash_x_chop                 last valid 2026-06-26
+      distress_x_bear              last valid 2026-06-26
+      distress_x_chop              last valid 2026-06-26
+      fear_z21_x_bear              last valid 2026-06-26
+      fear_z21_x_bull              last valid 2026-06-26
+      fear_z21_x_chop              last valid 2026-06-26
+      fear_z21_x_rate_shock        last valid 2026-06-26
+      recession_x_bear             last valid 2026-06-26
+      recession_x_rate_shock       last valid 2026-06-26
+      trends_bankruptcy            last valid 2026-06-26
+      trends_buy_stocks            last valid 2026-06-26
+      trends_crash                 last valid 2026-06-26
+      trends_distress_index        last valid 2026-06-26
+      trends_fear_index            last valid 2026-06-26
+      trends_fear_z21              last valid 2026-06-26
+      trends_how_invest            last valid 2026-06-26
+      trends_margin_call           last valid 2026-06-26
+      trends_payday_loan           last valid 2026-06-26
+      trends_recession             last valid 2026-06-26
+      trends_risk_appetite_index   last valid 2026-06-26
+      trends_spy                   last valid 2026-06-26
+      trends_unemployment          last valid 2026-06-26
+      trends_volatility            last valid 2026-06-26
+      vol_vwap_corr_5d             last valid 2026-06-26
+      vol_x_bear                   last valid 2026-06-26
+      vol_x_chop                   last valid 2026-06-26
+      late_reversal_flag           last valid 2026-08-03
+      open_drive_flag              last valid 2026-08-03
+      premarket_ret                last valid 2026-08-03
+      premarket_vol_ratio          last valid 2026-08-03
+      vwap_dev_am                  last valid 2026-08-03
+  chop after dropna: 1972 rows, 43 features available
+  date range: 2016-02-04 to 2026-10-14
+
+========================================================
+  RFE on chop rows (RFECV, LogisticRegression, cv=3)
+========================================================
+  [RFE] 42 features selected from 43
+  Selected: ['spy_ret_r5', 'spy_consec_down', 'spy_drawdown_252', 'vix_level', 'vix_z21', 'vvix_chg_5d', 'vix_term_z21', 'gld_ret_1d', 'gld_spy_corr_21', 'gld_corr_x_era', 'gld_corr_era_flag', 'gld_corr63_x_era', 'qqq_ret_1d', 'xle_spy_rs_5d', 'fedfunds_chg_21d', 'fomc_window', 'sector_risk_off_r5', 'XLF_ret', 'XLI_ret', 'XLY_ret', 'vwap_dev_open', 'vwap_dev_r5', 'days_since_regime_change', 'regime_transition_flag', 'vix_rv_x_chop', 'moon_phase_cos', 'days_to_new_moon', 'moon_full_flag', 'moon_new_flag', 'tavg_nyc', 'prcp_flag_nyc', 'sunshine_proxy_nyc', 'tavg_chi', 'temp_range_chi', 'sunshine_proxy_chi', 'gex_chg_5d', 'days_to_fomc', 'vvix_z21', 'gld_z21', 'skew_chg_1d', 'skew_chg_5d', 'vix9d_z21']
+
+========================================================
+  Chop-only walk-forward CV (5 folds x 252 calendar days)
+========================================================
+  fold 1 (2020-05-29 - 2021-06-04)  chop_tr= 712 chop_va=252  acc=0.4722  auc=0.5701  bt@0.51: Sharpe=-0.129  BH=1.965  n=29  | VIX-gated Sharpe=0.481 (skipped 165)
+  fold 2 (2021-06-07 - 2022-11-28)  chop_tr= 964 chop_va=252  acc=0.5754  auc=0.5543  bt@0.51: Sharpe=-0.866  BH=1.864  n=134  | VIX-gated Sharpe=1.277 (skipped 76)
+  fold 3 (2022-11-29 - 2024-07-29)  chop_tr=1216 chop_va=252  acc=0.5357  auc=0.5625  bt@0.51: Sharpe=-0.167  BH=-0.524  n=113  | VIX-gated Sharpe=0.906 (skipped 25)
+  fold 4 (2024-07-30 - 2025-09-17)  chop_tr=1468 chop_va=252  acc=0.5992  auc=0.6151  bt@0.51: Sharpe=1.605  BH=1.455  n=127  | VIX-gated Sharpe=1.694 (skipped 23)
+  fold 5 (2025-09-18 - 2026-10-14)  chop_tr=1720 chop_va=252  acc=0.5119  auc=0.4999  bt@0.51: Sharpe=1.898  BH=1.209  n=125  | VIX-gated Sharpe=1.835 (skipped 29)
+
+  WFCV summary:  dir_acc=0.5389 +/-0.0451  auc=0.5604 +/-0.0368
+
+========================================================
+  Final model: train=1720 chop rows, val=252 chop rows
+========================================================
+  Base: dir_acc=0.5119  AUC=0.4999  Spearman=-0.0002
+  Calibrated: dir_acc=0.5476  AUC=0.5001
+  t=0.51: Sharpe=1.234  ann_ret=15.8%  MaxDD=7.7%  n_signals=243
+  t=0.53: Sharpe=0.054  ann_ret=0.6%  MaxDD=9.8%  n_signals=181
+  Top features: sunshine_proxy_nyc=0.208; prcp_flag_nyc=0.191; sunshine_proxy_chi=0.183; regime_transition_flag=0.182; moon_phase_cos=0.179
+
+========================================================
+  GBM chop ensemble (15 seeds, chop rows only)
+========================================================
+  GBM: dir_acc=0.5635  AUC=0.5132
+  GBM t=0.51: Sharpe=0.855  n_signals=177
+  GBM t=0.53: Sharpe=1.281  n_signals=151
+
+  Blend (50/50 log_cal + gbm_chop): dir_acc=0.5238  AUC=0.5109
+  Blend t=0.51: Sharpe=0.725  ann_ret=8.6%  MaxDD=6.3%  n_signals=216
+  Blend t=0.53: Sharpe=0.272  ann_ret=3.0%  MaxDD=9.2%  n_signals=169
+
+  Existing regime_chop model:  dir_acc=0.6190  AUC=0.6381
+  New dedicated chop model:    dir_acc=0.5476  AUC=0.5001
+  Delta: acc=-0.0714  auc=-0.1379
+
+  saved -> /home/jhcv/discordBot/models/markets/spy/spy_logistic_chop_dedicated_2026-10-19.pkl
+  logged -> /home/jhcv/discordBot/models/meta/spy_experiment_log.csv
+
+[trainChopModel] done.
+DONE

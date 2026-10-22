@@ -320,6 +320,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Fetch 1-min SPY bars from Alpaca into year-partitioned CSVs."
     )
+    parser.add_argument("--today", action="store_true",
+                        help="fetch/refresh TODAY's bars (partial session allowed); replaces existing rows for today")
     parser.add_argument(
         "--backfill",
         nargs=2,
@@ -332,6 +334,31 @@ def main():
         print("ERROR: Alpaca API keys not set. Check APCA_API_KEY_ID and APCA_API_SECRET_KEY in .env.",
               file=sys.stderr)
         sys.exit(1)
+
+    if args.today:
+        # Fetch (or re-fetch) TODAY's bars. Used by the 15:25 pre-close run
+        # (partial session) and the 16:15 EOD run (full session); append_bars
+        # replaces any existing rows for the date, so the EOD run overwrites
+        # the partial one. Default daily mode deliberately looks back from
+        # YESTERDAY, so without this flag today's intraday features are always
+        # NaN at inference.
+        today = datetime.date.today()
+        if today.weekday() >= 5:
+            print("  weekend - nothing to fetch.")
+            return
+        print(f"  Fetching {TICKER} 1-min bars for TODAY {today.isoformat()} ...")
+        try:
+            raw = fetch_bars_for_date(today)
+        except Exception as e:
+            print(f"  WARNING: API error for {today}: {e}")
+            return
+        if not raw:
+            print("  WARNING: no bars returned for today (holiday or pre-market).")
+            return
+        new_df = bars_to_df(raw)
+        n = append_bars(new_df, today.year, today.isoformat())
+        print(f"  wrote {n} bars for {today.isoformat()}")
+        return
 
     if args.backfill:
         try:

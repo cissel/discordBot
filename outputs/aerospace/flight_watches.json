@@ -1,3 +1,36 @@
 {
-  "watches": {}
+  "watches": {
+    "1562104062734897193": {
+      "tail_query": "N257QS",
+      "callsign": "N257QS",
+      "registration": "N257QS",
+      "hex": null,
+      "channel_id": 1353611337888038964,
+      "guild_id": 1286546740211613706,
+      "last_on_ground": null,
+      "reactors": [
+        818644716962447430
+      ],
+      "active": true,
+      "pending": true,
+      "miss_count": 0,
+      "created_utc": "2026-10-20T14:03:53.362459+00:00"
+    },
+    "1562214791827685406": {
+      "tail_query": "EJA971",
+      "callsign": "EJA971",
+      "registration": "EJA971",
+      "hex": null,
+      "channel_id": 1353611337888038964,
+      "guild_id": 1286546740211613706,
+      "last_on_ground": null,
+      "reactors": [
+        818644716962447430
+      ],
+      "active": true,
+      "pending": true,
+      "miss_count": 0,
+      "created_utc": "2026-10-20T21:23:56.341284+00:00"
+    }
+  }
 }

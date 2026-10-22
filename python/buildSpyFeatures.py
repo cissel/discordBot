@@ -258,10 +258,13 @@ def build_features():
     # VIX/MOVE ratio — stock vs bond implied-vol divergence. corr_5d=0.063, p=0.0016,
     # full sample. MOVE itself (level/chg) tested not significant (p=0.52-0.55) —
     # only the ratio against VIX carries signal, so MOVE is not exposed standalone.
-    move = load_series("MOVE.csv", date_col=0, val_col=2, name="MOVE_close")  # col2=_close
-    move.index = pd.to_datetime(move.index)
-    move_d = move.reindex(df.index, method="ffill")
-    df["vix_move_ratio"] = df["VIX"] / move_d.replace(0, np.nan)
+    # DISABLED Oct 19 2026: cache/MOVE.csv is the Alpaca STOCK ticker "MOVE" (Movano Inc,
+    # a penny stock that fell 605 -> 8), not the ICE BofA MOVE index. vix_move_ratio
+    # drifted 0.03 -> 3.9 and blew up the 2025 walk-forward fold (|z| up to 63,
+    # log-loss 1.19). No free MOVE index source on Alpaca/FRED; feature set to NaN so
+    # the stale-feature guard drops it at the next retrain and inference imputes the
+    # median until then.
+    df["vix_move_ratio"] = np.nan
 
     # Copper/Gold ratio — growth risk-on/off proxy. corr_5d=-0.067, p=0.008,
     # n=1550 (CPER liquid from 2020-07 only — shorter sample, flagged in docs).

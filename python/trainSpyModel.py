@@ -668,6 +668,49 @@ def compute_sample_weights(dates, half_life_days=756):
     return weights / weights.mean()   # normalise so mean weight = 1
 
 
+# ── Stale-feature guard (Oct 2026) ──────────────────────────────────────────
+# Oct 19 2026 audit: 17 of the live logistic model's 80 features had been NaN
+# (median-imputed at inference) since Jun-Aug 2026 because their fetchers
+# silently stopped (Google Trends, Wikipedia views, holiday/earnings flags,
+# presidential approval, VWAP intraday set; cboe_pcr_equity dead since 2019).
+# A model trained on a varying feature and scored on its median every day is
+# a different model. Rule: any feature whose last non-NaN date is more than
+# STALE_MAX_LAG_DAYS before the newest row is dropped from EVERY feature list
+# before training, and the drop is printed so it shows up in the cron report.
+STALE_MAX_LAG_DAYS = 10
+
+
+def find_stale_features(df, features, max_lag_days=STALE_MAX_LAG_DAYS):
+    """Return {feature: last_valid_date_str} for features stale vs df['date'].max()."""
+    last = df["date"].max()
+    stale = {}
+    for f in features:
+        if f not in df.columns:
+            continue
+        valid = df.loc[df[f].notna(), "date"]
+        if valid.empty:
+            stale[f] = "never"
+        elif (last - valid.max()).days > max_lag_days:
+            stale[f] = str(valid.max().date())
+    return stale
+
+
+def drop_stale_features_inplace(df, feature_lists, label=""):
+    """Filter every list in feature_lists in place; returns the stale dict."""
+    allf = sorted({f for lst in feature_lists for f in lst})
+    stale = find_stale_features(df, allf)
+    if stale:
+        print(f"  [stale-guard{(' ' + label) if label else ''}] dropping {len(stale)} feature(s) with no data in the "
+              f"last {STALE_MAX_LAG_DAYS} days:")
+        for f, d in sorted(stale.items(), key=lambda kv: kv[1]):
+            print(f"      {f:<28} last valid {d}")
+        for lst in feature_lists:
+            lst[:] = [f for f in lst if f not in stale]
+    else:
+        print(f"  [stale-guard{(' ' + label) if label else ''}] all features current")
+    return stale
+
+
 def prep_df(df, features, target):
     """Impute sparse features, drop rows missing core features or target."""
     df = df.copy()
@@ -1065,6 +1108,8 @@ def run_training(notes="", skip_wfcv=False, half_life=1260, sweep_half_life=Fals
 
     df = pd.read_csv(FEAT_PATH, parse_dates=["date"])
     print(f"  loaded {len(df)} rows, {df['date'].min().date()} to {df['date'].max().date()}")
+    drop_stale_features_inplace(df, [SPY_FEATURES, GBM_FEATURES, BEAR_FEATURES, BULL_FEATURES,
+                                     GBM_5D_FEATURES, SPARSE_FEATURES], label="trainSpyModel")
     print(f"  recency half-life: {half_life} days (~{half_life/252:.1f}yr)  [default=1260, swept Run 20]")
 
     # ── build quintile tail target ─────────────────────────────────────────────

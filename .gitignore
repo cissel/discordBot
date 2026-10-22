@@ -10,6 +10,8 @@ outputs/dj/
 
 # Data caches and CSVs that regenerate automatically
 outputs/markets/cache/
+outputs/markets/*.tmp
+outputs/markets/mm_live_*.json
 outputs/markets/*_bars.csv
 outputs/markets/*_trades.csv
 outputs/markets/forecast_*.csv

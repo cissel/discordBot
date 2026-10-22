@@ -723,6 +723,18 @@ def main():
     ts_iso = datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
     df.insert(0, "scrapedAt", ts_iso)
 
+    # CLV gate: tag every row with its (market, modelStatus) bucket's
+    # closing-line-value verdict from the master log. Everything is still
+    # logged; only PASS rows are surfaced as recommendations / graded.
+    try:
+        import clvGate
+        clv_table = clvGate.bucket_table("nfl")
+        df = clvGate.annotate(df, "nfl", clv_table)
+    except Exception as e:
+        print(f"  (clv gate unavailable: {e})")
+        clv_table = {}
+        df["clvGate"] = "UNPROVEN"
+
     # keep the 5 requested columns first, diagnostics after
     lead_cols = ["scrapedAt", "betNumber", "nflGame", "betDescription", "payout", "confidence", "expectedValue"]
     other_cols = [c for c in df.columns if c not in lead_cols]
@@ -762,10 +774,14 @@ def main():
     print(f"Total bets: {len(df)} | with a computed EV: {n_ev} | +EV: {n_pos_ev}")
     print("\nBy market / model status:")
     print(df.groupby(["market", "modelStatus"]).size().to_string())
-    if n_pos_ev:
-        top = df[df["expectedValue"] > 0].sort_values("expectedValue", ascending=False).head(15)
-        print("\n=== Top +EV bets ===")
-        print(top[["nflGame", "betDescription", "payout", "confidence", "expectedValue", "modelStatus"]].to_string(index=False))
+    n_gated = int(((df["expectedValue"] > 0) & (df["clvGate"] == "PASS")).sum())
+    print(f"CLV gate: {n_gated} of {n_pos_ev} +EV rows are in a PASS bucket")
+    if clv_table:
+        print(clvGate.format_table("nfl", clv_table))
+    if n_gated:
+        top = df[(df["expectedValue"] > 0) & (df["clvGate"] == "PASS")].sort_values("expectedValue", ascending=False).head(15)
+        print("\n=== Top +EV bets (CLV gate PASS) ===")
+        print(top[["nflGame", "betDescription", "payout", "confidence", "expectedValue", "modelStatus", "clvBucketAvg"]].to_string(index=False))
     print("\nNOTE: spread/total EV is relative to DraftKings' devigged line (a "
           "real second book, not a model) and is only computed when the two "
           "books are pricing within 1 point of each other. Longest Reception, "

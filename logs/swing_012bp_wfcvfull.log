@@ -1,0 +1,54 @@
+Loading 5-min features + swing labels (0.4% threshold)...
+Merged: 113128 bars, 1451 days
+[spyVolTargetWFCV] 2558 prepped rows, 91 features, 2016-04-06-2026-10-16
+  fold 1: 2022-08-31-2023-09-13  tr=1550 va=252  pooled OOS so far: 252
+  fold 2: 2023-09-14-2024-09-19  tr=1802 va=252  pooled OOS so far: 504
+  fold 3: 2024-09-20-2025-10-03  tr=2054 va=252  pooled OOS so far: 756
+  fold 4: 2025-10-06-2026-10-16  tr=2306 va=252  pooled OOS so far: 1008
+  dropped 1 OOS row(s) with unresolved next_ret_1d
+Fold day counts: {0: 446, 1: 252, 2: 252, 3: 252, 4: 249}
+
+======================================================================
+Fold 1: expanding train (all days < fold 1 start)
+======================================================================
+  Train bars: 34753 (446 days)  Eval bars: 19647 (252 days)
+  Eval AUC swing_high: 0.9008  swing_low: 0.9197
+  N trades: 128  Daily Sharpe: +0.753  Total P&L: +5.35%
+  Bootstrap: mean=+0.183  95%CI=[-1.673,+1.938]  P(Sharpe>0)=57.6%
+
+======================================================================
+Fold 2: expanding train (all days < fold 2 start)
+======================================================================
+  Train bars: 54400 (698 days)  Eval bars: 19653 (252 days)
+  Eval AUC swing_high: 0.9420  swing_low: 0.9345
+  N trades: 24  Daily Sharpe: -1.769  Total P&L: -4.82%
+  Bootstrap: mean=-1.339  95%CI=[-2.630,+0.462]  P(Sharpe>0)=6.0%
+
+======================================================================
+Fold 3: expanding train (all days < fold 3 start)
+======================================================================
+  Train bars: 74053 (950 days)  Eval bars: 19653 (252 days)
+  Eval AUC swing_high: 0.9428  swing_low: 0.9537
+  N trades: 105  Daily Sharpe: +0.483  Total P&L: +2.26%
+  Bootstrap: mean=+0.484  95%CI=[-0.826,+1.818]  P(Sharpe>0)=80.5%
+
+======================================================================
+Fold 4: expanding train (all days < fold 4 start)
+======================================================================
+  Train bars: 93706 (1202 days)  Eval bars: 19422 (249 days)
+  Eval AUC swing_high: 0.9290  swing_low: 0.9538
+  N trades: 36  Daily Sharpe: +2.055  Total P&L: +6.29%
+  Bootstrap: mean=+1.952  95%CI=[-0.430,+4.081]  P(Sharpe>0)=94.8%
+
+======================================================================
+SUMMARY (all available folds)
+======================================================================
+  Fold 1: Sharpe=+0.753  N_trades=128  TotalRet=+5.35%  AUC(h/l)=0.901/0.920  Bootstrap P(>0)=57.6%
+  Fold 2: Sharpe=-1.769  N_trades=24  TotalRet=-4.82%  AUC(h/l)=0.942/0.935  Bootstrap P(>0)=6.0%
+  Fold 3: Sharpe=+0.483  N_trades=105  TotalRet=+2.26%  AUC(h/l)=0.943/0.954  Bootstrap P(>0)=80.5%
+  Fold 4: Sharpe=+2.055  N_trades=36  TotalRet=+6.29%  AUC(h/l)=0.929/0.954  Bootstrap P(>0)=94.8%
+
+  POOLED (1005 days, 293 total trades): Sharpe=+0.480  Bootstrap mean=+0.294  95%CI=[-0.661,+1.245]  P(Sharpe>0)=72.3%
+
+  Saved pooled daily P&L -> /tmp/spy_swing_wfcv_full_daily_pnl.csv
+DONE

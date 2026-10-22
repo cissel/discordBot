@@ -1,0 +1,5 @@
+=== volBook morning Thu 22 Oct 10:35:16 EDT 2026 ===
+Vol book 2026-10-22 | GEX q1 inverted=False VIX 17.31 scalar 0.81 -> ELIGIBLE | open 1 closed 0
+IC261020 exp 2026-11-20 (29d) credit 1.12 mark 1.15 pnl -6
+ENTRY IC261022: 2x 717/722P 793/798C exp 2026-11-20 (29d) credit 1.12 (mid 1.14) max loss $776 budget $813 spot 762.61 order 88f4adef-a5aa-4b6d-bb09-faf8f0e9d5fc 
+book P&L: realized +0, open -6 (est, mid marks, before fees)

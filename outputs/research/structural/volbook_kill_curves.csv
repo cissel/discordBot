@@ -1,0 +1,301 @@
+scenario,positions,p_killed
+empirical,1,0.0
+empirical,2,0.0
+empirical,3,0.0
+empirical,4,0.0
+empirical,5,0.0
+empirical,6,0.0
+empirical,7,0.0
+empirical,8,0.0
+empirical,9,0.0
+empirical,10,0.0
+empirical,11,0.0
+empirical,12,0.0
+empirical,13,0.0
+empirical,14,0.0
+empirical,15,0.0
+empirical,16,0.0
+empirical,17,0.0
+empirical,18,0.0
+empirical,19,0.0
+empirical,20,0.0
+empirical,21,0.0
+empirical,22,0.0
+empirical,23,0.0
+empirical,24,0.0
+empirical,25,0.03775
+empirical,26,0.03775
+empirical,27,0.03775
+empirical,28,0.03775
+empirical,29,0.03775
+empirical,30,0.03775
+empirical,31,0.03775
+empirical,32,0.03775
+empirical,33,0.03775
+empirical,34,0.03775
+empirical,35,0.03775
+empirical,36,0.03775
+empirical,37,0.03775
+empirical,38,0.03775
+empirical,39,0.03775
+empirical,40,0.03775
+empirical,41,0.03775
+empirical,42,0.03775
+empirical,43,0.03775
+empirical,44,0.03775
+empirical,45,0.03775
+empirical,46,0.03775
+empirical,47,0.03775
+empirical,48,0.03775
+empirical,49,0.03775
+empirical,50,0.03775
+empirical,51,0.03775
+empirical,52,0.03775
+empirical,53,0.03775
+empirical,54,0.03775
+empirical,55,0.03775
+empirical,56,0.03775
+empirical,57,0.03775
+empirical,58,0.03775
+empirical,59,0.03775
+empirical,60,0.03775
+stylised p=0.85 (edge),1,0.0
+stylised p=0.85 (edge),2,0.0
+stylised p=0.85 (edge),3,0.0
+stylised p=0.85 (edge),4,0.0
+stylised p=0.85 (edge),5,0.0
+stylised p=0.85 (edge),6,0.0
+stylised p=0.85 (edge),7,0.0
+stylised p=0.85 (edge),8,0.0
+stylised p=0.85 (edge),9,0.0
+stylised p=0.85 (edge),10,0.0
+stylised p=0.85 (edge),11,0.0
+stylised p=0.85 (edge),12,0.0
+stylised p=0.85 (edge),13,0.0
+stylised p=0.85 (edge),14,0.0
+stylised p=0.85 (edge),15,0.0
+stylised p=0.85 (edge),16,0.0
+stylised p=0.85 (edge),17,0.0
+stylised p=0.85 (edge),18,0.0
+stylised p=0.85 (edge),19,0.0
+stylised p=0.85 (edge),20,0.0
+stylised p=0.85 (edge),21,0.0
+stylised p=0.85 (edge),22,0.0
+stylised p=0.85 (edge),23,0.0
+stylised p=0.85 (edge),24,0.0
+stylised p=0.85 (edge),25,0.00025
+stylised p=0.85 (edge),26,0.00025
+stylised p=0.85 (edge),27,0.00025
+stylised p=0.85 (edge),28,0.00025
+stylised p=0.85 (edge),29,0.00025
+stylised p=0.85 (edge),30,0.00025
+stylised p=0.85 (edge),31,0.00025
+stylised p=0.85 (edge),32,0.00025
+stylised p=0.85 (edge),33,0.00025
+stylised p=0.85 (edge),34,0.00025
+stylised p=0.85 (edge),35,0.00025
+stylised p=0.85 (edge),36,0.00025
+stylised p=0.85 (edge),37,0.00025
+stylised p=0.85 (edge),38,0.00025
+stylised p=0.85 (edge),39,0.00025
+stylised p=0.85 (edge),40,0.00025
+stylised p=0.85 (edge),41,0.00025
+stylised p=0.85 (edge),42,0.00025
+stylised p=0.85 (edge),43,0.00025
+stylised p=0.85 (edge),44,0.00025
+stylised p=0.85 (edge),45,0.00025
+stylised p=0.85 (edge),46,0.00025
+stylised p=0.85 (edge),47,0.00025
+stylised p=0.85 (edge),48,0.00025
+stylised p=0.85 (edge),49,0.00025
+stylised p=0.85 (edge),50,0.00025
+stylised p=0.85 (edge),51,0.00025
+stylised p=0.85 (edge),52,0.00025
+stylised p=0.85 (edge),53,0.00025
+stylised p=0.85 (edge),54,0.00025
+stylised p=0.85 (edge),55,0.00025
+stylised p=0.85 (edge),56,0.00025
+stylised p=0.85 (edge),57,0.00025
+stylised p=0.85 (edge),58,0.00025
+stylised p=0.85 (edge),59,0.00025
+stylised p=0.85 (edge),60,0.00025
+stylised p=0.78 (thin),1,0.0
+stylised p=0.78 (thin),2,0.0
+stylised p=0.78 (thin),3,0.0
+stylised p=0.78 (thin),4,0.0
+stylised p=0.78 (thin),5,0.0
+stylised p=0.78 (thin),6,0.0
+stylised p=0.78 (thin),7,0.0
+stylised p=0.78 (thin),8,0.0
+stylised p=0.78 (thin),9,0.0
+stylised p=0.78 (thin),10,0.0
+stylised p=0.78 (thin),11,0.0
+stylised p=0.78 (thin),12,0.0
+stylised p=0.78 (thin),13,0.0
+stylised p=0.78 (thin),14,0.0
+stylised p=0.78 (thin),15,0.0
+stylised p=0.78 (thin),16,0.0
+stylised p=0.78 (thin),17,0.0
+stylised p=0.78 (thin),18,0.0
+stylised p=0.78 (thin),19,0.0
+stylised p=0.78 (thin),20,0.0
+stylised p=0.78 (thin),21,0.0
+stylised p=0.78 (thin),22,0.0
+stylised p=0.78 (thin),23,0.0
+stylised p=0.78 (thin),24,0.0
+stylised p=0.78 (thin),25,0.0114
+stylised p=0.78 (thin),26,0.0114
+stylised p=0.78 (thin),27,0.0114
+stylised p=0.78 (thin),28,0.0114
+stylised p=0.78 (thin),29,0.0114
+stylised p=0.78 (thin),30,0.0114
+stylised p=0.78 (thin),31,0.0114
+stylised p=0.78 (thin),32,0.0114
+stylised p=0.78 (thin),33,0.0114
+stylised p=0.78 (thin),34,0.0114
+stylised p=0.78 (thin),35,0.0114
+stylised p=0.78 (thin),36,0.0114
+stylised p=0.78 (thin),37,0.0114
+stylised p=0.78 (thin),38,0.0114
+stylised p=0.78 (thin),39,0.0114
+stylised p=0.78 (thin),40,0.0114
+stylised p=0.78 (thin),41,0.0114
+stylised p=0.78 (thin),42,0.0114
+stylised p=0.78 (thin),43,0.0114
+stylised p=0.78 (thin),44,0.0114
+stylised p=0.78 (thin),45,0.0114
+stylised p=0.78 (thin),46,0.0114
+stylised p=0.78 (thin),47,0.0114
+stylised p=0.78 (thin),48,0.0114
+stylised p=0.78 (thin),49,0.0114
+stylised p=0.78 (thin),50,0.0114
+stylised p=0.78 (thin),51,0.0114
+stylised p=0.78 (thin),52,0.0114
+stylised p=0.78 (thin),53,0.0114
+stylised p=0.78 (thin),54,0.0114
+stylised p=0.78 (thin),55,0.0114
+stylised p=0.78 (thin),56,0.0114
+stylised p=0.78 (thin),57,0.0114
+stylised p=0.78 (thin),58,0.0114
+stylised p=0.78 (thin),59,0.0114
+stylised p=0.78 (thin),60,0.0114
+stylised p=0.70 (no edge),1,0.0
+stylised p=0.70 (no edge),2,0.0
+stylised p=0.70 (no edge),3,0.0
+stylised p=0.70 (no edge),4,0.0
+stylised p=0.70 (no edge),5,0.0
+stylised p=0.70 (no edge),6,0.0
+stylised p=0.70 (no edge),7,0.0
+stylised p=0.70 (no edge),8,0.0
+stylised p=0.70 (no edge),9,0.0
+stylised p=0.70 (no edge),10,0.0
+stylised p=0.70 (no edge),11,0.0
+stylised p=0.70 (no edge),12,0.0
+stylised p=0.70 (no edge),13,0.0
+stylised p=0.70 (no edge),14,0.0
+stylised p=0.70 (no edge),15,0.0
+stylised p=0.70 (no edge),16,0.0
+stylised p=0.70 (no edge),17,0.0
+stylised p=0.70 (no edge),18,0.0
+stylised p=0.70 (no edge),19,0.0
+stylised p=0.70 (no edge),20,0.0
+stylised p=0.70 (no edge),21,0.0
+stylised p=0.70 (no edge),22,0.0
+stylised p=0.70 (no edge),23,0.0
+stylised p=0.70 (no edge),24,0.0
+stylised p=0.70 (no edge),25,0.09625
+stylised p=0.70 (no edge),26,0.09625
+stylised p=0.70 (no edge),27,0.09625
+stylised p=0.70 (no edge),28,0.09625
+stylised p=0.70 (no edge),29,0.09625
+stylised p=0.70 (no edge),30,0.09625
+stylised p=0.70 (no edge),31,0.09625
+stylised p=0.70 (no edge),32,0.09625
+stylised p=0.70 (no edge),33,0.09625
+stylised p=0.70 (no edge),34,0.09625
+stylised p=0.70 (no edge),35,0.09625
+stylised p=0.70 (no edge),36,0.09625
+stylised p=0.70 (no edge),37,0.09625
+stylised p=0.70 (no edge),38,0.09625
+stylised p=0.70 (no edge),39,0.09625
+stylised p=0.70 (no edge),40,0.09625
+stylised p=0.70 (no edge),41,0.09625
+stylised p=0.70 (no edge),42,0.09625
+stylised p=0.70 (no edge),43,0.09625
+stylised p=0.70 (no edge),44,0.09625
+stylised p=0.70 (no edge),45,0.09625
+stylised p=0.70 (no edge),46,0.09625
+stylised p=0.70 (no edge),47,0.09625
+stylised p=0.70 (no edge),48,0.09625
+stylised p=0.70 (no edge),49,0.09625
+stylised p=0.70 (no edge),50,0.09625
+stylised p=0.70 (no edge),51,0.09625
+stylised p=0.70 (no edge),52,0.09625
+stylised p=0.70 (no edge),53,0.09625
+stylised p=0.70 (no edge),54,0.09625
+stylised p=0.70 (no edge),55,0.09625
+stylised p=0.70 (no edge),56,0.0963
+stylised p=0.70 (no edge),57,0.0963
+stylised p=0.70 (no edge),58,0.0963
+stylised p=0.70 (no edge),59,0.0963
+stylised p=0.70 (no edge),60,0.0963
+stylised p=0.62 (negative),1,0.0
+stylised p=0.62 (negative),2,0.0
+stylised p=0.62 (negative),3,0.0
+stylised p=0.62 (negative),4,0.0
+stylised p=0.62 (negative),5,0.0
+stylised p=0.62 (negative),6,0.0
+stylised p=0.62 (negative),7,0.0
+stylised p=0.62 (negative),8,0.0
+stylised p=0.62 (negative),9,0.0
+stylised p=0.62 (negative),10,0.0
+stylised p=0.62 (negative),11,0.0
+stylised p=0.62 (negative),12,0.0
+stylised p=0.62 (negative),13,0.0
+stylised p=0.62 (negative),14,0.0
+stylised p=0.62 (negative),15,0.0
+stylised p=0.62 (negative),16,0.0
+stylised p=0.62 (negative),17,0.0
+stylised p=0.62 (negative),18,0.0
+stylised p=0.62 (negative),19,0.0
+stylised p=0.62 (negative),20,0.0
+stylised p=0.62 (negative),21,0.0
+stylised p=0.62 (negative),22,0.0
+stylised p=0.62 (negative),23,0.0
+stylised p=0.62 (negative),24,0.0
+stylised p=0.62 (negative),25,0.33775
+stylised p=0.62 (negative),26,0.33775
+stylised p=0.62 (negative),27,0.33775
+stylised p=0.62 (negative),28,0.33775
+stylised p=0.62 (negative),29,0.33775
+stylised p=0.62 (negative),30,0.33775
+stylised p=0.62 (negative),31,0.33775
+stylised p=0.62 (negative),32,0.33775
+stylised p=0.62 (negative),33,0.33775
+stylised p=0.62 (negative),34,0.33775
+stylised p=0.62 (negative),35,0.33775
+stylised p=0.62 (negative),36,0.33775
+stylised p=0.62 (negative),37,0.33775
+stylised p=0.62 (negative),38,0.33775
+stylised p=0.62 (negative),39,0.33775
+stylised p=0.62 (negative),40,0.33775
+stylised p=0.62 (negative),41,0.33775
+stylised p=0.62 (negative),42,0.33775
+stylised p=0.62 (negative),43,0.33775
+stylised p=0.62 (negative),44,0.33775
+stylised p=0.62 (negative),45,0.33775
+stylised p=0.62 (negative),46,0.33775
+stylised p=0.62 (negative),47,0.33775
+stylised p=0.62 (negative),48,0.33775
+stylised p=0.62 (negative),49,0.3378
+stylised p=0.62 (negative),50,0.3379
+stylised p=0.62 (negative),51,0.33805
+stylised p=0.62 (negative),52,0.3381
+stylised p=0.62 (negative),53,0.33815
+stylised p=0.62 (negative),54,0.33815
+stylised p=0.62 (negative),55,0.33835
+stylised p=0.62 (negative),56,0.33835
+stylised p=0.62 (negative),57,0.33865
+stylised p=0.62 (negative),58,0.33905
+stylised p=0.62 (negative),59,0.3393
+stylised p=0.62 (negative),60,0.33975

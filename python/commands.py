@@ -31,6 +31,7 @@
 #
 #   /history  server | channel | user | daily | userreport
 #
+#   /spotify  connect | submit | disconnect | genres | artists [timeframe: short|medium|long]
 #   /wordle   scores [option: time|distribution]
 #   /maptap   scores
 #   /cats     next | today | win | lost | hockeytoday | hockeytomorrow
@@ -79,6 +80,7 @@ import aiohttp
 import discord
 from discord import app_commands
 import pandas as pd
+import spotifyAuth
 
 CURRENT_YEAR = datetime.now().year
 
@@ -2149,9 +2151,16 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             else:
                 scope_label = "This Week"
 
-            pos_ev = df[df["expectedValue"] > 0].sort_values("expectedValue", ascending=False).head(count)
+            all_pos = df[df["expectedValue"] > 0]
+            if "clvGate" in df.columns:
+                pos_ev = all_pos[all_pos["clvGate"] == "PASS"]
+            else:
+                pos_ev = all_pos
+            n_gated_out = len(all_pos) - len(pos_ev)
+            pos_ev = pos_ev.sort_values("expectedValue", ascending=False).head(count)
             if pos_ev.empty:
-                await _send(interaction, f"No +EV bets found for {scope_label.lower()} on the current HardRock slate.")
+                await _send(interaction, f"No +EV bets passed the CLV gate for {scope_label.lower()} "
+                                         f"({n_gated_out} +EV rows are in buckets with no proven closing-line value).")
                 return
 
             model_labels = {
@@ -2172,7 +2181,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                            f"Confidence: {r['confidence']:.1f}% | EV: +${r['expectedValue']:.2f} per $1 | {model_tag}"),
                     inline=False,
                 )
-            emb.set_footer(text="Not proven edges -- log CLV/outcomes over multiple weeks before trusting any single bet.")
+            emb.set_footer(text=f"CLV-gated: only buckets with proven closing-line value (n>=50, t>=2). "
+                                f"{n_gated_out} +EV rows hidden by the gate.")
             await _send(interaction, embed=emb)
         except Exception as e:
             await _send(interaction, f"❌ error: {e}", ephemeral=True)
@@ -7610,9 +7620,16 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                 await _send(interaction, "No hardrock_mlb_ev CSV was produced.", ephemeral=True); return
             df = pd.read_csv(os.path.join(betting_dir, csvs[0]))
 
-            pos_ev = df[df["expectedValue"] > 0].sort_values("expectedValue", ascending=False).head(count)
+            all_pos = df[df["expectedValue"] > 0]
+            if "clvGate" in df.columns:
+                pos_ev = all_pos[all_pos["clvGate"] == "PASS"]
+            else:
+                pos_ev = all_pos
+            n_gated_out = len(all_pos) - len(pos_ev)
+            pos_ev = pos_ev.sort_values("expectedValue", ascending=False).head(count)
             if pos_ev.empty:
-                await _send(interaction, "No +EV bets found on the current HardRock MLB slate.")
+                await _send(interaction, f"No +EV bets passed the CLV gate on the current HardRock MLB slate "
+                                         f"({n_gated_out} +EV rows are in buckets with no proven closing-line value).")
                 return
 
             model_labels = {
@@ -7633,7 +7650,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
                            f"Confidence: {r['confidence']:.1f}% | EV: +${r['expectedValue']:.2f} per $1 | {model_tag}"),
                     inline=False,
                 )
-            emb.set_footer(text="Not proven edges -- log CLV/outcomes over multiple weeks before trusting any single bet.")
+            emb.set_footer(text=f"CLV-gated: only buckets with proven closing-line value (n>=50, t>=2). "
+                                f"{n_gated_out} +EV rows hidden by the gate.")
             await _send(interaction, embed=emb)
         except Exception as e:
             await _send(interaction, f"❌ error: {e}", ephemeral=True)
@@ -8325,6 +8343,8 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
             footer.append(note)
         if not sm.get("broker_history"):
             footer.append("broker equity unavailable - using signal-based returns")
+        elif sm.get("spy_strategy_pnl_usd") is not None:
+            footer.append(f"SPY strategy P&L ${sm['spy_strategy_pnl_usd']:+,.0f} net of ${abs(sm.get('spy_fees_usd') or 0):.2f} fees (pnlLedger)")
         emb.set_footer(text=" | ".join(footer) if footer else "Signal-based returns: kelly x next-day SPY return")
 
         if os.path.exists(img_path):
@@ -9380,6 +9400,119 @@ def register_commands(tree: app_commands.CommandTree, guild: discord.Object,
         await _send(interaction, f"🎤 *\"{message}\"*")
 
     tree.add_command(dj_group)
+
+    # ── /spotify  connect | submit | disconnect | genres | artists ──────────
+    # Resurrected from cissel/tuneR (R + spotifyr + ggwordcloud) as a Python
+    # equivalent: pulls Spotify "top artists" (and their genre tags) per
+    # timeframe and renders a wordcloud, diamond-masked, ggplot2 hue-palette
+    # colored, navy-chromed. Each discord user authorizes their OWN Spotify
+    # account (spotifyAuth.py) so genres/artists reflect whoever runs the
+    # command, not just James - see python/spotifyAuth.py for the OAuth flow
+    # and the Development Mode tester-allowlist caveat.
+    import secrets as _secrets
+    spotify_group = app_commands.Group(name="spotify", description="Spotify taste wordclouds", guild_ids=[guild.id])
+
+    _SPOTIFY_TIMEFRAMES = [
+        app_commands.Choice(name="last 4 weeks", value="short"),
+        app_commands.Choice(name="last 6 months", value="medium"),
+        app_commands.Choice(name="all-time", value="long"),
+    ]
+
+    # user_id (str) -> {"state": str, "expires": float}; pending /spotify connect flows
+    _spotify_pending: dict[str, dict] = {}
+
+    async def _spotify_wordcloud(interaction: discord.Interaction, mode: str, timeframe: app_commands.Choice[str] = None):
+        await _defer(interaction)
+        tf = timeframe.value if timeframe else "long"
+        uid = str(interaction.user.id)
+        result = await asyncio.to_thread(
+            lambda: subprocess.run(
+                [PYTHON, os.path.join(pp, "spotifyWordcloud.py"), mode, tf, uid],
+                capture_output=True, text=True, timeout=60
+            )
+        )
+        if "NOT_CONNECTED" in (result.stderr or ""):
+            await _send(interaction,
+                "🎧 you haven't connected Spotify yet - run `/spotify connect` first "
+                "(takes about 30 seconds), then try this again.",
+                ephemeral=True)
+            return
+        img = os.path.join(op, "spotify", f"{mode}_{tf}_{uid}.png")
+        if result.returncode != 0 or not os.path.exists(img):
+            err = (result.stderr or "no output")[-400:]
+            await _send(interaction, f"❌ wordcloud failed\n```{err}```", ephemeral=True)
+            return
+        await _send(interaction, file=discord.File(img, filename=f"{mode}_{tf}.png"))
+
+    @spotify_group.command(name="genres", description="word cloud of your top genres")
+    @app_commands.choices(timeframe=_SPOTIFY_TIMEFRAMES)
+    async def spotify_genres(interaction: discord.Interaction, timeframe: app_commands.Choice[str] = None):
+        await _spotify_wordcloud(interaction, "genres", timeframe)
+
+    @spotify_group.command(name="artists", description="word cloud of your top artists")
+    @app_commands.choices(timeframe=_SPOTIFY_TIMEFRAMES)
+    async def spotify_artists(interaction: discord.Interaction, timeframe: app_commands.Choice[str] = None):
+        await _spotify_wordcloud(interaction, "artists", timeframe)
+
+    @spotify_group.command(name="connect", description="link your own Spotify account for /spotify genres & artists")
+    async def spotify_connect(interaction: discord.Interaction):
+        uid = str(interaction.user.id)
+        state = _secrets.token_urlsafe(16)
+        _spotify_pending[uid] = {"state": state, "expires": time.time() + 600}
+
+        url = spotifyAuth.build_authorize_url(state)
+        await _quick(interaction,
+            "🎧 **connect your Spotify**\n"
+            f"1. Open this link and log in with the Spotify account you want word clouds for:\n{url}\n"
+            "2. Click **Agree**.\n"
+            "3. Your browser will then try to load a `127.0.0.1` page and fail - that's expected, "
+            "nothing is running there. Copy the **full address bar URL** (or just the `code=...` part) "
+            "from that failed page.\n"
+            "4. Run `/spotify submit` and paste it in.\n"
+            "_link expires in 10 minutes_",
+            ephemeral=True)
+
+    @spotify_group.command(name="submit", description="paste the code/URL from /spotify connect to finish linking")
+    @app_commands.describe(code="the code=... value, or the whole failed redirect URL")
+    async def spotify_submit(interaction: discord.Interaction, code: str):
+        await _defer(interaction, ephemeral=True)
+        uid = str(interaction.user.id)
+        pending = _spotify_pending.get(uid)
+        if not pending or pending["expires"] < time.time():
+            await _send(interaction, "❌ no pending `/spotify connect` request (or it expired) - run `/spotify connect` again.", ephemeral=True)
+            return
+
+        def _do_exchange():
+            auth_code = spotifyAuth.extract_code(code)
+            pasted_state = spotifyAuth.extract_state(code)
+            if pasted_state and pasted_state != pending["state"]:
+                raise ValueError("state mismatch - that link doesn't match your last /spotify connect. Run /spotify connect again.")
+            return spotifyAuth.exchange_code(uid, auth_code)
+
+        try:
+            profile = await asyncio.to_thread(_do_exchange)
+        except ValueError as e:
+            await _send(interaction, f"❌ {e}", ephemeral=True)
+            return
+        except Exception as e:
+            await _send(interaction, f"❌ couldn't complete that - the code may be expired/already used. Run `/spotify connect` again.\n```{e}```", ephemeral=True)
+            return
+
+        _spotify_pending.pop(uid, None)
+        name = profile.get("display_name") or profile.get("id") or "your account"
+        await _send(interaction, f"✅ connected as **{name}** - try `/spotify genres` or `/spotify artists`.", ephemeral=True)
+
+    @spotify_group.command(name="disconnect", description="unlink your Spotify account")
+    async def spotify_disconnect(interaction: discord.Interaction):
+        uid = str(interaction.user.id)
+
+        def _do_delete():
+            return spotifyAuth.delete_user_token(uid)
+
+        removed = await asyncio.to_thread(_do_delete)
+        await _quick(interaction, "🔌 disconnected." if removed else "you weren't connected.", ephemeral=True)
+
+    tree.add_command(spotify_group)
 
     # ── /jaxships ─────────────────────────────────────────────────────────────
     @tree.command(name="jaxships", description="ships in and around Jacksonville / JAXPORT right now", guild=guild)

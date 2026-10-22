@@ -1,0 +1,45 @@
+{
+  "updated": "2026-10-21",
+  "instructions": "Work top to bottom. Pick the first item with status=queued, research/collect data, run a pre-registered empirical test following outputs/research/structural/PRIOR_FINDINGS.md discipline, write <id>_summary.md + results.csv, then set status to done_fail / done_partial / done_pass here with a one-line note and the summary path. If a candidate reaches done_pass (clears Bonferroni + both halves + ideally a holdout), move it to a 'backtest_strategy' status and build a WFCV strategy backtest (same pattern as spyBearShortWFCV.py) before flagging James in #test-env - do not skip straight to recommending live use. Post one short status line to #test-env after each candidate resolves. When the queue is empty, do a fresh round of web research for structural SPY edge candidates not in PRIOR_FINDINGS.md's 'open mechanism categories' list (or already closed here), rank by (data availability, literature effect size, novelty), append 3-5 new candidates, and continue.",
+  "candidates": [
+    {
+      "id": "vol_control_flow",
+      "thesis": "Vol-targeting/risk-parity funds ($300-500bn AUM) mechanically buy/sell SPX futures based on trailing realized vol vs target, independent of dealer gamma (GEX). Proxy: RV21/RV63 ratio crossings and RV21 level buckets.",
+      "data_source": "spy_features.csv (spy_vol_r21, spy_vol_r63) - already cached, no fetch needed",
+      "status": "done_fail",
+      "summary": "outputs/research/structural/vol_control_flow_summary.md",
+      "note": "0/11 cells pass. One weak signal (re-leveraging crossdown, NW t=2.46, n=49) fails Bonferroni m=9 (bonf_p=0.12). Closed."
+    },
+    {
+      "id": "cot_positioning",
+      "thesis": "CFTC weekly Commitment of Traders report: non-commercial (large speculator) net positioning in S&P 500 futures as a contrarian/momentum signal. Literature is mixed/unstable (CXO Advisory R^2=0.02, sign flips across subperiods; Wang 2000 finds speculator sentiment is a CONTINUATION signal, hedgers a weak CONTRARY signal) but has never been tested against this repo's current data + discipline, and the data is free (CFTC.gov, weekly since 1995 combined futures+options report).",
+      "data_source": "CFTC Combined Futures and Options COT report, S&P 500 Consolidated, public CSV/API at https://www.cftc.gov/MarketReports/CommitmentsofTraders - need a fetch script (fetchCotSp500.py) writing outputs/markets/cache/cot_sp500.csv",
+      "status": "done_fail",
+      "summary": "outputs/research/structural/cot_positioning_summary.md",
+      "note": "0/10 cells pass (n=707 weekly reports, 2013-2026, TFF Leveraged Funds net_ratio via OFR mirror). Best cell H1_netratio_Q2_fwd4excess NW t=2.52 but bonf_p=0.12 (m=10) and half-split sign disagrees. Closed."
+    },
+    {
+      "id": "implied_correlation_dispersion",
+      "thesis": "Dispersion/correlation risk premium: CBOE Implied Correlation Index (or an implied-vs-realized correlation proxy built from sector ETF vol vs SPY vol) predicts forward SPX realized vol / vol-selling returns. Academic lit shows a real, priced correlation risk premium with dispersion-trade Sharpe ~0.6-0.85 (Driessen/Maenhout/Vilkov 2009, Branger et al 2019). Distinct mechanism from GEX/VIX-term (already tested) and from skew premium (already FAILed).",
+      "data_source": "CBOE historical implied correlation index (COR1M/KCJ, check cdn.cboe.com free history) OR build a realized-correlation proxy from existing sector ETF return data (XLK/XLF/XLE/etc vs SPY) if direct implied corr index isn't freely available",
+      "status": "done_fail",
+      "summary": "outputs/research/structural/implied_correlation_dispersion_WFCV_summary.md",
+      "note": "Hypothesis-test stage (2026-10-23) found 1/16 cells PASS (lowest COR3M quintile -> lower fwd21d realized vol, NW t=-4.87, bonf_p=1.8e-05). WFCV strategy-backtest stage (2026-10-22/23, implied_correlation_dispersion_WFCV.py): added a walk-forward COR3M bottom-quintile gate (trailing 756d percentile, no lookahead) on top of the already-live GEX/term short-variance gate (vrp_regime_study.py gate_both). n=2321 days 2017-2026 (limited by vix_term_history.csv start 2016-06-23). Result: 4/5 pass checks clear (worst-month loss shrinks from -111.15 to -16.87 vol pts, NW t rises 1.53->2.90, both halves positive, holdout positive) but monthly Sharpe does NOT improve (1.818 baseline vs 0.759 proposed) because eligible_frac collapses from 0.77 to 0.32 - the extra filter avoids the 2020 tail but also sits out so much of the upside that risk-adjusted return is worse, not better. Fails the all-must-hold pass rule. Closed at the backtest stage: do not wire into vol book.",
+      "priority": 2
+    },
+    {
+      "id": "buyback_blackout_seasonality",
+      "thesis": "~75% of S&P 500 constituents enter a self-imposed buyback blackout ~4-5 weeks before earnings through ~2 days after. Aggregate index-level 'buyback bid' withdrawal concentrated in known earnings-season weeks (mid-Jan, mid-Apr, mid-Jul, mid-Oct) could show up as elevated realized vol / weaker forward drift in those weeks vs open-window weeks. Distinct from the calendar_effects.py tests (TOM/FOMC/OpEx/CPI/NFP/DOW) which did not include an earnings-season/blackout-intensity variable.",
+      "data_source": "Need an earnings-season calendar proxy: % of S&P 500 market cap reporting in trailing 10 trading days (can approximate via a fixed historical earnings-season calendar - mid-Jan/Apr/Jul/Oct blackout windows - or pull S&P 500 constituent earnings dates if a free source exists)",
+      "status": "queued",
+      "priority": 3
+    },
+    {
+      "id": "treasury_auction_cycle",
+      "thesis": "Large Treasury coupon auctions (3y/10y/30y, mid-month) require dealers to absorb supply, sometimes associated with rates volatility spilling into equities on auction day and the day before. Never tested in this repo.",
+      "data_source": "TreasuryDirect auction announcement/results calendar (free, treasurydirect.gov) for auction dates 2011-2026",
+      "status": "queued",
+      "priority": 4
+    }
+  ]
+}

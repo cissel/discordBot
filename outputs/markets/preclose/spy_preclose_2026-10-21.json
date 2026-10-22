@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-21",
+  "placed_at": "15:19:06",
+  "executed": true,
+  "order_id": "dd389315-da6c-489e-a66e-14331ded1a63",
+  "pending": true,
+  "fired": true,
+  "passed_risk": true,
+  "action": "BUY",
+  "order_shares": 3,
+  "target_shares": 20,
+  "position_size": 0.1898,
+  "spy_price_proxy": 771.98,
+  "signal_prob": 0.6318,
+  "sizing_reason": "TREND/VOL: SPY above 200dma (idx/ma 1.067) -> base 0.25 x vol_scalar 0.76 = 0.190 | shadow model: blend=0.6318 kelly_size=0.1",
+  "risk_flags": [],
+  "errors": [],
+  "fired_at": "15:52:27",
+  "fire_action": "BUY",
+  "fire_shares": 3
+}

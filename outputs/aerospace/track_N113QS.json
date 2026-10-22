@@ -1,0 +1,19 @@
+{
+  "tail_query": "N113QS",
+  "callsign": "EJA113",
+  "registration": "N113QS",
+  "hex": "a038c7",
+  "aircraft_type": "BOMBARDIER BD-700 Global 5000/5500",
+  "operator": "",
+  "altitude_ft": null,
+  "on_ground": true,
+  "ground_speed_kt": 0.0,
+  "vertical_rate_str": "unknown",
+  "heading_deg": null,
+  "lat": 43.641629,
+  "lon": -70.306598,
+  "squawk": "2737",
+  "updated_utc": "2026-10-20 18:14 UTC",
+  "match_kind": "registration",
+  "image_path": "/home/jhcv/discordBot/outputs/aerospace/track_N113QS.png"
+}

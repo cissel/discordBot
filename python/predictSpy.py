@@ -40,6 +40,7 @@ Usage:
 """
 
 import os
+import re
 import sys
 import json
 import pickle
@@ -73,22 +74,47 @@ VIX_REGIMES = [(15, "LOW"), (20, "NORMAL"), (30, "ELEVATED"), (999, "FEAR")]
 # hysteresis was only validated (and should only delay) the routing/threshold
 # side, not risk-cutting logic.
 REGIME_HYSTERESIS_N = 5
+# Regime ROUTING (dedicated chop model + chop GBM blend) disabled Oct 19 2026.
+# The regime label is VIX-percentile based and called "chop" on 74% of all days
+# and 73 of 75 live days, so it never routed anything; and the dedicated chop
+# model's latest validation fold had AUC 0.4999 / Spearman -0.0002 (zero signal)
+# while adding a 41-feature surface (7 NaN at inference today). Universal
+# logistic + universal GBM blend is used on every day. The regime label is
+# still computed and reported, and the regime flags remain as model FEATURES.
+REGIME_ROUTING_ENABLED = False
 REGIME_HISTORY_LOOKBACK = 60   # trailing days scanned to resolve the hysteresis state
+
+
+def latest_dated_model(prefix):
+    """Newest file matching EXACTLY {prefix}YYYY-MM-DD.pkl in MODEL_DIR, by date.
+    Strict match so experiment variants with extra suffixes never shadow prod."""
+    pat = re.compile(rf"^{re.escape(prefix)}(\d{{4}}-\d{{2}}-\d{{2}})\.pkl$")
+    hits = sorted((m.group(1), f) for f in os.listdir(MODEL_DIR) for m in [pat.match(f)] if m)
+    return os.path.join(MODEL_DIR, hits[-1][1]) if hits else None
 
 
 def load_best_model(model_type, target):
     """Load the most recently saved model of a given type/target.
     Returns (model_or_models, features) where model_or_models is either
     a single model (logistic/gbm/ridge) or a list (gbm_ensemble).
+
+    Matches ONLY the exact dated pattern spy_{type}_{target}_YYYY-MM-DD.pkl
+    and sorts by that date. A plain prefix match + reverse string sort used to
+    pick experiment variants with a suffix (e.g. spy_gbm_next_ret_5d_vadj_...,
+    a vol-adjusted-target model whose output is in z-units) over the real
+    production file because 'v' sorts after '2' - that bug fed /spy signal a
+    -68% "5-day expected return" from Jun 24 to Oct 19 2026.
     """
-    pattern = f"spy_{model_type}_{target}_"
-    candidates = sorted(
-        [f for f in os.listdir(MODEL_DIR) if f.startswith(pattern) and f.endswith(".pkl")],
-        reverse=True
-    )
+    pattern = re.compile(rf"^spy_{re.escape(model_type)}_{re.escape(target)}_(\d{{4}}-\d{{2}}-\d{{2}})\.pkl$")
+    candidates = []
+    for f in os.listdir(MODEL_DIR):
+        m = pattern.match(f)
+        if m:
+            candidates.append((m.group(1), f))
     if not candidates:
         return None, None
-    path = os.path.join(MODEL_DIR, candidates[0])
+    candidates.sort(reverse=True)
+    path = os.path.join(MODEL_DIR, candidates[0][1])
     with open(path, "rb") as f:
         bundle = pickle.load(f)
     # GBM ensemble stores list under "models", single models under "model"
@@ -109,13 +135,8 @@ def load_regime_model(regime_name):
     Dedicated chop model bundle has a 'platt' key for calibration and optional 'gbm_chop_models' for chop-blend."""
     # Dedicated chop model takes priority
     if regime_name == "chop":
-        ded_pattern = "spy_logistic_chop_dedicated_"
-        ded_candidates = sorted(
-            [f for f in os.listdir(MODEL_DIR) if f.startswith(ded_pattern) and f.endswith(".pkl")],
-            reverse=True
-        )
-        if ded_candidates:
-            path = os.path.join(MODEL_DIR, ded_candidates[0])
+        path = latest_dated_model("spy_logistic_chop_dedicated_")
+        if path:
             with open(path, "rb") as f:
                 bundle = pickle.load(f)
             return (bundle["model"], bundle.get("features", []),
@@ -125,27 +146,16 @@ def load_regime_model(regime_name):
                     bundle.get("gbm_chop_models", None))
 
     if regime_name in ("bear", "chop"):
-        cal_pattern = f"spy_logistic_regime_{regime_name}_calibrated_"
-        cal_candidates = sorted(
-            [f for f in os.listdir(MODEL_DIR) if f.startswith(cal_pattern) and f.endswith(".pkl")],
-            reverse=True
-        )
-        if cal_candidates:
-            path = os.path.join(MODEL_DIR, cal_candidates[0])
+        path = latest_dated_model(f"spy_logistic_regime_{regime_name}_calibrated_")
+        if path:
             with open(path, "rb") as f:
                 bundle = pickle.load(f)
             flip   = bundle.get("flip_probs", False)
             drop   = bundle.get("drop_from_blend", False)
             return bundle["model"], bundle.get("features", []), flip, drop, None, None
-    pattern = f"spy_logistic_regime_{regime_name}_"
-    candidates = sorted(
-        [f for f in os.listdir(MODEL_DIR) if f.startswith(pattern) and f.endswith(".pkl")
-         and "calibrated" not in f and "dedicated" not in f],
-        reverse=True
-    )
-    if not candidates:
+    path = latest_dated_model(f"spy_logistic_regime_{regime_name}_")
+    if not path:
         return None, None, False, False, None, None
-    path = os.path.join(MODEL_DIR, candidates[0])
     with open(path, "rb") as f:
         bundle = pickle.load(f)
     return bundle["model"], bundle.get("features", []), False, False, None, None
@@ -156,14 +166,9 @@ def predict_tomorrow_regime(df, row_df):
     Use the regime prediction model to forecast tomorrow's regime.
     Returns (predicted_regime, probabilities_dict) or (None, None) if model unavailable.
     """
-    pattern = "spy_regime_pred_"
-    candidates = sorted(
-        [f for f in os.listdir(MODEL_DIR) if f.startswith(pattern) and f.endswith(".pkl")],
-        reverse=True
-    )
-    if not candidates:
+    path = latest_dated_model("spy_regime_pred_")
+    if not path:
         return None, None
-    path = os.path.join(MODEL_DIR, candidates[0])
     with open(path, "rb") as f:
         bundle = pickle.load(f)
 
@@ -342,7 +347,7 @@ def predict(target_date=None):
     # Fallback: universal Logistic if regime model unavailable.
     regime_model, regime_feats, regime_flip, regime_drop, regime_platt, regime_gbm_chop = (
         load_regime_model(routing_regime)
-        if routing_regime else (None, None, False, False, None, None)
+        if (routing_regime and REGIME_ROUTING_ENABLED) else (None, None, False, False, None, None)
     )
     if regime_model and regime_feats and not regime_drop:
         logistic_model  = regime_model
@@ -358,7 +363,7 @@ def predict(target_date=None):
         regime_platt_live = None
         regime_gbm_chop_live = None
         model_label_1d = "logistic"
-        if routing_regime and not regime_model:
+        if routing_regime and not regime_model and REGIME_ROUTING_ENABLED:
             warnings_list.append(f"Regime model '{routing_regime}' not found, using universal logistic")
         elif regime_drop:
             warnings_list.append(f"Regime model '{routing_regime}' dropped (noise after flip), using universal logistic")

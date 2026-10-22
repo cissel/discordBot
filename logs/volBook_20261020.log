@@ -1,0 +1,8 @@
+=== volBook morning Tue 20 Oct 10:35:16 EDT 2026 ===
+Vol book 2026-10-20 | GEX q0 inverted=False VIX 19.99 scalar 0.62 -> ELIGIBLE | open 0 closed 0
+ENTRY IC261020: 2x 728/733P 800/805C exp 2026-11-20 (31d) credit 1.12 (mid 1.13) max loss $776 budget $815 spot 770.98 order 02ab173d-d88e-4a94-b678-b7bb0596da34 
+book P&L: realized +0, open +0 (est, mid marks, before fees)
+=== volBook afternoon Tue 20 Oct 15:20:19 EDT 2026 ===
+Vol book 2026-10-20 | GEX q0 inverted=False VIX 18.44 scalar 0.67 -> ELIGIBLE | open 1 closed 0
+IC261020 exp 2026-11-20 (31d) credit 1.12 mark 1.05 pnl +15
+book P&L: realized +0, open +15 (est, mid marks, before fees)

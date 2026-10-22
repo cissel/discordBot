@@ -38,6 +38,12 @@ import clvTracking
 OUT_DIR = os.path.expanduser("~/discordBot/outputs/sports/mlb/betting")
 MASTER_LOG_PATH = os.path.join(OUT_DIR, "hardrock_mlb_bets_log.csv")
 STATE_PATH = os.path.join(OUT_DIR, "recap_graded_events.json")
+GRADED_RESULTS_PATH = os.path.join(OUT_DIR, "hardrock_mlb_graded_results.csv")
+GRADED_RESULTS_FIELDS = [
+    "espnEventId", "mlbGame", "matchTime", "market", "betDescription",
+    "payout", "confidence", "expectedValue", "modelStatus", "win", "profit",
+    "clv", "gradedAt",
+]
 
 ESPN_SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?event={event_id}"
 
@@ -82,6 +88,22 @@ def load_state():
 def save_state(graded_ids):
     with open(STATE_PATH, "w") as f:
         json.dump(sorted(graded_ids), f)
+
+
+def append_graded_results(rows):
+    """Append one row per graded bet to the persistent results log, so
+    later rollups (total W/L, P&L, by bet-type, sub-edge mining) are a
+    fast CSV read instead of re-fetching/re-grading every final game
+    from ESPN. Mirrors nflBetsRecap.py's append_graded_results()."""
+    if not rows:
+        return
+    write_header = not os.path.exists(GRADED_RESULTS_PATH)
+    with open(GRADED_RESULTS_PATH, "a", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=GRADED_RESULTS_FIELDS)
+        if write_header:
+            w.writeheader()
+        for r in rows:
+            w.writerow(r)
 
 
 def load_master_log():
@@ -329,10 +351,13 @@ def main():
         first_snapshot = min(by_snapshot, key=lambda s: datetime.fromisoformat(s))
         snapshot_rows = by_snapshot[first_snapshot]
 
+        # CLV gate (clvGate.py): rows logged with clvGate != PASS are not
+        # counted as bets. Pre-gate rows (no column) grade as before.
         pos_ev_rows = [r for r in snapshot_rows
                        if r["modelStatus"] in ("espn_bpi", "draftkings_devig", "mlbapi_poisson")
                        and r.get("expectedValue")
-                       and float(r["expectedValue"]) > 0]
+                       and float(r["expectedValue"]) > 0
+                       and r.get("clvGate", "") in ("", None, "PASS")]
 
         if not pos_ev_rows:
             graded_events.add(eid)
@@ -354,6 +379,8 @@ def main():
         )
 
         graded = []
+        persist_rows = []
+        now_utc = datetime.now(timezone.utc)
         for r in pos_ev_rows:
             market = r["market"]
             if market == "props_odds":
@@ -364,6 +391,7 @@ def main():
                 continue  # unparseable, push, or no comparable actual stat
             win, detail = result
             profit = american_profit_per_dollar(r["payout"]) if win else -1.0
+            clv = clv_map.get(r.get("outcomeId"))
             graded.append({
                 "desc": r["betDescription"],
                 "payout": r["payout"],
@@ -372,12 +400,29 @@ def main():
                 "win": win,
                 "detail": detail,
                 "profit": profit,
-                "clv": clv_map.get(r.get("outcomeId")),
+                "clv": clv,
+            })
+            persist_rows.append({
+                "espnEventId": eid,
+                "mlbGame": r["mlbGame"],
+                "matchTime": r["matchTime"],
+                "market": market,
+                "betDescription": r["betDescription"],
+                "payout": r["payout"],
+                "confidence": r["confidence"],
+                "expectedValue": r["expectedValue"],
+                "modelStatus": r["modelStatus"],
+                "win": win,
+                "profit": profit,
+                "clv": clv["clv"] if clv and not clv.get("single_snapshot") else "",
+                "gradedAt": now_utc.isoformat(),
             })
 
         if not graded:
             graded_events.add(eid)
             continue
+
+        append_graded_results(persist_rows)
 
         wins = [g for g in graded if g["win"]]
         losses = [g for g in graded if not g["win"]]

@@ -24,29 +24,29 @@
   "level_orders": {
     "2443.04400472": {
       "side": "sell",
-      "order_id": "a214e174-2de1-477f-b428-36e1b6515407",
-      "qty": 0.009970855
+      "order_id": "970d28bb-512c-4ae7-a64e-7f162720b172",
+      "qty": 0.004123191
     },
-    "2387.43594808": {
-      "side": "buy",
-      "order_id": "a5f89ac4-218c-4014-9563-7af02fd62d8e",
-      "qty": 0.067737694
+    "2424.50798584": {
+      "side": "sell",
+      "order_id": "ef36a838-fa93-4d16-b8ec-7450eb58770e",
+      "qty": 0.040089403
+    },
+    "2405.97196696": {
+      "side": "sell",
+      "order_id": "36c82c27-13b5-4e15-b186-952ff394afae",
+      "qty": 0.004186969
     },
     "2396.70395752": {
-      "side": "buy",
-      "order_id": "445e2489-1d13-4b3d-994c-f0b4608e1bf9",
-      "qty": 0.004193258816328439
-    },
-    "2415.2399764": {
-      "side": "buy",
-      "order_id": "e23892c6-f304-4cba-902d-f46067b797f2",
-      "qty": 0.040452113
+      "side": "sell",
+      "order_id": "2cf7c458-8706-46eb-bfa4-739a37af7da6",
+      "qty": 0.066229489
     }
   },
   "pending_reorders": [],
-  "last_fill_activity_id": "20261018224549566::e684b80c-48bf-4478-bab7-52a0c0d2082f",
-  "realized_pl": 20.39,
-  "completed_round_trips": 34,
+  "last_fill_activity_id": "20261022123135074::dcaec594-1e4c-4762-b5e5-b41f3bd43275",
+  "realized_pl": 33.11,
+  "completed_round_trips": 73,
   "halted": false,
   "halt_reason": null,
   "created_at": "2026-10-15T21:10:49",

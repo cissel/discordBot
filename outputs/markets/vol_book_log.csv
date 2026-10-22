@@ -1,0 +1,9 @@
+ts,event,pos_id,exp,dte,spot,put_long,put_short,call_short,call_long,contracts,credit,mark,pnl_usd,reason,gex_q,inverted,vix,scalar,order_id,note
+2026-10-19T15:43:33,skip,,,,,,,,,,,,,regime ineligible,1,False,19.99,0.7,,
+2026-10-19T15:43:45,entry(dry),IC261019,2026-11-20,32,768.09,724.0,729.0,797.0,802.0,1,1.07,,,deltas -0.16/+0.16 mid 1.09 nat 1.03,1,False,19.99,0.7,DRY-RUN,
+2026-10-19T15:45:07,skip,,,,,,,,,,,,,regime ineligible,1,False,19.99,0.7,,
+2026-10-19T19:16:55,entry(dry),IC261019,2026-11-20,32,766.73,723.0,728.0,797.0,802.0,1,1.12,,,deltas -0.16/+0.16 mid 1.13 nat 1.09,0,False,19.99,0.62,DRY-RUN,ret5=-0.01271 (down)
+2026-10-20T09:59:15,entry(dry),IC261020,2026-11-20,31,767.635,724.0,729.0,797.0,802.0,1,1.09,,,deltas -0.16/+0.16 mid 1.11 nat 1.01,0,False,19.99,0.62,DRY-RUN,ret5=-0.01271 (down)
+2026-10-20T10:13:25,entry(dry),IC261020,2026-11-20,31,768.88,725.0,730.0,798.0,803.0,2,1.09,,,deltas -0.16/+0.16 mid 1.10 nat 1.00,0,False,19.99,0.62,DRY-RUN,ret5=-0.01271 (down)
+2026-10-20T10:35:18,entry,IC261020,2026-11-20,31,770.98,728.0,733.0,800.0,805.0,2,1.12,,,deltas -0.16/+0.16 mid 1.13 nat 1.02,0,False,19.99,0.62,02ab173d-d88e-4a94-b678-b7bb0596da34,ret5=-0.01271 (down)
+2026-10-22T10:35:19,entry,IC261022,2026-11-20,29,762.61,717.0,722.0,793.0,798.0,2,1.12,,,deltas -0.16/+0.16 mid 1.14 nat 1.04,1,False,17.31,0.808,88f4adef-a5aa-4b6d-bb09-faf8f0e9d5fc,ret5=0.00403 (flat)

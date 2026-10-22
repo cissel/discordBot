@@ -28,7 +28,7 @@ raw_text <- strsplit(df, "\n")[[1]]
 data_lines <- raw_text[!grepl("^#", 
                               raw_text)]
 
-df <- read_table2(paste(data_lines, 
+df <- read_table(paste(data_lines, 
                         collapse = "\n"),
   col_names = c("YY", 
                 "MM", 

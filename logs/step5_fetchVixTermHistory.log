@@ -1,2 +1,11 @@
-Cache exists: 2594 rows, last=2026-10-16
-Cache already up to date.
+Cache exists: 2597 rows, last=2026-10-21
+Fetching ^VVIX (vvix)...
+  [WARN] got 0 rows for ^VVIX
+Fetching ^VIX9D (vix9d)...
+  [WARN] got 0 rows for ^VIX9D
+Fetching ^VIX3M (vix3m)...
+  [WARN] got 0 rows for ^VIX3M
+Fetching ^VIX6M (vix6m)...
+  [WARN] got 0 rows for ^VIX6M
+No new data fetched.
+EXIT:0

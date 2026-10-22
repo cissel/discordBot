@@ -1,0 +1,4 @@
+label,eligible_frac,n_days,mean_volpts,hit_rate,monthly_sharpe,worst_month_volpts,nw_t,mean_H1,mean_H2,mean_holdout,n_holdout
+"UNCONDITIONAL (every day, reference only)",1.0,2321,1.47,0.831,0.578,-138.71,1.12,0.437,2.502,2.476,465
+BASELINE (live gate: not-GEXq1 AND term-not-inverted),0.768,1782,1.8296,0.857,1.818,-111.15,1.53,0.739,2.916,3.632,361
+PROPOSED (live gate AND COR3M walk-forward bottom quintile),0.315,730,1.8048,0.853,0.759,-16.87,2.9,0.309,2.417,2.501,196

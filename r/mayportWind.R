@@ -1,14 +1,13 @@
-# windPlot.R by JHCV
+# mayportWind.R by JHCV
+# Pulls Mayport wind data directly from NOAA CO-OPS API (no rnoaa dependency
+# -- rnoaa was archived off CRAN and this script was broken until this fix
+# rewrote it the same way tidePlot.R already moved off rnoaa).
 
-##### Required Packages #####
-
-library(tidyverse)
-library(rvest)
-library(httr)
-library(magick)
-library(rnoaa)
-
-#####
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(httr)
+  library(jsonlite)
+})
 
 ##### Plot Appearance Theme #####
 
@@ -34,70 +33,85 @@ myTheme <- theme(legend.position = "none",
 myLegend <- theme(legend.position = "right",
                   legend.background = element_rect(fill = "#02233F"),
                   legend.text = element_text(color = "white"),
-                  legend.title = element_text(color = "white"))#,
-#legend.key.height = unit(100, "cm"))
+                  legend.title = element_text(color = "white"))
 
 #####
 
-##### NOAA API KEY #####
+##### NOAA CO-OPS API #####
 
-noaaKey <- "GyHGAotydjayGDfwSedFhZhHqcXkLavr"
-Sys.setenv("NOAA_KEY"="GyHGAotydjayGDfwSedFhZhHqcXkLavr")
+STATION  <- "8720218"   # Mayport Bar Pilots Dock
+BASE_URL <- "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
 
-#####
+begin_date <- format(Sys.Date() - 1, "%Y%m%d")
+end_date   <- format(Sys.Date() + 1, "%Y%m%d")
 
-##### NOAA Stations #####
+fetch_coops <- function(product) {
+  resp <- GET(BASE_URL, query = list(
+    station    = STATION,
+    begin_date = begin_date,
+    end_date   = end_date,
+    product    = product,
+    datum      = "STND",
+    time_zone  = "lst_ldt",
+    units      = "english",
+    format     = "json",
+    application = "discordbot"
+  ))
 
-stAugBuoyStation <- "41117"
+  if (status_code(resp) != 200) {
+    stop(sprintf("NOAA API error %d for product '%s'", status_code(resp), product))
+  }
+
+  body <- content(resp, as = "text", encoding = "UTF-8")
+  parsed <- fromJSON(body)
+
+  if (!is.null(parsed$error)) {
+    stop(sprintf("NOAA API returned error: %s", parsed$error$message))
+  }
+
+  parsed
+}
 
 #####
 
 ##### Pull Data #####
 
-mayportMeta <- data.frame("location" = c("Bar Pilots Dock"), "id" = c("8720218"))
-
-mw <- coops_search(station_name = mayportMeta$id, 
-                   begin_date = as.numeric(gsub("-", "", Sys.Date()-1)), 
-                   end_date = as.numeric(gsub("-", "", Sys.Date()+1)), 
-                   product = "wind", 
-                   datum = "stnd",
-                   time_zone = "lst")$data |>
-  
-  mutate(spd = s*1.15078,
-         gusts = as.numeric(g)*1.15078)
+cat("Fetching wind observations...\n")
+mw_raw <- fetch_coops("wind")
+mw <- mw_raw$data |>
+  transmute(
+    t    = as.POSIXct(t, format = "%Y-%m-%d %H:%M", tz = "America/New_York"),
+    spd  = as.numeric(s),     # units=english -> mph
+    gusts = as.numeric(g),    # units=english -> mph
+    d    = as.numeric(d),
+    dr   = dr
+  ) |>
+  filter(!is.na(spd))
 
 mws <- mw |>
-  
-  select(t, spd, d, dr)
-
+  select(t, spd, d, dr) |>
+  rename(windSpd = spd)
 mws$type <- "Sustained"
 
 mwg <- mw |>
-  
-  select(t, gusts, d, dr)
-
-mwg$type <- "Gusts"
-
-# Rename columns to be consistent for both dataframes
-mws <- mws %>%
-  rename(windSpd = spd)
-
-mwg <- mwg %>%
+  select(t, gusts, d, dr) |>
   rename(windSpd = gusts)
+mwg$type <- "Gusts"
 
 # Combine the two dataframes vertically
 mayportWinds <- bind_rows(mws, mwg)
 
-# View the combined dataframe
-#head(mayportWinds)
+#####
 
-mayportWindPlot <- ggplot(mayportWinds, 
+##### Plot #####
+
+mayportWindPlot <- ggplot(mayportWinds,
                           aes(x = t,
                               y = windSpd,
                               color = type)) +
-  
+
   geom_line() +
-  
+
   labs(x = "Time",
        y = "Wind Speed (mph)",
        color = "Type",
@@ -110,15 +124,20 @@ mayportWindPlot <- ggplot(mayportWinds,
        title = paste("Mayport Winds as of: ",
                      tail(mayportWinds$t, 1),
                      sep = "")) +
-  
+
   myTheme +
   myLegend
 
-ggsave("~/discordBot/outputs/weather/mayportWinds.png",
+out_path <- path.expand("~/discordBot/outputs/weather/mayportWinds.png")
+dir.create(dirname(out_path), recursive = TRUE, showWarnings = FALSE)
+
+ggsave(out_path,
        plot = mayportWindPlot,
        width = 10,
        height = 4,
        dpi = 300,
        bg = "transparent")
+
+cat(sprintf("Saved: %s\n", out_path))
 
 #####

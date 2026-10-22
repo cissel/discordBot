@@ -1,0 +1,68 @@
+Loading 5-min features + swing labels (suffix='')...
+Merged: 113128 bars, 1451 days
+TX cost per side: 0.12 bp
+[spyVolTargetWFCV] 2558 prepped rows, 91 features, 2016-04-06-2026-10-16
+  fold 1: 2022-08-31-2023-09-13  tr=1550 va=252  pooled OOS so far: 252
+  fold 2: 2023-09-14-2024-09-19  tr=1802 va=252  pooled OOS so far: 504
+  fold 3: 2024-09-20-2025-10-03  tr=2054 va=252  pooled OOS so far: 756
+  fold 4: 2025-10-06-2026-10-16  tr=2306 va=252  pooled OOS so far: 1008
+  dropped 1 OOS row(s) with unresolved next_ret_1d
+Fold day counts: {0: 446, 1: 252, 2: 252, 3: 252, 4: 249}
+
+GATE: prior-day VIX < 25.0 AND prior-day GEX trailing-252 quintile != 1
+  Days with missing VIX: 0  missing GEX quintile: 0  (missing => ineligible)
+  Overall eligible: 77.3% of 1451 days (VIX ok 86.7%, GEX ok 81.7%)
+
+======================================================================
+Fold 1: expanding train (all days < fold 1 start)
+======================================================================
+  Train bars: 34753 (446 days)  Eval bars: 19647 (252 days)
+  Eval AUC swing_high: 0.8339  swing_low: 0.8504
+  Eligible days: 203/252 = 80.6%  (VIX<25: 81.7%, GEX not Q1: 90.9%)
+  UNGATED: N trades= 1113  Sharpe=-0.477  Total P&L=-5.25%  Boot mean=-0.603  95%CI=[-2.565,+1.370]  P(>0)=28.3%
+  GATED  : N trades=  601  Sharpe=+0.810  Total P&L=+6.35%  Boot mean=+0.754  95%CI=[-0.661,+2.137]  P(>0)=85.5%
+
+======================================================================
+Fold 2: expanding train (all days < fold 2 start)
+======================================================================
+  Train bars: 54400 (698 days)  Eval bars: 19653 (252 days)
+  Eval AUC swing_high: 0.8400  swing_low: 0.8752
+  Eligible days: 225/252 = 89.3%  (VIX<25: 98.8%, GEX not Q1: 89.3%)
+  UNGATED: N trades=  584  Sharpe=+1.450  Total P&L=+10.95%  Boot mean=+1.341  95%CI=[-0.233,+2.953]  P(>0)=94.9%
+  GATED  : N trades=  432  Sharpe=+0.894  Total P&L=+5.83%  Boot mean=+0.979  95%CI=[-1.076,+3.071]  P(>0)=81.6%
+
+======================================================================
+Fold 3: expanding train (all days < fold 3 start)
+======================================================================
+  Train bars: 74053 (950 days)  Eval bars: 19653 (252 days)
+  Eval AUC swing_high: 0.8543  swing_low: 0.8918
+  Eligible days: 198/252 = 78.6%  (VIX<25: 92.5%, GEX not Q1: 79.4%)
+  UNGATED: N trades=  882  Sharpe=+0.584  Total P&L=+5.75%  Boot mean=+0.330  95%CI=[-0.947,+1.470]  P(>0)=71.7%
+  GATED  : N trades=  340  Sharpe=+1.021  Total P&L=+5.09%  Boot mean=+0.550  95%CI=[-0.961,+2.079]  P(>0)=75.9%
+
+======================================================================
+Fold 4: expanding train (all days < fold 4 start)
+======================================================================
+  Train bars: 93706 (1202 days)  Eval bars: 19422 (249 days)
+  Eval AUC swing_high: 0.8495  swing_low: 0.8792
+  Eligible days: 200/249 = 80.3%  (VIX<25: 93.6%, GEX not Q1: 80.7%)
+  UNGATED: N trades=  667  Sharpe=+0.843  Total P&L=+5.85%  Boot mean=+0.874  95%CI=[-1.335,+3.099]  P(>0)=77.3%
+  GATED  : N trades=  374  Sharpe=-0.475  Total P&L=-2.50%  Boot mean=-0.355  95%CI=[-2.171,+1.679]  P(>0)=35.3%
+
+======================================================================
+SUMMARY: GATED vs UNGATED (cost 0.12bp/side)
+======================================================================
+  Fold     Elig%   Sharpe U  Sharpe G   Trades U  Trades G     P&L U    P&L G               CI U              CI G   P>0 U  P>0 G
+  1        80.6%     -0.477    +0.810       1113       601    -5.25%   +6.35%  [-2.56,+1.37]   [-0.66,+2.14]    28.3%  85.5%
+  2        89.3%     +1.450    +0.894        584       432   +10.95%   +5.83%  [-0.23,+2.95]   [-1.08,+3.07]    94.9%  81.6%
+  3        78.6%     +0.584    +1.021        882       340    +5.75%   +5.09%  [-0.95,+1.47]   [-0.96,+2.08]    71.7%  75.9%
+  4        80.3%     +0.843    -0.475        667       374    +5.85%   -2.50%  [-1.34,+3.10]   [-2.17,+1.68]    77.3%  35.3%
+
+  POOLED UNGATED (1005 days, 3246 trades): Sharpe=+0.481  Boot mean=+0.466  95%CI=[-0.502,+1.427]  P(>0)=83.0%
+  POOLED GATED   (1005 days, 1747 trades, 82.2% eligible): Sharpe=+0.590  Boot mean=+0.588  95%CI=[-0.297,+1.455]  P(>0)=90.6%
+  (info) GATED Sharpe over eligible days only (826 days): +0.651
+
+  PRE-REGISTERED PASS RULE: fold1 gated Sharpe >= 0 -> +0.810 OK; pooled gated CI lower > 0 -> -0.297 FAIL
+  VERDICT: FAIL
+
+  Saved daily P&L (gated + ungated + gate inputs) -> /home/jhcv/discordBot/outputs/markets/spy_swing_wfcv_gated_daily_pnl.csv

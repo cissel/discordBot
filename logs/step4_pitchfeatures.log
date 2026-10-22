@@ -11,16 +11,12 @@
 [buildPitchFeatures] indexing statcast by batter...
   662 unique batters in statcast data
   built name->mlbam crosswalk: 1324 entries
-  eligible feature rows (within statcast window): 27,119
+  eligible feature rows (within statcast window): 9,623
   statcast window: 2026-03-25 to 2026-09-27
-  progress: 50/217 players, 6,316 rows patched
-  progress: 100/217 players, 12,359 rows patched
-  progress: 150/217 players, 18,668 rows patched
-  progress: 200/217 players, 24,799 rows patched
+  progress: 50/83 players, 5,920 rows patched
 
 [buildPitchFeatures] done.
-  rows patched with pitch features: 26,772 / 27,119
+  rows patched with pitch features: 9,490 / 9,623
   players skipped (no statcast match): 0
   feature columns added: ['bat_speed_r14', 'swing_length_r14', 'attack_angle_r14', 'sweet_spot_pct_r14', 'fastball_pct_r14', 'breaking_pct_r14', 'offspeed_pct_r14', 'chase_rate_r14', 'zone_contact_r14', 'whiff_rate_r14', 'first_pitch_strike_r14', 'xba_r14', 'xwoba_pitch_r14', 'hard_contact_r14', 'barrel_rate_r14', 'times_thru_order_r14', 'count_leverage_r14']
-  wrote 162,048 rows -> /home/jhcv/discordBot/outputs/features/sports/batter_features.csv
-EXIT:0
+  wrote 144,552 rows -> /home/jhcv/discordBot/outputs/features/sports/batter_features.csv

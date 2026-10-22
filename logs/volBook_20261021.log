@@ -1,0 +1,9 @@
+=== volBook morning Wed 21 Oct 10:35:16 EDT 2026 ===
+Vol book 2026-10-21 | GEX q1 inverted=False VIX 18.44 scalar 0.76 -> ELIGIBLE | open 1 closed 0
+IC261020 exp 2026-11-20 (30d) credit 1.12 mark 1.16 pnl -8
+no entry: last entry 1d ago (min 2)
+book P&L: realized +0, open -8 (est, mid marks, before fees)
+=== volBook afternoon Wed 21 Oct 15:20:21 EDT 2026 ===
+Vol book 2026-10-21 | GEX q1 inverted=False VIX 18.44 scalar 0.76 -> ELIGIBLE | open 1 closed 0
+IC261020 exp 2026-11-20 (30d) credit 1.12 mark 1.17 pnl -10
+book P&L: realized +0, open -10 (est, mid marks, before fees)

@@ -365,10 +365,13 @@ def main():
                              key=lambda s: datetime.fromisoformat(s))
         snapshot_rows = by_snapshot[last_snapshot]
 
+        # CLV gate (clvGate.py): rows logged with clvGate != PASS are not
+        # counted as bets. Pre-gate rows (no column) grade as before.
         pos_ev_rows = [r for r in snapshot_rows
                        if r["modelStatus"] not in ("no_model", "", None)
                        and r.get("expectedValue")
-                       and float(r["expectedValue"]) > 0]
+                       and float(r["expectedValue"]) > 0
+                       and r.get("clvGate", "") in ("", None, "PASS")]
 
         if not pos_ev_rows:
             graded_events.add(eid)

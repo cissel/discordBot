@@ -54,14 +54,14 @@ BARS_URL   = "https://data.alpaca.markets/v2/stocks/bars"
 # CPER (copper ETF) added Oct 2026 for copper/gold ratio feature (growth risk-on/off
 # proxy); liquid from 2020-07 only. MOVE (ICE BofA bond vol index ETN) added same day
 # for vix_move_ratio (stock/bond vol divergence); liquid from 2021-03 only.
-ALPACA_TICKERS = ["SPY", "QQQ", "GLD", "USO", "CPER", "MOVE"]
+ALPACA_TICKERS = ["SPY", "QQQ", "GLD", "USO", "CPER"]   # "MOVE" removed Oct 19 2026: it is Movano Inc stock, not the MOVE index
 ALPACA_START   = "2016-01-01"  # matches existing cache history start
 
 # Tickers where buildSpyFeatures.py needs the raw CLOSE level (not just daily return) —
 # copper/gold ratio and vix/move ratio both need levels. GLD level is reconstructed
 # from its existing _ret series (same cumprod trick as SPY_price) so it stays out of
 # this set — only CPER/MOVE need a dedicated level cache file.
-LEVEL_TICKERS = {"CPER", "MOVE"}
+LEVEL_TICKERS = {"CPER"}
 
 # FRED-sourced level series (mirrors fetch_fred_claims.py pattern)
 # Net liquidity / credit / breakeven series added Oct 2026 after Spearman-corr
@@ -198,7 +198,9 @@ def update_alpaca_ticker(symbol, backfill=False):
 
     if not existing.empty:
         combined = pd.concat([existing, df], ignore_index=True)
-        combined = combined.drop_duplicates("date").sort_values("date")
+        # keep="last": the pre-close run (15:25) writes today's PARTIAL bar; the 16:15
+        # run must overwrite it with the real close, not keep the first copy.
+        combined = combined.drop_duplicates("date", keep="last").sort_values("date")
     else:
         combined = df.sort_values("date")
 

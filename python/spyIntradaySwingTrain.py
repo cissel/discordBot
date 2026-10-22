@@ -68,7 +68,11 @@ LABEL_PATH = os.path.expanduser(
 OUT_PLOT = os.path.expanduser(
     f"~/discordBot/outputs/markets/spy_intraday_swing_equity{_LABEL_SUFFIX}.png")
 
-TX_COST_BPS = 0.5           # one-way, in bps of notional (matches TX_COST=0.0005 elsewhere)
+# One-way cost in bps of notional. Was 0.5 (and 1.0 in the first spike). Oct 19 2026:
+# spyExecutionCost.py MEASURED SPY NBBO half-spread at 0.12bp median (0.10 in the last
+# 30 min, 0.155 in the first 5 min) and realized paper market-fill slippage at ~0, so
+# 0.12 is the honest default for small SPY market orders. Override: SWING_TX_BPS env.
+TX_COST_BPS = float(os.environ.get("SWING_TX_BPS", "0.12"))
 ENTRY_THRESH = 0.35
 HOLD_BARS_MAX = 24          # ~2 hours max hold (24 x 5min)
 MIN_BARS_BEFORE_EOD = 6     # don't open new positions in the last 30min (no time to exit cleanly)
@@ -302,7 +306,7 @@ def main():
 
         # tx-cost sensitivity (the thing that killed the first swing spike)
         print("  TX-cost sensitivity:")
-        for tx_bps in [0.0, 0.5, 1.0, 2.0, 5.0]:
+        for tx_bps in [0.0, 0.12, 0.25, 0.5, 1.0, 2.0]:   # 0.12 = measured, 0.25 = conservative round-trip-ish
             tp, _, nt = backtest_reversal(df_eval, prob_high, prob_low, tx_cost_bps=tx_bps)
             dp = daily_pnl_from_bar_pnl(df_eval, tp)
             sh = ann_sharpe_bars(dp.values, bars_per_year=252)

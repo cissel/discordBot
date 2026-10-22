@@ -647,11 +647,20 @@ def run(symbol, budget, levels, atr_mult, min_spacing_pct, breakout_atr_mult,
 
     open_buy = sum(1 for v in state["level_orders"].values() if v["side"] == "buy")
     open_sell = sum(1 for v in state["level_orders"].values() if v["side"] == "sell")
+    # Broker fees (Alpaca paper charges crypto pair fees) from the daily
+    # pnlLedger run - realized_pl above is gross round-trip P&L.
+    try:
+        from alpacaFees import fees_for_symbol
+        fees_usd = fees_for_symbol(symbol)
+    except Exception:
+        fees_usd = 0.0
     result["grid"] = {
         "lower_bound": state["lower_bound"], "upper_bound": state["upper_bound"],
         "spacing_pct": state["spacing_pct"], "qty_per_level": state["qty_per_level"],
         "open_buy_levels": open_buy, "open_sell_levels": open_sell,
         "realized_pl": state.get("realized_pl", 0.0),
+        "fees_usd": round(fees_usd, 2),
+        "realized_pl_net": round(state.get("realized_pl", 0.0) + fees_usd, 2),
         "completed_round_trips": state.get("completed_round_trips", 0),
     }
 

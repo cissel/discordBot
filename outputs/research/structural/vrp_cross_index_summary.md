@@ -1,0 +1,58 @@
+# VRP cross-index study: does the premium and the term gate generalise to QQQ (VXN) and IWM (RVX)?
+
+Common window 2016-06-24 -> 2026-09-17, 2572 days. Gate = VIX9D <= VIX3M (SPX term structure, lagged one day), applied to all indices.
+
+SPY (VIX): **PARTIAL**. H1 fail {'a_mean_pos': True, 'b_nw_t': False, 'c_both_halves_pos': True}. H2 ok {'H1_sharpe_up': True, 'H1_worst_month_better': True, 'H2_sharpe_up': True, 'H2_worst_month_better': True}.
+
+QQQ (VXN): **PARTIAL**. H1 fail {'a_mean_pos': True, 'b_nw_t': False, 'c_both_halves_pos': True}. H2 ok {'H1_sharpe_up': True, 'H1_worst_month_better': True, 'H2_sharpe_up': True, 'H2_worst_month_better': True}.
+
+IWM (RVX): **FAIL**. H1 fail {'a_mean_pos': True, 'b_nw_t': False, 'c_both_halves_pos': True}. H2 fail {'H1_sharpe_up': True, 'H1_worst_month_better': True, 'H2_sharpe_up': False, 'H2_worst_month_better': True}.
+
+Daily gated P&L correlation above 0.9: SPY-QQQ 0.98, SPY-IWM 0.97, QQQ-IWM 0.94
+
+## Results
+
+| index   | iv_index   | gate      | period   |   n_days |   eligible_frac |   mean_volpts |   hit_rate |   monthly_sharpe |   worst_month_volpts | worst_month   |   worst_entry_volpts | worst_entry_date   |   nw_t |   mean_rv_over_iv |
+|:--------|:-----------|:----------|:---------|---------:|----------------:|--------------:|-----------:|-----------------:|---------------------:|:--------------|---------------------:|:-------------------|-------:|------------------:|
+| SPY     | VIX        | gate_none | full     |     2572 |           1     |         1.924 |      0.843 |            0.917 |              -115.75 | 2020-02       |               -213.8 | 2020-02-19         |   1.88 |             0.791 |
+| SPY     | VIX        | gate_none | H1       |     1263 |           1     |         1.2   |      0.833 |            0.571 |              -115.75 | 2020-02       |               -213.8 | 2020-02-19         |   0.62 |             0.784 |
+| SPY     | VIX        | gate_none | H2       |     1309 |           1     |         2.623 |      0.853 |            2.537 |               -36.25 | 2025-03       |                -66.5 | 2025-03-25         |   3.72 |             0.798 |
+| SPY     | VIX        | gate_term | full     |     2252 |           0.876 |         2.249 |      0.859 |            2.043 |               -92.63 | 2020-02       |               -213.8 | 2020-02-19         |   2.65 |             0.775 |
+| SPY     | VIX        | gate_term | H1       |     1092 |           0.865 |         1.636 |      0.856 |            1.491 |               -92.63 | 2020-02       |               -213.8 | 2020-02-19         |   0.99 |             0.763 |
+| SPY     | VIX        | gate_term | H2       |     1160 |           0.886 |         2.826 |      0.861 |            2.694 |               -18.48 | 2025-03       |                -66.5 | 2025-03-25         |   5.31 |             0.786 |
+| QQQ     | VXN        | gate_none | full     |     2572 |           1     |         1.305 |      0.788 |            0.608 |              -104.88 | 2020-02       |               -190   | 2020-02-14         |   1.3  |             0.863 |
+| QQQ     | VXN        | gate_none | H1       |     1263 |           1     |         0.91  |      0.794 |            0.461 |              -104.88 | 2020-02       |               -190   | 2020-02-14         |   0.49 |             0.848 |
+| QQQ     | VXN        | gate_none | H2       |     1309 |           1     |         1.687 |      0.782 |            1.217 |               -39.55 | 2025-03       |                -69.4 | 2025-03-25         |   2    |             0.878 |
+| QQQ     | VXN        | gate_term | full     |     2252 |           0.876 |         1.843 |      0.806 |            1.587 |               -82.23 | 2020-02       |               -190   | 2020-02-14         |   2.27 |             0.844 |
+| QQQ     | VXN        | gate_term | H1       |     1092 |           0.865 |         1.61  |      0.818 |            1.32  |               -82.23 | 2020-02       |               -190   | 2020-02-14         |   1.06 |             0.822 |
+| QQQ     | VXN        | gate_term | H2       |     1160 |           0.886 |         2.062 |      0.795 |            1.703 |               -19.22 | 2025-03       |                -69.4 | 2025-03-25         |   3.15 |             0.864 |
+| IWM     | RVX        | gate_none | full     |     2572 |           1     |         1.876 |      0.805 |            0.784 |              -129.87 | 2020-02       |               -242.7 | 2020-02-19         |   1.65 |             0.857 |
+| IWM     | RVX        | gate_none | H1       |     1263 |           1     |         0.899 |      0.801 |            0.429 |              -129.87 | 2020-02       |               -242.7 | 2020-02-19         |   0.4  |             0.855 |
+| IWM     | RVX        | gate_none | H2       |     1309 |           1     |         2.818 |      0.808 |            2.088 |               -23.19 | 2025-03       |                -40.5 | 2025-03-25         |   5.02 |             0.858 |
+| IWM     | RVX        | gate_term | full     |     2252 |           0.876 |         2.287 |      0.815 |            2.112 |              -103.95 | 2020-02       |               -242.7 | 2020-02-19         |   2.52 |             0.845 |
+| IWM     | RVX        | gate_term | H1       |     1092 |           0.865 |         1.664 |      0.82  |            1.825 |              -103.95 | 2020-02       |               -242.7 | 2020-02-19         |   0.93 |             0.835 |
+| IWM     | RVX        | gate_term | H2       |     1160 |           0.886 |         2.873 |      0.811 |            1.994 |               -11.34 | 2025-03       |                -40.5 | 2025-03-25         |   5.88 |             0.854 |
+
+## Correlation of daily gated P&L
+
+|     |   SPY |   QQQ |   IWM |
+|:----|------:|------:|------:|
+| SPY | 1     | 0.977 | 0.969 |
+| QQQ | 0.977 | 1     | 0.941 |
+| IWM | 0.969 | 0.941 | 1     |
+
+## Correlation of daily ungated P&L
+
+|     |   SPY |   QQQ |   IWM |
+|:----|------:|------:|------:|
+| SPY | 1     | 0.979 | 0.967 |
+| QQQ | 0.979 | 1     | 0.942 |
+| IWM | 0.967 | 0.942 | 1     |
+
+## Correlation of monthly (every 21st day) gated P&L
+
+|     |   SPY |   QQQ |   IWM |
+|:----|------:|------:|------:|
+| SPY | 1     | 0.902 | 0.795 |
+| QQQ | 0.902 | 1     | 0.741 |
+| IWM | 0.795 | 0.741 | 1     |

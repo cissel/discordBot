@@ -37,6 +37,7 @@ import os
 import sys
 import json
 import math
+import csv
 import datetime
 import argparse
 import importlib.util
@@ -51,7 +52,53 @@ PREDICT_SCRIPT = os.path.expanduser("~/discordBot/python/predictSpy.py")
 
 # Risk limits
 MAX_POSITION_PCT   = 0.20    # never more than 20% of equity in SPY
-MAX_DAILY_LOSS_PCT = 0.02    # halt trading if daily P&L < -2% of equity
+MAX_DAILY_LOSS_PCT = 0.02    # halt if the SPY STRATEGY's own daily P&L < -2% of equity
+MAX_STRATEGY_DD_PCT = 0.05   # halt new buys if the SPY strategy's cumulative P&L is > 5% of equity below its peak
+                             # (was 2.5% under the Kelly-sized model; the trend/vol book runs ~10-30% exposure)
+
+# ── Strategy mode (Oct 19 2026) ──────────────────────────────────────────────
+# "trend_vol": long SPY when its close is above the 200-day moving average, flat
+#   below; exposure = BASE_EXPOSURE x vol-regime scalar (spyVolRegime). Rebalance
+#   only when the target moves by more than REBALANCE_BAND of itself or the trend
+#   state flips. The direction model still runs every day and is logged
+#   (signal_direction / signal_prob) so the watchdog keeps scoring it against
+#   always-UP, but it does not size or gate the position (shadow mode).
+#   Evidence: studies 8 and 10 (python/research/structural/spy_direction_audit.py,
+#   spy_horizon_baseline_study.py): the model is indistinguishable from always-UP
+#   out of sample (log-loss 0.72 vs 0.69), and the 200dma rule matches or beats it
+#   (Sharpe 0.85 vs 0.72, maxDD -24% vs -44%, NW t 0.13) with 6 trades a year.
+# "model": the previous behaviour (Kelly size from predictSpy x vol scalar).
+STRATEGY_MODE  = "trend_vol"
+BASE_EXPOSURE  = 0.25     # fraction of equity in SPY when above the 200dma at vol scalar 1.0
+TREND_MA_DAYS  = 200
+REBALANCE_BAND = 0.10     # ignore target changes smaller than 10% of the current target
+SPY_RET_CACHE  = os.path.expanduser("~/discordBot/outputs/markets/cache/SPY.csv")
+
+
+def trend_state(ma_days=TREND_MA_DAYS):
+    """SPY close vs its 200-day MA from the daily-return cache (which carries today's
+    provisional row in the pre-close run). Returns (above: bool, ratio index/MA)."""
+    import csv as _csv
+    rets = []
+    with open(SPY_RET_CACHE) as f:
+        for row in _csv.DictReader(f):
+            try:
+                rets.append(float(row["SPY_ret"]))
+            except (ValueError, KeyError):
+                continue
+    if len(rets) < ma_days + 1:
+        raise RuntimeError(f"only {len(rets)} rows in SPY.csv, need {ma_days}")
+    idx, lvl = [], 1.0
+    for r in rets:
+        lvl *= (1.0 + r)
+        idx.append(lvl)
+    ma = sum(idx[-ma_days:]) / ma_days
+    return idx[-1] > ma, idx[-1] / ma
+LEDGER_DAILY = os.path.expanduser("~/discordBot/outputs/markets/pnl_ledger_daily.csv")
+# NOTE (Oct 2026): this paper account is shared with other bots (MM, crypto
+# grids). Account-level equity / last_equity therefore says nothing about THIS
+# strategy, so every risk check below is computed from the SPY position and
+# the per-strategy ledger (pnlLedger.py), never from account P&L.
 MIN_ORDER_SHARES   = 1       # don't trade fractional shares or 0-share orders
 MAX_SHARES_PER_DAY = 500     # hard cap on single-day order size (safety)
 
@@ -117,12 +164,34 @@ def get_spy_position(headers):
             "market_value": float(data.get("market_value", 0)),
             "avg_entry":    float(data.get("avg_entry_price", 0)),
             "unrealized_pl": float(data.get("unrealized_pl", 0)),
+            # SPY-only P&L since yesterday's close (Alpaca computes this per position)
+            "intraday_pl":   float(data.get("unrealized_intraday_pl", 0) or 0),
             "side":          data.get("side", "long"),
         }
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
-            return {"shares": 0, "market_value": 0.0, "avg_entry": 0.0, "unrealized_pl": 0.0, "side": "none"}
+            return {"shares": 0, "market_value": 0.0, "avg_entry": 0.0, "unrealized_pl": 0.0,
+                    "intraday_pl": 0.0, "side": "none"}
         raise
+
+
+def spy_strategy_drawdown():
+    """(current_total, peak_total, drawdown) for the 'SPY autopilot' row of the
+    pnlLedger daily series, or None if the ledger hasn't run yet."""
+    if not os.path.exists(LEDGER_DAILY):
+        return None
+    vals = []
+    with open(LEDGER_DAILY) as f:
+        for r in csv.DictReader(f):
+            if r.get("strategy") == "SPY autopilot":
+                try:
+                    vals.append(float(r["total"]))
+                except (TypeError, ValueError):
+                    pass
+    if not vals:
+        return None
+    peak = max(vals)
+    return vals[-1], peak, vals[-1] - peak
 
 
 def get_spy_price(headers):
@@ -159,11 +228,26 @@ def run_risk_checks(account, current_pos, target_shares, spy_price, signal):
     if account["status"] != "ACTIVE":
         flags.append(f"BLOCK: account not ACTIVE (status={account['status']})")
 
-    # 2. Daily loss halt
-    if account["last_equity"] > 0:
-        daily_pnl_pct = (account["equity"] - account["last_equity"]) / account["last_equity"]
-        if daily_pnl_pct < -MAX_DAILY_LOSS_PCT:
-            flags.append(f"BLOCK: daily loss {daily_pnl_pct*100:.2f}% exceeds -{MAX_DAILY_LOSS_PCT*100:.0f}% limit")
+    # 2. Daily loss halt - SPY strategy only (account equity is shared with
+    #    the MM / grid bots and would block SPY for their losses)
+    if account["equity"] > 0 and current_pos:
+        spy_daily = current_pos.get("intraday_pl", 0.0)
+        spy_daily_pct = spy_daily / account["equity"]
+        if spy_daily_pct < -MAX_DAILY_LOSS_PCT:
+            flags.append(f"BLOCK: SPY strategy daily loss ${spy_daily:,.0f} ({spy_daily_pct*100:.2f}% of equity) "
+                         f"exceeds -{MAX_DAILY_LOSS_PCT*100:.0f}% limit")
+        acct_daily_pct = ((account["equity"] - account["last_equity"]) / account["last_equity"]
+                          if account["last_equity"] > 0 else 0.0)
+        if acct_daily_pct < -MAX_DAILY_LOSS_PCT:
+            flags.append(f"INFO: account-wide daily P&L {acct_daily_pct*100:.2f}% (other bots) - not a SPY block")
+
+    # 2b. Strategy drawdown halt - from the per-strategy ledger (pnlLedger.py)
+    dd = spy_strategy_drawdown()
+    if dd is not None and account["equity"] > 0:
+        cur, peak, draw = dd
+        if draw < -MAX_STRATEGY_DD_PCT * account["equity"]:
+            flags.append(f"BLOCK: SPY strategy drawdown ${draw:,.0f} from peak ${peak:,.0f} "
+                         f"exceeds -{MAX_STRATEGY_DD_PCT*100:.1f}% of equity")
 
     # 3. Max position cap
     if spy_price and spy_price > 0:
@@ -212,8 +296,9 @@ def compute_target_shares(position_size, equity, spy_price):
     return int(math.floor(target_notional / spy_price))
 
 
-def place_order(action, shares, headers, dry_run=True):
-    """Place a market order. Returns order dict or simulated dict if dry_run."""
+def place_order(action, shares, headers, dry_run=True, time_in_force="day"):
+    """Place a market order. time_in_force 'cls' = market-on-close (Alpaca
+    accepts cls until ~15:50 ET). Returns order dict or simulated dict if dry_run."""
     if dry_run:
         return {
             "id": "DRY-RUN",
@@ -221,7 +306,7 @@ def place_order(action, shares, headers, dry_run=True):
             "side": action.lower(),
             "qty": str(shares),
             "type": "market",
-            "time_in_force": "day",
+            "time_in_force": time_in_force,
             "symbol": "SPY",
         }
     payload = {
@@ -229,9 +314,57 @@ def place_order(action, shares, headers, dry_run=True):
         "qty":           str(shares),
         "side":          action.lower(),   # "buy" or "sell"
         "type":          "market",
-        "time_in_force": "day",
+        "time_in_force": time_in_force,
     }
     return alpaca_post("/v2/orders", payload, headers)
+
+
+# ── Pre-close execution (Oct 2026) ──────────────────────────────────────────
+# spyExecutionCost.py measured the autopilot's real cost: the signal is made on
+# the 16:15 close but market orders fill at the NEXT 09:30 open, and that
+# overnight gap ran +17.9bp against the order (adverse 69% of fills, $340 over
+# 75 fills vs +$131 total strategy P&L). The spread itself is 0.12bp.
+# Fix: a 15:25 pre-close run rebuilds today's feature row from the partial
+# session, runs the same signal, and places a market-on-close (tif=cls) order,
+# so the fill happens at the close the signal was computed against. The 16:15
+# run then logs the official signal but does NOT trade again (double-trading
+# the small residual would re-create the gap cost). State file below is the
+# handshake between the two runs.
+PRECLOSE_STATE_DIR = os.path.expanduser("~/discordBot/outputs/markets/preclose")
+MOC_CUTOFF_ET = datetime.time(15, 49)   # Alpaca rejects cls after ~15:50 ET
+# Oct 19 2026: Alpaca PAPER does not simulate closing-auction fills; the first
+# tif=cls order sat "new" and expired at 16:00:43 unfilled. So the pre-close run
+# no longer places an order itself: it writes the target to the handshake file
+# (pending=True) and spyPrecloseFire.py (cron 15:52) sends a plain market order
+# for the delta, which fills within seconds, ~8 minutes before the close.
+PRECLOSE_FIRE_ONLY = True
+
+
+def preclose_state_path(day=None):
+    d = day or datetime.date.today().isoformat()
+    return os.path.join(PRECLOSE_STATE_DIR, f"spy_preclose_{d}.json")
+
+
+def load_preclose_state(day=None):
+    p = preclose_state_path(day)
+    if os.path.exists(p):
+        with open(p) as f:
+            return json.load(f)
+    return None
+
+
+def save_preclose_state(state):
+    os.makedirs(PRECLOSE_STATE_DIR, exist_ok=True)
+    with open(preclose_state_path(state["date"]), "w") as f:
+        json.dump(state, f, indent=2, default=str)
+
+
+def now_et():
+    try:
+        from zoneinfo import ZoneInfo
+        return datetime.datetime.now(ZoneInfo("America/New_York"))
+    except Exception:
+        return datetime.datetime.now()
 
 
 def append_trade_log(row):
@@ -264,7 +397,7 @@ def is_market_hours():
     return market_open <= now_et <= market_close
 
 
-def run(execute=False):
+def run(execute=False, preclose=False):
     errors = []
     result = {
         "date":             str(datetime.date.today()),
@@ -318,6 +451,45 @@ def run(execute=False):
     regime_probs   = signal.get("regime_probs", {})
     current_regime = max(regime_probs, key=regime_probs.get) if regime_probs else "unknown"
 
+    # ── 2b. Vol-regime scalar (GEX quintile + VIX term structure) ───────────
+    # Scales the Kelly size by expected-realized vol so risk per day is
+    # roughly constant across dealer-gamma regimes. Never flips direction and
+    # never applies to a zero size. See python/spyVolRegime.py for the study
+    # (Sharpe 0.80 -> 0.93, max DD -4.1% -> -1.9%, 2016-2026).
+    vol_regime = None
+    if position_size > 0:
+        try:
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            from spyVolRegime import current_scalar
+            vol_regime = current_scalar()
+            raw_size = position_size
+            position_size = round(raw_size * vol_regime["scalar"], 4)
+            sizing_reason = f"{sizing_reason} | {vol_regime['label']} raw={raw_size:.4f} -> eff={position_size:.4f}"
+        except Exception as e:
+            errors.append(f"vol-regime scalar unavailable, using raw Kelly size: {e}")
+    result["vol_regime"] = vol_regime
+
+    # ── 2c. Strategy mode: trend/vol book overrides the model size ───────────
+    model_size = position_size
+    if STRATEGY_MODE == "trend_vol":
+        try:
+            if vol_regime is None:
+                sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+                from spyVolRegime import current_scalar
+                vol_regime = current_scalar()
+                result["vol_regime"] = vol_regime
+            above, ratio = trend_state()
+            scalar = float(vol_regime["scalar"]) if vol_regime else 1.0
+            position_size = round(BASE_EXPOSURE * scalar, 4) if above else 0.0
+            sizing_reason = (f"TREND/VOL: SPY {'above' if above else 'below'} {TREND_MA_DAYS}dma (idx/ma {ratio:.3f}) "
+                             f"-> base {BASE_EXPOSURE:.2f} x vol_scalar {scalar:.2f} = {position_size:.3f}"
+                             f" | shadow model: blend={next_day.get('probability', '')} kelly_size={model_size}")
+            result["trend"] = {"above_ma": above, "ratio": round(ratio, 4), "ma_days": TREND_MA_DAYS}
+        except Exception as e:
+            errors.append(f"trend state unavailable, holding current position: {e}")
+            position_size = None   # sentinel: do not trade
+    result["strategy_mode"] = STRATEGY_MODE
+
     # ── 3. Get broker state ──────────────────────────────────────────────────
     try:
         account      = get_account(headers)
@@ -341,7 +513,16 @@ def run(execute=False):
         spy_price = None
 
     # ── 4. Compute target ────────────────────────────────────────────────────
-    target_shares   = compute_target_shares(position_size, account["equity"], spy_price)
+    if position_size is None:
+        position_size = (current_pos["market_value"] / account["equity"]) if account["equity"] else 0.0
+        target_shares = int(current_pos["shares"])
+    else:
+        target_shares = compute_target_shares(position_size, account["equity"], spy_price)
+    # rebalance band: small drifts in the vol scalar should not generate daily orders
+    if STRATEGY_MODE == "trend_vol" and target_shares > 0 and int(current_pos["shares"]) > 0:
+        if abs(target_shares - int(current_pos["shares"])) < max(1, REBALANCE_BAND * target_shares):
+            target_shares = int(current_pos["shares"])
+            sizing_reason += " | within rebalance band, hold"
     target_notional = (target_shares * spy_price) if spy_price else 0.0
     result["target"] = {
         "position_size_kelly": position_size,
@@ -382,13 +563,36 @@ def run(execute=False):
 
     # ── 7. Execute ───────────────────────────────────────────────────────────
     order_id = None
-    if execute and order_shares >= MIN_ORDER_SHARES and passed:
+    pre = None if preclose else load_preclose_state()
+    if execute and pre is not None and (pre.get("executed") or pre.get("fired")):
+        # The 15:25 pre-close run already placed today's MOC order. Log the
+        # official 16:15 signal but keep the REAL traded size in the log row so
+        # watchdog / performance measure what is actually held.
+        action, order_shares = "SKIP", 0
+        result["order"]["action"] = "SKIP"
+        result["order"]["reason"] = (f"pre-close MOC already placed at {pre.get('placed_at','?')} "
+                                     f"(target {pre.get('target_shares')} sh, size {pre.get('position_size')})")
+        sizing_reason = (f"{sizing_reason} || PRECLOSE traded: {pre.get('sizing_reason','')}")
+        position_size = float(pre.get("position_size", position_size))
+        target_shares = int(pre.get("target_shares", target_shares))
+        result["preclose"] = pre
+    elif execute and preclose and PRECLOSE_FIRE_ONLY and order_shares >= MIN_ORDER_SHARES and passed:
+        # defer to spyPrecloseFire.py at 15:52 (see PRECLOSE_FIRE_ONLY note)
+        result["order"]["deferred_to_fire"] = True
+        result["order"]["time_in_force"] = "day@15:52"
+    elif execute and order_shares >= MIN_ORDER_SHARES and passed:
+        tif = "day"
+        if preclose:
+            tif = "cls" if now_et().time() < MOC_CUTOFF_ET else "day"
+            if tif == "day":
+                errors.append("pre-close run past MOC cutoff - sent a regular market order instead")
         try:
-            order_resp = place_order(action, order_shares, headers, dry_run=False)
+            order_resp = place_order(action, order_shares, headers, dry_run=False, time_in_force=tif)
             order_id = order_resp.get("id")
             result["executed"] = True
             result["order_id"] = order_id
             result["order"]["order_response"] = order_resp
+            result["order"]["time_in_force"] = tif
         except Exception as e:
             errors.append(f"Order placement failed: {e}")
     elif execute and not passed:
@@ -417,6 +621,19 @@ def run(execute=False):
         "risk_flags":           "|".join(flags),
         "errors":               "|".join(errors),
     }
+    if preclose:
+        log_row["sizing_reason"] = "PRECLOSE/MOC " + log_row["sizing_reason"]
+        if execute:
+            deferred = bool(result["order"].get("deferred_to_fire"))
+            save_preclose_state({
+                "date": str(datetime.date.today()), "placed_at": now_et().strftime("%H:%M:%S"),
+                "executed": bool(result["executed"]), "order_id": order_id or "",
+                "pending": deferred, "fired": False, "passed_risk": bool(passed),
+                "action": action, "order_shares": order_shares, "target_shares": target_shares,
+                "position_size": position_size, "spy_price_proxy": spy_price,
+                "signal_prob": next_day.get("probability"), "sizing_reason": sizing_reason,
+                "risk_flags": flags, "errors": errors,
+            })
     result["trade_log_row"] = log_row
     try:
         append_trade_log(log_row)
@@ -430,7 +647,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--execute", action="store_true",
                         help="Actually place the order (default: dry run only)")
+    parser.add_argument("--preclose", action="store_true",
+                        help="Pre-close mode: market-on-close order (tif=cls) and write the handshake "
+                             "state file so the 16:15 run logs but does not trade again")
     args = parser.parse_args()
 
-    out = run(execute=args.execute)
+    out = run(execute=args.execute, preclose=args.preclose)
     print(json.dumps(out, indent=2))

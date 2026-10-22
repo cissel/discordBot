@@ -1,0 +1,56 @@
+Loading 5-min features + swing labels...
+Merged: 113128 bars, 1451 days
+Added extra causal features: ['rsi_12bar', 'accel_1bar', 'dir_streak', 'vwap_dev_z']
+[spyVolTargetWFCV] 2558 prepped rows, 91 features, 2016-04-06-2026-10-16
+  fold 1: 2022-08-31-2023-09-13  tr=1550 va=252  pooled OOS so far: 252
+  fold 2: 2023-09-14-2024-09-19  tr=1802 va=252  pooled OOS so far: 504
+  fold 3: 2024-09-20-2025-10-03  tr=2054 va=252  pooled OOS so far: 756
+  fold 4: 2025-10-06-2026-10-16  tr=2306 va=252  pooled OOS so far: 1008
+  dropped 1 OOS row(s) with unresolved next_ret_1d
+Fold day counts: {0: 446, 1: 252, 2: 252, 3: 252, 4: 249}
+
+======================================================================
+Fold A: train[1,2] -> eval[3]
+======================================================================
+  Train bars: 39300 (504 days)  Eval bars: 19653 (252 days)
+  Train swing_high_near rate: 1.9%  swing_low_near rate: 2.1%
+  Eval AUC swing_high: 0.9421  swing_low: 0.9502  (0.5 = no signal)
+
+  N trades: 115  N days with >=1 trade: 43/252
+  Daily Sharpe (ann): +1.314  Total P&L (sum of daily, notional=1x): +10.65%
+  Win rate (days with nonzero P&L): 58.1%
+  TX-cost sensitivity:
+    tx_bps= 0.0  n_trades= 115  total_ret=+10.93%  sharpe=+1.347
+    tx_bps= 0.1  n_trades= 115  total_ret=+10.65%  sharpe=+1.314
+    tx_bps= 0.2  n_trades= 115  total_ret=+10.35%  sharpe=+1.278
+    tx_bps= 0.5  n_trades= 115  total_ret=+9.78%  sharpe=+1.208
+    tx_bps= 1.0  n_trades= 115  total_ret=+8.63%  sharpe=+1.067
+    tx_bps= 2.0  n_trades= 115  total_ret=+6.33%  sharpe=+0.782
+  Mean P&L per trade (at 0.12bps): +9.26bps  std=84.36bps
+
+======================================================================
+Fold B: train[1,2,3] -> eval[4]
+======================================================================
+  Train bars: 58953 (756 days)  Eval bars: 19422 (249 days)
+  Train swing_high_near rate: 2.0%  swing_low_near rate: 2.2%
+  Eval AUC swing_high: 0.9270  swing_low: 0.9519  (0.5 = no signal)
+
+  N trades: 46  N days with >=1 trade: 36/249
+  Daily Sharpe (ann): +1.320  Total P&L (sum of daily, notional=1x): +5.34%
+  Win rate (days with nonzero P&L): 72.2%
+  TX-cost sensitivity:
+    tx_bps= 0.0  n_trades=  46  total_ret=+5.45%  sharpe=+1.347
+    tx_bps= 0.1  n_trades=  46  total_ret=+5.34%  sharpe=+1.320
+    tx_bps= 0.2  n_trades=  46  total_ret=+5.22%  sharpe=+1.292
+    tx_bps= 0.5  n_trades=  46  total_ret=+4.99%  sharpe=+1.236
+    tx_bps= 1.0  n_trades=  46  total_ret=+4.53%  sharpe=+1.124
+    tx_bps= 2.0  n_trades=  46  total_ret=+3.61%  sharpe=+0.898
+  Mean P&L per trade (at 0.12bps): +11.60bps  std=56.63bps
+
+======================================================================
+SUMMARY
+======================================================================
+  Fold A: train[1,2] -> eval[3]: AUC(high/low)=0.942/0.950  Sharpe=+1.314  TotalRet=+10.65%  N_trades=115
+  Fold B: train[1,2,3] -> eval[4]: AUC(high/low)=0.927/0.952  Sharpe=+1.320  TotalRet=+5.34%  N_trades=46
+
+Saved plot: /home/jhcv/discordBot/outputs/markets/spy_intraday_swing_equity_pct40bps.png

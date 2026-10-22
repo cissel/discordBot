@@ -1,0 +1,119 @@
+{
+  "generated": "2026-10-19T04:06:43",
+  "quotes_span": [
+    "2026-06-24",
+    "2026-10-16"
+  ],
+  "quote_minutes": 31516,
+  "overall_half_spread_bps": {
+    "median": 0.122,
+    "p75": 0.141,
+    "p95": 0.179
+  },
+  "half_spread_by_day_vol_tercile": {
+    "low_mid_vol_days": 0.115,
+    "high_vol_days": 0.141
+  },
+  "slippage_allowance_bps": 0.0,
+  "buckets": {
+    "open 0-5m": {
+      "bucket": "open 0-5m",
+      "window": "09:30-09:35",
+      "n_minutes": 405,
+      "half_spread_median_bps": 0.155,
+      "half_spread_p75_bps": 0.192,
+      "half_spread_p95_bps": 0.253,
+      "recommended_per_side_bps": 0.155,
+      "conservative_per_side_bps": 0.192
+    },
+    "open 5-30m": {
+      "bucket": "open 5-30m",
+      "window": "09:35-10:00",
+      "n_minutes": 2025,
+      "half_spread_median_bps": 0.133,
+      "half_spread_p75_bps": 0.153,
+      "half_spread_p95_bps": 0.191,
+      "recommended_per_side_bps": 0.133,
+      "conservative_per_side_bps": 0.153
+    },
+    "morning": {
+      "bucket": "morning",
+      "window": "10:00-12:00",
+      "n_minutes": 9720,
+      "half_spread_median_bps": 0.127,
+      "half_spread_p75_bps": 0.148,
+      "half_spread_p95_bps": 0.189,
+      "recommended_per_side_bps": 0.127,
+      "conservative_per_side_bps": 0.148
+    },
+    "midday": {
+      "bucket": "midday",
+      "window": "12:00-14:00",
+      "n_minutes": 9657,
+      "half_spread_median_bps": 0.123,
+      "half_spread_p75_bps": 0.14,
+      "half_spread_p95_bps": 0.172,
+      "recommended_per_side_bps": 0.123,
+      "conservative_per_side_bps": 0.14
+    },
+    "afternoon": {
+      "bucket": "afternoon",
+      "window": "14:00-15:30",
+      "n_minutes": 7279,
+      "half_spread_median_bps": 0.117,
+      "half_spread_p75_bps": 0.134,
+      "half_spread_p95_bps": 0.164,
+      "recommended_per_side_bps": 0.117,
+      "conservative_per_side_bps": 0.134
+    },
+    "last 30m": {
+      "bucket": "last 30m",
+      "window": "15:30-15:55",
+      "n_minutes": 2025,
+      "half_spread_median_bps": 0.107,
+      "half_spread_p75_bps": 0.123,
+      "half_spread_p95_bps": 0.152,
+      "recommended_per_side_bps": 0.107,
+      "conservative_per_side_bps": 0.123
+    },
+    "last 5m": {
+      "bucket": "last 5m",
+      "window": "15:55-16:00",
+      "n_minutes": 405,
+      "half_spread_median_bps": 0.098,
+      "half_spread_p75_bps": 0.112,
+      "half_spread_p95_bps": 0.14,
+      "recommended_per_side_bps": 0.098,
+      "conservative_per_side_bps": 0.112
+    }
+  },
+  "autopilot_fills": {
+    "fills": 124,
+    "first": "2026-05-26",
+    "last": "2026-10-16",
+    "share_in_first_5min": 0.613,
+    "slip_vs_bar_vwap": {
+      "n": 123,
+      "mean_bps": -0.08,
+      "median_bps": -0.09,
+      "p75_bps": 1.62
+    },
+    "slip_vs_open_print": {
+      "n": 123,
+      "mean_bps": 0.2,
+      "median_bps": -3.47,
+      "p75_bps": 7.6
+    },
+    "shortfall_vs_signal_close": {
+      "n": 75,
+      "mean_bps": 17.9,
+      "median_bps": 15.29,
+      "p75_bps": 39.38
+    }
+  },
+  "legacy_assumptions_bps_per_side": {
+    "swing_backtests": 0.5,
+    "structural_studies": 1.0
+  },
+  "note": "Per-side cost for a small SPY market order = median half-spread in that time bucket + realized slippage allowance. Multiply by 2 for a round trip. Does not include the overnight gap that the autopilot pays by filling at the next open (see autopilot_fills.shortfall_vs_signal_close)."
+}

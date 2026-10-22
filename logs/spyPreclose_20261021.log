@@ -1,0 +1,29 @@
+=== preclose run Wed 21 Oct 15:05:16 EDT 2026 ===
+  [VIX.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [DXY.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [T10Y2Y.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [FEDFUNDS.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [WALCL.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [RRPONTSYD.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [WTREGEN.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [T5YIE.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [T10YIE.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [BAMLH0A0HYM2.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+  [BAMLC0A0CM.csv] ERROR: Missing column provided to 'parse_dates': 'observation_date'
+[fetchCrossAssetData] done.
+  SPY: appended 2026-10-21 provisional ret +0.00289 (last 771.315 vs prev close 769.09)
+  QQQ: appended 2026-10-21 provisional ret +0.00878 (last 723.51 vs prev close 717.21)
+  GLD: appended 2026-10-21 provisional ret -0.00214 (last 376.87 vs prev close 377.68)
+  USO: appended 2026-10-21 provisional ret +0.00143 (last 160.91 vs prev close 160.68)
+  -> /home/jhcv/discordBot/outputs/markets/intraday/SPY_2026_1min.csv
+     180560 bars | 2026-01-02 to 2026-10-21 | 13784.2 KB
+  wrote 632 bars for 2026-10-21
+
+Saved -> /home/jhcv/discordBot/outputs/features/markets/spy_intraday_features.csv
+
+Saved -> /home/jhcv/discordBot/outputs/features/markets/spy_intraday_features_v2.csv
+
+[buildSpyFeatures] wrote 2715 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv
+SPY pre-close 2026-10-21: BUY 3 sh (deferred to 15:52 fire, executed=False) | target 20 sh size 0.1898 @ ~771.98 | {'above_ma': True, 'ratio': 1.0673, 'ma_days': 200} | TREND/VOL: SPY above 200dma (idx/ma 1.067) -> base 0.25 x vol_scalar 0.76 = 0.190 | shadow model: blend=0.6318 kelly_size=0.1
+=== done Wed 21 Oct 15:19:08 EDT 2026 ===
+SPY pre-close FIRE 2026-10-21: target 20 sh, broker has 17 -> BUY 3 market (day), order dd389315-da6c-489e-a66e-14331ded1a63 status pending_new

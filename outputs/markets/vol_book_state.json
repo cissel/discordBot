@@ -1,0 +1,65 @@
+{
+  "positions": [
+    {
+      "id": "IC261020",
+      "opened": "2026-10-20",
+      "exp": "2026-11-20",
+      "contracts": 2,
+      "credit": 1.12,
+      "entry_context": {
+        "ret5": -0.01271,
+        "ret5_tercile": "down"
+      },
+      "put_long": "SPY261120P00728000",
+      "put_short": "SPY261120P00733000",
+      "call_short": "SPY261120C00800000",
+      "call_long": "SPY261120C00805000",
+      "spot_at_entry": 770.98,
+      "max_loss_usd": 776.0,
+      "iv_short_put": 0.1905,
+      "iv_short_call": 0.1157,
+      "order_id": "02ab173d-d88e-4a94-b678-b7bb0596da34",
+      "status": "open",
+      "regime": {
+        "gex_q": 0,
+        "inverted": false,
+        "vix": 19.99,
+        "scalar": 0.62
+      },
+      "last_mark": 1.15,
+      "last_pnl": -6.0
+    },
+    {
+      "id": "IC261022",
+      "opened": "2026-10-22",
+      "exp": "2026-11-20",
+      "contracts": 2,
+      "credit": 1.12,
+      "entry_context": {
+        "ret5": 0.00403,
+        "ret5_tercile": "flat"
+      },
+      "put_long": "SPY261120P00717000",
+      "put_short": "SPY261120P00722000",
+      "call_short": "SPY261120C00793000",
+      "call_long": "SPY261120C00798000",
+      "spot_at_entry": 762.61,
+      "max_loss_usd": 776.0,
+      "iv_short_put": 0.2105,
+      "iv_short_call": 0.1271,
+      "order_id": "88f4adef-a5aa-4b6d-bb09-faf8f0e9d5fc",
+      "status": "pending",
+      "regime": {
+        "gex_q": 1,
+        "inverted": false,
+        "vix": 17.31,
+        "scalar": 0.808
+      }
+    }
+  ],
+  "closed": [],
+  "price_sign": -1,
+  "killed": false,
+  "launch_equity": 81440.44,
+  "last_entry": "2026-10-22"
+}

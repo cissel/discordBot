@@ -1,26 +1,25 @@
 [fetchCrossAssetData] Alpaca daily-return tickers:
-  [SPY] existing: 2712 rows to 2026-10-16, fetching 2026-10-17 to 2026-10-17
-  [SPY] no new data
-  [QQQ] existing: 2712 rows to 2026-10-16, fetching 2026-10-17 to 2026-10-17
-  [QQQ] no new data
-  [GLD] existing: 2712 rows to 2026-10-16, fetching 2026-10-17 to 2026-10-17
-  [GLD] no new data
-  [USO] existing: 2712 rows to 2026-10-16, fetching 2026-10-17 to 2026-10-17
-  [USO] no new data
-  [CPER] existing: 1482 rows to 2026-10-16, fetching 2026-10-17 to 2026-10-17
-  [CPER] no new data
-  [MOVE] existing: 1292 rows to 2026-10-16, fetching 2026-10-17 to 2026-10-17
-  [MOVE] no new data
+  [SPY] existing: 2715 rows to 2026-10-21, fetching 2026-10-22 to 2026-10-21
+  [SPY] already up to date
+  [QQQ] existing: 2715 rows to 2026-10-21, fetching 2026-10-22 to 2026-10-21
+  [QQQ] already up to date
+  [GLD] existing: 2715 rows to 2026-10-21, fetching 2026-10-22 to 2026-10-21
+  [GLD] already up to date
+  [USO] existing: 2715 rows to 2026-10-21, fetching 2026-10-22 to 2026-10-21
+  [USO] already up to date
+  [CPER] existing: 1484 rows to 2026-10-20, fetching 2026-10-21 to 2026-10-21
+  [CPER] wrote 1485 rows -> /home/jhcv/discordBot/outputs/markets/cache/CPER.csv (last: 2026-10-21)
 [fetchCrossAssetData] FRED level series:
-  [VIX.csv] wrote 9598 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-10-15, 3d behind, expected <=3d) [OK]
-  [DXY.csv] wrote 5420 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-10-09, 9d behind, expected <=14d) [OK]
-  [T10Y2Y.csv] wrote 13144 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-10-16, 2d behind, expected <=3d) [OK]
-  [FEDFUNDS.csv] wrote 867 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-09-01, 47d behind, expected <=65d) [OK]
-  [WALCL.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WALCL.csv (last: 2026-10-14, 4d behind, expected <=10d) [OK]
-  [RRPONTSYD.csv] wrote 6181 rows -> /home/jhcv/discordBot/outputs/markets/cache/RRPONTSYD.csv (last: 2026-10-16, 2d behind, expected <=3d) [OK]
-  [WTREGEN.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WTREGEN.csv (last: 2026-10-14, 4d behind, expected <=10d) [OK]
-  [T5YIE.csv] wrote 6207 rows -> /home/jhcv/discordBot/outputs/markets/cache/T5YIE.csv (last: 2026-10-16, 2d behind, expected <=3d) [OK]
-  [T10YIE.csv] wrote 6207 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10YIE.csv (last: 2026-10-16, 2d behind, expected <=3d) [OK]
-  [BAMLH0A0HYM2.csv] wrote 794 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLH0A0HYM2.csv (last: 2026-10-15, 3d behind, expected <=5d) [OK]
-  [BAMLC0A0CM.csv] wrote 794 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLC0A0CM.csv (last: 2026-10-15, 3d behind, expected <=5d) [OK]
+  [VIX.csv] wrote 9601 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-10-20, 2d behind, expected <=3d) [OK]
+  [DXY.csv] wrote 5425 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-10-16, 6d behind, expected <=14d) [OK]
+  [T10Y2Y.csv] wrote 13147 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-10-21, 1d behind, expected <=3d) [OK]
+  [FEDFUNDS.csv] wrote 867 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-09-01, 51d behind, expected <=65d) [OK]
+  [WALCL.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WALCL.csv (last: 2026-10-14, 8d behind, expected <=10d) [OK]
+  [RRPONTSYD.csv] wrote 6184 rows -> /home/jhcv/discordBot/outputs/markets/cache/RRPONTSYD.csv (last: 2026-10-21, 1d behind, expected <=3d) [OK]
+  [WTREGEN.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WTREGEN.csv (last: 2026-10-14, 8d behind, expected <=10d) [OK]
+  [T5YIE.csv] wrote 6210 rows -> /home/jhcv/discordBot/outputs/markets/cache/T5YIE.csv (last: 2026-10-21, 1d behind, expected <=3d) [OK]
+  [T10YIE.csv] wrote 6210 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10YIE.csv (last: 2026-10-21, 1d behind, expected <=3d) [OK]
+  [BAMLH0A0HYM2.csv] wrote 793 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLH0A0HYM2.csv (last: 2026-10-20, 2d behind, expected <=5d) [OK]
+  [BAMLC0A0CM.csv] wrote 793 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLC0A0CM.csv (last: 2026-10-20, 2d behind, expected <=5d) [OK]
 [fetchCrossAssetData] done.
+EXIT:0

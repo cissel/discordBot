@@ -1,0 +1,32 @@
+[    0.5s] rows 2713 -> 2712 after dropping today / NaN target; 2016-01-05 to 2026-10-16
+[    0.5s] production list from spy_logistic_next_dir_1d_2026-10-19.pkl: 73 features
+[    0.6s] stale filter dropped 0: []
+[    0.6s] A1: full model walk-forward (registered production list)
+[   16.9s]    full pooled: {'n': 1959, 'logloss': 0.7855062479206419, 'auc': 0.5173081784856529, 'acc': 0.5237366003062787, 'brier': 0.2742277008698927, 'base_rate': 0.5513016845329249}
+[   16.9s]    C by year: {2019: 0.01, 2020: 0.01, 2021: 0.01, 2022: 0.01, 2023: 0.01, 2024: 0.01, 2025: 0.01, 2026: 0.01}
+[   16.9s] A1b: full_clean = production list minus ['vix_move_ratio'] (72 features)
+[   33.9s]    full_clean pooled: {'n': 1959, 'logloss': 0.723278137227279, 'auc': 0.5162305650360257, 'acc': 0.5257784583971414, 'brier': 0.2620191918936637, 'base_rate': 0.5513016845329249}
+[   33.9s]    C by year: {2019: 0.01, 2020: 0.01, 2021: 0.01, 2022: 0.01, 2023: 0.01, 2024: 0.01, 2025: 0.01, 2026: 0.01}
+[   33.9s] A2: leave-one-group-out
+[   58.1s]    minus price_tech   dLL=-0.0028 (se 0.0048) dAUC=-0.000 hurt 6/8
+[   73.1s]    minus vix_term     dLL=-0.0063 (se 0.0028) dAUC=-0.002 hurt 1/8
+[   86.7s]    minus cross_asset  dLL=-0.0116 (se 0.0084) dAUC=-0.007 hurt 3/8
+[  101.5s]    minus macro_fred   dLL=-0.0093 (se 0.0075) dAUC=+0.007 hurt 4/8
+[  120.7s]    minus dix_gex      dLL=-0.0019 (se 0.0015) dAUC=+0.002 hurt 3/8
+[  138.8s]    minus intraday     dLL=-0.0073 (se 0.0044) dAUC=-0.010 hurt 0/8
+[  162.4s]    minus moon         dLL=-0.0008 (se 0.0008) dAUC=-0.001 hurt 3/8
+[  192.9s]    minus weather      dLL=-0.0028 (se 0.0032) dAUC=+0.002 hurt 2/8
+[  207.6s]    minus breadth      dLL=-0.0013 (se 0.0021) dAUC=-0.002 hurt 4/8
+[  207.6s] A3: forward selection (pre-2022 folds only)
+[  208.0s]    prescreen top-40 |Spearman| range 0.0272 .. 0.1473
+[  208.0s]    step 0 intercept-only pre-2022 pooled LL 0.68184
+[  240.1s]    step 1 best add XLF_ret LL 0.67765 gain +0.00419 ACCEPT (fits so far 4208)
+[  274.0s]    step 2 best add fomc_window LL 0.67449 gain +0.00316 ACCEPT (fits so far 6080)
+[  315.9s]    step 3 best add moon_phase_cos LL 0.67320 gain +0.00129 ACCEPT (fits so far 7904)
+[  349.1s]    step 4 best add sector_risk_off_r5 LL 0.67222 gain +0.00098 ACCEPT (fits so far 9680)
+[  382.6s]    step 5 best add new_high_pct_63d LL 0.67160 gain +0.00062 ACCEPT (fits so far 11408)
+[  427.9s]    step 6 best add nh_nl_spread_63d LL 0.67146 gain +0.00014 STOP (fits so far 13088)
+[  427.9s]    selected (5): ['XLF_ret', 'fomc_window', 'moon_phase_cos', 'sector_risk_off_r5', 'new_high_pct_63d']
+[  432.7s] B1: reliability
+[  432.8s] B2: thresholds
+[  433.3s] done; summary written

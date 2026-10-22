@@ -1,0 +1,50 @@
+VERIFY k=21 MTM == reference hold-to-expiry: max abs diff 8.53e-14; unconditional mean 2011-05..2016-06 2.16, 2016-06..2026 1.70 vol pts (reference holdout_2011_2016_daily.csv on the same SPX file: 2.16 / 1.70)
+entries: 3299 eligible of 3868 complete windows; first entry with credit proxy 2011-09-02; last complete window 2026-09-17; credit proxy median 3.55 vol pts
+study B: regime lookup unavailable (scalar 1.0) on 15 eligible entries, first available 2011-10-28
+
+STUDY A  exit policies (vol pts per unit vega, net of cost)
+                         policy  period    n  mean_per_entry   hit  monthly_sharpe  worst_month  nw_t  frac_PT  frac_time  frac_stop  frac_expiry  mean_k_exit
+                         1 hold holdout 1047           2.386 0.840           0.802       -18.12  3.86    0.000      0.000      0.000        1.000         21.0
+                         1 hold      H1 1092           1.196 0.853           0.432      -111.17  0.62    0.000      0.000      0.000        1.000         21.0
+                         1 hold      H2 1160           2.823 0.860           1.192       -16.33  4.86    0.000      0.000      0.000        1.000         21.0
+                           2 PT holdout 1047           1.031 0.889           0.587       -15.50  2.72    0.803      0.000      0.000        0.197         10.1
+                           2 PT      H1 1092          -0.286 0.908           0.616       -91.85 -0.18    0.856      0.000      0.000        0.144          9.9
+                           2 PT      H2 1160           1.379 0.894           1.057        -7.66  4.53    0.817      0.000      0.000        0.183          9.9
+                         3 time holdout 1047           1.151 0.771           0.621       -17.39  2.61    0.000      1.000      0.000        0.000         12.0
+                         3 time      H1 1092           1.108 0.802           0.768       -31.13  1.63    0.000      1.000      0.000        0.000         12.0
+                         3 time      H2 1160           1.315 0.784           0.894       -13.13  3.27    0.000      1.000      0.000        0.000         12.0
+                      4 PT+time holdout 1047           0.693 0.815           0.618       -14.30  2.11    0.672      0.328      0.000        0.000          7.7
+                      4 PT+time      H1 1092           0.619 0.849           0.749       -25.44  1.13    0.682      0.318      0.000        0.000          7.9
+                      4 PT+time      H2 1160           0.909 0.831           0.964        -8.68  3.27    0.662      0.338      0.000        0.000          7.7
+          5 PT+time+stop (live) holdout 1047           0.678 0.815           0.307        -9.81  2.41    0.672      0.294      0.033        0.000          7.5
+          5 PT+time+stop (live)      H1 1092           0.645 0.848           0.274       -16.76  1.36    0.682      0.275      0.043        0.000          7.6
+          5 PT+time+stop (live)      H2 1160           0.822 0.831           0.520        -8.40  2.91    0.662      0.315      0.023        0.000          7.5
+                         6 stop holdout 1047           2.353 0.839           0.786       -12.66  4.23    0.000      0.000      0.046        0.954         20.4
+                         6 stop      H1 1092           2.445 0.853           0.567       -28.48  2.89    0.000      0.000      0.070        0.930         20.1
+                         6 stop      H2 1160           2.644 0.859           0.827       -12.96  4.60    0.000      0.000      0.040        0.960         20.5
+5b PT+time+stop2x (sensitivity) holdout 1047           0.665 0.809           0.306        -5.99  2.67    0.670      0.264      0.067        0.000          7.3
+5b PT+time+stop2x (sensitivity)      H1 1092           0.520 0.840           0.218       -12.77  1.24    0.679      0.252      0.069        0.000          7.4
+5b PT+time+stop2x (sensitivity)      H2 1160           0.755 0.830           0.476        -8.40  2.72    0.661      0.285      0.053        0.000          7.3
+
+A checks: {'holdout': {'sharpe_5_gt_1': False, 'worst_5_gt_1': True}, 'H1': {'sharpe_5_gt_1': False, 'worst_5_gt_1': True}, 'H2': {'sharpe_5_gt_1': False, 'worst_5_gt_1': True}}
+A PASS RULE (live 5 beats hold 1 on Sharpe AND worst month in all three): FAIL
+stop effect (5 minus 4): {'holdout': {'sharpe_5_minus_4': -0.311, 'worst_5_minus_4': 4.49}, 'H1': {'sharpe_5_minus_4': -0.475, 'worst_5_minus_4': 8.68}, 'H2': {'sharpe_5_minus_4': -0.444, 'worst_5_minus_4': 0.28}}
+
+STUDY B  sizing arms (hold to expiry, mean size normalised to 1)
+            arm  period  mean_size  size_p10  size_p90    n  mean_per_entry   hit  monthly_sharpe  worst_month  nw_t
+        a const holdout      1.000     1.000     1.000 1047           2.386 0.840           0.802       -18.12  3.86
+        a const      H1      1.000     1.000     1.000 1092           1.196 0.853           0.432      -111.17  0.62
+        a const      H2      1.000     1.000     1.000 1160           2.823 0.860           1.192       -16.33  4.86
+       b 20/VIX holdout      1.026     0.745     1.260 1047           2.108 0.840           0.651       -21.23  3.25
+       b 20/VIX      H1      1.075     0.615     1.497 1092           0.772 0.853           0.360      -114.43  0.39
+       b 20/VIX      H2      0.906     0.646     1.164 1160           2.453 0.860           1.171       -13.63  4.82
+c regime lookup holdout      1.038     0.713     1.285 1047           2.202 0.840           0.687       -19.16  3.51
+c regime lookup      H1      1.037     0.629     1.285 1092           0.482 0.853           0.335      -130.07  0.22
+c regime lookup      H2      0.931     0.587     1.285 1160           2.574 0.860           1.192       -11.56  5.09
+    d 0.11/RV20 holdout      1.008     0.631     1.355 1047           2.064 0.840           0.697       -20.59  3.27
+    d 0.11/RV20      H1      1.069     0.543     1.355 1092           1.106 0.853           0.438       -97.13  0.63
+    d 0.11/RV20      H2      0.928     0.544     1.355 1160           2.684 0.860           1.158        -9.30  5.25
+
+B checks: {'holdout': {'worst_b_gt_a': False, 'sharpe_b_within': False}, 'H1': {'worst_b_gt_a': False, 'sharpe_b_within': True}, 'H2': {'worst_b_gt_a': True, 'sharpe_b_within': True}}
+B PASS RULE (b over a: worst month better all three AND Sharpe within 0.1): FAIL
+secondary, c beats b / d (Sharpe and worst month both): {'holdout': {'c_beats_b': True, 'c_beats_d': False}, 'H1': {'c_beats_b': False, 'c_beats_d': False}, 'H2': {'c_beats_b': True, 'c_beats_d': False}}

@@ -1,0 +1,29 @@
+=== preclose run Tue 20 Oct 15:05:15 EDT 2026 ===
+  [VIX.csv] wrote 9600 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-10-19, 1d behind, expected <=3d) [OK]
+  [DXY.csv] wrote 5425 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-10-16, 4d behind, expected <=14d) [OK]
+  [T10Y2Y.csv] wrote 13145 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-10-19, 1d behind, expected <=3d) [OK]
+  [FEDFUNDS.csv] wrote 867 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-09-01, 49d behind, expected <=65d) [OK]
+  [WALCL.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WALCL.csv (last: 2026-10-14, 6d behind, expected <=10d) [OK]
+  [RRPONTSYD.csv] wrote 6183 rows -> /home/jhcv/discordBot/outputs/markets/cache/RRPONTSYD.csv (last: 2026-10-20, 0d behind, expected <=3d) [OK]
+  [WTREGEN.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WTREGEN.csv (last: 2026-10-14, 6d behind, expected <=10d) [OK]
+  [T5YIE.csv] wrote 6208 rows -> /home/jhcv/discordBot/outputs/markets/cache/T5YIE.csv (last: 2026-10-19, 1d behind, expected <=3d) [OK]
+  [T10YIE.csv] wrote 6208 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10YIE.csv (last: 2026-10-19, 1d behind, expected <=3d) [OK]
+  [BAMLH0A0HYM2.csv] wrote 792 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLH0A0HYM2.csv (last: 2026-10-19, 1d behind, expected <=5d) [OK]
+  [BAMLC0A0CM.csv] wrote 792 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLC0A0CM.csv (last: 2026-10-19, 1d behind, expected <=5d) [OK]
+[fetchCrossAssetData] done.
+  SPY: appended 2026-10-20 provisional ret +0.00310 (last 768.98 vs prev close 766.6)
+  QQQ: appended 2026-10-20 provisional ret +0.00000 (last 718.31 vs prev close 718.31)
+  GLD: appended 2026-10-20 provisional ret -0.00429 (last 378.02 vs prev close 379.65)
+  USO: appended 2026-10-20 provisional ret -0.00445 (last 160.135 vs prev close 160.85)
+  -> /home/jhcv/discordBot/outputs/markets/intraday/SPY_2026_1min.csv
+     179857 bars | 2026-01-02 to 2026-10-20 | 13728.9 KB
+  wrote 641 bars for 2026-10-20
+
+Saved -> /home/jhcv/discordBot/outputs/features/markets/spy_intraday_features.csv
+
+Saved -> /home/jhcv/discordBot/outputs/features/markets/spy_intraday_features_v2.csv
+
+[buildSpyFeatures] wrote 2714 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv
+SPY pre-close 2026-10-20: BUY 5 sh (deferred to 15:52 fire, executed=False) | target 17 sh size 0.1683 @ ~768.57 | {'above_ma': True, 'ratio': 1.0649, 'ma_days': 200} | TREND/VOL: SPY above 200dma (idx/ma 1.065) -> base 0.25 x vol_scalar 0.67 = 0.168 | shadow model: blend=0.7071 kelly_size=0.1394
+=== done Tue 20 Oct 15:16:35 EDT 2026 ===
+SPY pre-close FIRE 2026-10-20: target 17 sh, broker has 12 -> BUY 5 market (day), order 7444b70f-ddc7-441b-9cc1-8b8df0fe2ff8 status pending_new

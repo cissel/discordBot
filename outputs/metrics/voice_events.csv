@@ -159,3 +159,57 @@ datetime,user_name,user_display_name,channel,event
 2026-10-19T02:49:06.555165+00:00,izooks,🧢 Zooksy 🧢,room-40,join
 2026-10-19T02:49:06.555337+00:00,jhcv.csv,JHCV,room-40,join
 2026-10-19T03:51:19.503697+00:00,jhcv.csv,JHCV,room-40,leave
+2026-10-19T04:22:46.768879+00:00,izooks,🧢 Zooksy 🧢,room-40,leave
+2026-10-19T04:22:55.560284+00:00,squidlysound,Squidly,room-40,leave
+2026-10-20T00:04:41.929908+00:00,jhcv.csv,JHCV,room-40,join
+2026-10-20T00:06:44.439383+00:00,izooks,🧢 Zooksy 🧢,room-40,join
+2026-10-20T00:45:43.098382+00:00,grooveinn.,grooveinn.,room-40,join
+2026-10-20T01:08:59.440214+00:00,grooveinn.,grooveinn.,room-40,leave
+2026-10-20T02:19:10.144548+00:00,grooveinn.,grooveinn.,room-40,join
+2026-10-20T02:23:48.131763+00:00,squidlysound,Squidly,room-40,join
+2026-10-20T03:09:36.060763+00:00,grooveinn.,grooveinn.,room-40,leave
+2026-10-20T03:26:27.457750+00:00,izooks,🧢 Zooksy 🧢,room-40,leave
+2026-10-20T03:26:29.006472+00:00,jhcv.csv,JHCV,room-40,leave
+2026-10-20T03:26:29.700272+00:00,squidlysound,Squidly,room-40,leave
+2026-10-20T22:35:58.150078+00:00,blumpkinpatch,_Fish_,room-40,join
+2026-10-20T22:43:06.467689+00:00,jhcv.csv,JHCV,room-40,join
+2026-10-21T00:22:37.972139+00:00,izooks,🧢 Zooksy 🧢,room-40,join
+2026-10-21T01:30:52.107413+00:00,blumpkinpatch,_Fish_,room-40,leave
+2026-10-21T02:00:23.471905+00:00,neckrosis,NECKROSIS,room-40,join
+2026-10-21T02:13:27.905418+00:00,neckrosis,NECKROSIS,room-40,leave
+2026-10-21T02:48:35.446604+00:00,squidlysound,Squidly,room-40,join
+2026-10-21T04:31:32.422686+00:00,jhcv.csv,JHCV,room-40,leave
+2026-10-21T04:59:58.720689+00:00,izooks,🧢 Zooksy 🧢,room-40,leave
+2026-10-21T05:00:07.436495+00:00,squidlysound,Squidly,room-40,leave
+2026-10-21T18:36:53.380043+00:00,jhcv.csv,JHCV,room-40,join
+2026-10-21T18:50:07.665908+00:00,neckrosis,NECKROSIS,room-40,join
+2026-10-21T20:54:45.028517+00:00,neckrosis,NECKROSIS,room-40,leave
+2026-10-21T21:26:51.578640+00:00,jhcv.csv,JHCV,room-40,leave
+2026-10-21T23:15:26.957851+00:00,squidlysound,Squidly,room-40,join
+2026-10-21T23:15:31.645401+00:00,squidlysound,Squidly,room-40,leave
+2026-10-22T00:55:15.337849+00:00,blumpkinpatch,_Fish_,room-40,join
+2026-10-22T00:56:32.866096+00:00,squidlysound,Squidly,room-40,join
+2026-10-22T01:00:31.024249+00:00,squidlysound,Squidly,room-40,join
+2026-10-22T01:00:31.024621+00:00,blumpkinpatch,_Fish_,room-40,join
+2026-10-22T01:10:18.734017+00:00,jhcv.csv,JHCV,room-40,join
+2026-10-22T01:14:30.143365+00:00,squidlysound,Squidly,room-40,join
+2026-10-22T01:14:30.143687+00:00,blumpkinpatch,_Fish_,room-40,join
+2026-10-22T01:14:30.143853+00:00,jhcv.csv,JHCV,room-40,join
+2026-10-22T01:22:27.160821+00:00,squidlysound,Squidly,room-40,join
+2026-10-22T01:22:27.161444+00:00,blumpkinpatch,_Fish_,room-40,join
+2026-10-22T01:22:27.161661+00:00,jhcv.csv,JHCV,room-40,join
+2026-10-22T01:30:38.114659+00:00,squidlysound,Squidly,room-40,join
+2026-10-22T01:30:38.114967+00:00,blumpkinpatch,_Fish_,room-40,join
+2026-10-22T01:30:38.115135+00:00,jhcv.csv,JHCV,room-40,join
+2026-10-22T01:34:17.975534+00:00,squidlysound,Squidly,room-40,join
+2026-10-22T01:34:17.976168+00:00,blumpkinpatch,_Fish_,room-40,join
+2026-10-22T01:34:17.980833+00:00,jhcv.csv,JHCV,room-40,join
+2026-10-22T01:51:00.216727+00:00,squidlysound,Squidly,room-40,leave
+2026-10-22T01:52:20.186508+00:00,neckrosis,NECKROSIS,room-40,join
+2026-10-22T02:08:36.261572+00:00,blumpkinpatch,_Fish_,room-40,leave
+2026-10-22T02:20:22.806183+00:00,grooveinn.,grooveinn.,room-40,join
+2026-10-22T02:23:22.117243+00:00,neckrosis,NECKROSIS,room-40,leave
+2026-10-22T03:38:24.549007+00:00,grooveinn.,grooveinn.,room-40,leave
+2026-10-22T03:38:27.564078+00:00,jhcv.csv,JHCV,room-40,leave
+2026-10-22T15:02:59.164685+00:00,jhcv.csv,JHCV,room-40,join
+2026-10-22T15:03:05.429652+00:00,jhcv.csv,JHCV,room-40,leave

@@ -25,26 +25,26 @@
     108.25429119
   ],
   "level_orders": {
+    "105.429": {
+      "side": "sell",
+      "order_id": "55f65826-0c0e-4320-8433-32966a4fc4f7",
+      "qty": 0.678108901
+    },
+    "104.21816092": {
+      "side": "sell",
+      "order_id": "41879337-ff14-4173-8772-148a53162b6b",
+      "qty": 0.09666203
+    },
     "103.00732184": {
       "side": "buy",
-      "order_id": "9fb0f368-ecc8-4e87-9d3b-dbb70a05e5c1",
-      "qty": 0.09756588
-    },
-    "103.81454789": {
-      "side": "buy",
-      "order_id": "62d34f9a-3b7e-4d38-bc83-64a4437832e7",
-      "qty": 0.09680724141522822
-    },
-    "105.02538697": {
-      "side": "buy",
-      "order_id": "bfa8c736-63cc-4fb0-beae-036393900d21",
-      "qty": 0.6971837
+      "order_id": "fd8ed334-b9fd-4334-afa4-dd3ad52933ff",
+      "qty": 0.09756587998288647
     }
   },
   "pending_reorders": [],
-  "last_fill_activity_id": "20261019000552100::322e8ad0-66fb-4f7e-ae38-be294cb6cc41",
-  "realized_pl": 28.23,
-  "completed_round_trips": 111,
+  "last_fill_activity_id": "20261022125454298::178b5c6c-1570-4c6a-b92c-249a279d05d5",
+  "realized_pl": 49.9,
+  "completed_round_trips": 220,
   "halted": false,
   "halt_reason": null,
   "created_at": "2026-10-15T21:10:52",

@@ -1,0 +1,50 @@
+============================================================
+buildSpyIntradayFeaturesV2.py
+============================================================
+
+Loading daily bars for prev-close reference...
+  Daily bars: 2,661 rows (2016-01-04 to 2026-08-04)
+
+Loading intraday 1-min bars...
+  Loaded SPY_2021_1min.csv: 201,757 rows
+  Loaded SPY_2022_1min.csv: 212,907 rows
+  Loaded SPY_2023_1min.csv: 202,657 rows
+  Loaded SPY_2024_1min.csv: 197,013 rows
+  Loaded SPY_2025_1min.csv: 211,613 rows
+  Loaded SPY_2026_1min.csv: 178,496 rows
+  Total 1-min bars: 1,204,443
+  Trading days: 1452 (2021-01-04 to 2026-10-16)
+
+Computing v2 features per day...
+  ... 300/1452 days
+  ... 600/1452 days
+  ... 900/1452 days
+  ... 1200/1452 days
+
+N rows written : 1,452
+Date range     : 2021-01-04 to 2026-10-16
+
+Feature coverage (non-null %):
+  rv_1min_full_ann        :  100.0%
+  rv_1min_am_ann          :  100.0%
+  rv_1min_pm_ann          :  100.0%
+  bpv_1min_ann            :  100.0%
+  jump_ratio              :  100.0%
+  overnight_ret_v2        :   96.6%
+  session_only_ret        :  100.0%
+  bucket1_ret             :  100.0%
+  bucket2_ret             :  100.0%
+  bucket3_ret             :  100.0%
+  bucket4_ret             :  100.0%
+  bucket5_ret             :  100.0%
+  bucket6_ret             :  100.0%
+  or_15m_range            :  100.0%
+  or_15m_breakout_up      :  100.0%
+  or_15m_breakout_down    :  100.0%
+  vol_entropy_30m         :  100.0%
+  signed_vol_imbalance    :  100.0%
+  vwap_dev_close_full     :  100.0%
+  session_runup           :  100.0%
+  session_drawdown        :  100.0%
+
+Saved -> /home/jhcv/discordBot/outputs/features/markets/spy_intraday_features_v2.csv

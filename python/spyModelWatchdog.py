@@ -2,8 +2,10 @@
 """
 spyModelWatchdog.py
 ====================
-PROTOTYPE / ANALYSIS DELIVERABLE - not wired into cron, does not touch
-production models or trade logs (read-only consumer of spy_trade_log.csv).
+PRODUCTION (Oct 2026): runs daily after the 4:15 PM EOD pipeline via the
+Hermes cron job "spy-watchdog-daily" (~/.hermes/scripts/spyWatchdog_cron.sh,
+`--post`), posting a compact status card to #markets. Read-only consumer of
+spy_trade_log.csv; never touches models or trade state.
 
 Live model-health watchdog for James's production SPY autopilot
 (tradeSpy.py / predictSpy.py). Monitors trailing-N-trade hit-rate and
@@ -387,6 +389,14 @@ def run_watchdog(args):
     else:
         overall_status = "OK"
 
+    # Base-rate context: a model that says UP every day scores the market's
+    # up-day frequency "for free". Hit rate only means something relative to that.
+    up_days = [1 if d["realized_ret"] > 0 else 0 for d in resolved]
+    always_up_hit = (sum(up_days) / len(up_days)) if up_days else None
+    model_up_share = (sum(1 for d in resolved if d["direction"] == "UP") / len(resolved)) if resolved else None
+    down_calls = [d for d in resolved if d["direction"] == "DOWN"]
+    down_hit = (sum(d["hit"] for d in down_calls) / len(down_calls)) if down_calls else None
+
     power = power_calc_report(p0=args.dir_acc_expected)
     min_power_n = min(s["trades_needed"] for s in power
                        if s["degraded_hit_rate"] == 0.50 and s["power"] == 0.80
@@ -409,6 +419,12 @@ def run_watchdog(args):
             "resolved_trades": len(resolved),
             "overall_hit_rate": round(overall_hit_rate, 4) if overall_hit_rate is not None else None,
             "overall_sharpe": round(overall_sharpe, 3) if overall_sharpe is not None else None,
+            "always_up_baseline_hit_rate": round(always_up_hit, 4) if always_up_hit is not None else None,
+            "excess_hit_rate_vs_always_up": (round(overall_hit_rate - always_up_hit, 4)
+                                             if overall_hit_rate is not None and always_up_hit is not None else None),
+            "model_up_call_share": round(model_up_share, 4) if model_up_share is not None else None,
+            "down_calls": len(down_calls),
+            "down_call_hit_rate": round(down_hit, 4) if down_hit is not None else None,
             "caveat": ("Sharpe computed from ~"
                        f"{len(resolved)} daily observations with small average "
                        "position sizing (Kelly-scaled) is extremely high-variance "
@@ -425,6 +441,9 @@ def run_watchdog(args):
             "headline_trades_needed_55_to_50pct_alpha05_power80": min_power_n,
         },
     }
+    report["feature_freshness"] = feature_freshness()
+    if report["feature_freshness"].get("status") != "OK" and report.get("overall_status") == "OK":
+        report["overall_status"] = "WARNING"
     return report
 
 
@@ -494,6 +513,101 @@ def print_human_summary(report):
           f"from ordinary sampling noise, at alpha=0.05 / power=0.80.")
 
 
+# Features whose data source publishes with a known lag; NaN on the latest row is
+# expected for these and is NOT a staleness alarm. Everything else NaN at inference
+# gets median-imputed silently (found Oct 19 2026: 39/80 live features were NaN for
+# months, 85 dead features in training), which is exactly what this check prevents.
+LAG_OK_PREFIXES = ("tavg_", "prcp_", "temp_", "weather_", "gex", "dix_", "skew_", "vix9d", "cboe_skew",
+                   "t5yie", "t10yie", "hy_oas", "ig_oas", "t10y2y", "fedfunds", "dxy")   # FRED series publish 1-3 days late
+
+# Features deliberately set to permanent NaN in buildSpyFeatures.py (dead data source,
+# retired pending a replacement) rather than a publication-lag delay. These are
+# expected-NaN forever, not a staleness alarm, so exclude them the same as LAG_OK_PREFIXES.
+# vix_move_ratio: disabled Oct 19 2026 - Alpaca "MOVE" ticker is Movano Inc (penny stock),
+# not the ICE BofA MOVE index; no free MOVE index source found yet.
+DISABLED_FEATURES = ("vix_move_ratio",)
+FEAT_PATH = os.path.expanduser("~/discordBot/outputs/features/markets/spy_features.csv")
+
+
+def feature_freshness():
+    """Per live model: count NaN features on the latest spy_features row, split into
+    expected publication lag vs unexplained (= stale fetcher / broken build)."""
+    out = {"feature_row_date": None, "models": {}, "unexplained": [], "status": "OK"}
+    try:
+        import pandas as pd
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import predictSpy as P
+        df = pd.read_csv(FEAT_PATH, parse_dates=["date"]).sort_values("date")
+        row = df.iloc[-1]
+        out["feature_row_date"] = row["date"].date().isoformat()
+        loaders = [("logistic", lambda: P.load_best_model("logistic", "next_dir_1d")[1]),
+                   ("gbm_ens", lambda: P.load_best_model("gbm_ensemble", "next_dir_1d")[1]),
+                   ("gbm_5d", lambda: P.load_best_model("gbm", "next_ret_5d")[1]),
+                   ("chop", lambda: P.load_regime_model("chop")[1])]
+        unexplained = set()
+        for name, fn in loaders:
+            try:
+                feats = list(fn())
+            except Exception as e:
+                out["models"][name] = {"error": str(e)[:80]}
+                continue
+            nan = [f for f in feats if f in df.columns and pd.isna(row[f])]
+            missing = [f for f in feats if f not in df.columns]
+            bad = [f for f in nan if not f.startswith(LAG_OK_PREFIXES) and f not in DISABLED_FEATURES] + missing
+            unexplained.update(bad)
+            out["models"][name] = {"n_feats": len(feats), "nan": len(nan), "unexplained": len(bad)}
+        out["unexplained"] = sorted(unexplained)
+        # the feature row itself must be the last trading day (allow weekend/holiday slack of 4 days)
+        age = (datetime.date.today() - row["date"].date()).days
+        out["row_age_days"] = age
+        if unexplained or age > 4:
+            out["status"] = "STALE"
+    except Exception as e:
+        out["status"] = f"CHECK FAILED: {str(e)[:80]}"
+    return out
+
+
+def discord_summary(report):
+    """Compact (<2000 char) status card for the daily #markets post."""
+    lp = report["live_performance_so_far"]
+    dq = report["data_quality"]
+    pc = report["power_calculation"]
+    n = lp["resolved_trades"]
+    need = pc["headline_trades_needed_55_to_50pct_alpha05_power80"]
+    need_adverse = min(s["trades_needed"] for s in pc["scenarios"]
+                       if s["degraded_hit_rate"] == 0.48 and s["power"] == 0.80 and s["alpha_one_sided"] == 0.05)
+    status = report["overall_status"]
+    icon = {"OK": "🟢", "WARNING": "🔴", "INSUFFICIENT_DATA": "⚪"}.get(status, "⚪")
+    lines = [f"{icon} **SPY autopilot watchdog** - {status}  ({dq['first_date']} -> {dq['last_date']}, {n} resolved days)", "```"]
+    hr = lp["overall_hit_rate"]; base = lp["always_up_baseline_hit_rate"]; ex = lp["excess_hit_rate_vs_always_up"]
+    lines.append(f"hit rate      {hr:.3f}   always-UP baseline {base:.3f}   excess {ex:+.3f}")
+    lines.append(f"UP calls      {lp['model_up_call_share']*100:.0f}% of days   DOWN calls {lp['down_calls']}"
+                 + (f" (hit {lp['down_call_hit_rate']:.2f})" if lp["down_call_hit_rate"] is not None else ""))
+    lines.append(f"live Sharpe   {lp['overall_sharpe']}   (WFCV ref {report['config']['sharpe_expected_optimistic_upper_bound']}, optimistic)")
+    for wr in report["window_results"]:
+        lc = wr.get("latest_check")
+        if not lc:
+            continue
+        lines.append(f"trail-{wr['window']:<3} {wr['status']:<17} hit {lc['observed_hit_rate']:.2f} CI[{lc['hit_rate_ci'][0]:.2f},{lc['hit_rate_ci'][1]:.2f}]"
+                     f"  sharpe {lc['observed_sharpe']:.2f} CI[{lc['sharpe_ci'][0]:.1f},{lc['sharpe_ci'][1]:.1f}]"
+                     f"  breaches {wr.get('consecutive_breaches_in_tail', 0)}/{wr['consecutive_required']}")
+    lines.append("")
+    lines.append(f"power: {n}/{need} days to detect 55%->50% drift (a=.05, 80%)  |  {n}/{need_adverse} to detect 55%->48%")
+    pct = min(100, 100 * n / need)
+    lines.append(f"       [{'#' * int(pct // 5):<20}] {pct:.0f}%   ~{max(0, need - n)} trading days remaining")
+    if dq.get("downtime_gaps_gt_4d"):
+        lines.append(f"log gaps >4d: {dq['downtime_gaps_gt_4d']}")
+    ff = report.get("feature_freshness") or {}
+    if ff:
+        per = "  ".join(f"{k} {v.get('nan','?')}/{v.get('n_feats','?')}" for k, v in ff.get("models", {}).items())
+        flag = "OK" if ff.get("status") == "OK" else f"!! {ff.get('status')}"
+        lines.append(f"features {ff.get('feature_row_date')} (age {ff.get('row_age_days','?')}d)  NaN on latest row: {per}  [{flag}]")
+        if ff.get("unexplained"):
+            lines.append(f"  STALE (not a known lag): {', '.join(ff['unexplained'][:8])}" + (" ..." if len(ff["unexplained"]) > 8 else ""))
+    lines.append("```")
+    return "\n".join(lines)
+
+
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -525,6 +639,11 @@ def parse_args(argv=None):
                          "(0=OK/INSUFFICIENT_DATA, 1=WARNING) - for cron use")
     p.add_argument("--power-calc", action="store_true",
                     help="Print only the statistical power analysis and exit")
+    p.add_argument("--summary", action="store_true",
+                    help="Print the compact Discord status card instead of the full report")
+    p.add_argument("--post", action="store_true",
+                    help="Post the compact status card to Discord (see --channel)")
+    p.add_argument("--channel", default="test-env", help="Discord channel name for --post")
     args = p.parse_args(argv)
     args.windows = [int(x) for x in args.windows.split(",") if x.strip()]
     return args
@@ -539,6 +658,16 @@ def main(argv=None):
         return 0
 
     report = run_watchdog(args)
+
+    if args.summary or args.post:
+        card = discord_summary(report)
+        print(card)
+        if args.post:
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            from discordPost import post
+            post(args.channel, card)
+            print(f"[watchdog] posted to #{args.channel}")
+        return 1 if report["overall_status"] == "WARNING" else 0
 
     if args.json:
         print(json.dumps(report, indent=2))

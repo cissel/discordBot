@@ -330,6 +330,16 @@ def load_unrealized_history(window_minutes):
     return df[df["timestamp"] >= cutoff]
 
 
+def _fees_for(symbol):
+    """Broker fees for this symbol's grid from the daily pnlLedger run
+    (Alpaca paper charges crypto pair fees; gridBot's realized_pl is gross)."""
+    try:
+        from alpacaFees import fees_for_symbol
+        return float(fees_for_symbol(symbol) or 0.0)
+    except Exception:
+        return 0.0
+
+
 def symbol_live_payload(symbol, window_seconds):
     """Everything the live-view panel for one symbol needs: 1-min OHLC
     candles, all grid levels (colored by current state), recent fills, live
@@ -372,6 +382,7 @@ def symbol_live_payload(symbol, window_seconds):
 
     unrealized = pos.get("unrealized_pl", 0.0)
     realized = state.get("realized_pl", 0.0)
+    fees = _fees_for(symbol)
 
     return {
         "symbol": symbol,
@@ -387,7 +398,9 @@ def symbol_live_payload(symbol, window_seconds):
         "market_value": pos.get("market_value", 0.0),
         "unrealized_pl": unrealized,
         "realized_pl": realized,
-        "total_pl": round(realized + unrealized, 2),
+        "fees_usd": round(fees, 2),
+        "realized_pl_net": round(realized + fees, 2),
+        "total_pl": round(realized + fees + unrealized, 2),
         "completed_round_trips": state.get("completed_round_trips", 0),
         "halted": state.get("halted", False),
         "halt_reason": state.get("halt_reason"),
@@ -496,7 +509,7 @@ def api_equity():
     for s in SYMBOLS:
         state = load_state(s)
         pos = cached_position(s)
-        realized_now += state.get("realized_pl", 0.0)
+        realized_now += state.get("realized_pl", 0.0) + _fees_for(s)  # net of broker fees
         unrealized_now += pos.get("unrealized_pl", 0.0)
         round_trips_now += state.get("completed_round_trips", 0)
         if state.get("halted"):
@@ -578,7 +591,7 @@ PAGE = """
   <div class="equity-panel">
     <h2 style="margin:0 0 8px 0; font-size:16px;">Grid Bot P&amp;L (BTC + ETH + SOL combined)</h2>
     <div class="equity-hero">
-      <div><div style="font-size:12px;opacity:0.75;">Realized P&amp;L</div><div class="big" id="equityRealized">-</div></div>
+      <div><div style="font-size:12px;opacity:0.75;">Realized P&amp;L (net of fees)</div><div class="big" id="equityRealized">-</div></div>
       <div class="pnl-line"><div style="font-size:12px;opacity:0.75;">Unrealized (now)</div><span id="equityUnrealized">-</span></div>
       <div class="pnl-line"><div style="font-size:12px;opacity:0.75;">Total (now)</div><span id="equityTotal">-</span></div>
       <div class="pnl-line"><div style="font-size:12px;opacity:0.75;">Today</div><span id="equityDayPnl">-</span></div>
@@ -774,7 +787,7 @@ async function refreshLive(symbol, windowSec) {
     }
     lastFillCount[symbol] = d.fills.length;
 
-    const realCls = d.realized_pl >= 0 ? 'pos-pos' : 'pos-neg';
+    const realCls = (d.realized_pl_net ?? d.realized_pl) >= 0 ? 'pos-pos' : 'pos-neg';
     const unrealCls = d.unrealized_pl >= 0 ? 'pos-pos' : 'pos-neg';
     const haltedHtml = d.halted ? `<div class="stat halted">HALTED<br><small>${d.halt_reason||''}</small></div>` : '';
     document.getElementById('stats-' + SAFE(symbol)).innerHTML = `
@@ -782,7 +795,7 @@ async function refreshLive(symbol, windowSec) {
       <div class="stat">Position<b>${fmtNum(d.position_qty, 6)}</b></div>
       <div class="stat">Avg cost<b>${fmtNum(d.avg_entry)}</b></div>
       <div class="stat">Open buy/sell<b>${d.open_buy_levels} / ${d.open_sell_levels}</b></div>
-      <div class="stat">Realized<b class="${realCls}">$${fmtNum(d.realized_pl)}</b></div>
+      <div class="stat">Realized (net of $${fmtNum(Math.abs(d.fees_usd || 0))} fees)<b class="${realCls}">$${fmtNum(d.realized_pl_net ?? d.realized_pl)}</b></div>
       <div class="stat">Unrealized<b class="${unrealCls}">$${fmtNum(d.unrealized_pl)}</b></div>
       <div class="stat">Round trips<b>${d.completed_round_trips}</b></div>
       ${d.pending_reorders ? `<div class="stat halted">Pending retry: ${d.pending_reorders}</div>` : ''}

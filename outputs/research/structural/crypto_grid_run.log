@@ -1,0 +1,39 @@
+BTC/USD 12m_1min live: total -182.37 rt 1481 halts 17 rt_inc 1145.42 fees 844.76 halt_loss 488.44 unreal +5.41 maxinv 49% sharpe -0.97 vs bh_vm -0.82 mdd 278 vs 145 overwrite 38 untracked 38
+BTC/USD 12m_1min pessimistic: total -56.63 rt 1227 halts 14 rt_inc 908.72 fees 689.61 halt_loss 277.02 unreal +1.28 maxinv 49% sharpe -0.31 vs bh_vm -0.82 mdd 229 vs 133 overwrite 34 untracked 34
+BTC/USD 2021+_1hour live: total -3002.76 rt 3258 halts 156 rt_inc 2872.19 fees 2180.48 halt_loss 3707.10 unreal +12.63 maxinv 50% sharpe -1.27 vs bh_vm 0.26 mdd 3395 vs 1008 overwrite 420 untracked 420
+BTC/USD 2021+_1hour pessimistic: total -813.02 rt 2173 halts 85 rt_inc 1932.25 fees 1350.53 halt_loss 1394.74 unreal +0.00 maxinv 49% sharpe -0.48 vs bh_vm 0.26 mdd 1400 vs 709 overwrite 243 untracked 243
+ETH/USD 12m_1min live: total -565.06 rt 1357 halts 25 rt_inc 865.95 fees 629.88 halt_loss 801.08 unreal -0.05 maxinv 49% sharpe -2.12 vs bh_vm -1.01 mdd 611 vs 255 overwrite 53 untracked 52
+ETH/USD 12m_1min pessimistic: total -184.88 rt 672 halts 8 rt_inc 561.25 fees 297.66 halt_loss 453.72 unreal +5.24 maxinv 49% sharpe -0.92 vs bh_vm -1.01 mdd 288 vs 138 overwrite 19 untracked 19
+ETH/USD 2021+_1hour live: total -1605.93 rt 4069 halts 156 rt_inc 2978.31 fees 1987.61 halt_loss 2598.29 unreal +1.66 maxinv 52% sharpe -0.66 vs bh_vm 0.11 mdd 2282 vs 1485 overwrite 480 untracked 478
+ETH/USD 2021+_1hour pessimistic: total -407.79 rt 2180 halts 89 rt_inc 1684.79 fees 1058.80 halt_loss 1051.38 unreal +17.60 maxinv 49% sharpe -0.23 vs bh_vm 0.11 mdd 964 vs 1005 overwrite 274 untracked 274
+SOL/USD 12m_1min live: total -14.50 rt 603 halts 10 rt_inc 416.26 fees 190.22 halt_loss 238.76 unreal -1.78 maxinv 46% sharpe -0.06 vs bh_vm -1.17 mdd 235 vs 269 overwrite 27 untracked 27
+SOL/USD 12m_1min pessimistic: total +2.11 rt 477 halts 5 rt_inc 384.13 fees 147.31 halt_loss 238.60 unreal +3.89 maxinv 46% sharpe 0.01 vs bh_vm -1.17 mdd 179 vs 161 overwrite 17 untracked 17
+SOL/USD 2021+_1hour live: total +361.90 rt 3309 halts 115 rt_inc 2758.74 fees 1142.25 halt_loss 1252.27 unreal -2.33 maxinv 51% sharpe 0.19 vs bh_vm 0.18 mdd 1551 vs 23475 overwrite 385 untracked 382
+SOL/USD 2021+_1hour pessimistic: total +1474.04 rt 1899 halts 62 rt_inc 1871.27 fees 639.84 halt_loss -225.94 unreal +16.67 maxinv 47% sharpe 0.95 vs bh_vm 0.18 mdd 588 vs 17171 overwrite 206 untracked 206
+BOOK 12m_1min live: total -761.93 sharpe -1.20 vs bh_vm -1.07 mdd 1039 vs 663 -> FAIL
+sanity window: 2026-10-15 21:10:46+00:00 .. 2026-10-20 14:21:32.639790+00:00 (4.72 days)
+sanity real_fill_orders_per_day: 20.99
+sanity sim_fills_per_day: 12.72
+sanity real_round_trips: 49
+sanity real_round_trips_per_day: 10.39
+sanity sim_round_trips: 30
+sanity sim_round_trips_per_day: 6.36
+sanity real_realized_gross_usd: 21.4
+sanity real_usd_per_round_trip_gross: 0.437
+sanity sim_realized_gross_usd: 30.29
+sanity sim_usd_per_round_trip_gross: 1.01
+sanity sim_fees_usd: 24.83
+sanity sim_total_net_usd: 5.45
+sanity sim_halts: 0
+sanity real_sell_qty_mean: 0.001248
+sanity sim_qty_per_level: 0.00338
+sanity real_qty_sold: 0.08362
+sanity sim_qty_sold: 0.1014
+sanity real_gross_usd_per_day: 4.54
+sanity sim_gross_usd_per_day: 6.42
+sanity ratio_sim_over_real_round_trips_per_day: 0.61
+sanity ratio_sim_over_real_usd_per_round_trip: 2.31
+sanity ratio_sim_over_real_qty_sold: 1.21
+sanity ratio_sim_over_real_gross_usd: 1.42
+sanity within_2x_on_volume_and_gross_usd: True
+sanity within_2x_on_per_trip_counts: False

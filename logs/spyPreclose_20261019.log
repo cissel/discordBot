@@ -1,0 +1,42 @@
+=== preclose run Mon 19 Oct 15:25:15 EDT 2026 ===
+  [VIX.csv] wrote 9599 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-10-16, 3d behind, expected <=3d) [OK]
+  [DXY.csv] wrote 5420 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-10-09, 10d behind, expected <=14d) [OK]
+  [T10Y2Y.csv] wrote 13144 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-10-16, 3d behind, expected <=3d) [OK]
+  [FEDFUNDS.csv] wrote 867 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-09-01, 48d behind, expected <=65d) [OK]
+  [WALCL.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WALCL.csv (last: 2026-10-14, 5d behind, expected <=10d) [OK]
+  [RRPONTSYD.csv] wrote 6182 rows -> /home/jhcv/discordBot/outputs/markets/cache/RRPONTSYD.csv (last: 2026-10-19, 0d behind, expected <=3d) [OK]
+  [WTREGEN.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WTREGEN.csv (last: 2026-10-14, 5d behind, expected <=10d) [OK]
+  [T5YIE.csv] wrote 6207 rows -> /home/jhcv/discordBot/outputs/markets/cache/T5YIE.csv (last: 2026-10-16, 3d behind, expected <=3d) [OK]
+  [T10YIE.csv] wrote 6207 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10YIE.csv (last: 2026-10-16, 3d behind, expected <=3d) [OK]
+  [BAMLH0A0HYM2.csv] wrote 792 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLH0A0HYM2.csv (last: 2026-10-16, 3d behind, expected <=5d) [OK]
+  [BAMLC0A0CM.csv] wrote 792 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLC0A0CM.csv (last: 2026-10-16, 3d behind, expected <=5d) [OK]
+[fetchCrossAssetData] done.
+ABORT: SPY.csv has no row for 2026-10-19 (Alpaca did not return today's partial bar). 16:15 run will trade as before.
+=== preclose run Mon 19 Oct 15:30:21 EDT 2026 ===
+  [VIX.csv] wrote 9599 rows -> /home/jhcv/discordBot/outputs/markets/cache/VIX.csv (last: 2026-10-16, 3d behind, expected <=3d) [OK]
+  [DXY.csv] wrote 5420 rows -> /home/jhcv/discordBot/outputs/markets/cache/DXY.csv (last: 2026-10-09, 10d behind, expected <=14d) [OK]
+  [T10Y2Y.csv] wrote 13144 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10Y2Y.csv (last: 2026-10-16, 3d behind, expected <=3d) [OK]
+  [FEDFUNDS.csv] wrote 867 rows -> /home/jhcv/discordBot/outputs/markets/cache/FEDFUNDS.csv (last: 2026-09-01, 48d behind, expected <=65d) [OK]
+  [WALCL.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WALCL.csv (last: 2026-10-14, 5d behind, expected <=10d) [OK]
+  [RRPONTSYD.csv] wrote 6182 rows -> /home/jhcv/discordBot/outputs/markets/cache/RRPONTSYD.csv (last: 2026-10-19, 0d behind, expected <=3d) [OK]
+  [WTREGEN.csv] wrote 1244 rows -> /home/jhcv/discordBot/outputs/markets/cache/WTREGEN.csv (last: 2026-10-14, 5d behind, expected <=10d) [OK]
+  [T5YIE.csv] wrote 6207 rows -> /home/jhcv/discordBot/outputs/markets/cache/T5YIE.csv (last: 2026-10-16, 3d behind, expected <=3d) [OK]
+  [T10YIE.csv] wrote 6207 rows -> /home/jhcv/discordBot/outputs/markets/cache/T10YIE.csv (last: 2026-10-16, 3d behind, expected <=3d) [OK]
+  [BAMLH0A0HYM2.csv] wrote 792 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLH0A0HYM2.csv (last: 2026-10-16, 3d behind, expected <=5d) [OK]
+  [BAMLC0A0CM.csv] wrote 792 rows -> /home/jhcv/discordBot/outputs/markets/cache/BAMLC0A0CM.csv (last: 2026-10-16, 3d behind, expected <=5d) [OK]
+[fetchCrossAssetData] done.
+  SPY: today's row already present
+  QQQ: today's row already present
+  GLD: today's row already present
+  USO: today's row already present
+  -> /home/jhcv/discordBot/outputs/markets/intraday/SPY_2026_1min.csv
+     179170 bars | 2026-01-02 to 2026-10-19 | 13675.0 KB
+  wrote 674 bars for 2026-10-19
+
+Saved -> /home/jhcv/discordBot/outputs/features/markets/spy_intraday_features.csv
+
+Saved -> /home/jhcv/discordBot/outputs/features/markets/spy_intraday_features_v2.csv
+
+[buildSpyFeatures] wrote 2713 rows -> /home/jhcv/discordBot/outputs/features/markets/spy_features.csv
+SPY pre-close 2026-10-19: SELL 12 sh (tif=cls, executed=True) | target 0 sh size 0.0 @ ~768.39 | 
+=== done Mon 19 Oct 15:42:17 EDT 2026 ===

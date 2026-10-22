@@ -1,0 +1,20 @@
+# 2011-2016 holdout checks (R1 GEX gate, R2 complacent skew, R4 post-dip)
+
+- R1 GEX q1 vs rest: FAIL on the holdout
+- R1b inverted vs normal: FAIL on the holdout
+- R1c live gate (not q1 AND not inverted) vs excluded: FAIL on the holdout
+- R2 SKEW z<-1 vs rest: FAIL on the holdout
+- R4 5d-return bottom tercile vs rest: FAIL on the holdout
+
+| period              | rule                                                |   n_in |   diff |   nw_t | extra                                                                                                                                                                   | pass   |
+|:--------------------|:----------------------------------------------------|-------:|-------:|-------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------|
+| holdout 2011-2016   | R1 GEX q1 vs rest                                   |    222 |  1.436 |   1.49 | q1 RV/IV highest: False; RV/IV by q: {1.0: 0.752, 2.0: 0.847, 3.0: 0.839, 4.0: 0.782, 5.0: 0.763}; P&L by q: {1.0: 3.84, 2.0: 1.768, 3.0: 1.857, 4.0: 2.848, 5.0: 2.91} | False  |
+| holdout 2011-2016   | R1b inverted vs normal                              |    198 |  0.557 |   0.32 | RV/IV inverted 0.821 vs normal 0.818; P&L 2.63 vs 2.07                                                                                                                  | False  |
+| holdout 2011-2016   | R1c live gate (not q1 AND not inverted) vs excluded |    909 | -1.333 |  -1.56 | monthly Sharpe ungated 2.22 vs gated 1.80; eligible 0.77; worst cal-month mean ungated -16.0 gated -13.0                                                                | False  |
+| holdout 2011-2016   | R2 SKEW z<-1 vs rest                                |    175 |  0.021 |   0.37 | crash rate 0.114 vs 0.093; RV/IV diff +0.005 (t 0.03); P&L diff -0.25 (t -0.19)                                                                                         | False  |
+| holdout 2011-2016   | R4 5d-return bottom tercile vs rest                 |    430 |  0.178 |   0.24 | tercile edge -0.0036; mean in 2.27 vs out 2.09                                                                                                                          | False  |
+| in-sample 2016-2026 | R1 GEX q1 vs rest                                   |    470 | -1.816 |  -0.92 | q1 RV/IV highest: True; RV/IV by q: {1.0: 0.867, 2.0: 0.779, 3.0: 0.746, 4.0: 0.78, 5.0: 0.806}; P&L by q: {1.0: 0.212, 2.0: 2.582, 3.0: 3.424, 4.0: 2.347, 5.0: 0.642} | False  |
+| in-sample 2016-2026 | R1b inverted vs normal                              |    320 | -3.113 |  -1.06 | RV/IV inverted 0.916 vs normal 0.780; P&L -1.03 vs 2.08                                                                                                                 | False  |
+| in-sample 2016-2026 | R1c live gate (not q1 AND not inverted) vs excluded |   2009 |  1.522 |   0.87 | monthly Sharpe ungated 0.76 vs gated 1.89; eligible 0.78; worst cal-month mean ungated -138.7 gated -111.1                                                              | True   |
+| in-sample 2016-2026 | R2 SKEW z<-1 vs rest                                |    465 |  0.173 |   2.16 | crash rate 0.297 vs 0.123; RV/IV diff +0.120 (t 0.71); P&L diff -0.49 (t -0.29)                                                                                         | False  |
+| in-sample 2016-2026 | R4 5d-return bottom tercile vs rest                 |    857 |  0.464 |   0.55 | tercile edge -0.0025; mean in 2.01 vs out 1.54                                                                                                                          | False  |
