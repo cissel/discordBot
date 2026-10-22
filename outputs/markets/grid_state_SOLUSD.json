@@ -45,8 +45,8 @@
   "last_fill_activity_id": "20261022125454298::178b5c6c-1570-4c6a-b92c-249a279d05d5",
   "realized_pl": 49.9,
   "completed_round_trips": 220,
-  "halted": false,
-  "halt_reason": null,
+  "halted": true,
+  "halt_reason": "manual --flatten",
   "created_at": "2026-10-15T21:10:52",
   "breakout_atr_mult": 1.5
 }

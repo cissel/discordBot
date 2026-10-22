@@ -1,13 +1,13 @@
 {
- "computed_at": "2026-10-22T07:47:36",
+ "computed_at": "2026-10-22T13:50:39",
  "min_n": 50,
  "min_t": 2.0,
  "buckets": {
   "upcoming_games_odds|draftkings_devig": {
-   "n": 86,
-   "avg_clv": 0.007481121814512318,
-   "t": 5.962970298784759,
-   "pct_beat": 0.4883720930232558,
+   "n": 87,
+   "avg_clv": 0.007528630780532915,
+   "t": 6.066575465901004,
+   "pct_beat": 0.4942528735632184,
    "status": "PASS"
   },
   "upcoming_games_odds|espn_bpi": {
@@ -19,9 +19,9 @@
   },
   "props_odds|sleeper_poisson": {
    "n": 547,
-   "avg_clv": -0.0010702447051593013,
-   "t": -0.91645295633095,
-   "pct_beat": 0.33638025594149906,
+   "avg_clv": -0.0009735737451643814,
+   "t": -0.8323237554622152,
+   "pct_beat": 0.340036563071298,
    "status": "FAIL"
   },
   "upcoming_games_odds|no_model": {

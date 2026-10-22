@@ -1,0 +1,16 @@
+[Unit]
+Description=Alpaca P&L Dashboard (by strategy)
+After=network.target
+
+[Service]
+Type=simple
+User=jhcv
+WorkingDirectory=/home/jhcv/discordBot
+ExecStart=/home/jhcv/discordBot/venv/bin/python3 /home/jhcv/discordBot/python/pnl_dashboard/app.py --port 8901
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/jhcv/discordBot/pnl_dashboard.log
+StandardError=append:/home/jhcv/discordBot/pnl_dashboard.log
+
+[Install]
+WantedBy=multi-user.target

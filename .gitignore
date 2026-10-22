@@ -5,6 +5,19 @@
 .Rhistory
 server_messages.csv
 
+# Live service logs - systemd appends to these at fixed root paths,
+# keep tracking out of git so they stop bloating history/stacking up
+/bot.log
+/live_poller.log
+/pnl_dashboard.log
+/grid_dashboard.log
+/mm_dashboard.log
+logs/archive/
+
+# Ad-hoc scratch pulls, not part of the regular data pipeline
+outputs/sports/nba/adhoc/
+outputs/sports/nhl/adhoc/
+
 # DJ music library - too large for git
 outputs/dj/
 

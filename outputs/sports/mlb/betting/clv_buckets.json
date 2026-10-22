@@ -1,5 +1,5 @@
 {
- "computed_at": "2026-10-22T08:26:29",
+ "computed_at": "2026-10-22T14:29:28",
  "min_n": 50,
  "min_t": 2.0,
  "buckets": {
@@ -25,10 +25,10 @@
    "status": "UNPROVEN"
   },
   "props_odds|mlbapi_poisson": {
-   "n": 8550,
-   "avg_clv": -0.00022277987361037424,
-   "t": -0.8976118594450291,
-   "pct_beat": 0.2856140350877193,
+   "n": 8551,
+   "avg_clv": -0.00022188996350550898,
+   "t": -0.8939958236284055,
+   "pct_beat": 0.28581452461700385,
    "status": "FAIL"
   },
   "props_odds|no_espn_match": {

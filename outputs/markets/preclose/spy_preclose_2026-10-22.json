@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-22",
+  "placed_at": "15:16:40",
+  "executed": false,
+  "order_id": "",
+  "pending": false,
+  "fired": false,
+  "passed_risk": true,
+  "action": "HOLD",
+  "order_shares": 0,
+  "target_shares": 20,
+  "position_size": 0.2097,
+  "spy_price_proxy": 762.34,
+  "signal_prob": 0.6663,
+  "sizing_reason": "TREND/VOL: SPY above 200dma (idx/ma 1.051) -> base 0.25 x vol_scalar 0.84 = 0.210 | shadow model: blend=0.6663 kelly_size=0.1395 | within rebalance band, hold",
+  "risk_flags": [],
+  "errors": []
+}
